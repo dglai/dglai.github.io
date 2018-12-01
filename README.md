@@ -1,2 +1,7 @@
-# dglai.github.io
-Website for DGL project
+# DGL Project Homepage
+
+## Serve Locally
+
+```bash
+./serve_local.sh
+```
