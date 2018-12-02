@@ -37,3 +37,6 @@ To this end, we made DGL. We are keen to bringing graphs closer to deep
 learning researchers. We want to make it easy to implement graph neural
 networks model family. We also want to make the combination of graph based
 modules and tensor based modules (PyTorch or MXNet) as smooth as possible.
+
+## Team
+NYU/NYU Shanghai, AWS Shanghai AI Lab/AWS MXNet Science
