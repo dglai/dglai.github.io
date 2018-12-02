@@ -10,16 +10,16 @@ description: "DGL"
 # Credits
 
 ### Team members:
-New York University: Minjie Wang, Lingfan Yu, Quan Gan, Jake Zhao
+New York University: Minjie Wang (Proj Lead), Lingfan Yu, Quan Gan, Jake Zhao
 
 NYU Shanghai: Yu Gai, Zihao Ye, Mufei Li, Jinjing Zhou, Qi Huang
 
-AWS: Da Zheng, Haibin Lin, Chao Ma, Damon Deng
+AWS: Da Zheng (Proj Lead), Haibin Lin, Chao Ma, Damon Deng
 
 Fudan University: Qipeng Guo
 
 CQUPT: Hao Zhang
 
 ### Advisors:
-Jinyang Li (New York University), Alex Smola (AWS), Zheng Zhang (AWS Shanghai AI Lab, NYU Shanghai)
+Jinyang Li (New York University), Alex Smola (AWS), [Zheng Zhang](https://shanghai.nyu.edu/academics/faculty/directory/zheng-zhang) (AWS Shanghai AI Lab, NYU Shanghai)
 

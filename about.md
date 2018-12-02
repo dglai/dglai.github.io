@@ -15,7 +15,9 @@ Deep Learning, such as image recognition, rich-resource machine translation,
 game playing. These were made possible by a set of techniques that are
 composed of a number of representationally powerful building-blocks, such as
 convolution, attention and recurrence, applied to images, video, text, speech
-and beyond. The development and deployment of these techniques often depend on
+and beyond. 
+
+The development and deployment of these techniques often depend on
 the simple correlation of the given data; for example, CNN is based on the
 spatial correlation between nearby pixels while RNN family dwells on the
 assumption that its input is sequence-like.
@@ -24,7 +26,7 @@ More recently, there has been a steady flow of new deep learning research
 focusing on graph-structured data. Some of them are more conventional graph
 related problems, like social networks, chemical molecules and recommender
 systems, where how the entity interacts with its neighborhood is as
-informative, if not more than, as the features of the entity itself.
+informative as, if not more than, the features of the entity itself.
 
 Some others nevertheless have applied graph neural networks to images, text or
 games. Very broadly speaking, any of the data structures we have covered so
