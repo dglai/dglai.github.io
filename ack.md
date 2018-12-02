@@ -18,8 +18,8 @@ AWS: Da Zheng, Haibin Lin, Chao Ma, Damon Deng
 
 Fudan University: Qipeng Guo
 
-Shanghai Jiaotong University: Hao Zhang
+CQUPT: Hao Zhang
 
 ### Advisors:
-Jinyang Li (New York University:), Alex Smola (AWS), Zheng Zhang (AWS Shanghai AI Lab)
+Jinyang Li (New York University), Alex Smola (AWS), Zheng Zhang (NYU Shanghai, AWS Shanghai AI Lab)
 
