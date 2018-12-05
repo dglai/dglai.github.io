@@ -23,3 +23,9 @@ CQUPT: Hao Zhang
 ### Advisors:
 Jinyang Li (New York University), Alex Smola (AWS), [Zheng Zhang](https://shanghai.nyu.edu/academics/faculty/directory/zheng-zhang) (AWS Shanghai AI Lab, NYU Shanghai)
 
+
+### Special thanks: 
+
+We would like to thank [Tianqi Chen](https://homes.cs.washington.edu/~tqchen/) 
+and [TVM](https://tvm.ai/) for helping us solving many technical details.
+
