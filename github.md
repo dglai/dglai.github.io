@@ -9,4 +9,4 @@ description: "DGL"
 
 # GitHub Repository
 
-DGL repository is open **now**, on the 7th, Dec 2018. Please click [here](https://github.com/jermainewang/dgl).
+DGL repository is open **now**, on the 7th, Dec 2018. Please click [here](https://github.com/jermainewang/dgl/tree/0.1.2)
