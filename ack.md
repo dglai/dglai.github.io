@@ -19,8 +19,9 @@ Fudan University: Qipeng Guo
 CQUPT: Hao Zhang
 
 ## Contributors:
-[@yzhliu](https://github.com/yzhliu)
-[@yifeim](https://github.com/yifeim)
+[Yizhi Liu](https://github.com/yzhliu),
+[Yifei Ma](https://github.com/yifeim),
+Hao Jin
 
 ## Advisors:
 
