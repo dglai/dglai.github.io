@@ -21,7 +21,8 @@ CQUPT: Hao Zhang
 ## Contributors:
 [Yizhi Liu](https://github.com/yzhliu),
 [Yifei Ma](https://github.com/yifeim),
-Hao Jin
+Hao Jin,
+Sheng Zha
 
 ## Advisors:
 
