@@ -8,7 +8,7 @@ description: "DGL"
 {% include JB/setup %}
 
 ## Team members:
-New York University: Minjie Wang (*Project Lead*), Lingfan Yu, Quan Gan, Jake Zhao
+New York University: [Minjie Wang](https://jermainewang.github.io/) (*Project Lead*), Lingfan Yu, Quan Gan, [Jake Zhao](https://cs.nyu.edu/~jakezhao/)
 
 NYU Shanghai: Yu Gai, Zihao Ye, Mufei Li, Jinjing Zhou, Qi Huang
 
