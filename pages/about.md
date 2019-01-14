@@ -36,7 +36,8 @@ networks model family. We also want to make the combination of graph based
 modules and tensor based modules (PyTorch or MXNet) as smooth as possible.
 
 ## Team members:
-New York University: [Minjie Wang](https://jermainewang.github.io/) (*Project Lead*), Lingfan Yu, Quan Gan, [Jake Zhao](https://cs.nyu.edu/~jakezhao/)
+New York University: [Minjie Wang](https://jermainewang.github.io/) (*Project Lead*),
+[Lingfan Yu](https://cs.nyu.edu/~lingfan/), Quan Gan, [Jake Zhao](https://cs.nyu.edu/~jakezhao/)
 
 NYU Shanghai: Yu Gai, Zihao Ye, Mufei Li, Jinjing Zhou, Qi Huang
 
