@@ -53,6 +53,6 @@ Checkout [jekyll](jekyll)'s tutorial before you proceed. Here, we list several u
 Credits & License
 -----------------
 This website is customized over the ["documenter"](https://themeforest.net/item/documenter-all-in-one-support-knowledgebase-documentation-website-jekyll-template/21417158) template. Credits to the awesome designers.
-For the inquiry of purchase and licence, please email wmjlyjemaine@gmail.com.
+For the inquiry of certificate of purchase, please email wmjlyjemaine@gmail.com.
 
 [jekyll]: https://jekyllrb.com/tutorials/home/
