@@ -15,17 +15,17 @@ Setup
 In `jekyll` folder:
 * `bundle install --path vendor/bundle`
 
-Build
------
+Serve locally
+-------------
 In `jekyll` folder:
-* `bundle exec jekyll build`
+* `bundle exec jekyll serve --watch`
 
 Scripts
------------
+-------
 In the root folder:
 * Clean the generated static sites: `bash script/clean.sh`
 * Copy the jekyll generated sites to root folder: `bash script/ship.sh`
-* Clean, ship and serve locally: `bash script/clean_and_serve.sh`
+* Build for production: `bash script/build_and_ship.sh`
 
 How to upload your change
 -------------------------
