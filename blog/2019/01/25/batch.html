@@ -40,6 +40,9 @@
     <!-- Minima CSS -->
     <link href="/assets/main.css" rel="stylesheet">
 
+    <!-- Rouge Highlighter CSS -->
+    <link href="/assets/css/syntax.css" rel="stylesheet">
+
     <!--[if lt IE 9]>
         <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -289,15 +292,14 @@
 
           <div class="single-blog-details">
             <div class="blog-img">
-              <img src="https://i.imgur.com/ZYaSoqO.png" alt="blog">
+              <img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/batch/dataset_overview.png" alt="blog">
             </div>
             <div class="blog-content-desc">
               <h4 class="themeix-blog-h">Batched Graph Classification with DGL</h4>
-              <p><p>Graph classification, namely the prediction of graph labels, is an important
-problem with applications across many fields – bioinformatics,
-chemoinformatics, social network analysis, urban computing and cyber-security.
-Recently there has been an arising trend of applying graph neural networks to
-graph classification (<a href="https://arxiv.org/pdf/1806.08804.pdf">Ying et al.,
+              <p><p>Graph classification is an important problem
+with applications across many fields – bioinformatics, chemoinformatics, social
+network analysis, urban computing and cyber-security. Applying graph neural
+networks to this problem has been a popular approach recently (<a href="https://arxiv.org/pdf/1806.08804.pdf">Ying et al.,
 2018</a>, <a href="https://arxiv.org/pdf/1811.01287.pdf">Cangea et al.,
 2018</a>, <a href="https://arxiv.org/pdf/1811.09595.pdf">Knyazev et al.,
 2018</a>, <a href="https://arxiv.org/pdf/1901.01343.pdf">Bianchi et al.,
@@ -312,211 +314,183 @@ graph classification (<a href="https://arxiv.org/pdf/1806.08804.pdf">Ying et al.
 </ul>
 
 <h2 id="simple-graph-classification-task">Simple Graph Classification Task</h2>
-<p>In this tutorial, we will learn how to perform batched graph classification
-with DGL via a toy example of distinguishing cycles from stars. From a
-synthetic dataset, we want to learn a binary classifier like below:</p>
+<p>In this tutorial, we will learn how to perform <em>batched</em> graph classification
+with DGL via a toy example of classifying 8 types of regular graphs as below:</p>
 
-<p><img src="https://i.imgur.com/ZYaSoqO.png" alt="task" height="400px" width="400px" class="aligncenter" /></p>
+<p><img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/batch/dataset_overview.png" alt="task" class="aligncenter" /></p>
 
-<p>We implement a dataset class for our synthetic dataset as usual in PyTorch.
-This will be a balanced dataset with half of cycles and half of stars. In
-particular for the <code class="highlighter-rouge">collate</code> function, we perform a <code class="highlighter-rouge">dgl.batch</code> operation.
-Normally in <code class="highlighter-rouge">collate</code> function we batch across a set of tensors with same shape
-to make a minibatch, here our <code class="highlighter-rouge">dgl.batch</code> performs a similar operation across
-graphs except that our graphs may have different sizes. Below is a
-visualization that hopefully gives a general idea:</p>
+<p>We implement this <a href="https://docs.dgl.ai/api/python/data.html">Mini Graph Classification
+Dataset</a> in DGL. The dataset has 8
+different types of graphs and each class has the same number of graph samples.</p>
 
-<p><img src="https://i.imgur.com/0cNkhn6.png" alt="batch" height="600px" width="600px" class="aligncenter" /></p>
-
-<p>Basically with <code class="highlighter-rouge">dgl.batch([g_1,...,g_n])</code>, we can merge <script type="math/tex">n</script> small graphs into a
-large graph with <script type="math/tex">n</script> connected components. This allows many possibilities of
-parallelization. To learn more, check
-<a href="https://docs.dgl.ai/api/python/batch.html">BatchedDGLGraph</a>.</p>
-
-<figure class="highlight">
-  <pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">dgl</span>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">MiniGCDataset</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+<span class="c"># a dataset with 80 samples, each graph is</span>
+<span class="c">#  of size [10, 20]</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">MiniGCDataset</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">graph</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">())</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'Class:'</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+</code></pre>
+</div>
 
+<p><img src="/assets/images/posts/2019-01-25-batch/001.png" alt="sample" class="aligncenter" /></p>
 
-<span class="k">class</span> <span class="nc">SynDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="s">"""A synthetic dataset for graph classification consisting
-    of cycle graphs and star graphs."""</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ds_size</span><span class="p">,</span> <span class="n">min_num_v</span><span class="p">,</span> <span class="n">max_num_v</span><span class="p">,</span> <span class="n">num_train</span><span class="p">):</span>
-        <span class="s">"""
-        Parameters
-        ----------
-        ds_size: int
-            Number of graphs in the synthetic dataset
-        min_num_v: int
-            Minimum number of nodes for graphs
-        max_num_v: int
-            Maximum number of nodes for graphs
-        num_train: int
-            Number of training samples
-        """</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SynDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+<h2 id="form-a-graph-mini-batch">Form a graph mini-batch</h2>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_syn_dataset</span><span class="p">(</span><span class="n">ds_size</span><span class="p">,</span> <span class="n">min_num_v</span><span class="p">,</span> <span class="n">max_num_v</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">num_train</span><span class="p">)</span>
+<p>To train neural networks more efficiently, a common practice is to <strong>batch</strong>
+multiple samples together to form a mini-batch. Batching fixed-shaped tensor
+inputs is quite easy (for example, batching two images of size 28x28 gives a
+tensor of shape 2x28x28). By contrast, batching graph inputs has two
+challenges:</p>
 
-    <span class="k">def</span> <span class="nf">gen_syn_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_graph</span><span class="p">,</span> <span class="n">min_num_v</span><span class="p">,</span> <span class="n">max_num_v</span><span class="p">):</span>
-        <span class="s">"""Generate a synthetic dataset of n_graph graphs with half of
-        cycles and half of stars. All graphs have min_num_v to max_num_v
-        nodes."""</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_graph</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="n">nx_cycle</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">cycle_graph</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_num_v</span><span class="p">,</span> <span class="n">max_num_v</span><span class="p">))</span>
-            <span class="n">dgl_cycle</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">DGLGraph</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">)</span>
-            <span class="c"># Add self edges which we will explain later</span>
-            <span class="n">dgl_cycle</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">dgl_cycle</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">dgl_cycle</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
-            <span class="c"># Label 0 for cycle graph</span>
-            <span class="n">ds</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dgl</span><span class="o">.</span><span class="n">DGLGraph</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">),</span> <span class="mi">0</span><span class="p">))</span>
-            <span class="c"># nx.star_graph(N) gives a star graph with N+1 nodes</span>
-            <span class="n">nx_star</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">star_graph</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_num_v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-                                                   <span class="n">max_num_v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-            <span class="n">dgl_star</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">DGLGraph</span><span class="p">(</span><span class="n">nx_star</span><span class="p">)</span>
-            <span class="n">dgl_star</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">dgl_star</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">dgl_star</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
-            <span class="c"># Label 1 for star graph</span>
-            <span class="n">ds</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dgl</span><span class="o">.</span><span class="n">DGLGraph</span><span class="p">(</span><span class="n">nx_star</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ds</span>
+<ul>
+  <li>Graphs are sparse.</li>
+  <li>Graphs can have various length (e.g. number of nodes and eges).</li>
+</ul>
 
-    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_train</span><span class="p">):</span>
-        <span class="s">"""Split the dataset into training and test datasets."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[:</span><span class="n">num_train</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">num_train</span><span class="p">:]</span>
+<p>To address this, DGL provides a <code class="highlighter-rouge">dgl.batch</code> API. It leverages the trick that a
+batch of graphs can be viewed as a large graph that have many disjoint
+connected components. Below is a visualization that gives the general idea:</p>
 
-    <span class="k">def</span> <span class="nf">collate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
-        <span class="c"># Convert a list of tuples to two lists</span>
-        <span class="n">batch_X</span><span class="p">,</span> <span class="n">batch_Y</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">batch</span><span class="p">))</span>
-        <span class="n">batched_graph</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_X</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">batched_graph</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">batch_Y</span><span class="p">)</span><span class="o">.</span><span class="nb">float</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></code></pre>
-</figure>
+<p><img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/batch/batch.png" alt="batch" height="600px" width="600px" class="aligncenter" /></p>
+
+<p>For example, we can define the following <code class="highlighter-rouge">collate</code> function to form a
+mini-batch from a given list of graph and label pairs (as provided by the
+<code class="highlighter-rouge">MiniGCDataset</code>):</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">collate</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+    <span class="c"># The input `samples` is a list of pairs</span>
+    <span class="c">#  (graph, label).</span>
+    <span class="n">graphs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">samples</span><span class="p">))</span>
+    <span class="n">batched_graph</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">graphs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">batched_graph</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>The return type of <code class="highlighter-rouge">dgl.batch</code> is still a graph (similar to the fact that a
+batch of tensors is still a tensor). This means that any code that works for
+one graph immediately works for a batch of graphs. More importantly, since DGL
+processes messages on all nodes and edges in parallel, this greatly improves
+efficiency.</p>
 
 <h2 id="graph-classifier">Graph Classifier</h2>
 
 <p>The graph classification can be proceeded as follows:</p>
 
-<p><img src="https://i.imgur.com/s3y8hVM.png" alt="model" class="aligncenter" /></p>
+<p><img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/batch/graph_classifier.png" alt="model" class="aligncenter" /></p>
 
 <p>From a batch of graphs, we first perform message passing/graph convolution for
 nodes to “communicate” with others. After message passing, we compute a tensor
 for graph representation from node (and edge) attributes. This step may be
 called “readout/aggregation” interchangeably. Finally, the graph
-representations can be fed into a classifier <script type="math/tex">g</script> for classification.</p>
+representations are fed into a classifier to predict the graph labels.</p>
 
 <h2 id="graph-convolution">Graph Convolution</h2>
 
-<p>Here we employ the rule below for message passing and update node features:
-<script type="math/tex">h_{v}^{(l+1)} = \text{ReLU}\left(b^{(l)}+\frac{1}{|\mathcal{N}(v)|+1}\sum_{u\in\mathcal{N}(v)\bigcup\{v\}}h_{u}^{(l)}W^{(l)}\right),</script></p>
-
-<p>where <script type="math/tex">h_{v}^{(0)}</script> is the initial feature of node <script type="math/tex">v</script>, <script type="math/tex">\mathcal{N}(v)</script> is the
-collection of neighbors of node <script type="math/tex">v</script>, <script type="math/tex">b^{(l)}</script> and <script type="math/tex">W^{(l)}</script> are trainable
-parameters.</p>
-
-<p>Our main class for this stage is <code class="highlighter-rouge">GraphConvolution</code>, where simultaneously each
-node <script type="math/tex">v</script> sends a message of its feature <script type="math/tex">h_{v}^{(l)}</script> to all their neighbors
-with <code class="highlighter-rouge">msg</code>, and then based on the messages received, each node performs
-<script type="math/tex">\frac{1}{|\mathcal{N}(v)|+1}\sum_{u\in\mathcal{N}(v)\bigcup\{v\}}h_{u}^{(l)}</script>
-in <code class="highlighter-rouge">reduce</code>. Finally <code class="highlighter-rouge">update_func</code> takes in
-<script type="math/tex">\frac{1}{|\mathcal{N}(v)|+1}\sum_{u\in\mathcal{N}(v)\bigcup\{v\}}h_{u}^{(l)}</script>
-and returns <script type="math/tex">h_{v}^{(l+1)}</script>.</p>
+<p>Our graph convolution operation is basically the same as that for GCN (checkout our
+earlier <a href="https://docs.dgl.ai/tutorials/models/1_gnn/1_gcn.html">tutorial on GCN</a>). The
+only difference is that we replace <script type="math/tex">h_{v}^{(l+1)} =
+\text{ReLU}\left(b^{(l)}+\sum_{u\in\mathcal{N}(v)}h_{u}^{(l)}W^{(l)}\right)</script> by
+<script type="math/tex">h_{v}^{(l+1)} =
+\text{ReLU}\left(b^{(l)}+\frac{1}{|\mathcal{N}(v)|}\sum_{u\in\mathcal{N}(v)}h_{u}^{(l)}W^{(l)}\right)</script>.
+The replacement of summation by average is to balance nodes with different
+degrees, which gives a better performance for this experiment.</p>
 
 <p>Note that the self edges added in the dataset initialization allows us to
-include the original node feature <script type="math/tex">h_{v}^{(l)}</script> when taking the average.</p>
+include the original node feature <script type="math/tex">h_{v}^{(l)}</script> when taking the average.
+Below is the code snipplet to implement this GCN in DGL.</p>
 
-<figure class="highlight">
-  <pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">torch</span>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">dgl.function</span> <span class="kn">as</span> <span class="nn">fn</span>
+<span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="kn">as</span> <span class="nn">nn</span>
 
+<span class="c"># Sends a message of node feature h.</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">copy_src</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s">'h'</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="s">'m'</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
-    <span class="s">"""Sends a message of node feature hv."""</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="s">'h'</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s">'m'</span><span class="p">:</span> <span class="n">msg</span><span class="p">}</span>
-
-<span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
     <span class="s">"""Take an average over all neighbor node features hu and use it to
     overwrite the original node feature."""</span>
-    <span class="n">accum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s">'m'</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">accum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s">'m'</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="s">'h'</span><span class="p">:</span> <span class="n">accum</span><span class="p">}</span>
 
-<span class="k">class</span> <span class="nc">NodeUpdate</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">NodeApplyModule</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="s">"""Update the node feature hv with ReLU(Whv+b)."""</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_field</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">NodeUpdate</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">node_field</span> <span class="o">=</span> <span class="n">node_field</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_func</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">,</span> <span class="n">activation</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NodeApplyModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_field</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">update_func</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">node_field</span><span class="p">])}</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'h'</span><span class="p">])</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">'h'</span> <span class="p">:</span> <span class="n">h</span><span class="p">}</span>
 
-<span class="k">class</span> <span class="nc">GraphConvolution</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_field</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">GraphConvolution</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">GCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">,</span> <span class="n">activation</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GCN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_mod</span> <span class="o">=</span> <span class="n">NodeApplyModule</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">,</span> <span class="n">activation</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">node_field</span> <span class="o">=</span> <span class="n">node_field</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_func</span> <span class="o">=</span> <span class="n">NodeUpdate</span><span class="p">(</span><span class="n">node_field</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
         <span class="c"># Initialize the node features with h. </span>
-        <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">node_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">reduce</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_func</span><span class="p">)</span>
-        <span class="n">h</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_field</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">h</span></code></pre>
-</figure>
+        <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s">'h'</span><span class="p">]</span> <span class="o">=</span> <span class="n">feature</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">reduce</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">apply_nodes</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">apply_mod</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">'h'</span><span class="p">)</span>
+</code></pre>
+</div>
 
 <h2 id="readout-and-classification">Readout and Classification</h2>
 
 <p>For this demonstration, we consider initial node features to be their degrees.
 After two rounds of graph convolution, we perform a graph readout by averaging
-over all node features <script type="math/tex">\frac{1}{|\mathcal{V}|}\sum_{v\in\mathcal{V}}h_{v}</script> for
-each graph in the batch. <code class="highlighter-rouge">dgl.mean(g)</code> handles this task for a batch of graphs
-with variable size. We then feed our graph representations into a classifier
-with one linear layer followed by <script type="math/tex">\text{sigmoid}</script>.</p>
+over all node features for each graph in the batch:</p>
 
-<figure class="highlight">
-  <pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Classifier</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">):</span>
+<script type="math/tex; mode=display">h_g=\frac{1}{|\mathcal{V}|}\sum_{v\in\mathcal{V}}h_{v}</script>
+
+<p>In DGL, <code class="highlighter-rouge">dgl.mean_nodes(g)</code> handles this task for a batch of graphs with
+variable size. We then feed our graph representations into a classifier with
+one linear layer followed by <script type="math/tex">\text{sigmoid}</script>.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="kn">as</span> <span class="nn">F</span>
+
+<span class="k">class</span> <span class="nc">Classifier</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Classifier</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span>
-            <span class="n">GraphConvolution</span><span class="p">(</span><span class="s">'h'</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">),</span>
-            <span class="n">GraphConvolution</span><span class="p">(</span><span class="s">'h'</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classify</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer0</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classify</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
         <span class="c"># For undirected graphs, in_degree is the same as</span>
         <span class="c"># out_degree.</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="nb">float</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">conv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">layer0</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">layer1</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
         <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s">'h'</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
-        <span class="n">graph_repr</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">mean_nodes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s">'h'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">graph_repr</span><span class="p">)</span></code></pre>
-</figure>
+        <span class="n">hg</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">mean_nodes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s">'h'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">hg</span><span class="p">)</span>
+</code></pre>
+</div>
 
 <h2 id="setup-and-training">Setup and Training</h2>
 
-<p>We create a synthetic dataset of 1000 graphs with 10-20 nodes.</p>
+<p>We create a synthetic dataset of $1000$ graphs with 10 - 20 nodes.</p>
 
-<figure class="highlight">
-  <pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">torch.optim</span> <span class="kn">as</span> <span class="nn">optim</span>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="kn">as</span> <span class="nn">optim</span>
+<span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">MiniGCDataset</span>
 
-<span class="c"># We use a 80:20 split for the training set and the test set.</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">SynDataset</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
-<span class="n">data_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                         <span class="n">collate_fn</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">collate</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
-<span class="n">loss_func</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCELoss</span><span class="p">()</span>
+<span class="c"># Create training and testing set.</span>
+<span class="n">trainset</span> <span class="o">=</span> <span class="n">MiniGCDataset</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">testset</span> <span class="o">=</span> <span class="n">MiniGCDataset</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="c"># Use pytorch's DataLoader and the collate function</span>
+<span class="c"># defined before.</span>
+<span class="n">data_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">trainset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                         <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate</span><span class="p">)</span>
+<span class="c"># Create model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">loss_func</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 
@@ -529,47 +503,57 @@ with one linear layer followed by <script type="math/tex">\text{sigmoid}</script
         <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
         <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
         <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">'Epoch {}, iteration {}: loss {:.4f}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">epoch</span><span class="p">,</span> <span class="nb">iter</span><span class="p">,</span> <span class="n">loss</span><span class="p">))</span>
         <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-    <span class="n">epoch_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_loss</span> <span class="o">/</span> <span class="p">(</span><span class="nb">iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span></code></pre>
-</figure>
-
-<p>The learning curve of a run is presented below:</p>
-
-<figure class="highlight">
-  <pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">switch_backend</span><span class="p">(</span><span class="s">'TkAgg'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'cross entropy averaged over minibatches'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epoch_losses</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></code></pre>
-</figure>
-
-<p><img src="https://i.imgur.com/YWOKpTA.png" alt="curve" class="aligncenter" /></p>
-
-<p>On our test set with the trained classifier, the accuracy of sampled
-predictions varies across 10 random runs between 90.5% ~ 100% with the
-code below:</p>
-
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># Convert a list of tuples to two lists</span>
-<span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
-<span class="n">test_X</span><span class="p">,</span> <span class="n">test_Y</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">dataset</span><span class="o">.</span><span class="n">test</span><span class="p">))</span>
-<span class="n">test_bg</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
-<span class="n">test_Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">test_Y</span><span class="p">)</span><span class="o">.</span><span class="nb">float</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">sampled_Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bernoulli</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">test_bg</span><span class="p">))</span>
-<span class="k">print</span><span class="p">(</span><span class="s">'Accuracy of sampled predictions on the test set: {:.4f}</span><span class="si">%</span><span class="s">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">test_Y</span> <span class="o">==</span> <span class="n">sampled_Y</span><span class="p">)</span><span class="o">.</span><span class="nb">sum</span><span class="p">()</span><span class="o">.</span><span class="nb">float</span><span class="p">()</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_Y</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'Epoch {}, loss {:.4f}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">loss</span><span class="p">))</span>
+    <span class="n">epoch_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_loss</span> <span class="o">/</span> <span class="p">(</span><span class="nb">iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 </code></pre>
 </div>
 
-<p>We also show an animation for the soft classification performed on the test set
-by our model. Recall that we have label 0 for cycle graph and label 1 for
-star graph.</p>
+<p>The learning curve of a run is presented below:</p>
 
-<p><img src="https://user-images.githubusercontent.com/19576924/51403773-6f687980-1b8c-11e9-8de8-17cea9db734a.gif" alt="anim" class="aligncenter" /></p>
+<p><img src="/assets/images/posts/2019-01-25-batch/002.png" alt="curve" class="aligncenter" /></p>
+
+<p>On our test set with the trained classifier, the accuracy of sampled
+predictions varies across random runs between 78% ~ 85%. The argmax
+accuracy is typically higher and can reach up to 91%.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># Convert a list of tuples to two lists</span>
+<span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
+<span class="n">test_X</span><span class="p">,</span> <span class="n">test_Y</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">testset</span><span class="p">))</span>
+<span class="n">test_bg</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
+<span class="n">test_Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">test_Y</span><span class="p">)</span><span class="o">.</span><span class="nb">float</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">probs_Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">test_bg</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sampled_Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">probs_Y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">argmax_Y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">probs_Y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'Accuracy of sampled predictions on the test set: {:.4f}</span><span class="si">%</span><span class="s">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">test_Y</span> <span class="o">==</span> <span class="n">sampled_Y</span><span class="o">.</span><span class="nb">float</span><span class="p">())</span><span class="o">.</span><span class="nb">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_Y</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'Accuracy of argmax predictions on the test set: {:4f}</span><span class="si">%</span><span class="s">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">test_Y</span> <span class="o">==</span> <span class="n">argmax_Y</span><span class="o">.</span><span class="nb">float</span><span class="p">())</span><span class="o">.</span><span class="nb">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_Y</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<p>Below is an animation where we plot graphs with the probability a trained model
+assigns its ground truth label to it:</p>
+
+<p><img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/batch/test_eval4.gif" alt="anim" class="aligncenter" /></p>
+
+<p>To understand how the node/graph features change over layers with a trained
+model, we use <a href="https://lvdmaaten.github.io/tsne/">t-SNE</a> for dimensionality
+reduction and visualization.</p>
+
+<p><img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/batch/tsne_node2.png" alt="" height="600px" width="800px" class="aligncenter" /></p>
+
+<p><img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/batch/tsne_graph2.png" alt="" height="600px" width="800px" class="aligncenter" /></p>
+
+<p>The two small figures on the top separately visualize node features after ,
+graph convolution layer #1 and #2, and the figure on the bottom visualizes the
+pre-softmax logits for graphs. As you can see, the node embeddings of different
+types of graphs are more separable in the higher layer and the lower layer. Finally,
+the embeddings of different types of graphs are well-separated.</p>
 
 <h2 id="whats-next">What’s Next?</h2>
+
+<p>Download the full tutorial code and jupyter notebook <a href="#">here</a>.</p>
 
 <p>Graph classification with graph neural networks is still a very young field
 waiting for folks to bring more exciting discoveries! It is not easy as it
@@ -589,7 +573,7 @@ VAE</a>.</li>
 </ul>
 </p>
               <div class="blog-post-date">
-                <p>02 <span>January</span> </p>
+                <p>25 <span>January</span> </p>
               </div>
               <div class="tag-links mt-30">
                 <div class="widget">
@@ -600,7 +584,7 @@ VAE</a>.</li>
                 <div class="blog-data">
                   <p>By 
                   
-                  <a href="">Mufei Li</a>,
+                  <a href="https://github.com/mufeili">Mufei Li</a>,
                   
                   <a href="https://jermainewang.github.io/">Minjie Wang</a>,
                    in <a href="#">blog</a> </p>
@@ -612,7 +596,7 @@ VAE</a>.</li>
                   <div id='discourse-comments'></div>
                   <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://discuss.dgl.ai/',
-                     discourseEmbedUrl: 'http://dgl.ai/blog/2019/01/02/batch.html' };
+                     discourseEmbedUrl: 'http://dgl.ai/blog/2019/01/25/batch.html' };
 
   (function() {
     var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;
