@@ -47,6 +47,8 @@ Fudan University: Qipeng Guo
 
 CQUPT: Hao Zhang
 
+HKUST: Ziyue Huang
+
 ## Contributors:
 See full list [here](https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md).
 
