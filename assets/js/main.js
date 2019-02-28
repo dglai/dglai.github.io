@@ -302,7 +302,7 @@ $('#bootstrap-touch-slider').bsTouchSlider();
         }
 
     }
-    custom_google_map();
+    // custom_google_map();
 
 /*=============================================
 	4. Mobile Menu
