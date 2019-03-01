@@ -23,7 +23,6 @@ In `jekyll` folder:
 Scripts
 -------
 In the root folder:
-* Clean the generated static sites: `bash script/clean.sh`
 * Copy the jekyll generated sites to root folder: `bash script/ship.sh`
 * Build for production: `bash script/build_and_ship.sh`
 
