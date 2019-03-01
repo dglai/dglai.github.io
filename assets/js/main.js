@@ -358,6 +358,7 @@ $('#bootstrap-touch-slider').bsTouchSlider();
 wind.on('load', function() {
 	$('.preloader').fadeOut("slow");
 });
+setTimeout(function() { $('.preloader').fadeOut("slow") }, 5000);
 
 
 /*=============================================
