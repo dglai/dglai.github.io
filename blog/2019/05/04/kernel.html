@@ -300,17 +300,17 @@
               <h4 class="themeix-blog-h">When Kernel Fusion meets Graph Neural Networks</h4>
               <p><p>In DGL’s first release last December, we focused on usability by introducing a
 set of carefully designed, easy-to-use APIs that support a variety of model
-implementations of Graph Neural Networks. We decide to keep DGL
+implementations of Graph Neural Networks. We decided to keep DGL
 framework-agnostic to engage with users from different platforms (PyTorch,
-MXNet…). As a result, in our earlier releases, we largely leverage the
+MXNet…). As a result, in our earlier releases, we largely leveraged the
 available functionalities provided by these frameworks, and based on many
 valuable feedback from our users, we are well-aware of the room of improvement
 particularly on some new models defined on the sparse and irregular graphs.</p>
 
 <p>With DGL’s APIs from the first relase being well-received and gradually stable,
-we have been working on boosting its performance in a high gear. As per our
-next major release (<strong>v0.3</strong>), we are pleased to offer much faster training
-speed and lower memory consumption.</p>
+we have been working on boosting its performance in a high gear. Our next major
+release (<strong>v0.3</strong>) will focus on much faster training speed, lower memory
+consumption, and scalability.</p>
 
 <p>The performance gains of the upcoming DGL v0.3 are substantial. Compared to the
 current version, DGL v0.3 achieves up to <strong>19X</strong> the training throughput and
@@ -373,6 +373,7 @@ underneath.</p>
              <span class="k">lambda</span> <span class="n">nodes</span><span class="p">:</span> <span class="p">{</span><span class="s">'h'</span> <span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s">'m'</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)})</span>
 </code></pre>
 </div>
+
 <p>The problem with basic message passing is that messages are explicitly
 materialized and stored, resulting in memory explosion as the graph becomes
 larger. As a concrete example, consider the reddit graph dataset introduced in
@@ -388,7 +389,7 @@ to under-utilization of GPU device.</p>
 
 <p>To avoid the overhead of materializing messages, we implement fused message
 passing, i.e. combining the <code class="highlighter-rouge">send</code> and <code class="highlighter-rouge">recv</code> into one operation
-<code class="highlighter-rouge">send_and_recv</code> (shown in following figure). Under the veil, the fused
+<code class="highlighter-rouge">send_and_recv</code> (shown in following figure). Under the hood, the fused
 <code class="highlighter-rouge">send_and_recv</code> operation is implemented using a CUDA kernel in which each
 thread loads the source node feature into the per-thread local memory, computes
 a message, and directly aggregates it into the buffer for a given destination
@@ -399,7 +400,7 @@ node and immediately discards the message afterwards.</p>
 <p>To enable fused message passing, there are two challenges to be solved:</p>
 
 <ul>
-  <li><em>How to fused the user-defined functions <script type="math/tex">\phi^e</script> and <script type="math/tex">\Sigma</script>?</em> In DGL, we
+  <li><em>How to fuse the user-defined functions <script type="math/tex">\phi^e</script> and <script type="math/tex">\Sigma</script>?</em> In DGL, we
 provide a set of pre-defined functions, called DGL built-ins, and let users
 choose from them. This restricts the message and reduce functions to be used
 for fused message passing, but we provide a variety of common functions so most
@@ -423,7 +424,10 @@ implementation leverages this optimization.</li>
 </code></pre>
 </div>
 
-<p><a href="https://docs.dgl.ai/tutorials/models/1_gnn/9_gat.html">A Graph Attention Network (GAT)</a> can also be implemented using the built-in <code class="highlighter-rouge">src_mul_edge</code> message function and <code class="highlighter-rouge">sum</code> reduce function.</p>
+<p><a href="https://docs.dgl.ai/tutorials/models/1_gnn/9_gat.html">A Graph Attention Network
+(GAT)</a> can also be
+implemented using the built-in <code class="highlighter-rouge">src_mul_edge</code> message function and <code class="highlighter-rouge">sum</code> reduce
+function.</p>
 
 <div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># the src features 'h' are weighted by the attention score 'e'</span>
 <span class="c"># on the edges and are summed as the new feature 'h'</span>
@@ -432,11 +436,12 @@ implementation leverages this optimization.</li>
 </div>
 
 <p>DGL v0.3 includes built-in functions that support the following combinations:</p>
+
 <ul>
   <li>The message function <script type="math/tex">\phi^e</script> can be any one of add/sub/mul/div between two
 given features among src, edge, dst.</li>
-  <li>Broadcasting is supported on the feature dimensions. For example, in
-multi-head attention model, the node feature is of shape <code class="highlighter-rouge">(NUM_HEADS,
+  <li>Broadcasting is supported on the feature dimensions. For example, a
+multi-head attention module where the node feature is of shape <code class="highlighter-rouge">(NUM_HEADS,
 NUM_FEATS)</code> and the attention score is of shape <code class="highlighter-rouge">(NUM_HEADS, 1)</code>.</li>
   <li>The reduce function <script type="math/tex">\Sigma</script> can be any one of sum/max/min/prod.</li>
 </ul>
@@ -447,11 +452,10 @@ might introduce some programming burden but the payoff is definitely worthy
 (see next section for the evaluation results).</p>
 
 <h1 id="convince-me-with-numbers">Convince me with numbers</h1>
-
-<p>We compare DGL with PyG (Pytorch Geometric v1.2.0). PyG implements basic
-message passing by first <code class="highlighter-rouge">gather</code> node features as edge messages and then
-<code class="highlighter-rouge">scatter</code> them for message aggregation, which generates explicit messages. We
-also compare with our v0.2 release to see how much we have improved the system.</p>
+<p>We compare with our v0.2 release to see how much we have improved the system.
+In addition, we compare against PyG (Pytorch Geometric v1.2.0). PyG implements
+basic message passing by first <code class="highlighter-rouge">gather</code> node features as edge messages and then
+<code class="highlighter-rouge">scatter</code> them for message aggregation, which generates explicit messages.</p>
 
 <p>We benchmark both GCN and GAT models on several popular datasets following
 their original settings. The testbed is one AWS p3.2xlarge instance with NVIDIA
@@ -509,13 +513,14 @@ V100 GPU (16GB memory).</p>
   </tbody>
 </table>
 
-<p>The up-coming release has huge performance boost especially on GAT model
-(<strong>19x</strong>) faster due to the kernel fusion technique. Compared with PyG, for
-small graphs (i.e, Cora, Citeseer and Pubmed), the computation and memory
-consumption stay the same regardless of the graph sizes. In such regime, the
-graph computation does not dominate the whole training and DGL has some slight,
-constant overhead compared with PyG. However, on a much larger reddit graph,
-PyG runs out of memory while DGL can fit the graph quite easily.</p>
+<p>The up-coming release has huge performance boost especially on the GAT model
+(<strong>19x</strong>) faster thanks to the kernel fusion. Compared with PyG, for small
+graphs (i.e, Cora, Citeseer and Pubmed), the computation and memory consumption
+stay the same, relatively invariant to the graph sizes. In this regime, the
+graph computation does not bottleneck the training and DGL has some slight,
+constant overhead compared with PyG. However, when evaluating on a much larger
+graph extracted from Reddit, PyG runs out of memory while DGL fits the graph
+quite easily.</p>
 
 <p>We further perform some ablation studies using synthetic graphs.</p>
 
@@ -549,7 +554,7 @@ machine with large CPU memory (AWS x1.32xlarge instance with 2TB memory).</p>
       <th>#Nodes</th>
       <th>#Edges</th>
       <th>Times(s)</th>
-      <th>RAM(GB)</th>
+      <th>Memory(GB)</th>
     </tr>
   </thead>
   <tbody>
@@ -578,11 +583,11 @@ machine with large CPU memory (AWS x1.32xlarge instance with 2TB memory).</p>
 
 <h2 id="whats-next">What’s next?</h2>
 
-<p>We have a bag of features we want to deliver on our agenda.  In fact, many of
-them have been in our mind from the birth of DGL. For example, the built-in
-functions have been in the project for a long time but only shine with the help
-of kernel fusion. We want to stay more closely with the community so we want to
-share some of the directions we are working on:</p>
+<p>The DGL team is very passionate about the bag of features to deliver on our
+future agenda. As a matter of fact, many of these have been in our mind since
+the intiation of the project. For example, the built-in functions have been our
+priority the whole time but they only shine with the help of kernel fusion. To
+shed some light on the directions we are working on:</p>
 
 <ul>
   <li>A detailed demo and tutorial on how to reproduce the large graph experiement in this post on a large CPU machine.</li>
@@ -590,9 +595,11 @@ share some of the directions we are working on:</p>
   <li>Accelerate graph traversal and querying using GPU.</li>
 </ul>
 
-<p>Lastly, try out this new feature and leave us your feedback! For now, you need
-to clone DGL’s repository, switch to <code class="highlighter-rouge">kernel</code> branch and build it from source.
-Stay tuned for our next major release more updates on the DGL project.</p>
+<p>DGL always stays close with our users and we greatly value your feedback! To
+try out this new feature, simple as this: clone DGL’s repository, switch to
+<code class="highlighter-rouge">kernel</code> branch and build the library from source.</p>
+
+<p>Please stay tuned for our next major release! More good stuff coming soon.</p>
 </p>
               <div class="blog-post-date">
                 <p>04 <span>May</span> </p>
