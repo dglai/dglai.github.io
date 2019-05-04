@@ -294,7 +294,7 @@
 
           <div class="single-blog-details">
             <div class="blog-img">
-              <img src="https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/cora-attention.png" alt="blog">
+              <img src="https://i.imgur.com/JcnWxg2.jpg" alt="blog">
             </div>
             <div class="blog-content-desc">
               <h4 class="themeix-blog-h">When Kernel Fusion meets Graph Neural Networks</h4>
@@ -345,17 +345,17 @@ performed for all (or a subset of) nodes.</li>
 </ul>
 
 <p>The following figure gives an illustration. The user-defined message function
-is denoted as $\phi^e$, which is used to generate a message (yellow boxes) on
-each edge.  To create a message $m_{i,j}$ for edge $i\rightarrow j$, the
-message function takes into account the edge feature $e_{i,j}$ as well as the
-two endpoints’ node features, $h_i$, $h_j$. At each node, incoming messages are
-aggregated using the user-defined reduce function $\sum$ and another
-user-defined function $\phi^v$ is used to update the node feature. In DGL, one
+is denoted as <script type="math/tex">\phi^e</script>, which is used to generate a message (yellow boxes) on
+each edge.  To create a message <script type="math/tex">m_{i,j}</script> for edge <script type="math/tex">i\rightarrow j</script>, the
+message function takes into account the edge feature <script type="math/tex">e_{i,j}</script> as well as the
+two endpoints’ node features, <script type="math/tex">h_i</script>, <script type="math/tex">h_j</script>. At each node, incoming messages are
+aggregated using the user-defined reduce function <script type="math/tex">\sum</script> and another
+user-defined function <script type="math/tex">\phi^v</script> is used to update the node feature. In DGL, one
 can easily implement such message passing by calling <code class="highlighter-rouge">send</code> and <code class="highlighter-rouge">recv</code> APIs
 (see <a href="https://docs.dgl.ai/tutorials/basics/3_pagerank.html">our tutorial on message passing for more
 details</a>).</p>
 
-<p><img src="https://i.imgur.com/wTda40k.jpg" alt="" class="aligncenter" /></p>
+<p><img src="https://i.imgur.com/wTda40k.jpg" alt="" width="450x" class="aligncenter" /></p>
 
 <p>The basic strategy for implementing message-passing is straighforward. First,
 we <code class="highlighter-rouge">send</code> messages by invoking <strong>edge-wise</strong> message functions.  Then, we
@@ -399,7 +399,7 @@ node and immediately discards the message afterwards.</p>
 <p>To enable fused message passing, there are two challenges to be solved:</p>
 
 <ul>
-  <li><em>How to fused the user-defined functions $\phi^e$ and $\Sigma$?</em> In DGL, we
+  <li><em>How to fused the user-defined functions <script type="math/tex">\phi^e</script> and <script type="math/tex">\Sigma</script>?</em> In DGL, we
 provide a set of pre-defined functions, called DGL built-ins, and let users
 choose from them. This restricts the message and reduce functions to be used
 for fused message passing, but we provide a variety of common functions so most
@@ -408,7 +408,7 @@ use basic message passing instead.</li>
   <li><em>How to backprop the gradient without explicit messages?</em>  The trick is to
 recompute the message during backward propagation, similar to the technique
 used in <a href="https://arxiv.org/abs/1604.06174">training very deep NN models</a>. In
-practice, many $\phi^e$ do not require explicit messages to compute the
+practice, many <script type="math/tex">\phi^e</script> do not require explicit messages to compute the
 gradient (such as copying the node features as messages), and our
 implementation leverages this optimization.</li>
 </ul>
@@ -433,12 +433,12 @@ implementation leverages this optimization.</li>
 
 <p>DGL v0.3 includes built-in functions that support the following combinations:</p>
 <ul>
-  <li>The message function $\phi^e$ can be any one of add/sub/mul/div between two
+  <li>The message function <script type="math/tex">\phi^e</script> can be any one of add/sub/mul/div between two
 given features among src, edge, dst.</li>
   <li>Broadcasting is supported on the feature dimensions. For example, in
 multi-head attention model, the node feature is of shape <code class="highlighter-rouge">(NUM_HEADS,
 NUM_FEATS)</code> and the attention score is of shape <code class="highlighter-rouge">(NUM_HEADS, 1)</code>.</li>
-  <li>The reduce function $\Sigma$ can be any one of sum/max/min/prod.</li>
+  <li>The reduce function <script type="math/tex">\Sigma</script> can be any one of sum/max/min/prod.</li>
 </ul>
 
 <p>The rule of thumb is to <strong>use built-in functions as much as possible</strong> so that
