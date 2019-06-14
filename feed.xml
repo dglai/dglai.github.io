@@ -1,8 +1,167 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2019-06-13T12:23:15-04:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">DGL v0.3 Release</title><link href="https://www.dgl.ai/release/2019/06/12/release.html" rel="alternate" type="text/html" title="DGL v0.3 Release" /><published>2019-06-12T00:00:00-04:00</published><updated>2019-06-12T00:00:00-04:00</updated><id>https://www.dgl.ai/release/2019/06/12/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/06/12/release.html">&lt;p&gt;V0.3 release includes many crucial updates:&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2019-06-13T22:09:43-07:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">Large-Scale Training of Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/06/12/giant.html" rel="alternate" type="text/html" title="Large-Scale Training of Graph Neural Networks" /><published>2019-06-12T00:00:00-07:00</published><updated>2019-06-12T00:00:00-07:00</updated><id>https://www.dgl.ai/blog/2019/06/12/giant</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/06/12/giant.html">&lt;p&gt;Many graph applications deal with &lt;em&gt;giant&lt;/em&gt; scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.&lt;/p&gt;
+
+&lt;h2 id=&quot;sampling-methods-in-dgl&quot;&gt;Sampling methods in DGL&lt;/h2&gt;
+&lt;p&gt;Giant graphs are a classic challenge, and is even more so in graph neural networks (GNN). In a GNN model, computing the embedding of a node depends on the embeddings of its neighbors. Such dependency leads to exponential growth of the number of nodes involved with number of GNN layers.&lt;/p&gt;
+
+&lt;p&gt;A typical technique is sampling, and there are many variants, some of them are applicable to GNN and DGL supports a few of them. The basic idea is to prune the node dependency to reduce the computation while still estimating the embeddings of GNN accurately. We leave the exact formulation of these techniques at the end of the tutorial (and users are encouraged to read them!), and describe the gists of them breifly here:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1706.02216&quot;&gt;neighbor sampling&lt;/a&gt;. This is the most basic: simply pick a small number of random neighbors.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1809.05343&quot;&gt;layer-wise sampling&lt;/a&gt;. The problem with simple neighbor sampling is that number of nodes needed will continue to grow exponentially with deeper layers. The idea here is to consider a layer as a whole and constrain the amount of samples per layer.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1806.01973&quot;&gt;random-walk sampling&lt;/a&gt;. As the name suggests, samples are picked up by performing random walks.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Sampling estimators can suffer from high variance. Obviously, including more neighbors will reduce the variance but this defeats the purpose of sampling. One interesting soution is &lt;a href=&quot;https://arxiv.org/abs/1710.10568&quot;&gt;control-variate sampling&lt;/a&gt;, a standard variance reduction technique used in Monte Carlo methods.&lt;/p&gt;
+
+&lt;p&gt;The basic idea is simple: given a random variable &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and we wish to estimate its expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [X] = \theta&lt;/script&gt;, the control variate method finds another random variable &lt;script type=&quot;math/tex&quot;&gt;Y&lt;/script&gt; which is highly correlated with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and whose expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [Y]&lt;/script&gt; can be easily computed. Control variate needs to keep extra state, but otherwise is effective in reducing sample size. In fact, one neighbor is enough, for the Reddit dataset!
+&lt;!--
+We experiment neighbor sampling and control variate sampling to train GCN and GraphSage on Reddit to evaluate the effectiveness of these two sampling methods. The result is shown in the figure below. For GCN, control variate sampling is much more effective than neighbor sampling. Sampling only one neighbor is sufficient to train GCN on the Reddit dataset. Similarly, when training GraphSage, we only need to sample one neighbor to get its accuracy over 96%.
+--&gt;
+&lt;img src=&quot;https://i.imgur.com/DTPQu5V.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;system-support-for-giant-graphs&quot;&gt;System support for giant graphs&lt;/h2&gt;
+&lt;p&gt;Sampling provides the nice possiblity of dealing with giant graphs with a data-parallel perspective. DGL adds two components, see figure below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Sampler&lt;/strong&gt;: a sampler constructs small subgraphs (&lt;code class=&quot;highlighter-rouge&quot;&gt;NodeFlow&lt;/code&gt;) from a given (giant) graph; tutorials of &lt;code class=&quot;highlighter-rouge&quot;&gt;NodeFlow&lt;/code&gt; can be found &lt;a href=&quot;https://doc.dgl.ai/tutorials/models/5_giant_graph/1_sampling_mx.html#sphx-glr-tutorials-models-5-giant-graph-1-sampling-mx-py&quot;&gt;here&lt;/a&gt;. Multiple samplers can be launched locally, or remotely, and on many machines.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Graph store&lt;/strong&gt;: this prepares the I/O substrate to scale out with a large number of trainers. The graph store contains graph embeddings as well as its structure. For now, the implementation is based on shared-memory, supporting multi-processing training on multi-GPU and/or non-uniform memory access (NUMA) machines.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The shared-memory graph store has a similar interface to &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; for programming. DGL will also support a distributed graph store that can store graph embeddings across machines in the future release.&lt;/p&gt;
+
+&lt;!--
+The figure below shows the interaction of the trainer with the samplers and the graph store. The trainer takes subgraphs (`NodeFlow`) from the sampler and fetches graph embeddings from the graph store before training. The trainer can push new graph embeddings to the graph store or invoke some computation on the graph store.
+--&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/OmLVXfo.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, let’s demonstrate how good these supports are.&lt;/p&gt;
+
+&lt;h3 id=&quot;multi-processing-training-and-optimizations-on-a-numa-machine&quot;&gt;Multi-processing training and optimizations on a NUMA machine&lt;/h3&gt;
+&lt;p&gt;The speedup is almost linear, and on Reddit dataset takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/eaiEcEi.png&quot; alt=&quot;&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;X1.32xlarge instance has 4 processors, each of which has 16 physical CPU cores.&lt;/li&gt;
+  &lt;li&gt;We need to be aware of NUMA architecture, otherwise there’s hardly any speedup with more CPU processors. Please see &lt;a href=&quot;https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py&quot;&gt;our tutorial&lt;/a&gt; for more details.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--
+To demonstrate the effectiveness of multi-processing training with this architecture on a NUMA machine and on a multi-GPU machine, we train GraphSage on the Reddit dataset with control-variate sampling. To optimize the training in a NUMA machine, we need to bind trainers' processes to specific NUMA nodes. Please see [our tutorial](https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py) for more details how to bind processes on a NUMA node.
+The figure below shows that NUMA-aware multi-processing training can accelerate training almost by a factor of 4 on an X1.32xlarge instance where there are 4 processors, each of which has 16 physical CPU cores. We can see that NUMA-unaware training cannot take advantage of computation power of the machine. It is even slightly slower than just using one of the processors in the machine. NUMA-aware training, on the other hand, takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.
+--&gt;
+
+&lt;h3 id=&quot;distributed-sampler&quot;&gt;Distributed Sampler&lt;/h3&gt;
+
+&lt;p&gt;We can move samplers around. For GCN variants where computation aren’t that intense, running samplers on small (and cheaper) machines and training on NUMA is both faster and more cost-effective (additional 20%-40% speedups).&lt;/p&gt;
+
+&lt;!--
+are ran on different machines, we can 
+We also notice that the sampling in many tasks takes a significant amount of time for the training process on a giant graph. So DGL supports distributed samplers for speeding up the sampling process on giant graphs. DGL allows users to launch multiple samplers on different machines concurrently, and each sampler can send its sampled subgraph (`NodeFlow`) to trainer machines continuously. 
+The figure below shows the overall performance improvement of training GCN and GraphSage on the Reddit dataset after deploying NUMA optimizations and distributed sampling. Our NUMA optimization speeds up the training by a factor of 3. The distributed sampling achieves additional 20%-40% speed improvement for different tasks.
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/e0MXa5N.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;scale-to-giant-graphs&quot;&gt;Scale to giant graphs&lt;/h3&gt;
+&lt;!--Finally, we would like to demonstrate the scalability of DGL on giant graphs. 
+--&gt;
+&lt;p&gt;We create three large power-law graphs with &lt;a href=&quot;http://www.cs.cmu.edu/~christos/PUBLICATIONS/siam04.pdf&quot;&gt;RMAT&lt;/a&gt;. Each node is associated with 100 features and we compute node embeddings with 64 dimensions. Below shows the training speed and memory consumption of GCN with neighbor sampling.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;#Nodes&lt;/th&gt;
+      &lt;th&gt;#Edges&lt;/th&gt;
+      &lt;th&gt;Time per epoch (s)&lt;/th&gt;
+      &lt;th&gt;Memory (GB)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;5M&lt;/td&gt;
+      &lt;td&gt;250M&lt;/td&gt;
+      &lt;td&gt;4.7&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;50M&lt;/td&gt;
+      &lt;td&gt;2.5B&lt;/td&gt;
+      &lt;td&gt;46&lt;/td&gt;
+      &lt;td&gt;75&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;500M&lt;/td&gt;
+      &lt;td&gt;25B&lt;/td&gt;
+      &lt;td&gt;505&lt;/td&gt;
+      &lt;td&gt;740&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;We can see that DGL can scale to graphs with 500M nodes and 25B edges on an X1.32xlarge instance.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
+&lt;p&gt;We are looking forward to your feedbacks and would love to hear your use cases and models for giant graphs! All of these new features shown in this blog will be in our upcoming v0.3 release. Please try them out and give us feedbacks.&lt;/p&gt;
+
+&lt;p&gt;We are continuing working on our infrastructure for training graph neural networks on giant graphs, which includes:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;In the infrastructure, we will add a distributed graph store to support fully distributed training for graph neural networks.&lt;/li&gt;
+  &lt;li&gt;We will experiment various strategies to accelerate distributed training. For example, we will experiment fast and scalable graph partitioning algorithms to reduce network communication.&lt;/li&gt;
+  &lt;li&gt;We will also add more demonstrations of other sampling strategies. For example, we will scale PinSage with our random walk sampler.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;sampling-techniques-in-gnn&quot;&gt;Sampling techniques in GNN&lt;/h2&gt;
+
+&lt;p&gt;Let’s use graph convolution network as an example to show these sampling techniques. Given a graph &lt;script type=&quot;math/tex&quot;&gt;G=(V, E)&lt;/script&gt;, represented as an adjacency matrix &lt;script type=&quot;math/tex&quot;&gt;A&lt;/script&gt;, with node features &lt;script type=&quot;math/tex&quot;&gt;H^{(0)} = X \in \mathbb{R}^{|V| \times m}&lt;/script&gt;, graph convolution networks (GCNs) compute the hidden features &lt;script type=&quot;math/tex&quot;&gt;H^{(l+1)}&lt;/script&gt; of the &lt;script type=&quot;math/tex&quot;&gt;(l+1)&lt;/script&gt;-th layer by computing for each &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;h_v^{(l+1)} = \sigma ( z_v^{(l)} W^{(l)}) \qquad z_v^{(l)} = \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} h_u^{(l)}&lt;/script&gt;
+where &lt;script type=&quot;math/tex&quot;&gt;\mathcal{N}(v)&lt;/script&gt; denotes the neighborhood of &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\tilde{A}&lt;/script&gt; is a normalized version of &lt;script type=&quot;math/tex&quot;&gt;A&lt;/script&gt; such as &lt;script type=&quot;math/tex&quot;&gt;D^{-1} A&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\sigma(\cdot)&lt;/script&gt; is the activation function, &lt;script type=&quot;math/tex&quot;&gt;W^{(l)}&lt;/script&gt; is a trainable parameter of the &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th layer. For a &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-layer GCN model, the computation of &lt;script type=&quot;math/tex&quot;&gt;H^{(L)}&lt;/script&gt; requires the propagation from all of its &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors. This is too expensive in mini-batch training because the receptive field of a node grows exponentially with respective to the number of layers &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Neighbor Sampling&lt;/strong&gt;
+Instead of using all the &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors of a node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;, neighbor sampling randomly samples a few neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}^{(l)}(v)&lt;/script&gt; to estimate the aggregation &lt;script type=&quot;math/tex&quot;&gt;z_v^{(l)}&lt;/script&gt; of its total neighbors &lt;script type=&quot;math/tex&quot;&gt;\mathcal{N}(v)&lt;/script&gt; in &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th GCN layer by an unbiased estimator &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt;&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} \hat{h}_u^{(l)} \\
+\hat{h}_v^{(l+1)} = \sigma ( \hat{z}_v^{(l)} W^{(l)} )&lt;/script&gt;
+
+&lt;p&gt;Let &lt;script type=&quot;math/tex&quot;&gt;D^{(l)}&lt;/script&gt; be the number of neighbors to be sampled for each node at the &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th layer, then the receptive field size of each node can be controlled under &lt;script type=&quot;math/tex&quot;&gt;\prod_{i=0}^{L-1} D^{(l)}&lt;/script&gt; by neighbor sampling.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Layer-Wise Sampling&lt;/strong&gt;
+In node-wise sampling, each parent node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; independently samples a few neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}(v)&lt;/script&gt;, which are not visible to other parent nodes &lt;script type=&quot;math/tex&quot;&gt;u&lt;/script&gt; except &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;. The receptive field size still grows exponentially if &lt;script type=&quot;math/tex&quot;&gt;\vert \hat{\mathcal{N}}(v) \vert &gt; 1&lt;/script&gt;. In layer-wise sampling, the sampling procedure is performed only once in each layer, where each node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; gets sampled into &lt;script type=&quot;math/tex&quot;&gt;\mathcal{S}^{(l)}&lt;/script&gt; with probability &lt;script type=&quot;math/tex&quot;&gt;p^{(l)}(v)&lt;/script&gt;,
+&lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)} = \sum_{u \in \mathcal{S}^{(l)}} \frac{1}{p^{(l)}(u)} \tilde{A}_{uv} \hat{h}_u^{(l)}&lt;/script&gt;
+The receptive field size can be controlled directly by &lt;script type=&quot;math/tex&quot;&gt;\vert \mathcal{S}^{(0)} \vert&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Random Walk Sampling&lt;/strong&gt;
+Given a source node &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; and a decay factor &lt;script type=&quot;math/tex&quot;&gt;\alpha&lt;/script&gt;, a random walk from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; is a trace beginning from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt;, at each step either proceeds to a neighbor uniformly at random, or stop with probability &lt;script type=&quot;math/tex&quot;&gt;\alpha&lt;/script&gt;. The personalized PageRank (PPR) score &lt;script type=&quot;math/tex&quot;&gt;\pi(s, t)&lt;/script&gt; is the probability that a random walk from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; terminates at &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;In PinSage, each node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; selects top-&lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; important nodes with highest PPR scores with respective to &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; as its neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}(v)&lt;/script&gt;, and the hidden feature of each neighbor &lt;script type=&quot;math/tex&quot;&gt;u \in \hat{\mathcal{N}}(v)&lt;/script&gt; is weighted by &lt;script type=&quot;math/tex&quot;&gt;\pi(v, u)&lt;/script&gt;,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}^{(l)}_v = \frac{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u) \tilde{A}_{uv} \hat{h}_u^{(l)}}{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u)}&lt;/script&gt;
+
+&lt;p&gt;Compared to GCNs which uses all the &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors, PinSage selects &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; topology-based important neighbors which have the largest influence.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Control Variate&lt;/strong&gt;
+Although unbiased, sampling estimators such as &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt; in neighbor sampling suffers from high variance, so it still requires a relatively large number of neighbors, e.g. &lt;script type=&quot;math/tex&quot;&gt;D^{(0)}=25&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;D^{(1)}=10&lt;/script&gt; in the GraphSage paper. With control variate, a standard variance reduction technique used in Monte Carlo methods, 2 neighbors for a node are sufficient in the experiments.&lt;/p&gt;
+
+&lt;p&gt;Given a random variable &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and we wish to estimate its expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [X] = \theta&lt;/script&gt;, the control variate method finds another random variable &lt;script type=&quot;math/tex&quot;&gt;Y&lt;/script&gt; which is highly correlated with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and whose expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [Y]&lt;/script&gt; can be easily computed. The control variate estimator is&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Z = X - Y + \mathbb{E} [Y]&lt;/script&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\mathbb{VAR} [Z] = \mathbb{VAR} [X] + \mathbb{VAR} [Y] - 2 \cdot \mathbb{COV} [X, Y]&lt;/script&gt;
+If &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\mathbb{VAR} [Y] - 2\mathbb{COV} [X, Y] &lt; 0 %]]&gt;&lt;/script&gt;, then &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\mathbb{VAR} [Z] &lt; \mathbb{VAR} [X] %]]&gt;&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;For GCN, by using history &lt;script type=&quot;math/tex&quot;&gt;\bar{H}^{(l)}&lt;/script&gt; of the nodes which are not sampled, the modified estimator &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt; is&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} ( \hat{h}_u^{(l)} - \bar{h}_u^{(l)} ) + \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} \bar{h}_u^{(l)}&lt;/script&gt;</content><author><name>Da Zheng</name></author><category term="blog" /><category term="blog" /><summary type="html">Many graph applications deal with giant scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.</summary></entry><entry><title type="html">DGL v0.3 Release</title><link href="https://www.dgl.ai/release/2019/06/12/release.html" rel="alternate" type="text/html" title="DGL v0.3 Release" /><published>2019-06-12T00:00:00-07:00</published><updated>2019-06-12T00:00:00-07:00</updated><id>https://www.dgl.ai/release/2019/06/12/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/06/12/release.html">&lt;p&gt;V0.3 release includes many crucial updates:&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Fused message passing kernels that greatly boost the training speed of GNNs on large graphs.
 Please refer to our &lt;a href=&quot;https://www.dgl.ai/blog/2019/05/04/kernel.html&quot;&gt;blogpost&lt;/a&gt; for more details.&lt;/li&gt;
-  &lt;li&gt;Demostration of how to train GNNs on giant graphs by graph sampling.&lt;/li&gt;
+  &lt;li&gt;Add components to enable distributed training of GNNs on giant graphs with graph sampling.
+Please see our &lt;a href=&quot;https://www.dgl.ai/blog/2019/06/12/giant.html&quot;&gt;blogpost&lt;/a&gt; for more details.&lt;/li&gt;
   &lt;li&gt;New models and NN modules.&lt;/li&gt;
   &lt;li&gt;Many other bugfixes and other enhancement.&lt;/li&gt;
 &lt;/ul&gt;
@@ -102,7 +261,9 @@ conda install -c dglteam dgl-cuda10.0  # For CUDA 10.0
 
 &lt;p&gt;As you can see, the syntax is quite straight-forward. &lt;code class=&quot;highlighter-rouge&quot;&gt;u_mul_e&lt;/code&gt; means multiplying the source node data with the edge data; &lt;code class=&quot;highlighter-rouge&quot;&gt;u_mul_v&lt;/code&gt; means multiplying the source node data with the destination node data, and so on and so forth. Each builtin combination will be mapped to a CPU/CUDA kernel and broadcasting and gradient computation are also supported. Checkout our &lt;a href=&quot;https://docs.dgl.ai/features/builtin.html&quot;&gt;document&lt;/a&gt; for more details.&lt;/p&gt;
 
-&lt;h2 id=&quot;tutorials-for-training-on-giant-graphs&quot;&gt;Tutorials for training on giant graphs&lt;/h2&gt;
+&lt;h2 id=&quot;training-giant-graphs&quot;&gt;Training giant graphs&lt;/h2&gt;
+
+&lt;p&gt;We added new components shared-memory DGLGraph and distributed samplers to support distributed and multi-processing training of graph neural networks.&lt;/p&gt;
 
 &lt;p&gt;Two new tutorials are now live:&lt;/p&gt;
 &lt;ul&gt;
@@ -152,7 +313,7 @@ conda install -c dglteam dgl-cuda10.0  # For CUDA 10.0
       &lt;li&gt;Fix a bug in &lt;code class=&quot;highlighter-rouge&quot;&gt;send&lt;/code&gt; when the given message function is a builtin.&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">V0.3 release includes many crucial updates: Fused message passing kernels that greatly boost the training speed of GNNs on large graphs. Please refer to our blogpost for more details. Demostration of how to train GNNs on giant graphs by graph sampling. New models and NN modules. Many other bugfixes and other enhancement.</summary></entry><entry><title type="html">When Kernel Fusion meets Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/05/04/kernel.html" rel="alternate" type="text/html" title="When Kernel Fusion meets Graph Neural Networks" /><published>2019-05-04T00:00:00-04:00</published><updated>2019-05-04T00:00:00-04:00</updated><id>https://www.dgl.ai/blog/2019/05/04/kernel</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/05/04/kernel.html">&lt;p&gt;In DGL’s first release last December, we focused on usability by introducing a
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">V0.3 release includes many crucial updates: Fused message passing kernels that greatly boost the training speed of GNNs on large graphs. Please refer to our blogpost for more details. Add components to enable distributed training of GNNs on giant graphs with graph sampling. Please see our blogpost for more details. New models and NN modules. Many other bugfixes and other enhancement.</summary></entry><entry><title type="html">When Kernel Fusion meets Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/05/04/kernel.html" rel="alternate" type="text/html" title="When Kernel Fusion meets Graph Neural Networks" /><published>2019-05-04T00:00:00-07:00</published><updated>2019-05-04T00:00:00-07:00</updated><id>https://www.dgl.ai/blog/2019/05/04/kernel</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/05/04/kernel.html">&lt;p&gt;In DGL’s first release last December, we focused on usability by introducing a
 set of carefully designed, easy-to-use APIs that support a variety of model
 implementations of Graph Neural Networks. We decided to keep DGL
 framework-agnostic to engage with users from different platforms (PyTorch,
@@ -453,7 +614,7 @@ shed some light on the directions we are working on:&lt;/p&gt;
 try out this new feature, simple as this: clone DGL’s repository, switch to
 &lt;code class=&quot;highlighter-rouge&quot;&gt;kernel&lt;/code&gt; branch and build the library from source.&lt;/p&gt;
 
-&lt;p&gt;Please stay tuned for our next major release! More good stuff coming soon.&lt;/p&gt;</content><author><name>Minjie Wang</name></author><category term="blog" /><category term="blog" /><summary type="html">In DGL’s first release last December, we focused on usability by introducing a set of carefully designed, easy-to-use APIs that support a variety of model implementations of Graph Neural Networks. We decided to keep DGL framework-agnostic to engage with users from different platforms (PyTorch, MXNet…). As a result, in our earlier releases, we largely leveraged the available functionalities provided by these frameworks, and based on many valuable feedback from our users, we are well-aware of the room of improvement particularly on some new models defined on the sparse and irregular graphs.</summary></entry><entry><title type="html">Understand Graph Attention Network</title><link href="https://www.dgl.ai/blog/2019/02/17/gat.html" rel="alternate" type="text/html" title="Understand Graph Attention Network" /><published>2019-02-17T00:00:00-05:00</published><updated>2019-02-17T00:00:00-05:00</updated><id>https://www.dgl.ai/blog/2019/02/17/gat</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/02/17/gat.html">&lt;p&gt;From &lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Graph Convolutional Network (GCN)&lt;/a&gt;, we
+&lt;p&gt;Please stay tuned for our next major release! More good stuff coming soon.&lt;/p&gt;</content><author><name>Minjie Wang</name></author><category term="blog" /><category term="blog" /><summary type="html">In DGL’s first release last December, we focused on usability by introducing a set of carefully designed, easy-to-use APIs that support a variety of model implementations of Graph Neural Networks. We decided to keep DGL framework-agnostic to engage with users from different platforms (PyTorch, MXNet…). As a result, in our earlier releases, we largely leveraged the available functionalities provided by these frameworks, and based on many valuable feedback from our users, we are well-aware of the room of improvement particularly on some new models defined on the sparse and irregular graphs.</summary></entry><entry><title type="html">Understand Graph Attention Network</title><link href="https://www.dgl.ai/blog/2019/02/17/gat.html" rel="alternate" type="text/html" title="Understand Graph Attention Network" /><published>2019-02-17T00:00:00-08:00</published><updated>2019-02-17T00:00:00-08:00</updated><id>https://www.dgl.ai/blog/2019/02/17/gat</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/02/17/gat.html">&lt;p&gt;From &lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Graph Convolutional Network (GCN)&lt;/a&gt;, we
 learned that combining local graph structure and node-level features yields
 good performance on node classification task. However, the way GCN aggregates
 is structure-dependent, which may hurt its generalizability.&lt;/p&gt;
@@ -924,7 +1085,7 @@ readers to the full example.&lt;/p&gt;
 &lt;a href=&quot;https://github.com/dmlc/dgl/blob/master/examples/pytorch/gat/gat.py&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
   &lt;li&gt;Stay tune for our next tutorial about how to speedup GAT models by
 parallelizing multiple attention heads and SPMV optimization.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Hao Zhang</name></author><category term="blog" /><category term="blog" /><summary type="html">From Graph Convolutional Network (GCN), we learned that combining local graph structure and node-level features yields good performance on node classification task. However, the way GCN aggregates is structure-dependent, which may hurt its generalizability.</summary></entry><entry><title type="html">Batched Graph Classification with DGL</title><link href="https://www.dgl.ai/blog/2019/01/25/batch.html" rel="alternate" type="text/html" title="Batched Graph Classification with DGL" /><published>2019-01-25T00:00:00-05:00</published><updated>2019-01-25T00:00:00-05:00</updated><id>https://www.dgl.ai/blog/2019/01/25/batch</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/01/25/batch.html">&lt;p&gt;Graph classification is an important problem
+&lt;/ul&gt;</content><author><name>Hao Zhang</name></author><category term="blog" /><category term="blog" /><summary type="html">From Graph Convolutional Network (GCN), we learned that combining local graph structure and node-level features yields good performance on node classification task. However, the way GCN aggregates is structure-dependent, which may hurt its generalizability.</summary></entry><entry><title type="html">Batched Graph Classification with DGL</title><link href="https://www.dgl.ai/blog/2019/01/25/batch.html" rel="alternate" type="text/html" title="Batched Graph Classification with DGL" /><published>2019-01-25T00:00:00-08:00</published><updated>2019-01-25T00:00:00-08:00</updated><id>https://www.dgl.ai/blog/2019/01/25/batch</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/01/25/batch.html">&lt;p&gt;Graph classification is an important problem
 with applications across many fields – bioinformatics, chemoinformatics, social
 network analysis, urban computing and cyber-security. Applying graph neural
 networks to this problem has been a popular approach recently (&lt;a href=&quot;https://arxiv.org/abs/1806.08804&quot;&gt;Ying et al.,
