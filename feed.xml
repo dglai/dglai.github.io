@@ -1,4 +1,620 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2019-02-28T22:56:20-08:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">Understand Graph Attention Network</title><link href="https://www.dgl.ai/blog/2019/02/17/gat.html" rel="alternate" type="text/html" title="Understand Graph Attention Network" /><published>2019-02-17T00:00:00-08:00</published><updated>2019-02-17T00:00:00-08:00</updated><id>https://www.dgl.ai/blog/2019/02/17/gat</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/02/17/gat.html">&lt;p&gt;From &lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Graph Convolutional Network (GCN)&lt;/a&gt;, we
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2019-06-13T22:19:58-07:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">Large-Scale Training of Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/06/13/giant.html" rel="alternate" type="text/html" title="Large-Scale Training of Graph Neural Networks" /><published>2019-06-13T00:00:00-07:00</published><updated>2019-06-13T00:00:00-07:00</updated><id>https://www.dgl.ai/blog/2019/06/13/giant</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/06/13/giant.html">&lt;p&gt;Many graph applications deal with &lt;em&gt;giant&lt;/em&gt; scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.&lt;/p&gt;
+
+&lt;h2 id=&quot;sampling-methods-in-dgl&quot;&gt;Sampling methods in DGL&lt;/h2&gt;
+&lt;p&gt;Giant graphs are a classic challenge, and is even more so in graph neural networks (GNN). In a GNN model, computing the embedding of a node depends on the embeddings of its neighbors. Such dependency leads to exponential growth of the number of nodes involved with number of GNN layers.&lt;/p&gt;
+
+&lt;p&gt;A typical technique is sampling, and there are many variants, some of them are applicable to GNN and DGL supports a few of them. The basic idea is to prune the node dependency to reduce the computation while still estimating the embeddings of GNN accurately. We leave the exact formulation of these techniques at the end of the tutorial (and users are encouraged to read them!), and describe the gists of them breifly here:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1706.02216&quot;&gt;neighbor sampling&lt;/a&gt;. This is the most basic: simply pick a small number of random neighbors.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1809.05343&quot;&gt;layer-wise sampling&lt;/a&gt;. The problem with simple neighbor sampling is that number of nodes needed will continue to grow exponentially with deeper layers. The idea here is to consider a layer as a whole and constrain the amount of samples per layer.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1806.01973&quot;&gt;random-walk sampling&lt;/a&gt;. As the name suggests, samples are picked up by performing random walks.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Sampling estimators can suffer from high variance. Obviously, including more neighbors will reduce the variance but this defeats the purpose of sampling. One interesting soution is &lt;a href=&quot;https://arxiv.org/abs/1710.10568&quot;&gt;control-variate sampling&lt;/a&gt;, a standard variance reduction technique used in Monte Carlo methods.&lt;/p&gt;
+
+&lt;p&gt;The basic idea is simple: given a random variable &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and we wish to estimate its expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [X] = \theta&lt;/script&gt;, the control variate method finds another random variable &lt;script type=&quot;math/tex&quot;&gt;Y&lt;/script&gt; which is highly correlated with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and whose expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [Y]&lt;/script&gt; can be easily computed. Control variate needs to keep extra state, but otherwise is effective in reducing sample size. In fact, one neighbor is enough, for the Reddit dataset!
+&lt;!--
+We experiment neighbor sampling and control variate sampling to train GCN and GraphSage on Reddit to evaluate the effectiveness of these two sampling methods. The result is shown in the figure below. For GCN, control variate sampling is much more effective than neighbor sampling. Sampling only one neighbor is sufficient to train GCN on the Reddit dataset. Similarly, when training GraphSage, we only need to sample one neighbor to get its accuracy over 96%.
+--&gt;
+&lt;img src=&quot;https://i.imgur.com/DTPQu5V.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;system-support-for-giant-graphs&quot;&gt;System support for giant graphs&lt;/h2&gt;
+&lt;p&gt;Sampling provides the nice possiblity of dealing with giant graphs with a data-parallel perspective. DGL adds two components, see figure below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Sampler&lt;/strong&gt;: a sampler constructs small subgraphs (&lt;code class=&quot;highlighter-rouge&quot;&gt;NodeFlow&lt;/code&gt;) from a given (giant) graph; tutorials of &lt;code class=&quot;highlighter-rouge&quot;&gt;NodeFlow&lt;/code&gt; can be found &lt;a href=&quot;https://doc.dgl.ai/tutorials/models/5_giant_graph/1_sampling_mx.html#sphx-glr-tutorials-models-5-giant-graph-1-sampling-mx-py&quot;&gt;here&lt;/a&gt;. Multiple samplers can be launched locally, or remotely, and on many machines.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Graph store&lt;/strong&gt;: this prepares the I/O substrate to scale out with a large number of trainers. The graph store contains graph embeddings as well as its structure. For now, the implementation is based on shared-memory, supporting multi-processing training on multi-GPU and/or non-uniform memory access (NUMA) machines.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The shared-memory graph store has a similar interface to &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; for programming. DGL will also support a distributed graph store that can store graph embeddings across machines in the future release.&lt;/p&gt;
+
+&lt;!--
+The figure below shows the interaction of the trainer with the samplers and the graph store. The trainer takes subgraphs (`NodeFlow`) from the sampler and fetches graph embeddings from the graph store before training. The trainer can push new graph embeddings to the graph store or invoke some computation on the graph store.
+--&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/OmLVXfo.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, let’s demonstrate how good these supports are.&lt;/p&gt;
+
+&lt;h3 id=&quot;multi-processing-training-and-optimizations-on-a-numa-machine&quot;&gt;Multi-processing training and optimizations on a NUMA machine&lt;/h3&gt;
+&lt;p&gt;The speedup is almost linear, and on Reddit dataset takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/eaiEcEi.png&quot; alt=&quot;&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;X1.32xlarge instance has 4 processors, each of which has 16 physical CPU cores.&lt;/li&gt;
+  &lt;li&gt;We need to be aware of NUMA architecture, otherwise there’s hardly any speedup with more CPU processors. Please see &lt;a href=&quot;https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py&quot;&gt;our tutorial&lt;/a&gt; for more details.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--
+To demonstrate the effectiveness of multi-processing training with this architecture on a NUMA machine and on a multi-GPU machine, we train GraphSage on the Reddit dataset with control-variate sampling. To optimize the training in a NUMA machine, we need to bind trainers' processes to specific NUMA nodes. Please see [our tutorial](https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py) for more details how to bind processes on a NUMA node.
+The figure below shows that NUMA-aware multi-processing training can accelerate training almost by a factor of 4 on an X1.32xlarge instance where there are 4 processors, each of which has 16 physical CPU cores. We can see that NUMA-unaware training cannot take advantage of computation power of the machine. It is even slightly slower than just using one of the processors in the machine. NUMA-aware training, on the other hand, takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.
+--&gt;
+
+&lt;h3 id=&quot;distributed-sampler&quot;&gt;Distributed Sampler&lt;/h3&gt;
+
+&lt;p&gt;We can move samplers around. For GCN variants where computation aren’t that intense, running samplers on small (and cheaper) machines and training on NUMA is both faster and more cost-effective (additional 20%-40% speedups).&lt;/p&gt;
+
+&lt;!--
+are ran on different machines, we can 
+We also notice that the sampling in many tasks takes a significant amount of time for the training process on a giant graph. So DGL supports distributed samplers for speeding up the sampling process on giant graphs. DGL allows users to launch multiple samplers on different machines concurrently, and each sampler can send its sampled subgraph (`NodeFlow`) to trainer machines continuously. 
+The figure below shows the overall performance improvement of training GCN and GraphSage on the Reddit dataset after deploying NUMA optimizations and distributed sampling. Our NUMA optimization speeds up the training by a factor of 3. The distributed sampling achieves additional 20%-40% speed improvement for different tasks.
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/e0MXa5N.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;scale-to-giant-graphs&quot;&gt;Scale to giant graphs&lt;/h3&gt;
+&lt;!--Finally, we would like to demonstrate the scalability of DGL on giant graphs. 
+--&gt;
+&lt;p&gt;We create three large power-law graphs with &lt;a href=&quot;http://www.cs.cmu.edu/~christos/PUBLICATIONS/siam04.pdf&quot;&gt;RMAT&lt;/a&gt;. Each node is associated with 100 features and we compute node embeddings with 64 dimensions. Below shows the training speed and memory consumption of GCN with neighbor sampling.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;#Nodes&lt;/th&gt;
+      &lt;th&gt;#Edges&lt;/th&gt;
+      &lt;th&gt;Time per epoch (s)&lt;/th&gt;
+      &lt;th&gt;Memory (GB)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;5M&lt;/td&gt;
+      &lt;td&gt;250M&lt;/td&gt;
+      &lt;td&gt;4.7&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;50M&lt;/td&gt;
+      &lt;td&gt;2.5B&lt;/td&gt;
+      &lt;td&gt;46&lt;/td&gt;
+      &lt;td&gt;75&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;500M&lt;/td&gt;
+      &lt;td&gt;25B&lt;/td&gt;
+      &lt;td&gt;505&lt;/td&gt;
+      &lt;td&gt;740&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;We can see that DGL can scale to graphs with 500M nodes and 25B edges on an X1.32xlarge instance.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
+&lt;p&gt;We are looking forward to your feedbacks and would love to hear your use cases and models for giant graphs! All of these new features shown in this blog will be in our upcoming v0.3 release. Please try them out and give us feedbacks.&lt;/p&gt;
+
+&lt;p&gt;We are continuing working on our infrastructure for training graph neural networks on giant graphs, which includes:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;In the infrastructure, we will add a distributed graph store to support fully distributed training for graph neural networks.&lt;/li&gt;
+  &lt;li&gt;We will experiment various strategies to accelerate distributed training. For example, we will experiment fast and scalable graph partitioning algorithms to reduce network communication.&lt;/li&gt;
+  &lt;li&gt;We will also add more demonstrations of other sampling strategies. For example, we will scale PinSage with our random walk sampler.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;sampling-techniques-in-gnn&quot;&gt;Sampling techniques in GNN&lt;/h2&gt;
+
+&lt;p&gt;Let’s use graph convolution network as an example to show these sampling techniques. Given a graph &lt;script type=&quot;math/tex&quot;&gt;G=(V, E)&lt;/script&gt;, represented as an adjacency matrix &lt;script type=&quot;math/tex&quot;&gt;A&lt;/script&gt;, with node features &lt;script type=&quot;math/tex&quot;&gt;H^{(0)} = X \in \mathbb{R}^{|V| \times m}&lt;/script&gt;, graph convolution networks (GCNs) compute the hidden features &lt;script type=&quot;math/tex&quot;&gt;H^{(l+1)}&lt;/script&gt; of the &lt;script type=&quot;math/tex&quot;&gt;(l+1)&lt;/script&gt;-th layer by computing for each &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;h_v^{(l+1)} = \sigma ( z_v^{(l)} W^{(l)}) \qquad z_v^{(l)} = \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} h_u^{(l)}&lt;/script&gt;
+where &lt;script type=&quot;math/tex&quot;&gt;\mathcal{N}(v)&lt;/script&gt; denotes the neighborhood of &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\tilde{A}&lt;/script&gt; is a normalized version of &lt;script type=&quot;math/tex&quot;&gt;A&lt;/script&gt; such as &lt;script type=&quot;math/tex&quot;&gt;D^{-1} A&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\sigma(\cdot)&lt;/script&gt; is the activation function, &lt;script type=&quot;math/tex&quot;&gt;W^{(l)}&lt;/script&gt; is a trainable parameter of the &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th layer. For a &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-layer GCN model, the computation of &lt;script type=&quot;math/tex&quot;&gt;H^{(L)}&lt;/script&gt; requires the propagation from all of its &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors. This is too expensive in mini-batch training because the receptive field of a node grows exponentially with respective to the number of layers &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Neighbor Sampling&lt;/strong&gt;
+Instead of using all the &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors of a node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;, neighbor sampling randomly samples a few neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}^{(l)}(v)&lt;/script&gt; to estimate the aggregation &lt;script type=&quot;math/tex&quot;&gt;z_v^{(l)}&lt;/script&gt; of its total neighbors &lt;script type=&quot;math/tex&quot;&gt;\mathcal{N}(v)&lt;/script&gt; in &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th GCN layer by an unbiased estimator &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt;&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} \hat{h}_u^{(l)} \\
+\hat{h}_v^{(l+1)} = \sigma ( \hat{z}_v^{(l)} W^{(l)} )&lt;/script&gt;
+
+&lt;p&gt;Let &lt;script type=&quot;math/tex&quot;&gt;D^{(l)}&lt;/script&gt; be the number of neighbors to be sampled for each node at the &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th layer, then the receptive field size of each node can be controlled under &lt;script type=&quot;math/tex&quot;&gt;\prod_{i=0}^{L-1} D^{(l)}&lt;/script&gt; by neighbor sampling.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Layer-Wise Sampling&lt;/strong&gt;
+In node-wise sampling, each parent node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; independently samples a few neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}(v)&lt;/script&gt;, which are not visible to other parent nodes &lt;script type=&quot;math/tex&quot;&gt;u&lt;/script&gt; except &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;. The receptive field size still grows exponentially if &lt;script type=&quot;math/tex&quot;&gt;\vert \hat{\mathcal{N}}(v) \vert &gt; 1&lt;/script&gt;. In layer-wise sampling, the sampling procedure is performed only once in each layer, where each node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; gets sampled into &lt;script type=&quot;math/tex&quot;&gt;\mathcal{S}^{(l)}&lt;/script&gt; with probability &lt;script type=&quot;math/tex&quot;&gt;p^{(l)}(v)&lt;/script&gt;,
+&lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)} = \sum_{u \in \mathcal{S}^{(l)}} \frac{1}{p^{(l)}(u)} \tilde{A}_{uv} \hat{h}_u^{(l)}&lt;/script&gt;
+The receptive field size can be controlled directly by &lt;script type=&quot;math/tex&quot;&gt;\vert \mathcal{S}^{(0)} \vert&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Random Walk Sampling&lt;/strong&gt;
+Given a source node &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; and a decay factor &lt;script type=&quot;math/tex&quot;&gt;\alpha&lt;/script&gt;, a random walk from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; is a trace beginning from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt;, at each step either proceeds to a neighbor uniformly at random, or stop with probability &lt;script type=&quot;math/tex&quot;&gt;\alpha&lt;/script&gt;. The personalized PageRank (PPR) score &lt;script type=&quot;math/tex&quot;&gt;\pi(s, t)&lt;/script&gt; is the probability that a random walk from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; terminates at &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;In PinSage, each node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; selects top-&lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; important nodes with highest PPR scores with respective to &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; as its neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}(v)&lt;/script&gt;, and the hidden feature of each neighbor &lt;script type=&quot;math/tex&quot;&gt;u \in \hat{\mathcal{N}}(v)&lt;/script&gt; is weighted by &lt;script type=&quot;math/tex&quot;&gt;\pi(v, u)&lt;/script&gt;,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}^{(l)}_v = \frac{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u) \tilde{A}_{uv} \hat{h}_u^{(l)}}{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u)}&lt;/script&gt;
+
+&lt;p&gt;Compared to GCNs which uses all the &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors, PinSage selects &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; topology-based important neighbors which have the largest influence.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Control Variate&lt;/strong&gt;
+Although unbiased, sampling estimators such as &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt; in neighbor sampling suffers from high variance, so it still requires a relatively large number of neighbors, e.g. &lt;script type=&quot;math/tex&quot;&gt;D^{(0)}=25&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;D^{(1)}=10&lt;/script&gt; in the GraphSage paper. With control variate, a standard variance reduction technique used in Monte Carlo methods, 2 neighbors for a node are sufficient in the experiments.&lt;/p&gt;
+
+&lt;p&gt;Given a random variable &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and we wish to estimate its expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [X] = \theta&lt;/script&gt;, the control variate method finds another random variable &lt;script type=&quot;math/tex&quot;&gt;Y&lt;/script&gt; which is highly correlated with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and whose expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [Y]&lt;/script&gt; can be easily computed. The control variate estimator is&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Z = X - Y + \mathbb{E} [Y]&lt;/script&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\mathbb{VAR} [Z] = \mathbb{VAR} [X] + \mathbb{VAR} [Y] - 2 \cdot \mathbb{COV} [X, Y]&lt;/script&gt;
+If &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\mathbb{VAR} [Y] - 2\mathbb{COV} [X, Y] &lt; 0 %]]&gt;&lt;/script&gt;, then &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\mathbb{VAR} [Z] &lt; \mathbb{VAR} [X] %]]&gt;&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;For GCN, by using history &lt;script type=&quot;math/tex&quot;&gt;\bar{H}^{(l)}&lt;/script&gt; of the nodes which are not sampled, the modified estimator &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt; is&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} ( \hat{h}_u^{(l)} - \bar{h}_u^{(l)} ) + \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} \bar{h}_u^{(l)}&lt;/script&gt;</content><author><name>Da Zheng</name></author><category term="blog" /><category term="blog" /><summary type="html">Many graph applications deal with giant scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.</summary></entry><entry><title type="html">DGL v0.3 Release</title><link href="https://www.dgl.ai/release/2019/06/12/release.html" rel="alternate" type="text/html" title="DGL v0.3 Release" /><published>2019-06-12T00:00:00-07:00</published><updated>2019-06-12T00:00:00-07:00</updated><id>https://www.dgl.ai/release/2019/06/12/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/06/12/release.html">&lt;p&gt;V0.3 release includes many crucial updates:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Fused message passing kernels that greatly boost the training speed of GNNs on large graphs.
+Please refer to our &lt;a href=&quot;https://www.dgl.ai/blog/2019/05/04/kernel.html&quot;&gt;blogpost&lt;/a&gt; for more details.&lt;/li&gt;
+  &lt;li&gt;Add components to enable distributed training of GNNs on giant graphs with graph sampling.
+Please see our &lt;a href=&quot;https://www.dgl.ai/blog/2019/06/13/giant.html&quot;&gt;blogpost&lt;/a&gt; for more details.&lt;/li&gt;
+  &lt;li&gt;New models and NN modules.&lt;/li&gt;
+  &lt;li&gt;Many other bugfixes and other enhancement.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;As a result, please be aware of the following changes:&lt;/p&gt;
+
+&lt;h2 id=&quot;installation&quot;&gt;Installation&lt;/h2&gt;
+
+&lt;p&gt;Previous installation methods with pip and conda, i.e.:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pip install dgl
+conda install -c dglteam dgl
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;now &lt;strong&gt;only install CPU builds&lt;/strong&gt; (works for Linux/MacOS/Windows).&lt;/p&gt;
+
+&lt;h3 id=&quot;installing-cuda-builds-with-pip&quot;&gt;Installing CUDA builds with pip&lt;/h3&gt;
+&lt;p&gt;Pip users could install the DGL CUDA builds with the following:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pip install &amp;lt;package-url&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;where &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;package-url&amp;gt;&lt;/code&gt; is one of the following:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt;CUDA 9.0&lt;/th&gt;
+      &lt;th&gt;CUDA 10.0&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Linux + Py35&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda9.0/dgl-0.3-cp35-cp35m-manylinux1_x86_64.whl&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda10.0/dgl-0.3-cp35-cp35m-manylinux1_x86_64.whl&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Linux + Py36&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda9.0/dgl-0.3-cp36-cp36m-manylinux1_x86_64.whl&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda10.0/dgl-0.3-cp36-cp36m-manylinux1_x86_64.whl&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Linux + Py37&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda9.0/dgl-0.3-cp37-cp37m-manylinux1_x86_64.whl&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda10.0/dgl-0.3-cp37-cp37m-manylinux1_x86_64.whl&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Win + Py35&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda9.0/dgl-0.3-cp35-cp35m-win_amd64.whl&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda10.0/dgl-0.3-cp35-cp35m-win_amd64.whl&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Win + Py36&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda9.0/dgl-0.3-cp36-cp36m-win_amd64.whl&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda10.0/dgl-0.3-cp36-cp36m-win_amd64.whl&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Win + Py37&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda9.0/dgl-0.3-cp37-cp37m-win_amd64.whl&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install https://s3.us-east-2.amazonaws.com/dgl.ai/wheels/cuda10.0/dgl-0.3-cp37-cp37m-win_amd64.whl&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;MacOS&lt;/td&gt;
+      &lt;td&gt;N/A&lt;/td&gt;
+      &lt;td&gt;N/A&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&quot;installing-cuda-builds-with-conda&quot;&gt;Installing CUDA builds with conda&lt;/h3&gt;
+&lt;p&gt;Conda users could install the CUDA builds with&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;conda install -c dglteam dgl-cuda9.0   # For CUDA 9.0
+conda install -c dglteam dgl-cuda10.0  # For CUDA 10.0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;DGL currently support CUDA 9.0 (dgl-cuda9.0) and 10.0 (dgl-cuda10.0). To find your CUDA version, use &lt;code class=&quot;highlighter-rouge&quot;&gt;nvcc --version&lt;/code&gt;. To install from source, checkout our &lt;a href=&quot;https://docs.dgl.ai/install/index.html#install-from-source&quot;&gt;installation guide&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;new-built-in-message-and-reduce-functions&quot;&gt;New built-in message and reduce functions&lt;/h2&gt;
+
+&lt;p&gt;We have expanded the list of built-in message and reduce functions to cover more use cases. Previously, DGL only has &lt;code class=&quot;highlighter-rouge&quot;&gt;copy_src&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;copy_edge&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;src_mul_edge&lt;/code&gt;. With the v0.3 release, we support more combinations. Here is a demonstration of some of the new builtin functions.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.function&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;fn&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;torch&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;th&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# create a DGLGraph&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;randn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number_of_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# each node has feature size 10&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;edata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'w'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;randn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number_of_edges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# each edge has feature size 1&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# collect features from source nodes and aggregate them in destination nodes&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;copy_u&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'h_sum'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# multiply source node features with edge weights and aggregate them in destination nodes&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;u_mul_e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'w'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'h_max'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# compute edge embedding by multiplying source and destination node embeddings&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;apply_edges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;u_mul_v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'w_new'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;As you can see, the syntax is quite straight-forward. &lt;code class=&quot;highlighter-rouge&quot;&gt;u_mul_e&lt;/code&gt; means multiplying the source node data with the edge data; &lt;code class=&quot;highlighter-rouge&quot;&gt;u_mul_v&lt;/code&gt; means multiplying the source node data with the destination node data, and so on and so forth. Each builtin combination will be mapped to a CPU/CUDA kernel and broadcasting and gradient computation are also supported. Checkout our &lt;a href=&quot;https://docs.dgl.ai/features/builtin.html&quot;&gt;document&lt;/a&gt; for more details.&lt;/p&gt;
+
+&lt;h2 id=&quot;training-giant-graphs&quot;&gt;Training giant graphs&lt;/h2&gt;
+
+&lt;p&gt;We added new components shared-memory DGLGraph and distributed samplers to support distributed and multi-processing training of graph neural networks.&lt;/p&gt;
+
+&lt;p&gt;Two new tutorials are now live:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Train GNNs by neighbor sampling and its variants (&lt;a href=&quot;https://docs.dgl.ai/tutorials/models/5_giant_graph/1_sampling_mx.html&quot;&gt;link&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;Scale the sampler-trainer architecture to giant graphs using distributed graph store (&lt;a href=&quot;https://docs.dgl.ai/tutorials/models/5_giant_graph/2_giant.html&quot;&gt;link&lt;/a&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We also provide scripts on how to setup such distributed setting (&lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/mxnet/sampling/dis_sampling&quot;&gt;link&lt;/a&gt;).&lt;/p&gt;
+
+&lt;h2 id=&quot;enhancement-and-bugfix&quot;&gt;Enhancement and bugfix&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;NN modules
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.[mxnet|pytorch].edge_softmax&lt;/code&gt; now directly returns the normalized scores on edges.&lt;/li&gt;
+      &lt;li&gt;Fix a memory leak bug when graph is passed as the input.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Graph
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; now supports direct conversion from scipy csr matrix rather than conversion to coo matrix first.&lt;/li&gt;
+      &lt;li&gt;Readonly graph can now be batched via &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.batch&lt;/code&gt;.&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; now supports node/edge removal via &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph.remove_nodes&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph.remove_edges&lt;/code&gt; (&lt;a href=&quot;https://docs.dgl.ai/api/python/graph.html#removing-nodes-and-edges&quot;&gt;doc&lt;/a&gt;).&lt;/li&gt;
+      &lt;li&gt;A new API &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph.to(device)&lt;/code&gt; that can move all node/edge data to the given device.&lt;/li&gt;
+      &lt;li&gt;A new API &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.to_simple&lt;/code&gt; that can convert a graph to a simple graph with no multi-edges.&lt;/li&gt;
+      &lt;li&gt;A new API &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.to_bidirected&lt;/code&gt; that can convert a graph to a bidirectional graph.&lt;/li&gt;
+      &lt;li&gt;A new API &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.contrib.sampling.random_walk&lt;/code&gt; that can generate random walks from a graph.&lt;/li&gt;
+      &lt;li&gt;Allow &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; to be constructed from another &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt;.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;New model examples
+    &lt;ul&gt;
+      &lt;li&gt;APPNP&lt;/li&gt;
+      &lt;li&gt;GIN&lt;/li&gt;
+      &lt;li&gt;PinSage (slow version)&lt;/li&gt;
+      &lt;li&gt;DGI&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Bugfix
+    &lt;ul&gt;
+      &lt;li&gt;Fix a bug where numpy integer is passed in as the argument.&lt;/li&gt;
+      &lt;li&gt;Fix a bug when constructing from a networkx graph that has no edge.&lt;/li&gt;
+      &lt;li&gt;Fix a bug in nodeflow where id is not correctly converted sometimes.&lt;/li&gt;
+      &lt;li&gt;Fix a bug in MiniGC dataset where the number of nodes is not consistent.&lt;/li&gt;
+      &lt;li&gt;Fix a bug in RGCN example when bfs_level=0.&lt;/li&gt;
+      &lt;li&gt;Fix a bug where DLContext is not correctly exposed in CFFI.&lt;/li&gt;
+      &lt;li&gt;Fix a crash during Cython build.&lt;/li&gt;
+      &lt;li&gt;Fix a bug in &lt;code class=&quot;highlighter-rouge&quot;&gt;send&lt;/code&gt; when the given message function is a builtin.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">V0.3 release includes many crucial updates: Fused message passing kernels that greatly boost the training speed of GNNs on large graphs. Please refer to our blogpost for more details. Add components to enable distributed training of GNNs on giant graphs with graph sampling. Please see our blogpost for more details. New models and NN modules. Many other bugfixes and other enhancement.</summary></entry><entry><title type="html">When Kernel Fusion meets Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/05/04/kernel.html" rel="alternate" type="text/html" title="When Kernel Fusion meets Graph Neural Networks" /><published>2019-05-04T00:00:00-07:00</published><updated>2019-05-04T00:00:00-07:00</updated><id>https://www.dgl.ai/blog/2019/05/04/kernel</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/05/04/kernel.html">&lt;p&gt;In DGL’s first release last December, we focused on usability by introducing a
+set of carefully designed, easy-to-use APIs that support a variety of model
+implementations of Graph Neural Networks. We decided to keep DGL
+framework-agnostic to engage with users from different platforms (PyTorch,
+MXNet…). As a result, in our earlier releases, we largely leveraged the
+available functionalities provided by these frameworks, and based on many
+valuable feedback from our users, we are well-aware of the room of improvement
+particularly on some new models defined on the sparse and irregular graphs.&lt;/p&gt;
+
+&lt;p&gt;With DGL’s APIs from the first relase being well-received and gradually stable,
+we have been working on boosting its performance in a high gear. Our next major
+release (&lt;strong&gt;v0.3&lt;/strong&gt;) will focus on much faster training speed, lower memory
+consumption, and scalability.&lt;/p&gt;
+
+&lt;p&gt;The performance gains of the upcoming DGL v0.3 are substantial. Compared to the
+current version, DGL v0.3 achieves up to &lt;strong&gt;19X&lt;/strong&gt; the training throughput and
+can train &lt;strong&gt;8X&lt;/strong&gt; larger graphs on a single GPU.  DGL’s training speed is now
+competitive with alternative frameworks such as Pytorch Geometric, however with
+much better scalability. DGL allows training on considerably larger
+graphs—&lt;strong&gt;500M&lt;/strong&gt; nodes and &lt;strong&gt;25B&lt;/strong&gt; edges. For a more concrete performance
+evaluation and comparison, check out our &lt;a href=&quot;https://rlgm.github.io/papers/49.pdf&quot;&gt;workshop
+paper&lt;/a&gt; for more details.&lt;/p&gt;
+
+&lt;p&gt;In the rest of this post, we’ll get technical and describe fused message
+passing, the key technique enabling these performance improvements.  We will
+address the following questions:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Why cannot basic message passing scale to large graphs?&lt;/li&gt;
+  &lt;li&gt;How does fused message passing help?&lt;/li&gt;
+  &lt;li&gt;How to enable fused message passing in DGL?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;why-cant-basic-message-passing-scale-to-large-graphs&quot;&gt;Why can’t basic message passing scale to large graphs?&lt;/h2&gt;
+&lt;p&gt;Most GNN models perform message-passing style computation over a graph. Such a
+computation constitutes two main user-defined functions:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Message function&lt;/strong&gt; specifies to send a message along an edge from a node to
+its neighbor. This is &lt;strong&gt;edge-wise computation&lt;/strong&gt; since it is performed for all
+(or a subset of) edges.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Reduce function&lt;/strong&gt; specifies to aggregate the incoming messages of a node
+and updates the node feature. This is &lt;strong&gt;node-wide computation&lt;/strong&gt; since it is
+performed for all (or a subset of) nodes.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The following figure gives an illustration. The user-defined message function
+is denoted as &lt;script type=&quot;math/tex&quot;&gt;\phi^e&lt;/script&gt;, which is used to generate a message (yellow boxes) on
+each edge.  To create a message &lt;script type=&quot;math/tex&quot;&gt;m_{i,j}&lt;/script&gt; for edge &lt;script type=&quot;math/tex&quot;&gt;i\rightarrow j&lt;/script&gt;, the
+message function takes into account the edge feature &lt;script type=&quot;math/tex&quot;&gt;e_{i,j}&lt;/script&gt; as well as the
+two endpoints’ node features, &lt;script type=&quot;math/tex&quot;&gt;h_i&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;h_j&lt;/script&gt;. At each node, incoming messages are
+aggregated using the user-defined reduce function &lt;script type=&quot;math/tex&quot;&gt;\sum&lt;/script&gt; and another
+user-defined function &lt;script type=&quot;math/tex&quot;&gt;\phi^v&lt;/script&gt; is used to update the node feature. In DGL, one
+can easily implement such message passing by calling &lt;code class=&quot;highlighter-rouge&quot;&gt;send&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;recv&lt;/code&gt; APIs
+(see &lt;a href=&quot;https://docs.dgl.ai/tutorials/basics/3_pagerank.html&quot;&gt;our tutorial on message passing for more
+details&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/wTda40k.jpg&quot; alt=&quot;&quot; width=&quot;450x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The basic strategy for implementing message-passing is straighforward. First,
+we &lt;code class=&quot;highlighter-rouge&quot;&gt;send&lt;/code&gt; messages by invoking &lt;strong&gt;edge-wise&lt;/strong&gt; message functions.  Then, we
+&lt;code class=&quot;highlighter-rouge&quot;&gt;recv&lt;/code&gt; messages by applying &lt;strong&gt;node-wise&lt;/strong&gt; computation to aggregate messages
+according to their destination nodes (and updating node features). In DGL
+example below, we implement &lt;a href=&quot;https://docs.dgl.ai/tutorials/models/1_gnn/1_gcn.html&quot;&gt;Graph Convolution Network
+(GCN)&lt;/a&gt; by specifying its
+message and reduce functions in lambdas, and DGL uses basic message passing
+underneath.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# A GCN example with user-defined message function.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Using user-defined message function causes DGL to use &lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# the basic message passing strategy.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]},&lt;/span&gt; 
+             &lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mailbox&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)})&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The problem with basic message passing is that messages are explicitly
+materialized and stored, resulting in memory explosion as the graph becomes
+larger. As a concrete example, consider the reddit graph dataset introduced in
+the &lt;a href=&quot;https://www-cs-faculty.stanford.edu/people/jure/pubs/graphsage-nips17.pdf&quot;&gt;GraphSAGE
+paper&lt;/a&gt;.
+It has 232K nodes and 114M edges. If we are to train a GCN model whose message
+function copies the source node feature, this will cause a whopping &lt;strong&gt;~500
+times&lt;/strong&gt; memory consumption of the storage for the node features! It gets even
+worse since the frequent memory access can bottleneck the computation, leading
+to under-utilization of GPU device.&lt;/p&gt;
+
+&lt;h1 id=&quot;fused-message-passing--no-explicit-messages&quot;&gt;Fused message passing == NO explicit messages&lt;/h1&gt;
+
+&lt;p&gt;To avoid the overhead of materializing messages, we implement fused message
+passing, i.e. combining the &lt;code class=&quot;highlighter-rouge&quot;&gt;send&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;recv&lt;/code&gt; into one operation
+&lt;code class=&quot;highlighter-rouge&quot;&gt;send_and_recv&lt;/code&gt; (shown in following figure). Under the hood, the fused
+&lt;code class=&quot;highlighter-rouge&quot;&gt;send_and_recv&lt;/code&gt; operation is implemented using a CUDA kernel in which each
+thread loads the source node feature into the per-thread local memory, computes
+a message, and directly aggregates it into the buffer for a given destination
+node and immediately discards the message afterwards.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/0oMUTrZ.png&quot; alt=&quot;&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To enable fused message passing, there are two challenges to be solved:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;How to fuse the user-defined functions &lt;script type=&quot;math/tex&quot;&gt;\phi^e&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\Sigma&lt;/script&gt;?&lt;/em&gt; In DGL, we
+provide a set of pre-defined functions, called DGL built-ins, and let users
+choose from them. This restricts the message and reduce functions to be used
+for fused message passing, but we provide a variety of common functions so most
+GNN models can be implemented. UDFs are still allowed, in which case DGL will
+use basic message passing instead.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;How to backprop the gradient without explicit messages?&lt;/em&gt;  The trick is to
+recompute the message during backward propagation, similar to the technique
+used in &lt;a href=&quot;https://arxiv.org/abs/1604.06174&quot;&gt;training very deep NN models&lt;/a&gt;. In
+practice, many &lt;script type=&quot;math/tex&quot;&gt;\phi^e&lt;/script&gt; do not require explicit messages to compute the
+gradient (such as copying the node features as messages), and our
+implementation leverages this optimization.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For example, we can re-write our earlier GCN implementation to use the built-in
+&lt;code class=&quot;highlighter-rouge&quot;&gt;copy_src&lt;/code&gt; message function and &lt;code class=&quot;highlighter-rouge&quot;&gt;sum&lt;/code&gt; reduce function, as shown below.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.function&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;fn&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# some graph&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# copy src feature 'h' as the message and sum it as new 'h'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;copy_src&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.dgl.ai/tutorials/models/1_gnn/9_gat.html&quot;&gt;A Graph Attention Network
+(GAT)&lt;/a&gt; can also be
+implemented using the built-in &lt;code class=&quot;highlighter-rouge&quot;&gt;src_mul_edge&lt;/code&gt; message function and &lt;code class=&quot;highlighter-rouge&quot;&gt;sum&lt;/code&gt; reduce
+function.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# the src features 'h' are weighted by the attention score 'e'&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# on the edges and are summed as the new feature 'h'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src_mul_edge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'e'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;DGL v0.3 includes built-in functions that support the following combinations:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The message function &lt;script type=&quot;math/tex&quot;&gt;\phi^e&lt;/script&gt; can be any one of add/sub/mul/div between two
+given features among src, edge, dst.&lt;/li&gt;
+  &lt;li&gt;Broadcasting is supported on the feature dimensions. For example, a
+multi-head attention module where the node feature is of shape &lt;code class=&quot;highlighter-rouge&quot;&gt;(NUM_HEADS,
+NUM_FEATS)&lt;/code&gt; and the attention score is of shape &lt;code class=&quot;highlighter-rouge&quot;&gt;(NUM_HEADS, 1)&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;The reduce function &lt;script type=&quot;math/tex&quot;&gt;\Sigma&lt;/script&gt; can be any one of sum/max/min/prod.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The rule of thumb is to &lt;strong&gt;use built-in functions as much as possible&lt;/strong&gt; so that
+DGL can use fused message passing for better performance. We notice that this
+might introduce some programming burden but the payoff is definitely worthy
+(see next section for the evaluation results).&lt;/p&gt;
+
+&lt;h1 id=&quot;convince-me-with-numbers&quot;&gt;Convince me with numbers&lt;/h1&gt;
+&lt;p&gt;We compare with our v0.2 release to see how much we have improved the system.
+In addition, we compare against PyG (Pytorch Geometric v1.2.0). PyG implements
+basic message passing by first &lt;code class=&quot;highlighter-rouge&quot;&gt;gather&lt;/code&gt; node features as edge messages and then
+&lt;code class=&quot;highlighter-rouge&quot;&gt;scatter&lt;/code&gt; them for message aggregation, which generates explicit messages.&lt;/p&gt;
+
+&lt;p&gt;We benchmark both GCN and GAT models on several popular datasets following
+their original settings. The testbed is one AWS p3.2xlarge instance with NVIDIA
+V100 GPU (16GB memory).&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Dataset&lt;/th&gt;
+      &lt;th&gt;#V&lt;/th&gt;
+      &lt;th&gt;#E&lt;/th&gt;
+      &lt;th&gt;Models&lt;/th&gt;
+      &lt;th&gt;DGL(v0.2) Times(s)&lt;/th&gt;
+      &lt;th&gt;PyG Time(s)&lt;/th&gt;
+      &lt;th&gt;DGL(v0.3) Time(s)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Cora&lt;/td&gt;
+      &lt;td&gt;3K&lt;/td&gt;
+      &lt;td&gt;11K&lt;/td&gt;
+      &lt;td&gt;GCN&lt;br /&gt;GAT&lt;/td&gt;
+      &lt;td&gt;0.685&lt;br /&gt;9.727&lt;/td&gt;
+      &lt;td&gt;0.482&lt;br /&gt;1.248&lt;/td&gt;
+      &lt;td&gt;0.619&lt;br /&gt;1.389&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Citeseer&lt;/td&gt;
+      &lt;td&gt;3K&lt;/td&gt;
+      &lt;td&gt;9K&lt;/td&gt;
+      &lt;td&gt;GCN&lt;br /&gt;GAT&lt;/td&gt;
+      &lt;td&gt;0.670&lt;br /&gt;9.018&lt;/td&gt;
+      &lt;td&gt;0.490&lt;br /&gt;1.254&lt;/td&gt;
+      &lt;td&gt;0.631&lt;br /&gt;1.363&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Pubmed&lt;/td&gt;
+      &lt;td&gt;20K&lt;/td&gt;
+      &lt;td&gt;889K&lt;/td&gt;
+      &lt;td&gt;GCN&lt;br /&gt;GAT&lt;/td&gt;
+      &lt;td&gt;0.694&lt;br /&gt;26.186&lt;/td&gt;
+      &lt;td&gt;0.485&lt;br /&gt;1.509&lt;/td&gt;
+      &lt;td&gt;0.603&lt;br /&gt;1.381&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Reddit&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;232K&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;114M&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;GCN&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;OOM&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;OOM&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;25.30&lt;/strong&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The up-coming release has huge performance boost especially on the GAT model
+(&lt;strong&gt;19x&lt;/strong&gt;) faster thanks to the kernel fusion. Compared with PyG, for small
+graphs (i.e, Cora, Citeseer and Pubmed), the computation and memory consumption
+stay the same, relatively invariant to the graph sizes. In this regime, the
+graph computation does not bottleneck the training and DGL has some slight,
+constant overhead compared with PyG. However, when evaluating on a much larger
+graph extracted from Reddit, PyG runs out of memory while DGL fits the graph
+quite easily.&lt;/p&gt;
+
+&lt;p&gt;We further perform some ablation studies using synthetic graphs.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/8K3n5PU.png&quot; alt=&quot;&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We first vary the number of nodes in the graph with fixed graph density
+(0.0008), and test the training speed of GCN and GAT. DGL can train GCN on the
+graph with up to 500K nodes, twice larger than PyG. PyG is also 3.4x slower
+than DGL on the largest graph it can fits.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/VvI7xoc.png&quot; alt=&quot;&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We then fix the number of nodes in the graph (32K), but vary the density of the
+graph. The result clearly shows the advantage of fused message passing. For
+both GCN and GAT, DGL can train on graphs with up to 8 times more edges and is
+7.5x faster than PyG on the largest graph it can fits.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/awXc1mP.png&quot; alt=&quot;&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We also vary the hidden layer size and compare the performance on a
+median-sized graph (32K nodes with density 0.0008). For GCN, although PyG can
+fit the largest hidden size we tested, it is 4x slower than DGL. For GAT, PyG
+cannot train with hidden size of more than 32.&lt;/p&gt;
+
+&lt;p&gt;Finally, we push the limit to see how large is the graph can be trained on one
+machine with large CPU memory (AWS x1.32xlarge instance with 2TB memory).&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;#Nodes&lt;/th&gt;
+      &lt;th&gt;#Edges&lt;/th&gt;
+      &lt;th&gt;Times(s)&lt;/th&gt;
+      &lt;th&gt;Memory(GB)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;5M&lt;/td&gt;
+      &lt;td&gt;250M&lt;/td&gt;
+      &lt;td&gt;4.7&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;50M&lt;/td&gt;
+      &lt;td&gt;2.5B&lt;/td&gt;
+      &lt;td&gt;46&lt;/td&gt;
+      &lt;td&gt;75&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;500M&lt;/td&gt;
+      &lt;td&gt;25B&lt;/td&gt;
+      &lt;td&gt;505&lt;/td&gt;
+      &lt;td&gt;740&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The result shows that DGL can train a GCN model on graphs with up to 500M nodes and 25B edges.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
+
+&lt;p&gt;The DGL team is very passionate about the bag of features to deliver on our
+future agenda. As a matter of fact, many of these have been in our mind since
+the intiation of the project. For example, the built-in functions have been our
+priority the whole time but they only shine with the help of kernel fusion. To
+shed some light on the directions we are working on:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A detailed demo and tutorial on how to reproduce the large graph experiement in this post on a large CPU machine.&lt;/li&gt;
+  &lt;li&gt;Support for heterogenous graph.&lt;/li&gt;
+  &lt;li&gt;Accelerate graph traversal and querying using GPU.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;DGL always stays close with our users and we greatly value your feedback! To
+try out this new feature, simple as this: clone DGL’s repository, switch to
+&lt;code class=&quot;highlighter-rouge&quot;&gt;kernel&lt;/code&gt; branch and build the library from source.&lt;/p&gt;
+
+&lt;p&gt;Please stay tuned for our next major release! More good stuff coming soon.&lt;/p&gt;</content><author><name>Minjie Wang</name></author><category term="blog" /><category term="blog" /><summary type="html">In DGL’s first release last December, we focused on usability by introducing a set of carefully designed, easy-to-use APIs that support a variety of model implementations of Graph Neural Networks. We decided to keep DGL framework-agnostic to engage with users from different platforms (PyTorch, MXNet…). As a result, in our earlier releases, we largely leveraged the available functionalities provided by these frameworks, and based on many valuable feedback from our users, we are well-aware of the room of improvement particularly on some new models defined on the sparse and irregular graphs.</summary></entry><entry><title type="html">Understand Graph Attention Network</title><link href="https://www.dgl.ai/blog/2019/02/17/gat.html" rel="alternate" type="text/html" title="Understand Graph Attention Network" /><published>2019-02-17T00:00:00-08:00</published><updated>2019-02-17T00:00:00-08:00</updated><id>https://www.dgl.ai/blog/2019/02/17/gat</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/02/17/gat.html">&lt;p&gt;From &lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Graph Convolutional Network (GCN)&lt;/a&gt;, we
 learned that combining local graph structure and node-level features yields
 good performance on node classification task. However, the way GCN aggregates
 is structure-dependent, which may hurt its generalizability.&lt;/p&gt;
@@ -433,24 +1049,22 @@ attention histogram learnt by different attention layers.&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;Attention learnt in layer 1:&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-attention-hist-layer1.png&quot; alt=&quot;&quot; width=&quot;600px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-first-layer-hist.png&quot; alt=&quot;&quot; width=&quot;600px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;Attention learnt in layer 2:&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-attention-hist-layer2.png&quot; alt=&quot;&quot; width=&quot;600px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-second-layer-hist.png&quot; alt=&quot;&quot; width=&quot;600px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;Attention learnt in final layer:&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-attention-hist-final.png&quot; alt=&quot;&quot; width=&quot;600px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-final-layer-hist.png&quot; alt=&quot;&quot; width=&quot;600px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Again, comparing with uniform distribution:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-attention-uniform-hist.png&quot; alt=&quot;&quot; width=&quot;300px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3.us-east-2.amazonaws.com/dgl.ai/tutorial/gat/ppi-uniform-hist.png&quot; alt=&quot;&quot; width=&quot;300px&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Clearly, &lt;strong&gt;GAT does learn sharp attention weights&lt;/strong&gt;! There is a clear pattern
-over the layers as well: &lt;strong&gt;the attention gets more sharper with higher layer&lt;/strong&gt;;
-the final layer is a mean aggregation thus it is not surprising that the
-histogram looks similar to the uniform one.&lt;/p&gt;
+over the layers as well: &lt;strong&gt;the attention gets more sharper with higher layer&lt;/strong&gt;.&lt;/p&gt;
 
 &lt;p&gt;Unlike the Cora dataset where GAT’s gain is lukewarm at best, for PPI there is
 a significant performance gap between GAT and other GNN variants compared in
