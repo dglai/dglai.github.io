@@ -8,7 +8,7 @@ sub_title: Install
 Install from source
 ---
 
-Check out our [guild on build from source](https://docs.dgl.ai/install/index.html#install-from-source).
+Check out our [guide on build from source](https://docs.dgl.ai/install/index.html#install-from-source).
 
 Learning DGL
 ---
