@@ -192,6 +192,8 @@
                                     
                                     
                                     
+                                    
+                                    
                                      <li>
                                         <a href="https://docs.dgl.ai/tutorials/models/index.html">Tutorials
                                           <span>Tutorials</span>
@@ -305,143 +307,229 @@
               <img src="https://i.imgur.com/ZoP4A7A.jpg" alt="blog">
             </div>
             <div class="blog-content-desc">
-              <h4 class="themeix-blog-h">DGL v0.3.1 Release</h4>
-              <p><p>We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under <code class="highlighter-rouge">dgl.model_zoo</code> namespace). We will continue explore this idea and release more domain specific models and packages.</p>
+              <h4 class="themeix-blog-h">DGL v0.4 Release</h4>
+              <p><p>We are thrilled to announce the 0.4 release!  This includes:</p>
 
-<h1 id="new-apis">New APIs</h1>
+<h1 id="heterogeneous-graph-support">Heterogeneous Graph Support</h1>
 
-<h2 id="new-nn-modules">New NN Modules</h2>
+<h2 id="what-is-a-heterogeneous-graph">What is a heterogeneous graph?</h2>
+
+<p>A heterogeneous graph is a graph whose nodes and edges are typed:</p>
+
+<p><img src="https://user-images.githubusercontent.com/2978100/66382127-3196d400-e9ed-11e9-94f8-ee89ba530a13.png" alt="" width="700x" class="aligncenter" /></p>
+
+<h2 id="models-that-work-on-heterogeneous-graphs">Models that work on heterogeneous graphs?</h2>
+
+<p>Models using Heterogeneous Graph API:</p>
 <ul>
-  <li><code class="highlighter-rouge">GATConv</code> from <a href="https://arxiv.org/pdf/1710.10903.pdf">“Graph Attention Network”</a></li>
-  <li><code class="highlighter-rouge">RelGraphConv</code> from <a href="https://arxiv.org/abs/1703.06103">“Modeling Relational Data with Graph Convolutional Networks”</a></li>
-  <li><code class="highlighter-rouge">TAGConv</code> from <a href="https://arxiv.org/pdf/1710.10370.pdf">“Topology Adaptive Graph Convolutional Networks”</a></li>
-  <li><code class="highlighter-rouge">EdgeConv</code> from <a href="https://arxiv.org/pdf/1801.07829">“Dynamic Graph CNN for Learning on Point Clouds”</a></li>
-  <li><code class="highlighter-rouge">SAGEConv</code> from <a href="https://arxiv.org/pdf/1706.02216.pdf">“Inductive Representation Learning on Large Graphs”</a></li>
-  <li><code class="highlighter-rouge">GatedGraphConv</code> from <a href="https://arxiv.org/pdf/1511.05493.pdf">“Gated Graph Sequence Neural Networks”</a></li>
-  <li><code class="highlighter-rouge">GMMConv</code> from <a href="http://openaccess.thecvf.com/content_cvpr_2017/papers/Monti_Geometric_Deep_Learning_CVPR_2017_paper.pdf">“Geometric Deep Learning on Graphs and Manifolds using Mixture Model CNNs”</a></li>
-  <li><code class="highlighter-rouge">GINConv</code> from <a href="https://arxiv.org/pdf/1810.00826.pdf">“How Powerful are Graph Neural Networks?”</a></li>
-  <li><code class="highlighter-rouge">ChebConv</code> from <a href="https://arxiv.org/pdf/1606.09375.pdf">“Convolutional Neural Networks on Graphs with Fast Localized Spectral Filtering”</a></li>
-  <li><code class="highlighter-rouge">SGConv</code> from <a href="https://arxiv.org/pdf/1902.07153.pdf">“Simplifying Graph Convolutional Networks”</a></li>
-  <li><code class="highlighter-rouge">NNConv</code> from <a href="https://arxiv.org/pdf/1704.01212.pdf">“Neural Message Passing for Quantum Chemistry”</a></li>
-  <li><code class="highlighter-rouge">APPNPConv</code> from <a href="https://arxiv.org/pdf/1810.05997.pdf">“Predict then Propagate: Graph Neural Networks meet Personalized PageRank”</a></li>
-  <li><code class="highlighter-rouge">AGNNConv</code> from <a href="https://arxiv.org/abs/1803.03735">“Attention-based Graph Neural Network for Semi-Supervised Learning
-”</a></li>
-  <li><code class="highlighter-rouge">DenseGraphConv</code> (Dense implementation of <code class="highlighter-rouge">GraphConv</code>)</li>
-  <li><code class="highlighter-rouge">DenseSAGEConv</code> (Dense implementation of <code class="highlighter-rouge">SAGEConv</code>)</li>
-  <li><code class="highlighter-rouge">DenseChebConv</code> (Dense implementation of <code class="highlighter-rouge">ChebConv</code>)</li>
+  <li>
+    <p><a href="https://arxiv.org/abs/1706.02263">GCMC</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/mxnet/gcmc">Code in MXNet</a>]</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>RMSE (DGL)</th>
+          <th>RMSE (Official)</th>
+          <th>Speed (DGL)</th>
+          <th>Speed (Official)</th>
+          <th>Speed Comparison</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MovieLens-100K</td>
+          <td><strong>0.9077</strong></td>
+          <td>0.910</td>
+          <td><strong>0.0246s/epoch</strong></td>
+          <td>0.1008s/epoch</td>
+          <td>5x</td>
+        </tr>
+        <tr>
+          <td>MovieLens-1M</td>
+          <td>0.8377</td>
+          <td><strong>0.832</strong></td>
+          <td>0.0695s/epoch</td>
+          <td>1.538s/epoch</td>
+          <td>22x</td>
+        </tr>
+        <tr>
+          <td>MovieLens-10M (full-graph training)</td>
+          <td>0.7875</td>
+          <td><strong>0.777</strong></td>
+          <td>0.6480s/epoch</td>
+          <td>OOM</td>
+          <td>-</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li><a href="https://arxiv.org/abs/1703.06103">R-GCN</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn-hetero">Code in PyTorch</a>]
+    <ul>
+      <li>We provide an R-GCN model for heterograph input. The new code can train the model for the AM dataset (&gt;5M edges) using one GPU, while the original implementation can only run on CPU and consume 32GB memory.</li>
+      <li>The original implementation takes 51.88s to train one epoch on CPU. The new R-GCN based on heterograph takes only 0.1781s for one epoch on V100 GPU (<strong>291x faster !!</strong>).</li>
+    </ul>
+  </li>
+  <li><a href="https://arxiv.org/abs/1903.07293">Heterogeneous Attention Networks</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/han">Code in PyTorch</a>]</li>
+  <li><a href="https://dl.acm.org/citation.cfm?id=3098036">Metapath2vec</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/metapath2vec">Code in PyTorch</a>]
+    <ul>
+      <li>The metapath sampler is twice as fast as the original implementation.</li>
+    </ul>
+  </li>
 </ul>
 
-<h2 id="new-global-pooling-module">New global pooling module</h2>
-<ul>
-  <li><code class="highlighter-rouge">Sum/Avg/MaxPooling</code></li>
-  <li><code class="highlighter-rouge">SortPooling</code></li>
-  <li><code class="highlighter-rouge">GlobalAttentionPooling</code> from GGNN model</li>
-  <li><code class="highlighter-rouge">Set2Set</code> from <a href="https://arxiv.org/pdf/1511.06391.pdf">“Order Matters: Sequence to sequence for sets”</a></li>
-  <li><code class="highlighter-rouge">SetTransformerEncoder</code> and <code class="highlighter-rouge">SetTransformerDecoder</code> from <a href="https://arxiv.org/pdf/1810.00825.pdf">“Set Transformer: A Framework for Attention-based Permutation-Invariant Neural Networks”</a></li>
-</ul>
+<h2 id="how-could-i-play-with-a-heterogeneous-graph">How could I play with a heterogeneous graph?</h2>
 
-<p>Please refer to the <a href="https://docs.dgl.ai/api/python/nn.pytorch.html#module-dgl.nn.pytorch.glob">API document</a> for more details.</p>
+<p>Here is an example for creating and manipulating a heterogeneous graph:</p>
 
-<h2 id="new-graph-transformation-routines">New graph transformation routines</h2>
-<ul>
-  <li><code class="highlighter-rouge">dgl.transform.khop_adj</code></li>
-  <li><code class="highlighter-rouge">dgl.transform.khop_graph</code></li>
-  <li><code class="highlighter-rouge">dgl.transform.laplacian_lambda_max</code></li>
-  <li><code class="highlighter-rouge">dgl.transform.knn_graph</code></li>
-  <li><code class="highlighter-rouge">dgl.transform.segmented_knn_graph</code></li>
-</ul>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">dgl.function</span> <span class="kn">as</span> <span class="nn">fn</span>
 
-<p>Please refer to the <a href="https://docs.dgl.ai/api/python/transform.html">API document</a> for more details.</p>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">heterograph</span><span class="p">({</span>
+    <span class="p">(</span><span class="s">'user'</span><span class="p">,</span> <span class="s">'follows'</span><span class="p">,</span> <span class="s">'user'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+    <span class="p">(</span><span class="s">'user'</span><span class="p">,</span> <span class="s">'plays'</span><span class="p">,</span> <span class="s">'game'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+    <span class="p">(</span><span class="s">'game'</span><span class="p">,</span> <span class="s">'attracts'</span><span class="p">,</span> <span class="s">'user'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+    <span class="p">(</span><span class="s">'developer'</span><span class="p">,</span> <span class="s">'develops'</span><span class="p">,</span> <span class="s">'game'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+    <span class="p">})</span>
 
-<h1 id="model-zoo-for-chemistry-and-molecule-applications">Model zoo for chemistry and molecule applications</h1>
-<p>To make it easy for domain scientists, we are now releasing a model zoo for chemistry, with training scripts and pre-trained models, and focuses on two particular tasks: property prediction and targeted molecular generation/optimization.</p>
+<span class="c"># Here the user nodes have a single feature named x, and game nodes have a single feature named y</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s">'user'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'x'</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+<span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s">'game'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'y'</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
 
-<p><strong>Credit</strong>: Shout out to @geekinglcq from Tencent Quantum Lab for contributing three models (MGCN, SchNet and MPNN). We also thank WuXi AppTec CADD team for their critical feedback on usability.</p>
+<span class="c"># Edge features are similar</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s">'follows'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'a'</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s">'plays'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'b'</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
 
-<h2 id="property-prediction">Property prediction</h2>
-<p>In practice, the determination of molecular properties is mostly achieved via wet lab experiments. We can cast the problem as a regression or classification problem.</p>
+<span class="c"># One can also perform message passing.</span>
+<span class="c"># The following code performs a full message passing on the "plays" edges.</span>
+<span class="n">g</span><span class="p">[</span><span class="s">'follows'</span><span class="p">]</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s">'x'</span><span class="p">,</span> <span class="s">'m'</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="s">'m'</span><span class="p">,</span> <span class="s">'z'</span><span class="p">))</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s">'game'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'z'</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<p>Featurization is the beginning of prediction. Traditionally, chemists develop pre-defined rules to convert molecular graphs into binary strings where each bit indicates the presence or absence of a particular substructure.</p>
-
-<p>Graph neural networks enable a data-driven representation of molecules out of the atoms, bonds and molecular graph topology, which may be viewed as a learned fingerprint. The message passing mechanism allows the model to learn the interactions between atoms in a molecule.</p>
-
-<p>The following code script is self-explanatory.</p>
-
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">dgl.data.chem</span> <span class="kn">import</span> <span class="n">Tox21</span>
-<span class="kn">from</span> <span class="nn">dgl</span> <span class="kn">import</span> <span class="n">model_zoo</span>
-
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">Tox21</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">model_zoo</span><span class="o">.</span><span class="n">chem</span><span class="o">.</span><span class="n">load_pretrained</span><span class="p">(</span><span class="s">'GCN_Tox21'</span><span class="p">)</span> <span class="c"># Pretrained model loaded</span>
-<span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
-
-<span class="n">smiles</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">feats</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">'h'</span><span class="p">)</span>
-<span class="n">label_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">feats</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>                   <span class="c"># CCOc1ccc2nc(S(N)(=O)=O)sc2c1</span>
-<span class="k">print</span><span class="p">(</span><span class="n">label_pred</span><span class="p">[:,</span> <span class="n">mask</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">])</span> <span class="c"># Mask non-existing labels</span>
-<span class="c"># tensor([[-0.7956,  0.4054,  0.4288, -0.5565, -0.0911,  </span>
-<span class="c"># 0.9981, -0.1663,  0.2311, -0.2376,  0.9196]])</span>
+<span class="c"># Moreover, one can also perform message passing on multiple types at the same time, aggregating the results</span>
+<span class="n">g</span><span class="o">.</span><span class="n">multi_update_all</span><span class="p">({</span>
+    <span class="s">'follows'</span><span class="p">:</span> <span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s">'x'</span><span class="p">,</span> <span class="s">'m'</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="s">'m'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)),</span>
+    <span class="s">'attracts'</span><span class="p">:</span> <span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span> <span class="s">'m'</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="s">'m'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)),</span>
+    <span class="p">},</span> <span class="s">'sum'</span><span class="p">)</span>
 </code></pre>
 </div>
 
-<p>Supported Models</p>
+<p>Checkout our heterograph tutorial: <a href="https://docs.dgl.ai/tutorials/hetero/1_basics.html">Working with Heterogeneous Graphs in DGL</a></p>
+
+<p>Checkout the full <a href="https://docs.dgl.ai/api/python/heterograph.html">API reference</a>.</p>
+
+<h1 id="knowledge-graph-models">Knowledge Graph Models</h1>
+
+<p>We also released DGL-KE, a subpackage of DGL that trains embeddings on knowledge graphs. This package is adapted from the <a href="https://github.com/DeepGraphLearning/KnowledgeGraphEmbedding">KnowledgeGraphEmbedding</a> package. We made it fast and scalable while still maintaining the flexibility of the original package. Using a single NVIDIA V100 GPU, DGL-KE can train TransE on FB15k in <strong>6.85 mins</strong>, substantially outperforming existing tools such as GraphVite.  For graphs with hundreds of millions of edges (such as the full Freebase graph), it takes a couple of hours on <strong>one</strong> EC2 x1.32xlarge machine.</p>
+
+<p>Currently, the following models are supported:</p>
+
 <ul>
-  <li>Graph Convolution</li>
-  <li>Graph Attention Networks</li>
-  <li>SchNet</li>
-  <li>Multilevel Graph Convolutional neural Network</li>
-  <li>Message Passing Neural Networks</li>
+  <li>TransE</li>
+  <li>DistMult</li>
+  <li>ComplEx</li>
 </ul>
 
-<h2 id="generative-models">Generative Models</h2>
+<p>And the following training schemas are supported:</p>
 
-<p>Targeted molecular generation refers to finding new molecules with desired properties. This gives rise to the need for generative models for two purposes:</p>
 <ul>
-  <li><strong>Distribution Learning</strong>: Given a collection of molecules, we want to model their distribution and generate new molecules consistent with the distribution.</li>
-  <li><strong>Goal-directed Optimization</strong>: Find molecules with desired properties.</li>
+  <li>CPU training</li>
+  <li>GPU training</li>
+  <li>Joint CPU &amp; GPU training</li>
+  <li>Multiprocessing training on CPUs</li>
 </ul>
 
-<p>For this model zoo, we provide only graph-based generative models. There are other generative models working with alternative representations like SMILES.</p>
+<p><strong>Training results on FB15k using one NVIDIA V100 GPU</strong></p>
 
-<p>Example with Pre-trained Models</p>
+<p>Training Speed:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># We recommend running the code below with Jupyter notebooks</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">SVG</span>
-<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
-<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Draw</span>
+<table>
+  <thead>
+    <tr>
+      <th>Models</th>
+      <th>TransE</th>
+      <th>DistMult</th>
+      <th>ComplEx</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MAX_STEPS</td>
+      <td>20000</td>
+      <td>100000</td>
+      <td>100000</td>
+    </tr>
+    <tr>
+      <td>TIME</td>
+      <td>411s</td>
+      <td>690s</td>
+      <td>806s</td>
+    </tr>
+  </tbody>
+</table>
 
-<span class="kn">from</span> <span class="nn">dgl</span> <span class="kn">import</span> <span class="n">model_zoo</span>
+<p>Training accuracy:</p>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">model_zoo</span><span class="o">.</span><span class="n">chem</span><span class="o">.</span><span class="n">load_pretrained</span><span class="p">(</span><span class="s">'DGMG_ZINC_canonical'</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
-<span class="n">mols</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-    <span class="n">SMILES</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">rdkit_mol</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">mols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">SMILES</span><span class="p">))</span>
-<span class="c"># Generating 4 molecules takes less than a second.</span>
+<table>
+  <thead>
+    <tr>
+      <th>Models</th>
+      <th>MR</th>
+      <th>MRR</th>
+      <th>HITS@1</th>
+      <th>HITS@3</th>
+      <th>HITS@10</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>TransE</td>
+      <td>69.12</td>
+      <td>0.656</td>
+      <td>0.567</td>
+      <td>0.718</td>
+      <td>0.802</td>
+    </tr>
+    <tr>
+      <td>DistMult</td>
+      <td>43.35</td>
+      <td>0.783</td>
+      <td>0.713</td>
+      <td>0.837</td>
+      <td>0.897</td>
+    </tr>
+    <tr>
+      <td>ComplEx</td>
+      <td>51.99</td>
+      <td>0.785</td>
+      <td>0.720</td>
+      <td>0.832</td>
+      <td>0.889</td>
+    </tr>
+  </tbody>
+</table>
 
-<span class="n">SVG</span><span class="p">(</span><span class="n">Draw</span><span class="o">.</span><span class="n">MolsToGridImage</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">molsPerRow</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">subImgSize</span><span class="o">=</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">useSVG</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
-</code></pre>
-</div>
+<p>In comparison, GraphVite uses 4 GPUs and takes 14 minutes. Thus, DGL-KE trains TransE on FB15k 2x times faster than GraphVite while using much fewer resources.</p>
 
-<p><img src="https://s3.us-east-2.amazonaws.com/dgl.ai/model_zoo/drug_discovery/dgmg_model_zoo_example2.png" alt="" width="700x" class="aligncenter" /></p>
+<p>For more information, please refer to <a href="https://github.com/dmlc/dgl/tree/master/apps/kg">this directory</a></p>
 
-<p>Supported Models</p>
+<h1 id="miscellaneous">Miscellaneous</h1>
+
 <ul>
-  <li>Learning Deep Generative Models of Graphs</li>
-  <li>Junction Tree Variational Autoencoder for Molecular Graph Generation</li>
+  <li>New builtin message function: dot product (<code class="highlighter-rouge">u_dot_v</code> etc. #831 @classicsong )</li>
+  <li>More efficient data format and serialization (#728 @VoVAllen )</li>
+  <li>ClusterGCN (#877 , @Zardinality )</li>
+  <li>CoraFull, Amazon, KarateClub, Coauthor datasets (#855 @VoVAllen )</li>
+  <li>More performance improvements</li>
+  <li>More bugfixes</li>
 </ul>
-
-<h1 id="api-break">API break</h1>
-<p>We refactor the <code class="highlighter-rouge">nn</code> package to make all APIs more consistent. Thus, there are following changes to the API that breaks the previous behavior:</p>
-<ul>
-  <li>Change the argument order of <code class="highlighter-rouge">dgl.nn.pytorch.GraphConv</code> and <code class="highlighter-rouge">dgl.nn.mxnet.GraphConv</code>. The argument order is now first <code class="highlighter-rouge">graph</code> and then <code class="highlighter-rouge">feat</code>, which follows the convention of all the other new modules.</li>
-</ul>
-
-<h1 id="new-model-example">New model example</h1>
-<p><a href="https://arxiv.org/pdf/1711.08028.pdf">Recurrent Relational Networks</a> in PyTorch (credit: @HuXiangkun )</p>
-
-<p>There are also many bug fixes and minor changes. We will list them in the next 0.4 major release.</p>
 </p>
               <div class="blog-post-date">
                 <p>28 <span>August</span> </p>
@@ -449,7 +537,7 @@
               <div class="tag-links mt-30">
                 <div class="widget">
                   <div class="tagcloud">
-                    <a href="/tag/blog.html" class="set-5">blog</a> <a href="/tag/release.html" class="set-2">release</a>
+                    <a href="/tag/blog.html" class="set-5">blog</a> <a href="/tag/release.html" class="set-4">release</a>
                   </div>
                 </div>
                 <div class="blog-data">
