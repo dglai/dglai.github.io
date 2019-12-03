@@ -7,6 +7,6 @@ rm -rf _site
 JEKYLL_ENV=production bundle exec jekyll build || exit;
 cd ..
 # ship
-cp jekyll/_site/* . -r
+cp -r jekyll/_site/* .
 # serve
 python -m http.server 4000
