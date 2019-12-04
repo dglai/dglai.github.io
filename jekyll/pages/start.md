@@ -48,7 +48,7 @@ models at any scale. Amazon SageMaker now supports DGL, simplifying
 implementation of DGL models. A Deep Learning container (MXNet 1.6 and PyTorch
 1.3) bundles all the software dependencies and the SageMaker API automatically
 sets up and scales the infrastructure required to train graphs. Please refer to
-the [SageMaker documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/deep-graph-library.html) for
+the [SageMaker documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/deep-graph-libary.html) for
 more information. The best way to get stated is with our sample Notebooks
 below:
 
