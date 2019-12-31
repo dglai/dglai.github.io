@@ -25,6 +25,7 @@
                   <radio label="9.0"></radio>
                   <radio label="9.2"></radio>
                   <radio label="10.0"></radio>
+                  <radio label="10.1"></radio>
                 </radio-group>
               </i-col>
               </row>
@@ -35,8 +36,9 @@
               </i-col>
               <i-col span="19">
                 <radio-group v-model="button_pkg" type="button" size="large">
-                  <radio label="Conda"></radio>
-                  <radio label="Pip"></radio>
+                  <radio label="Conda(Stable)"></radio>
+                  <radio label="Pip(Stable)"></radio>
+                  <radio label="Pip(Nightly Build)"></radio>
                 </radio-group>
               </i-col>
               </row>
@@ -101,7 +103,7 @@
 
     .ivu-radio-wrapper {
         text-align: center;
-        width: 125px;
+        width: 150px;
     }
 
     .ivu-col {
@@ -119,23 +121,20 @@
 
 <script>
 
-    function pip_path_cuda(_build_dir, _python_abi, _platform) {
+    function pip_path_cuda(_build_dir, _pkg) {
         var build_dir = {
-            '9.0': 'cu90',
-            '9.2': 'cu92',
-            '10.0': 'cu100'
+            '9.0': '-cu90',
+            '9.2': '-cu92',
+            '10.0': '-cu100',
+            '10.1': '-cu101',
+            'None': '',
         }[_build_dir];
-        var python_abi = {
-            '3.5': 'cp35-cp35m',
-            '3.6': 'cp36-cp36m',
-            '3.7': 'cp37-cp37m',
-        }[_python_abi];
-        var platform = {
-            'Linux': 'manylinux1_x86_64',
-            'Windows': 'win_amd64',
-        }[_platform];
+        var pre_str = "";
+        if (_pkg == 'Pip(Nightly Build)'){
+          pre_str = " --pre"
+        }
 
-        return "pip install dgl-" + build_dir
+        return "pip install" + pre_str + " dgl" + build_dir
     }
 
     function conda_path(cuda) {
@@ -143,7 +142,8 @@
             'None': 'conda install -c dglteam dgl',
             '9.0': 'conda install -c dglteam dgl-cuda9.0',
             '9.2': 'conda install -c dglteam dgl-cuda9.2',
-            '10.0': 'conda install -c dglteam dgl-cuda10.0'
+            '10.0': 'conda install -c dglteam dgl-cuda10.0',
+            '10.1': 'conda install -c dglteam dgl-cuda10.1'
         };
         return link_dict[cuda]
     }
@@ -159,20 +159,23 @@
         computed: {
             path_value: function () {
                 if (this.button_os === 'Mac') {
-                    var cmd = (this.button_pkg === 'Conda')? conda_path('None') : 'pip install dgl';
+                    var cmd = (this.button_pkg === 'Conda(Stable)')? conda_path('None') : "pip install dgl";
+                    if (this.button_pkg === 'Pip(Nightly Build)') {
+                        cmd += '\nMacOS binary does not have nightly build version. Install from source if needed.'
+                    }
                     if (this.button_cuda !== 'None') {
                         cmd += '\nMacOS binary does not support CUDA. Install from source if needed.'
                     }
                     return cmd
                 } else {
-                    if (this.button_pkg === 'Conda') {
+                    if (this.button_pkg === 'Conda(Stable)') {
                         return conda_path(this.button_cuda)
                     } else {
-                        if (this.button_cuda === 'None') {
-                            return 'pip install dgl'
-                        } else {
-                            return pip_path_cuda(this.button_cuda, this.button_python, this.button_os)
-                        }
+                      if (this.button_os === 'Windows' && this.button_pkg === 'Pip(Nightly Build)') {
+                        return pip_path_cuda(this.button_cuda, 'Pip(Stable)') + "\nWindows binary does not have nightly build version. Install from source if needed."
+                      } else {
+                        return pip_path_cuda(this.button_cuda, this.button_pkg)
+                      }
                     }
                 }
             }
