@@ -1,4 +1,263 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2019-12-31T15:00:21+08:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">DGL v0.4 Release (heterogeneous graph update)</title><link href="https://www.dgl.ai/release/2019/10/08/release.html" rel="alternate" type="text/html" title="DGL v0.4 Release (heterogeneous graph update)" /><published>2019-10-08T00:00:00+08:00</published><updated>2019-10-08T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2019/10/08/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/10/08/release.html">&lt;p&gt;We are thrilled to announce the 0.4 release!  This includes:&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2020-04-02T06:53:41+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">DGL v0.4.3 Release</title><link href="https://www.dgl.ai/release/2020/04/01/release.html" rel="alternate" type="text/html" title="DGL v0.4.3 Release" /><published>2020-04-01T00:00:00+00:00</published><updated>2020-04-01T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2020/04/01/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/04/01/release.html">&lt;h1 id=&quot;tensorflow-support&quot;&gt;TensorFlow support&lt;/h1&gt;
+
+&lt;p&gt;DGL finally comes to the TensorFlow community starting from this release.
+Switching to TensorFlow is easy. If you are a first-time user, please install
+DGL and &lt;code class=&quot;highlighter-rouge&quot;&gt;import dgl&lt;/code&gt;, and then follow the instructions to set the default
+backend. You can always switch back by changing the &lt;code class=&quot;highlighter-rouge&quot;&gt;config.json&lt;/code&gt; file, which is
+under &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.dgl&lt;/code&gt; folder. DGL keeps a coherent user experience regardless of which
+backend is currently in use. The following code demonstrates the basic steps to
+apply a graph convolution layer.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;tensorflow&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;tf&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.nn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dglnn&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Random features for 10 nodes; each is of length 5.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Random graph; 10 nodes and 20 edges.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rand_graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Pre-defined graph convolution module.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;conv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglnn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GraphConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;conv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# Apply the graph convolution layer.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We have implemented and released 15 common GNN modules in TensorFlow (more are
+coming), all of which can be invoked in one line of codes.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GraphConv&lt;/code&gt; from the &lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Graph Convolutional Networks&lt;/a&gt; paper.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GATConv&lt;/code&gt; from the &lt;a href=&quot;https://arxiv.org/pdf/1710.10903.pdf&quot;&gt;Graph Attention Networks&lt;/a&gt; paper.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SAGEConv&lt;/code&gt; from the &lt;a href=&quot;https://arxiv.org/pdf/1706.02216.pdf&quot;&gt;Inductive Representation Learning on Large Graphs&lt;/a&gt; paper (a.k.a. GraphSAGE).&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GINConv&lt;/code&gt; from the &lt;a href=&quot;https://arxiv.org/pdf/1810.00826.pdf&quot;&gt;How Powerful are Graph Neural Networks&lt;/a&gt; paper.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;RelGraphConv&lt;/code&gt; from the &lt;a href=&quot;https://arxiv.org/abs/1703.06103&quot;&gt;Modeling Relational Data with Graph Convolutional Networks&lt;/a&gt; paper.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SGConv&lt;/code&gt; from the &lt;a href=&quot;https://arxiv.org/pdf/1902.07153.pdf&quot;&gt;Simplifying Graph Convolutional Networks&lt;/a&gt; paper.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;APPNPConv&lt;/code&gt; from the &lt;a href=&quot;https://arxiv.org/pdf/1810.05997.pdf&quot;&gt;Predict then Propagate: Graph Neural Networks meet Personalized PageRank&lt;/a&gt; paper.&lt;/li&gt;
+  &lt;li&gt;An &lt;code class=&quot;highlighter-rouge&quot;&gt;edge_softmax&lt;/code&gt; function for computing softmax over the neighboring edges of each vertex.&lt;/li&gt;
+  &lt;li&gt;Various pooling layers: &lt;code class=&quot;highlighter-rouge&quot;&gt;SumPooling&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;AvgPooling&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;MaxPooling&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;SortPooling&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;WeightAndSum&lt;/code&gt;, and &lt;code class=&quot;highlighter-rouge&quot;&gt;GlobalAttentionPooling&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;A &lt;code class=&quot;highlighter-rouge&quot;&gt;HeteroGraphConv&lt;/code&gt; module for applying GNN modules to heterogeneous graphs.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Our preliminary benchmark shows strong performance improvement against other
+TF-based tools for GNNs in terms of both training speed (measured by epoch
+running time in seconds) and memory consumption.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Dateset&lt;/th&gt;
+      &lt;th&gt;Model&lt;/th&gt;
+      &lt;th&gt;DGL&lt;/th&gt;
+      &lt;th&gt;GraphNet&lt;/th&gt;
+      &lt;th&gt;tf_geometric&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Core&lt;/td&gt;
+      &lt;td&gt;GCN&lt;/td&gt;
+      &lt;td&gt;0.0148&lt;/td&gt;
+      &lt;td&gt;0.0152&lt;/td&gt;
+      &lt;td&gt;0.0192&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Reddit&lt;/td&gt;
+      &lt;td&gt;GCN&lt;/td&gt;
+      &lt;td&gt;0.1095&lt;/td&gt;
+      &lt;td&gt;OOM&lt;/td&gt;
+      &lt;td&gt;OOM&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;PubMed&lt;/td&gt;
+      &lt;td&gt;GCN&lt;/td&gt;
+      &lt;td&gt;0.0156&lt;/td&gt;
+      &lt;td&gt;0.0553&lt;/td&gt;
+      &lt;td&gt;0.0185&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;PPI&lt;/td&gt;
+      &lt;td&gt;GCN&lt;/td&gt;
+      &lt;td&gt;0.09&lt;/td&gt;
+      &lt;td&gt;0.16&lt;/td&gt;
+      &lt;td&gt;0.21&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Cora&lt;/td&gt;
+      &lt;td&gt;GAT&lt;/td&gt;
+      &lt;td&gt;0.0442&lt;/td&gt;
+      &lt;td&gt;n/a&lt;/td&gt;
+      &lt;td&gt;0.058&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;PPI&lt;/td&gt;
+      &lt;td&gt;GAT&lt;/td&gt;
+      &lt;td&gt;0.398&lt;/td&gt;
+      &lt;td&gt;n/a&lt;/td&gt;
+      &lt;td&gt;0.752&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;To get started, install &lt;a href=&quot;https://www.dgl.ai/pages/start.html&quot;&gt;DGL&lt;/a&gt; and check out the examples &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/tensorflow&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;dgl-ke-a-light-speed-package-for-learning-knowledge-graph-embeddings&quot;&gt;DGL-KE: A light-speed package for learning knowledge graph embeddings&lt;/h1&gt;
+&lt;p&gt;Previously incubated under the DGL main repository, DGL-KE now officially
+announces its 0.1 release as a standalone package. The key highlights are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Effortlessly generate knowledge graph embedding with one line of code.&lt;/li&gt;
+  &lt;li&gt;Support for giant graphs with millions of nodes and edges.&lt;/li&gt;
+  &lt;li&gt;Distributed training with highly-optimized graph partitioning, negative
+sampling and communication, which can be deployed on both multi-GPU machines
+and multi-machine clusters.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;DGL-KE can be installed with pip:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pip install dglke
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The following command trains embeddings of the full FreeBase graph (86M nodes
+and 338M edges) with 8 GPUs.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;dglke_train --model TransE_l2 --dataset Freebase --batch_size 1000 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+            --neg_sample_size 200 --hidden_dim 400 --gamma 10 --lr 0.1 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+            --regularization_coef 1e-9 -adv --gpu 0 1 2 3 4 5 6 7 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+            --max_step 320000 --log_interval 10000 --async_update &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+            --rel_part --force_sync_interval 10000
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Check out our new GitHub repository, examples and documentations under
+&lt;a href=&quot;https://github.com/awslabs/dgl-ke&quot;&gt;https://github.com/awslabs/dgl-ke&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;dgl-lifesci-bringing-graph-neural-networks-to-chemistry-and-biology&quot;&gt;DGL-LifeSci: Bringing Graph Neural Networks to Chemistry and Biology&lt;/h1&gt;
+
+&lt;p&gt;Previously incubated as a model zoo for chemistry, DGL-LifeSci is now spun off
+as a standalone package. The key highlights are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Training scripts and pre-trained models for various applications — molecular
+property prediction, generative models, and reaction prediction.&lt;/li&gt;
+  &lt;li&gt;Up to 5.5x model training speedup compared to previous implementations.&lt;/li&gt;
+  &lt;li&gt;Well defined pipelines for data processing, model construction and
+evaluation.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;DGL-LifeSci can be installed with pip or conda.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pip install dgllife
+conda install -c dglteam dgllife
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A summary of speedup in seconds per epoch of training:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Model&lt;/th&gt;
+      &lt;th&gt;Original Implementations&lt;/th&gt;
+      &lt;th&gt;DGL-LifeSci Implementations&lt;/th&gt;
+      &lt;th&gt;Speedup&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;GCN on Tox21&lt;/td&gt;
+      &lt;td&gt;5.5 (DeepChem)&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;5.5x&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;AttentiveFP on Aromaticity&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;1.2&lt;/td&gt;
+      &lt;td&gt;5x&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;JTNN on ZINC&lt;/td&gt;
+      &lt;td&gt;1826&lt;/td&gt;
+      &lt;td&gt;743&lt;/td&gt;
+      &lt;td&gt;2.5x&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;WLN for reaction center prediction&lt;/td&gt;
+      &lt;td&gt;11657&lt;/td&gt;
+      &lt;td&gt;5095&lt;/td&gt;
+      &lt;td&gt;2.3x&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;To get started, check out the examples and documentations under
+&lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/apps/life_sci&quot;&gt;https://github.com/dmlc/dgl/tree/master/apps/life_sci&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;experimenting-new-apis-for-sampling&quot;&gt;Experimenting new APIs for sampling&lt;/h1&gt;
+
+&lt;p&gt;Sampling is crucial to training GNNs on giant graphs. In this release, we
+re-design the APIs for sampling, aiming for a more intuitive programming
+experience and a better performance at the same time. The new APIs have several
+advantages:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Support a wide range of sampling-based GNN models, including PinSAGE,
+GraphSAGE, Graph Convolutional Matrix Completion (GCMC), and etc.&lt;/li&gt;
+  &lt;li&gt;Support customization in Python.&lt;/li&gt;
+  &lt;li&gt;Support heterogeneous graphs.&lt;/li&gt;
+  &lt;li&gt;Leverage all pre-defined NN modules with no code change.&lt;/li&gt;
+  &lt;li&gt;Utilize both multi-processing and multi-threading for maximum speed.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The code below defines a basic neighbor sampler:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NeighborSampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fanouts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# The full graph structure&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fanouts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fanouts&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# fan-out of each layer&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;sample_blocks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seeds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# `seeds` are the set of nodes to build one sample from.&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;blocks&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fanout&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fanouts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;# For each seed node, sample ``fanout`` neighbors.&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;frontier&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sampling&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample_neighbors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seeds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fanout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;# Then we compact the frontier into a bipartite graph for message passing.&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;block&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;frontier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seeds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;# Obtain the seed nodes for next layer.&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;seeds&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srcdata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;blocks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;blocks&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Although these APIs are still experimental, you can find their usages in many
+examples:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Train the GraphSAGE model by neighbor sampling and scale it to multiple GPUs
+(&lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/graphsage&quot;&gt;link&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;Train the Relational GCN model on heterogeneous graphs by sampling for both
+node classification and link prediction (&lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn-hetero&quot;&gt;link&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;Train the PinSAGE model by random walk sampling for item recommendation (&lt;a href=&quot;https://github.com/dmlc/dgl/pull/1334&quot;&gt;link&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;Train the GCMC model by sampling for MovieLens rating prediction (&lt;a href=&quot;https://github.com/dmlc/dgl/pull/1296&quot;&gt;link&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;Implement the variance reduction technique for neighbor sampling (&lt;a href=&quot;https://github.com/dmlc/dgl/pull/1355&quot;&gt;link&lt;/a&gt;) proposed by &lt;a href=&quot;https://arxiv.org/abs/1710.10568&quot;&gt;Chen et al.&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We will continue polishing these APIs, and the corresponding documentations and
+tutorials are coming.&lt;/p&gt;
+
+&lt;h1 id=&quot;other-improvements&quot;&gt;Other Improvements&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;All GNN modules under &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn&lt;/code&gt; now support both homogeneous graph and bipartite graph.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DGLHeteroGraph&lt;/code&gt; now has a faster pickling/unpickling implementation.&lt;/li&gt;
+  &lt;li&gt;Add new APIs for saving and loading &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLHeteroGraph&lt;/code&gt; from checkpoints.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;BatchedDGLGraph&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLSubGraph&lt;/code&gt; classes have been merged to &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Constructing &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; no longer requires a &lt;code class=&quot;highlighter-rouge&quot;&gt;multigraph&lt;/code&gt; flag.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;More details can be found in the &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.4.3&quot;&gt;full release note&lt;/a&gt;.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">TensorFlow support</summary></entry><entry><title type="html">DGL v0.4 Release (heterogeneous graph update)</title><link href="https://www.dgl.ai/release/2019/10/08/release.html" rel="alternate" type="text/html" title="DGL v0.4 Release (heterogeneous graph update)" /><published>2019-10-08T00:00:00+00:00</published><updated>2019-10-08T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2019/10/08/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/10/08/release.html">&lt;p&gt;We are thrilled to announce the 0.4 release!  This includes:&lt;/p&gt;
 
 &lt;h1 id=&quot;heterogeneous-graph-support&quot;&gt;Heterogeneous Graph Support&lt;/h1&gt;
 
@@ -219,7 +478,7 @@
   &lt;li&gt;CoraFull, Amazon, KarateClub, Coauthor datasets (#855 @VoVAllen )&lt;/li&gt;
   &lt;li&gt;More performance improvements&lt;/li&gt;
   &lt;li&gt;More bugfixes&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are thrilled to announce the 0.4 release! This includes:</summary></entry><entry><title type="html">DGL v0.3.1 Release</title><link href="https://www.dgl.ai/release/2019/08/28/release.html" rel="alternate" type="text/html" title="DGL v0.3.1 Release" /><published>2019-08-28T00:00:00+08:00</published><updated>2019-08-28T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2019/08/28/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/08/28/release.html">&lt;p&gt;We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.model_zoo&lt;/code&gt; namespace). We will continue explore this idea and release more domain specific models and packages.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are thrilled to announce the 0.4 release! This includes:</summary></entry><entry><title type="html">DGL v0.3.1 Release</title><link href="https://www.dgl.ai/release/2019/08/28/release.html" rel="alternate" type="text/html" title="DGL v0.3.1 Release" /><published>2019-08-28T00:00:00+00:00</published><updated>2019-08-28T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2019/08/28/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/08/28/release.html">&lt;p&gt;We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.model_zoo&lt;/code&gt; namespace). We will continue explore this idea and release more domain specific models and packages.&lt;/p&gt;
 
 &lt;h1 id=&quot;new-apis&quot;&gt;New APIs&lt;/h1&gt;
 
@@ -354,7 +613,7 @@
 &lt;h1 id=&quot;new-model-example&quot;&gt;New model example&lt;/h1&gt;
 &lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1711.08028.pdf&quot;&gt;Recurrent Relational Networks&lt;/a&gt; in PyTorch (credit: @HuXiangkun )&lt;/p&gt;
 
-&lt;p&gt;There are also many bug fixes and minor changes. We will list them in the next 0.4 major release.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under dgl.model_zoo namespace). We will continue explore this idea and release more domain specific models and packages.</summary></entry><entry><title type="html">Large-Scale Training of Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/06/13/giant.html" rel="alternate" type="text/html" title="Large-Scale Training of Graph Neural Networks" /><published>2019-06-13T00:00:00+08:00</published><updated>2019-06-13T00:00:00+08:00</updated><id>https://www.dgl.ai/blog/2019/06/13/giant</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/06/13/giant.html">&lt;p&gt;Many graph applications deal with &lt;em&gt;giant&lt;/em&gt; scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.&lt;/p&gt;
+&lt;p&gt;There are also many bug fixes and minor changes. We will list them in the next 0.4 major release.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under dgl.model_zoo namespace). We will continue explore this idea and release more domain specific models and packages.</summary></entry><entry><title type="html">Large-Scale Training of Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/06/13/giant.html" rel="alternate" type="text/html" title="Large-Scale Training of Graph Neural Networks" /><published>2019-06-13T00:00:00+00:00</published><updated>2019-06-13T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2019/06/13/giant</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/06/13/giant.html">&lt;p&gt;Many graph applications deal with &lt;em&gt;giant&lt;/em&gt; scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.&lt;/p&gt;
 
 &lt;h2 id=&quot;sampling-methods-in-dgl&quot;&gt;Sampling methods in DGL&lt;/h2&gt;
 &lt;p&gt;Giant graphs are a classic challenge, and is even more so in graph neural networks (GNN). In a GNN model, computing the embedding of a node depends on the embeddings of its neighbors. Such dependency leads to exponential growth of the number of nodes involved with number of GNN layers.&lt;/p&gt;
@@ -512,7 +771,7 @@ If &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
 
 &lt;p&gt;For GCN, by using history &lt;script type=&quot;math/tex&quot;&gt;\bar{H}^{(l)}&lt;/script&gt; of the nodes which are not sampled, the modified estimator &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt; is&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} ( \hat{h}_u^{(l)} - \bar{h}_u^{(l)} ) + \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} \bar{h}_u^{(l)}&lt;/script&gt;</content><author><name>Da Zheng</name></author><category term="blog" /><category term="blog" /><summary type="html">Many graph applications deal with giant scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.</summary></entry><entry><title type="html">DGL v0.3 Release</title><link href="https://www.dgl.ai/release/2019/06/12/release.html" rel="alternate" type="text/html" title="DGL v0.3 Release" /><published>2019-06-12T00:00:00+08:00</published><updated>2019-06-12T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2019/06/12/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/06/12/release.html">&lt;p&gt;V0.3 release includes many crucial updates:&lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} ( \hat{h}_u^{(l)} - \bar{h}_u^{(l)} ) + \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} \bar{h}_u^{(l)}&lt;/script&gt;</content><author><name>Da Zheng</name></author><category term="blog" /><category term="blog" /><summary type="html">Many graph applications deal with giant scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.</summary></entry><entry><title type="html">DGL v0.3 Release</title><link href="https://www.dgl.ai/release/2019/06/12/release.html" rel="alternate" type="text/html" title="DGL v0.3 Release" /><published>2019-06-12T00:00:00+00:00</published><updated>2019-06-12T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2019/06/12/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/06/12/release.html">&lt;p&gt;V0.3 release includes many crucial updates:&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Fused message passing kernels that greatly boost the training speed of GNNs on large graphs.
 Please refer to our &lt;a href=&quot;https://www.dgl.ai/blog/2019/05/04/kernel.html&quot;&gt;blogpost&lt;/a&gt; for more details.&lt;/li&gt;
@@ -669,7 +928,7 @@ conda install -c dglteam dgl-cuda10.0  # For CUDA 10.0
       &lt;li&gt;Fix a bug in &lt;code class=&quot;highlighter-rouge&quot;&gt;send&lt;/code&gt; when the given message function is a builtin.&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">V0.3 release includes many crucial updates: Fused message passing kernels that greatly boost the training speed of GNNs on large graphs. Please refer to our blogpost for more details. Add components to enable distributed training of GNNs on giant graphs with graph sampling. Please see our blogpost for more details. New models and NN modules. Many other bugfixes and other enhancement.</summary></entry><entry><title type="html">When Kernel Fusion meets Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/05/04/kernel.html" rel="alternate" type="text/html" title="When Kernel Fusion meets Graph Neural Networks" /><published>2019-05-04T00:00:00+08:00</published><updated>2019-05-04T00:00:00+08:00</updated><id>https://www.dgl.ai/blog/2019/05/04/kernel</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/05/04/kernel.html">&lt;p&gt;In DGL’s first release last December, we focused on usability by introducing a
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">V0.3 release includes many crucial updates: Fused message passing kernels that greatly boost the training speed of GNNs on large graphs. Please refer to our blogpost for more details. Add components to enable distributed training of GNNs on giant graphs with graph sampling. Please see our blogpost for more details. New models and NN modules. Many other bugfixes and other enhancement.</summary></entry><entry><title type="html">When Kernel Fusion meets Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/05/04/kernel.html" rel="alternate" type="text/html" title="When Kernel Fusion meets Graph Neural Networks" /><published>2019-05-04T00:00:00+00:00</published><updated>2019-05-04T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2019/05/04/kernel</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/05/04/kernel.html">&lt;p&gt;In DGL’s first release last December, we focused on usability by introducing a
 set of carefully designed, easy-to-use APIs that support a variety of model
 implementations of Graph Neural Networks. We decided to keep DGL
 framework-agnostic to engage with users from different platforms (PyTorch,
@@ -970,7 +1229,7 @@ shed some light on the directions we are working on:&lt;/p&gt;
 try out this new feature, simple as this: clone DGL’s repository, switch to
 &lt;code class=&quot;highlighter-rouge&quot;&gt;kernel&lt;/code&gt; branch and build the library from source.&lt;/p&gt;
 
-&lt;p&gt;Please stay tuned for our next major release! More good stuff coming soon.&lt;/p&gt;</content><author><name>Minjie Wang</name></author><category term="blog" /><category term="blog" /><summary type="html">In DGL’s first release last December, we focused on usability by introducing a set of carefully designed, easy-to-use APIs that support a variety of model implementations of Graph Neural Networks. We decided to keep DGL framework-agnostic to engage with users from different platforms (PyTorch, MXNet…). As a result, in our earlier releases, we largely leveraged the available functionalities provided by these frameworks, and based on many valuable feedback from our users, we are well-aware of the room of improvement particularly on some new models defined on the sparse and irregular graphs.</summary></entry><entry><title type="html">Understand Graph Attention Network</title><link href="https://www.dgl.ai/blog/2019/02/17/gat.html" rel="alternate" type="text/html" title="Understand Graph Attention Network" /><published>2019-02-17T00:00:00+08:00</published><updated>2019-02-17T00:00:00+08:00</updated><id>https://www.dgl.ai/blog/2019/02/17/gat</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/02/17/gat.html">&lt;p&gt;From &lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Graph Convolutional Network (GCN)&lt;/a&gt;, we
+&lt;p&gt;Please stay tuned for our next major release! More good stuff coming soon.&lt;/p&gt;</content><author><name>Minjie Wang</name></author><category term="blog" /><category term="blog" /><summary type="html">In DGL’s first release last December, we focused on usability by introducing a set of carefully designed, easy-to-use APIs that support a variety of model implementations of Graph Neural Networks. We decided to keep DGL framework-agnostic to engage with users from different platforms (PyTorch, MXNet…). As a result, in our earlier releases, we largely leveraged the available functionalities provided by these frameworks, and based on many valuable feedback from our users, we are well-aware of the room of improvement particularly on some new models defined on the sparse and irregular graphs.</summary></entry><entry><title type="html">Understand Graph Attention Network</title><link href="https://www.dgl.ai/blog/2019/02/17/gat.html" rel="alternate" type="text/html" title="Understand Graph Attention Network" /><published>2019-02-17T00:00:00+00:00</published><updated>2019-02-17T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2019/02/17/gat</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/02/17/gat.html">&lt;p&gt;From &lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Graph Convolutional Network (GCN)&lt;/a&gt;, we
 learned that combining local graph structure and node-level features yields
 good performance on node classification task. However, the way GCN aggregates
 is structure-dependent, which may hurt its generalizability.&lt;/p&gt;
@@ -1441,7 +1700,7 @@ readers to the full example.&lt;/p&gt;
 &lt;a href=&quot;https://github.com/dmlc/dgl/blob/master/examples/pytorch/gat/gat.py&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
   &lt;li&gt;Stay tune for our next tutorial about how to speedup GAT models by
 parallelizing multiple attention heads and SPMV optimization.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Hao Zhang</name></author><category term="blog" /><category term="blog" /><summary type="html">From Graph Convolutional Network (GCN), we learned that combining local graph structure and node-level features yields good performance on node classification task. However, the way GCN aggregates is structure-dependent, which may hurt its generalizability.</summary></entry><entry><title type="html">Batched Graph Classification with DGL</title><link href="https://www.dgl.ai/blog/2019/01/25/batch.html" rel="alternate" type="text/html" title="Batched Graph Classification with DGL" /><published>2019-01-25T00:00:00+08:00</published><updated>2019-01-25T00:00:00+08:00</updated><id>https://www.dgl.ai/blog/2019/01/25/batch</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/01/25/batch.html">&lt;p&gt;Graph classification is an important problem
+&lt;/ul&gt;</content><author><name>Hao Zhang</name></author><category term="blog" /><category term="blog" /><summary type="html">From Graph Convolutional Network (GCN), we learned that combining local graph structure and node-level features yields good performance on node classification task. However, the way GCN aggregates is structure-dependent, which may hurt its generalizability.</summary></entry><entry><title type="html">Batched Graph Classification with DGL</title><link href="https://www.dgl.ai/blog/2019/01/25/batch.html" rel="alternate" type="text/html" title="Batched Graph Classification with DGL" /><published>2019-01-25T00:00:00+00:00</published><updated>2019-01-25T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2019/01/25/batch</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/01/25/batch.html">&lt;p&gt;Graph classification is an important problem
 with applications across many fields – bioinformatics, chemoinformatics, social
 network analysis, urban computing and cyber-security. Applying graph neural
 networks to this problem has been a popular approach recently (&lt;a href=&quot;https://arxiv.org/abs/1806.08804&quot;&gt;Ying et al.,
