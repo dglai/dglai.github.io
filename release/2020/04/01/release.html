@@ -304,172 +304,273 @@
 
           <div class="single-blog-details">
             <div class="blog-img">
-              <img src="https://i.imgur.com/OmLVXfo.png" alt="blog">
+              <img src="https://i.imgur.com/ZoP4A7A.jpg" alt="blog">
             </div>
             <div class="blog-content-desc">
-              <h4 class="themeix-blog-h">Large-Scale Training of Graph Neural Networks</h4>
-              <p><p>Many graph applications deal with <em>giant</em> scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.</p>
+              <h4 class="themeix-blog-h">DGL v0.4.3 Release</h4>
+              <p><h1 id="tensorflow-support">TensorFlow support</h1>
 
-<h2 id="sampling-methods-in-dgl">Sampling methods in DGL</h2>
-<p>Giant graphs are a classic challenge, and is even more so in graph neural networks (GNN). In a GNN model, computing the embedding of a node depends on the embeddings of its neighbors. Such dependency leads to exponential growth of the number of nodes involved with number of GNN layers.</p>
+<p>DGL finally comes to the TensorFlow community starting from this release.
+Switching to TensorFlow is easy. If you are a first-time user, please install
+DGL and <code class="highlighter-rouge">import dgl</code>, and then follow the instructions to set the default
+backend. You can always switch back by changing the <code class="highlighter-rouge">config.json</code> file, which is
+under <code class="highlighter-rouge">~/.dgl</code> folder. DGL keeps a coherent user experience regardless of which
+backend is currently in use. The following code demonstrates the basic steps to
+apply a graph convolution layer.</p>
 
-<p>A typical technique is sampling, and there are many variants, some of them are applicable to GNN and DGL supports a few of them. The basic idea is to prune the node dependency to reduce the computation while still estimating the embeddings of GNN accurately. We leave the exact formulation of these techniques at the end of the tutorial (and users are encouraged to read them!), and describe the gists of them breifly here:</p>
-<ul>
-  <li><a href="https://arxiv.org/abs/1706.02216">neighbor sampling</a>. This is the most basic: simply pick a small number of random neighbors.</li>
-  <li><a href="https://arxiv.org/abs/1809.05343">layer-wise sampling</a>. The problem with simple neighbor sampling is that number of nodes needed will continue to grow exponentially with deeper layers. The idea here is to consider a layer as a whole and constrain the amount of samples per layer.</li>
-  <li><a href="https://arxiv.org/abs/1806.01973">random-walk sampling</a>. As the name suggests, samples are picked up by performing random walks.</li>
-</ul>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">dgl.nn</span> <span class="kn">as</span> <span class="nn">dglnn</span>
 
-<p>Sampling estimators can suffer from high variance. Obviously, including more neighbors will reduce the variance but this defeats the purpose of sampling. One interesting soution is <a href="https://arxiv.org/abs/1710.10568">control-variate sampling</a>, a standard variance reduction technique used in Monte Carlo methods.</p>
+<span class="c"># Random features for 10 nodes; each is of length 5.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="c"># Random graph; 10 nodes and 20 edges.</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">rand_graph</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="c"># Pre-defined graph convolution module.</span>
+<span class="n">conv</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>  <span class="c"># Apply the graph convolution layer.</span>
+</code></pre>
+</div>
 
-<p>The basic idea is simple: given a random variable <script type="math/tex">X</script> and we wish to estimate its expectation <script type="math/tex">\mathbb{E} [X] = \theta</script>, the control variate method finds another random variable <script type="math/tex">Y</script> which is highly correlated with <script type="math/tex">X</script> and whose expectation <script type="math/tex">\mathbb{E} [Y]</script> can be easily computed. Control variate needs to keep extra state, but otherwise is effective in reducing sample size. In fact, one neighbor is enough, for the Reddit dataset!
-<!--
-We experiment neighbor sampling and control variate sampling to train GCN and GraphSage on Reddit to evaluate the effectiveness of these two sampling methods. The result is shown in the figure below. For GCN, control variate sampling is much more effective than neighbor sampling. Sampling only one neighbor is sufficient to train GCN on the Reddit dataset. Similarly, when training GraphSage, we only need to sample one neighbor to get its accuracy over 96%.
--->
-<img src="https://i.imgur.com/DTPQu5V.png" alt="" width="700x" class="aligncenter" /></p>
-
-<h2 id="system-support-for-giant-graphs">System support for giant graphs</h2>
-<p>Sampling provides the nice possiblity of dealing with giant graphs with a data-parallel perspective. DGL adds two components, see figure below:</p>
-
-<ul>
-  <li>
-    <p><strong>Sampler</strong>: a sampler constructs small subgraphs (<code class="highlighter-rouge">NodeFlow</code>) from a given (giant) graph; tutorials of <code class="highlighter-rouge">NodeFlow</code> can be found <a href="https://doc.dgl.ai/tutorials/models/5_giant_graph/1_sampling_mx.html#sphx-glr-tutorials-models-5-giant-graph-1-sampling-mx-py">here</a>. Multiple samplers can be launched locally, or remotely, and on many machines.</p>
-  </li>
-  <li>
-    <p><strong>Graph store</strong>: this prepares the I/O substrate to scale out with a large number of trainers. The graph store contains graph embeddings as well as its structure. For now, the implementation is based on shared-memory, supporting multi-processing training on multi-GPU and/or non-uniform memory access (NUMA) machines.</p>
-  </li>
-</ul>
-
-<p>The shared-memory graph store has a similar interface to <code class="highlighter-rouge">DGLGraph</code> for programming. DGL will also support a distributed graph store that can store graph embeddings across machines in the future release.</p>
-
-<!--
-The figure below shows the interaction of the trainer with the samplers and the graph store. The trainer takes subgraphs (`NodeFlow`) from the sampler and fetches graph embeddings from the graph store before training. The trainer can push new graph embeddings to the graph store or invoke some computation on the graph store.
--->
-<p><img src="https://i.imgur.com/OmLVXfo.png" alt="" width="700x" class="aligncenter" /></p>
-
-<p>Now, let’s demonstrate how good these supports are.</p>
-
-<h3 id="multi-processing-training-and-optimizations-on-a-numa-machine">Multi-processing training and optimizations on a NUMA machine</h3>
-<p>The speedup is almost linear, and on Reddit dataset takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.</p>
-
-<p><img src="https://i.imgur.com/eaiEcEi.png" alt="" class="aligncenter" /></p>
+<p>We have implemented and released 15 common GNN modules in TensorFlow (more are
+coming), all of which can be invoked in one line of codes.</p>
 
 <ul>
-  <li>X1.32xlarge instance has 4 processors, each of which has 16 physical CPU cores.</li>
-  <li>We need to be aware of NUMA architecture, otherwise there’s hardly any speedup with more CPU processors. Please see <a href="https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py">our tutorial</a> for more details.</li>
+  <li><code class="highlighter-rouge">GraphConv</code> from the <a href="https://arxiv.org/abs/1609.02907">Graph Convolutional Networks</a> paper.</li>
+  <li><code class="highlighter-rouge">GATConv</code> from the <a href="https://arxiv.org/pdf/1710.10903.pdf">Graph Attention Networks</a> paper.</li>
+  <li><code class="highlighter-rouge">SAGEConv</code> from the <a href="https://arxiv.org/pdf/1706.02216.pdf">Inductive Representation Learning on Large Graphs</a> paper (a.k.a. GraphSAGE).</li>
+  <li><code class="highlighter-rouge">GINConv</code> from the <a href="https://arxiv.org/pdf/1810.00826.pdf">How Powerful are Graph Neural Networks</a> paper.</li>
+  <li><code class="highlighter-rouge">RelGraphConv</code> from the <a href="https://arxiv.org/abs/1703.06103">Modeling Relational Data with Graph Convolutional Networks</a> paper.</li>
+  <li><code class="highlighter-rouge">SGConv</code> from the <a href="https://arxiv.org/pdf/1902.07153.pdf">Simplifying Graph Convolutional Networks</a> paper.</li>
+  <li><code class="highlighter-rouge">APPNPConv</code> from the <a href="https://arxiv.org/pdf/1810.05997.pdf">Predict then Propagate: Graph Neural Networks meet Personalized PageRank</a> paper.</li>
+  <li>An <code class="highlighter-rouge">edge_softmax</code> function for computing softmax over the neighboring edges of each vertex.</li>
+  <li>Various pooling layers: <code class="highlighter-rouge">SumPooling</code>, <code class="highlighter-rouge">AvgPooling</code>, <code class="highlighter-rouge">MaxPooling</code>, <code class="highlighter-rouge">SortPooling</code>, <code class="highlighter-rouge">WeightAndSum</code>, and <code class="highlighter-rouge">GlobalAttentionPooling</code>.</li>
+  <li>A <code class="highlighter-rouge">HeteroGraphConv</code> module for applying GNN modules to heterogeneous graphs.</li>
 </ul>
 
-<!--
-To demonstrate the effectiveness of multi-processing training with this architecture on a NUMA machine and on a multi-GPU machine, we train GraphSage on the Reddit dataset with control-variate sampling. To optimize the training in a NUMA machine, we need to bind trainers' processes to specific NUMA nodes. Please see [our tutorial](https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py) for more details how to bind processes on a NUMA node.
-The figure below shows that NUMA-aware multi-processing training can accelerate training almost by a factor of 4 on an X1.32xlarge instance where there are 4 processors, each of which has 16 physical CPU cores. We can see that NUMA-unaware training cannot take advantage of computation power of the machine. It is even slightly slower than just using one of the processors in the machine. NUMA-aware training, on the other hand, takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.
--->
-
-<h3 id="distributed-sampler">Distributed Sampler</h3>
-
-<p>We can move samplers around. For GCN variants where computation aren’t that intense, running samplers on small (and cheaper) machines and training on NUMA is both faster and more cost-effective (additional 20%-40% speedups).</p>
-
-<!--
-are ran on different machines, we can 
-We also notice that the sampling in many tasks takes a significant amount of time for the training process on a giant graph. So DGL supports distributed samplers for speeding up the sampling process on giant graphs. DGL allows users to launch multiple samplers on different machines concurrently, and each sampler can send its sampled subgraph (`NodeFlow`) to trainer machines continuously. 
-The figure below shows the overall performance improvement of training GCN and GraphSage on the Reddit dataset after deploying NUMA optimizations and distributed sampling. Our NUMA optimization speeds up the training by a factor of 3. The distributed sampling achieves additional 20%-40% speed improvement for different tasks.
--->
-
-<p><img src="https://i.imgur.com/e0MXa5N.png" alt="" width="700x" class="aligncenter" /></p>
-
-<h3 id="scale-to-giant-graphs">Scale to giant graphs</h3>
-<!--Finally, we would like to demonstrate the scalability of DGL on giant graphs. 
--->
-<p>We create three large power-law graphs with <a href="http://www.cs.cmu.edu/~christos/PUBLICATIONS/siam04.pdf">RMAT</a>. Each node is associated with 100 features and we compute node embeddings with 64 dimensions. Below shows the training speed and memory consumption of GCN with neighbor sampling.</p>
+<p>Our preliminary benchmark shows strong performance improvement against other
+TF-based tools for GNNs in terms of both training speed (measured by epoch
+running time in seconds) and memory consumption.</p>
 
 <table>
   <thead>
     <tr>
-      <th>#Nodes</th>
-      <th>#Edges</th>
-      <th>Time per epoch (s)</th>
-      <th>Memory (GB)</th>
+      <th>Dateset</th>
+      <th>Model</th>
+      <th>DGL</th>
+      <th>GraphNet</th>
+      <th>tf_geometric</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>5M</td>
-      <td>250M</td>
-      <td>4.7</td>
-      <td>8</td>
+      <td>Core</td>
+      <td>GCN</td>
+      <td>0.0148</td>
+      <td>0.0152</td>
+      <td>0.0192</td>
     </tr>
     <tr>
-      <td>50M</td>
-      <td>2.5B</td>
-      <td>46</td>
-      <td>75</td>
+      <td>Reddit</td>
+      <td>GCN</td>
+      <td>0.1095</td>
+      <td>OOM</td>
+      <td>OOM</td>
     </tr>
     <tr>
-      <td>500M</td>
-      <td>25B</td>
-      <td>505</td>
-      <td>740</td>
+      <td>PubMed</td>
+      <td>GCN</td>
+      <td>0.0156</td>
+      <td>0.0553</td>
+      <td>0.0185</td>
+    </tr>
+    <tr>
+      <td>PPI</td>
+      <td>GCN</td>
+      <td>0.09</td>
+      <td>0.16</td>
+      <td>0.21</td>
+    </tr>
+    <tr>
+      <td>Cora</td>
+      <td>GAT</td>
+      <td>0.0442</td>
+      <td>n/a</td>
+      <td>0.058</td>
+    </tr>
+    <tr>
+      <td>PPI</td>
+      <td>GAT</td>
+      <td>0.398</td>
+      <td>n/a</td>
+      <td>0.752</td>
     </tr>
   </tbody>
 </table>
 
-<p>We can see that DGL can scale to graphs with 500M nodes and 25B edges on an X1.32xlarge instance.</p>
+<p>To get started, install <a href="https://www.dgl.ai/pages/start.html">DGL</a> and check out the examples <a href="https://github.com/dmlc/dgl/tree/master/examples/tensorflow">here</a>.</p>
 
-<h2 id="whats-next">What’s next?</h2>
-<p>We are looking forward to your feedbacks and would love to hear your use cases and models for giant graphs! All of these new features shown in this blog will be in our upcoming v0.3 release. Please try them out and give us feedbacks.</p>
+<h1 id="dgl-ke-a-light-speed-package-for-learning-knowledge-graph-embeddings">DGL-KE: A light-speed package for learning knowledge graph embeddings</h1>
+<p>Previously incubated under the DGL main repository, DGL-KE now officially
+announces its 0.1 release as a standalone package. The key highlights are:</p>
 
-<p>We are continuing working on our infrastructure for training graph neural networks on giant graphs, which includes:</p>
 <ul>
-  <li>In the infrastructure, we will add a distributed graph store to support fully distributed training for graph neural networks.</li>
-  <li>We will experiment various strategies to accelerate distributed training. For example, we will experiment fast and scalable graph partitioning algorithms to reduce network communication.</li>
-  <li>We will also add more demonstrations of other sampling strategies. For example, we will scale PinSage with our random walk sampler.</li>
+  <li>Effortlessly generate knowledge graph embedding with one line of code.</li>
+  <li>Support for giant graphs with millions of nodes and edges.</li>
+  <li>Distributed training with highly-optimized graph partitioning, negative
+sampling and communication, which can be deployed on both multi-GPU machines
+and multi-machine clusters.</li>
 </ul>
 
-<h2 id="sampling-techniques-in-gnn">Sampling techniques in GNN</h2>
+<p>DGL-KE can be installed with pip:</p>
 
-<p>Let’s use graph convolution network as an example to show these sampling techniques. Given a graph <script type="math/tex">G=(V, E)</script>, represented as an adjacency matrix <script type="math/tex">A</script>, with node features <script type="math/tex">H^{(0)} = X \in \mathbb{R}^{|V| \times m}</script>, graph convolution networks (GCNs) compute the hidden features <script type="math/tex">H^{(l+1)}</script> of the <script type="math/tex">(l+1)</script>-th layer by computing for each <script type="math/tex">v</script>
-<script type="math/tex">h_v^{(l+1)} = \sigma ( z_v^{(l)} W^{(l)}) \qquad z_v^{(l)} = \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} h_u^{(l)}</script>
-where <script type="math/tex">\mathcal{N}(v)</script> denotes the neighborhood of <script type="math/tex">v</script>, <script type="math/tex">\tilde{A}</script> is a normalized version of <script type="math/tex">A</script> such as <script type="math/tex">D^{-1} A</script>, <script type="math/tex">\sigma(\cdot)</script> is the activation function, <script type="math/tex">W^{(l)}</script> is a trainable parameter of the <script type="math/tex">l</script>-th layer. For a <script type="math/tex">L</script>-layer GCN model, the computation of <script type="math/tex">H^{(L)}</script> requires the propagation from all of its <script type="math/tex">L</script>-hop neighbors. This is too expensive in mini-batch training because the receptive field of a node grows exponentially with respective to the number of layers <script type="math/tex">L</script>.</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>pip install dglke
+</code></pre>
+</div>
 
-<p><strong>Neighbor Sampling</strong>
-Instead of using all the <script type="math/tex">L</script>-hop neighbors of a node <script type="math/tex">v</script>, neighbor sampling randomly samples a few neighbors <script type="math/tex">\hat{\mathcal{N}}^{(l)}(v)</script> to estimate the aggregation <script type="math/tex">z_v^{(l)}</script> of its total neighbors <script type="math/tex">\mathcal{N}(v)</script> in <script type="math/tex">l</script>-th GCN layer by an unbiased estimator <script type="math/tex">\hat{z}_v^{(l)}</script></p>
+<p>The following command trains embeddings of the full FreeBase graph (86M nodes
+and 338M edges) with 8 GPUs.</p>
 
-<script type="math/tex; mode=display">\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} \hat{h}_u^{(l)} \\
-\hat{h}_v^{(l+1)} = \sigma ( \hat{z}_v^{(l)} W^{(l)} )</script>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>dglke_train --model TransE_l2 --dataset Freebase --batch_size 1000 <span class="se">\</span>
+            --neg_sample_size 200 --hidden_dim 400 --gamma 10 --lr 0.1 <span class="se">\</span>
+            --regularization_coef 1e-9 -adv --gpu 0 1 2 3 4 5 6 7 <span class="se">\</span>
+            --max_step 320000 --log_interval 10000 --async_update <span class="se">\</span>
+            --rel_part --force_sync_interval 10000
+</code></pre>
+</div>
 
-<p>Let <script type="math/tex">D^{(l)}</script> be the number of neighbors to be sampled for each node at the <script type="math/tex">l</script>-th layer, then the receptive field size of each node can be controlled under <script type="math/tex">\prod_{i=0}^{L-1} D^{(l)}</script> by neighbor sampling.</p>
+<p>Check out our new GitHub repository, examples and documentations under
+<a href="https://github.com/awslabs/dgl-ke">https://github.com/awslabs/dgl-ke</a></p>
 
-<p><strong>Layer-Wise Sampling</strong>
-In node-wise sampling, each parent node <script type="math/tex">v</script> independently samples a few neighbors <script type="math/tex">\hat{\mathcal{N}}(v)</script>, which are not visible to other parent nodes <script type="math/tex">u</script> except <script type="math/tex">v</script>. The receptive field size still grows exponentially if <script type="math/tex">\vert \hat{\mathcal{N}}(v) \vert > 1</script>. In layer-wise sampling, the sampling procedure is performed only once in each layer, where each node <script type="math/tex">v</script> gets sampled into <script type="math/tex">\mathcal{S}^{(l)}</script> with probability <script type="math/tex">p^{(l)}(v)</script>,
-<script type="math/tex">\hat{z}_v^{(l)} = \sum_{u \in \mathcal{S}^{(l)}} \frac{1}{p^{(l)}(u)} \tilde{A}_{uv} \hat{h}_u^{(l)}</script>
-The receptive field size can be controlled directly by <script type="math/tex">\vert \mathcal{S}^{(0)} \vert</script>.</p>
+<h1 id="dgl-lifesci-bringing-graph-neural-networks-to-chemistry-and-biology">DGL-LifeSci: Bringing Graph Neural Networks to Chemistry and Biology</h1>
 
-<p><strong>Random Walk Sampling</strong>
-Given a source node <script type="math/tex">s</script> and a decay factor <script type="math/tex">\alpha</script>, a random walk from <script type="math/tex">s</script> is a trace beginning from <script type="math/tex">s</script>, at each step either proceeds to a neighbor uniformly at random, or stop with probability <script type="math/tex">\alpha</script>. The personalized PageRank (PPR) score <script type="math/tex">\pi(s, t)</script> is the probability that a random walk from <script type="math/tex">s</script> terminates at <script type="math/tex">t</script>.</p>
+<p>Previously incubated as a model zoo for chemistry, DGL-LifeSci is now spun off
+as a standalone package. The key highlights are:</p>
 
-<p>In PinSage, each node <script type="math/tex">v</script> selects top-<script type="math/tex">k</script> important nodes with highest PPR scores with respective to <script type="math/tex">v</script> as its neighbors <script type="math/tex">\hat{\mathcal{N}}(v)</script>, and the hidden feature of each neighbor <script type="math/tex">u \in \hat{\mathcal{N}}(v)</script> is weighted by <script type="math/tex">\pi(v, u)</script>,</p>
+<ul>
+  <li>Training scripts and pre-trained models for various applications — molecular
+property prediction, generative models, and reaction prediction.</li>
+  <li>Up to 5.5x model training speedup compared to previous implementations.</li>
+  <li>Well defined pipelines for data processing, model construction and
+evaluation.</li>
+</ul>
 
-<script type="math/tex; mode=display">\hat{z}^{(l)}_v = \frac{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u) \tilde{A}_{uv} \hat{h}_u^{(l)}}{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u)}</script>
+<p>DGL-LifeSci can be installed with pip or conda.</p>
 
-<p>Compared to GCNs which uses all the <script type="math/tex">L</script>-hop neighbors, PinSage selects <script type="math/tex">k</script> topology-based important neighbors which have the largest influence.</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>pip install dgllife
+conda install -c dglteam dgllife
+</code></pre>
+</div>
 
-<p><strong>Control Variate</strong>
-Although unbiased, sampling estimators such as <script type="math/tex">\hat{z}_v^{(l)}</script> in neighbor sampling suffers from high variance, so it still requires a relatively large number of neighbors, e.g. <script type="math/tex">D^{(0)}=25</script> and <script type="math/tex">D^{(1)}=10</script> in the GraphSage paper. With control variate, a standard variance reduction technique used in Monte Carlo methods, 2 neighbors for a node are sufficient in the experiments.</p>
+<p>A summary of speedup in seconds per epoch of training:</p>
 
-<p>Given a random variable <script type="math/tex">X</script> and we wish to estimate its expectation <script type="math/tex">\mathbb{E} [X] = \theta</script>, the control variate method finds another random variable <script type="math/tex">Y</script> which is highly correlated with <script type="math/tex">X</script> and whose expectation <script type="math/tex">\mathbb{E} [Y]</script> can be easily computed. The control variate estimator is</p>
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Original Implementations</th>
+      <th>DGL-LifeSci Implementations</th>
+      <th>Speedup</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GCN on Tox21</td>
+      <td>5.5 (DeepChem)</td>
+      <td>1</td>
+      <td>5.5x</td>
+    </tr>
+    <tr>
+      <td>AttentiveFP on Aromaticity</td>
+      <td>6</td>
+      <td>1.2</td>
+      <td>5x</td>
+    </tr>
+    <tr>
+      <td>JTNN on ZINC</td>
+      <td>1826</td>
+      <td>743</td>
+      <td>2.5x</td>
+    </tr>
+    <tr>
+      <td>WLN for reaction center prediction</td>
+      <td>11657</td>
+      <td>5095</td>
+      <td>2.3x</td>
+    </tr>
+  </tbody>
+</table>
 
-<script type="math/tex; mode=display">Z = X - Y + \mathbb{E} [Y]</script>
+<p>To get started, check out the examples and documentations under
+<a href="https://github.com/dmlc/dgl/tree/master/apps/life_sci">https://github.com/dmlc/dgl/tree/master/apps/life_sci</a>.</p>
 
-<p><script type="math/tex">\mathbb{VAR} [Z] = \mathbb{VAR} [X] + \mathbb{VAR} [Y] - 2 \cdot \mathbb{COV} [X, Y]</script>
-If <script type="math/tex">% <![CDATA[
-\mathbb{VAR} [Y] - 2\mathbb{COV} [X, Y] < 0 %]]></script>, then <script type="math/tex">% <![CDATA[
-\mathbb{VAR} [Z] < \mathbb{VAR} [X] %]]></script>.</p>
+<h1 id="experimenting-new-apis-for-sampling">Experimenting new APIs for sampling</h1>
 
-<p>For GCN, by using history <script type="math/tex">\bar{H}^{(l)}</script> of the nodes which are not sampled, the modified estimator <script type="math/tex">\hat{z}_v^{(l)}</script> is</p>
+<p>Sampling is crucial to training GNNs on giant graphs. In this release, we
+re-design the APIs for sampling, aiming for a more intuitive programming
+experience and a better performance at the same time. The new APIs have several
+advantages:</p>
 
-<script type="math/tex; mode=display">\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} ( \hat{h}_u^{(l)} - \bar{h}_u^{(l)} ) + \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} \bar{h}_u^{(l)}</script>
+<ul>
+  <li>Support a wide range of sampling-based GNN models, including PinSAGE,
+GraphSAGE, Graph Convolutional Matrix Completion (GCMC), and etc.</li>
+  <li>Support customization in Python.</li>
+  <li>Support heterogeneous graphs.</li>
+  <li>Leverage all pre-defined NN modules with no code change.</li>
+  <li>Utilize both multi-processing and multi-threading for maximum speed.</li>
+</ul>
+
+<p>The code below defines a basic neighbor sampler:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NeighborSampler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">fanouts</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g</span>  <span class="c"># The full graph structure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fanouts</span> <span class="o">=</span> <span class="n">fanouts</span>  <span class="c"># fan-out of each layer</span>
+
+    <span class="k">def</span> <span class="nf">sample_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeds</span><span class="p">):</span>
+        <span class="c"># `seeds` are the set of nodes to build one sample from.</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fanout</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fanouts</span><span class="p">:</span>
+            <span class="c"># For each seed node, sample ``fanout`` neighbors.</span>
+            <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">fanout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="c"># Then we compact the frontier into a bipartite graph for message passing.</span>
+            <span class="n">block</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+            <span class="c"># Obtain the seed nodes for next layer.</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+
+            <span class="n">blocks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">blocks</span>
+</code></pre>
+</div>
+
+<p>Although these APIs are still experimental, you can find their usages in many
+examples:</p>
+
+<ul>
+  <li>Train the GraphSAGE model by neighbor sampling and scale it to multiple GPUs
+(<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/graphsage">link</a>).</li>
+  <li>Train the Relational GCN model on heterogeneous graphs by sampling for both
+node classification and link prediction (<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn-hetero">link</a>).</li>
+  <li>Train the PinSAGE model by random walk sampling for item recommendation (<a href="https://github.com/dmlc/dgl/pull/1334">link</a>).</li>
+  <li>Train the GCMC model by sampling for MovieLens rating prediction (<a href="https://github.com/dmlc/dgl/pull/1296">link</a>).</li>
+  <li>Implement the variance reduction technique for neighbor sampling (<a href="https://github.com/dmlc/dgl/pull/1355">link</a>) proposed by <a href="https://arxiv.org/abs/1710.10568">Chen et al.</a></li>
+</ul>
+
+<p>We will continue polishing these APIs, and the corresponding documentations and
+tutorials are coming.</p>
+
+<h1 id="other-improvements">Other Improvements</h1>
+<ul>
+  <li>All GNN modules under <code class="highlighter-rouge">dgl.nn</code> now support both homogeneous graph and bipartite graph.</li>
+  <li><code class="highlighter-rouge">DGLHeteroGraph</code> now has a faster pickling/unpickling implementation.</li>
+  <li>Add new APIs for saving and loading <code class="highlighter-rouge">DGLHeteroGraph</code> from checkpoints.</li>
+  <li><code class="highlighter-rouge">BatchedDGLGraph</code> and <code class="highlighter-rouge">DGLSubGraph</code> classes have been merged to <code class="highlighter-rouge">DGLGraph</code>.</li>
+  <li>Constructing <code class="highlighter-rouge">DGLGraph</code> no longer requires a <code class="highlighter-rouge">multigraph</code> flag.</li>
+</ul>
+
+<p>More details can be found in the <a href="https://github.com/dmlc/dgl/releases/tag/0.4.3">full release note</a>.</p>
 </p>
               <div class="blog-post-date">
-                <p>13 <span>June</span> </p>
+                <p>01 <span>April</span> </p>
               </div>
               <div class="tag-links mt-30">
                 <div class="widget">
@@ -480,18 +581,8 @@ If <script type="math/tex">% <![CDATA[
                 <div class="blog-data">
                   <p>By 
                   
-                  <a href="http://www.cs.jhu.edu/~zhengda/">Da Zheng</a>,
-                  
-                  <a href="https://github.com/aksnzhy">Chao Ma</a>,
-                  
-                  <a href="https://github.com/ZiyueHuang">Ziyue Huang</a>,
-                  
-                  <a href="https://barclayii.github.io/">Quan Gan</a>,
-                  
-                  <a href="https://github.com/GaiYu0">Yu Gai</a>,
-                  
-                  <a href="https://shanghai.nyu.edu/academics/faculty/directory/zheng-zhang">Zheng Zhang</a>,
-                   in <a href="#">blog</a> </p>
+                  <a href="https://github.com/dmlc/dgl/">DGLTeam</a>,
+                   in <a href="#">release</a> </p>
                 </div>
               </div>
               <!-- Leave a Comment -->
@@ -500,7 +591,7 @@ If <script type="math/tex">% <![CDATA[
                   <div id='discourse-comments'></div>
                   <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://discuss.dgl.ai/',
-                     discourseEmbedUrl: 'https://www.dgl.ai/blog/2019/06/13/giant.html' };
+                     discourseEmbedUrl: 'https://www.dgl.ai/release/2020/04/01/release.html' };
 
   (function() {
     var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;
