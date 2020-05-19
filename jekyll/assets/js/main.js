@@ -365,29 +365,18 @@ setTimeout(function() { $('.preloader').fadeOut("slow") }, 5000);
 	7. Owl carousel
 ===============================================*/ 
 
-    $(".team-member-wrapper.owl-carousel").owlCarousel({
-        autoplay: true,
-        loop: true,
-        responsive: {
+$(".team-member-wrapper.owl-carousel").owlCarousel({
+    autoplay: true,
+    loop: true,
+    items: 1,
+});
 
-            0: {
-                items: 1
-            },
-            480: {
-
-                items: 2
-            },
-            678: {
-                items: 3
-            },
-
-            992: {
-                items: 4
-            }
-
-        }
-
-    });
+$(".news-wrapper.owl-carousel").owlCarousel({
+    autoplay: true,
+    loop: true,
+    items: 1,
+    autoplayHoverPause: true,
+});
 
 /*=============================================
 	8. Particle Ground
