@@ -368,25 +368,8 @@ setTimeout(function() { $('.preloader').fadeOut("slow") }, 5000);
     $(".team-member-wrapper.owl-carousel").owlCarousel({
         autoplay: true,
         loop: true,
-        responsive: {
-
-            0: {
-                items: 1
-            },
-            480: {
-
-                items: 2
-            },
-            678: {
-                items: 3
-            },
-
-            992: {
-                items: 4
-            }
-
-        }
-
+        items: 1,
+        nav: true,
     });
 
 /*=============================================
