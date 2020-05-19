@@ -365,12 +365,18 @@ setTimeout(function() { $('.preloader').fadeOut("slow") }, 5000);
 	7. Owl carousel
 ===============================================*/ 
 
-    $(".team-member-wrapper.owl-carousel").owlCarousel({
-        autoplay: true,
-        loop: true,
-        items: 1,
-        nav: true,
-    });
+$(".team-member-wrapper.owl-carousel").owlCarousel({
+    autoplay: true,
+    loop: true,
+    items: 1,
+});
+
+$(".news-wrapper.owl-carousel").owlCarousel({
+    autoplay: true,
+    loop: true,
+    items: 1,
+    autoplayHoverPause: true,
+});
 
 /*=============================================
 	8. Particle Ground
