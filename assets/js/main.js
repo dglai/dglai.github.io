@@ -376,6 +376,7 @@ $(".news-wrapper.owl-carousel").owlCarousel({
     loop: true,
     items: 1,
     autoplayHoverPause: true,
+    autoplayTimeout: 15000,
 });
 
 /*=============================================
