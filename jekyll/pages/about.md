@@ -35,31 +35,23 @@ learning researchers. We want to make it easy to implement graph neural
 networks model family. We also want to make the combination of graph based
 modules and tensor based modules (PyTorch or MXNet) as smooth as possible.
 
-## Team members:
-New York University: [Minjie Wang](https://jermainewang.github.io/) (*Project Lead*),
-[Lingfan Yu](https://cs.nyu.edu/~lingfan/), Quan Gan, [Jake Zhao](https://cs.nyu.edu/~jakezhao/)
 
-NYU Shanghai: Yu Gai, Zihao Ye, Mufei Li, Jinjing Zhou, Qi Huang
+Core Team
+---
+Minjie Wang, Da Zheng, Guan Gan, Mufei Li, Zihao Ye, Chao Ma, Jinjing Zhou,
+Xiang Song, Tianjun Xiao, Tong He, Jian Zhang, Wen-ming Ye, George Karypis,
+Zheng Zhang
 
-AWS: Da Zheng (*Project Lead*), Haibin Lin, Chao Ma, Damon Deng
+Contributors
+---
+**New York Univeristy**: Lingfan Yu, Yu Gai, Jake Zhao, Jinyang Li
 
-Fudan University: Qipeng Guo
+**Intel**: Pawel Piotrowcz, Michal Szarmach, Izabela Mazur
 
-CQUPT: Hao Zhang
+**NVIDIA**: Dominique LaSalle
 
-HKUST: Ziyue Huang
+**NYU Shanghai**: Qi Huang
 
-## Contributors:
-See full list [here](https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md).
+**Fudan University**: Qipeng Guo
 
-## Advisors:
-
-[Jinyang Li](http://www.news.cs.nyu.edu/~jinyang/) (New York University), 
-Alex Smola (AWS), 
-[Zheng Zhang](https://shanghai.nyu.edu/academics/faculty/directory/zheng-zhang) 
-(AWS Shanghai AI Lab, NYU Shanghai)
-
-## Special thanks: 
-
-We would like to thank [Tianqi Chen](https://homes.cs.washington.edu/~tqchen/) 
-and the [TVM Project](https://tvm.ai/) for helping us with many technical decisions.
+Also see the list [here](https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md).
