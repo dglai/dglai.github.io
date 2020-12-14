@@ -54,4 +54,4 @@ Contributors
 
 **Fudan University**: Qipeng Guo
 
-See the full list [here](https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md).
+Also see the list [here](https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md).
