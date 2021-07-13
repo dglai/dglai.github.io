@@ -445,12 +445,12 @@
 
             <div>
               <h2 id="paper-table">Papers using DGL</h2>
-              <div  style="margin-bottom: 10px;">
-              <multiselect v-model="value" :options="options" :close-on-select="false" :clear-on-select="false" :multiple="true"
-                :hide-selected="true" :preserve-search="true" placeholder="Pick some" label="name" track-by="name"
-                :preselect-first="false" id="multiselect-paper" @input="onChange">
-              </multiselect>
-            </div>
+              <div style="margin-bottom: 10px;">
+                <multiselect v-model="value" :options="options" :close-on-select="false" :clear-on-select="false"
+                  :multiple="true" :hide-selected="true" :preserve-search="true" placeholder="Pick some" label="name"
+                  track-by="name" :preselect-first="false" id="multiselect-paper" @input="onChange">
+                </multiselect>
+              </div>
               <!-- <select id="dropdown" multiple="multiple"> -->
               <!-- </select> -->
 
@@ -533,22 +533,22 @@ below:</p>
       }
       var tag_lists = []
       for (let item of all_tags) {
-        tag_lists.push({"name": item})
-      }; 
+        tag_lists.push({ "name": item })
+      };
 
 
       const papers_regex = /(<a\s)(.*)(\.\s\[Paper)/g;
       var papers = getMatches(data, papers_regex, 2);
       var paper_lists = []
-      for (let paper of papers){
+      for (let paper of papers) {
         var anchor = paper.split("\"")[1]
         var paper_title = paper.split(".")[1].trim()
-        paper_lists.push({"title": paper_title, "anchor": anchor})
+        paper_lists.push({ "title": paper_title, "anchor": anchor })
       }
       /* console.log(papers); */
       /*  document.write(papers);  */
-      function to_anchor_link(title, anchor){
-        return "<a href=\"https://github.com/dmlc/dgl/blob/master/examples/README.md#"+anchor+"\">"+title+"</a>";
+      function to_anchor_link(title, anchor) {
+        return "<a href=\"https://github.com/dmlc/dgl/blob/master/examples/README.md#" + anchor + "\">" + title + "</a>";
       }
       // Create a obj list where each obj is a matching of the Title and Tags
       var obj = [];
@@ -580,29 +580,42 @@ below:</p>
 
 
       var multiselect = new Vue({
-      components: {
-        Multiselect: window.VueMultiselect.default
-      },
-      data: {
-        value: [],
-        options: tag_lists
-      },
-      methods: {
-        // customLabel (option) {
-        //   return `${option.library} - ${option.language}`
-        // },
-        onChange (option, id) {
-          var selected = [];
-          for (var i = 0; i < this.value.length; i++){
-            selected.push(this.value[i]["name"])
+        components: {
+          Multiselect: window.VueMultiselect.default
+        },
+        data: {
+          value: [],
+          options: tag_lists
+        },
+        methods: {
+          // customLabel (option) {
+          //   return `${option.library} - ${option.language}`
+          // },
+          onChange(option, id) {
+            var selected = [];
+            for (var i = 0; i < this.value.length; i++) {
+              selected.push(this.value[i]["name"])
+            }
+            // var regex = selected.join("|");
+            // console.log(regex)
+            if (selected.length == 0) {
+              $.fn.dataTable.ext.search = []
+            } else {
+              $.fn.dataTable.ext.search = [function (settings, data, dataIndex) {
+                var value = data[1]
+                console.log(value)
+                console.log(selected)
+                for (var i = 0; i < selected.length; i++) {
+                  if (!value.toLowerCase().includes(selected[i].toLowerCase())) {
+                    return false
+                  }
+                }
+                return true
+              }]
+            }
+            $('#table').DataTable().draw();
           }
-          var regex = selected.join("|");
-          console.log(regex)
-          $('#table').DataTable().column(1).search(
-            regex, true, false
-          ).draw();
         }
-      }
       }).$mount('#multiselect-paper')
     });
 
