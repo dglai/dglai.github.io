@@ -350,12 +350,14 @@
     <!-- End Pages Banner Area -->
 <!-- Start Document Source Area -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.1/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.jqueryui.min.css">
 
 <!-- <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.16/css/bootstrap-multiselect.min.css"> -->
 <!-- import Vue.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
 
 
 <!-- import Vue.multiselect -->
@@ -456,10 +458,12 @@
 
               <table id="table" class="display" cellspacing="0" width="100%">
               </table>
+              <canvas id="wordcloud" width="960" height="320" style="margin: 0 auto;width: 100%; height: auto;">
             </div>
-            <!-- End install cmd app -->
-            <div class="blog-content-desc">
-              <p><h2 id="install-from-source">Install from source</h2>
+          </div>
+          <!-- End install cmd app -->
+          <div class="blog-content-desc">
+            <p><h2 id="install-from-source">Install from source</h2>
 
 <p>Check out our <a href="https://docs.dgl.ai/install/index.html#install-from-source">guide on build from source</a>.</p>
 
@@ -485,12 +489,12 @@ below:</p>
   <li>Recommender system for movies using a GCMC implementation (<a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker-python-sdk/dgl_gcmc">https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker-python-sdk/dgl_gcmc</a>)</li>
 </ul>
 </p>
-            </div>
           </div>
         </div>
       </div>
-
     </div>
+
+  </div>
   </div>
 
 
@@ -499,6 +503,7 @@ below:</p>
 
 <script>
   // Run after the Document DOM tree is constructed
+  var multiselect;
   $(document).ready(function () { // or shorthand of $( function () { 
     // Your jQuery scripts here!
     $.get("/assets/README.md", function (data) {
@@ -524,20 +529,34 @@ below:</p>
 
       // get all current tags
       var all_tags = new Set();
+      var tag_count = {}
       for (var i = 0; i < tags.length; i++) {
         var subtags = tags[i].split(", ");
 
         for (var j = 0; j < subtags.length; j++) {
-          all_tags.add(subtags[j].trim().toLowerCase());
+          var clean_tag = subtags[j].trim().toLowerCase();
+          all_tags.add(clean_tag);
+          if (!(clean_tag in tag_count)) {
+            tag_count[clean_tag] = 0
+          }
+          tag_count[clean_tag] = tag_count[clean_tag] + 1;
         }
       }
+      // console.log(tag_count)
+      var count_array = Object.entries(tag_count)
+      // console.log(count_array)
+
       var tag_lists = []
       for (let item of all_tags) {
         tag_lists.push({ "name": item })
       };
+      tag_lists.sort(function (first, second) {
+        return first["name"].localeCompare(second["name"])
+      })
 
 
-      const papers_regex = /(<a\s)(.*)(\.\s\[Paper)/g;
+      const papers_regex = /(<a\s)(.*)(\n)/g;
+      // debugger;
       var papers = getMatches(data, papers_regex, 2);
       var paper_lists = []
       for (let paper of papers) {
@@ -545,7 +564,8 @@ below:</p>
         var paper_title = paper.split(".")[1].trim()
         paper_lists.push({ "title": paper_title, "anchor": anchor })
       }
-      /* console.log(papers); */
+      console.log(paper_lists);
+      console.log(tags);
       /*  document.write(papers);  */
       function to_anchor_link(title, anchor) {
         return "<a href=\"https://github.com/dmlc/dgl/blob/master/examples/README.md#" + anchor + "\">" + title + "</a>";
@@ -579,7 +599,7 @@ below:</p>
       )
 
 
-      var multiselect = new Vue({
+      multiselect = new Vue({
         components: {
           Multiselect: window.VueMultiselect.default
         },
@@ -591,7 +611,7 @@ below:</p>
           // customLabel (option) {
           //   return `${option.library} - ${option.language}`
           // },
-          onChange(option, id) {
+          onChange(option) {
             var selected = [];
             for (var i = 0; i < this.value.length; i++) {
               selected.push(this.value[i]["name"])
@@ -615,6 +635,23 @@ below:</p>
           }
         }
       }).$mount('#multiselect-paper')
+
+      var w = WordCloud(document.getElementById('wordcloud'),
+        {
+          list: count_array,
+          gridSize: Math.round(16 * $('#wordcloud').width() / 1024),
+          weightFactor: function (size) {
+            return Math.pow(size, 1.7) * $('#wordcloud').width() / 1024;
+          },
+          minSize: 8,
+          shrinkToFit: true,
+          drawOutOfBound: false,
+          hover: window.drawBox,
+          click: function (item) {
+            multiselect.value = [{"name": item[0]}]
+            multiselect.onChange()
+          },
+        })
     });
 
   });
@@ -869,7 +906,7 @@ below:</p>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-    <script src="https://cdn.datatables.net/1.10.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
     
 
     <!-- Bootstrap Js -->
