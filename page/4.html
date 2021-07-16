@@ -344,8 +344,8 @@
                        <h1>Deep Graph Library</h1>
                        <p>Easy Deep Learning on Graphs</p>
                          <div class="slider-buttons">
-                            <a href="/pages/start.html" class="themeix-btn primary-bg">Get Started</a>
-                            <a href="https://github.com/dmlc/dgl/releases" class="themeix-btn white-bg">Latest Version</a>
+                            <a href="/pages/start.html" class="themeix-btn primary-bg">Install</a>
+                            <a href="https://github.com/dmlc/dgl/" class="themeix-btn white-bg">GitHub</a>
                         </div>
                    </div>
                    </div>
@@ -391,51 +391,247 @@
 <div class="our-community-area themeix-ptb">
     <div class="container">
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="single-community">
                     <h3>Framework Agnostic</h3>
-                    <p>Build your models with PyTorch, TensorFlow or MXNet.</p>
+                    <p>Build your models with PyTorch, TensorFlow or Apache MXNet.</p>
+                    <img src="/assets/images/framework.jpg" alt="framework" width=50% />
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
+                <div class="single-community">
+                    <h3>Efficient and Scalable</h3>
+                    <p>Fast and memory-efficient message passing primitives for training
+                    Graph Neural Networks. Scale to giant graphs via multi-GPU acceleration
+                    and distributed training infrastructure.</p>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="single-community">
+                    <h3>Diverse Ecosystem</h3>
+                    <p>DGL empowers a variety of domain-specific projects including <a href="https://github.com/awslabs/dgl-ke">DGL-KE</a> for learning
+                    large-scale knowledge graph embeddings, <a href="https://github.com/awslabs/dgl-lifesci">DGL-LifeSci</a> for
+                    bioinformatics and cheminformatics, and many others.</p>
+                </div>
+            </div>
+        </div>
+        <!--
+        <div class="row">
+            <div class="col-sm-4">
                 <div class="single-community">
                     <img src="/assets/images/framework.jpg" alt="framework" width=70% />
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="single-community">
-                    <h3>High Performant</h3>
-                    <p>DGL adopts advanced optimization techniques like kernel fusion, multi-thread and multi-process acceleration, and
-                    automatic sparse format tuning. Compared with other popular GNN frameworks such as PyTorch Geometric, DGL is both
-                    faster and more memory-friendly.</p>
+                    <img src="/assets/images/vspyg.jpg" alt="vspyg" width=70% />
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="single-community">
-                    <img src="/assets/images/vspyg.jpg" alt="vspyg" width=60% />
+                    <img src="/assets/images/dgl-app.jpg" alt="dglapp" width=70% />
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="single-community">
-                    <h3>Ecosystem of Domain specific toolkits</h3>
-                    <p>DGL supports a variety of domains. <a href="https://github.com/awslabs/dgl-ke">DGL-KE</a> is an easy-to-use and highly scalable package for learning
-                    large-scale knowledge graph embeddings. <a href="https://github.com/awslabs/dgl-lifesci">DGL-LifeSci</a> is a specialized package for applications
-                    in bioinformatics and cheminformatics powered by graph neural networks.</p>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="single-community">
-                    <img src="/assets/images/dgl-app.jpg" alt="dglapp" width=60% />
-                </div>
-            </div>
-        </div>
+        -->
     </div>
 </div>
 <!-- End HighLights -->
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.jqueryui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
+
+<!-- import Vue.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.min.js"></script>
+
+<!-- import Vue.multiselect -->
+<script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
+<link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+
+<div class="our-community-area">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="single-community">
+          <h3>Rich Examples To Get Started With</h3>
+          <p>90+ off-the-shelf implementations of popular models in graph deep learning for quick
+          experiments with research baselines, model innovation or simply learning by examples.
+          Search by picking tags from the picture or the list below.
+          </p>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <canvas id="wordcloud-canvas" class="wordcloud-canvas" width="600" height="300"></canvas>
+      </div>
+    </div>
+    <div class="row" style="padding-top: 10px">
+      <div style="margin-bottom: 10px;">
+        <multiselect v-model="value" :options="options" :close-on-select="false" :clear-on-select="false"
+          :multiple="true" :hide-selected="true" :preserve-search="true" placeholder="Select tags to find examples" label="name"
+          track-by="name" :preselect-first="false" id="multiselect-paper" @input="onChange">
+        </multiselect>
+      </div>
+      <table id="table" class="compact" cellspacing="0" width="100%"> </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Run after the Document DOM tree is constructed
+  var multiselect;
+  $(document).ready(function () { // or shorthand of $( function () { 
+    // Your jQuery scripts here!
+    $.get("/assets/README.md", function (data) {
+      var text = data;
+
+      /* get the nth capturing group for each match: */
+      function getMatches(string, regex, index) {
+        index || (index = 1); // default to the first capturing group
+        var matches = [];
+        var match;
+        while (match = regex.exec(string)) {
+          matches.push(match[index]);
+        }
+        return matches;
+      }
+
+      //Match or replace using some regex
+      const tags_regex = /\b(Tags:\s)(.*)/g;
+      var tags = getMatches(data, tags_regex, 2);
+
+      // get all current tags
+      var all_tags = new Set();
+      var tag_count = {}
+      for (var i = 0; i < tags.length; i++) {
+        var subtags = tags[i].split(", ");
+
+        for (var j = 0; j < subtags.length; j++) {
+          var clean_tag = subtags[j].trim().toLowerCase();
+          all_tags.add(clean_tag);
+          if (!(clean_tag in tag_count)) {
+            tag_count[clean_tag] = 0
+          }
+          tag_count[clean_tag] = tag_count[clean_tag] + 1;
+        }
+      }
+      // console.log(tag_count)
+      var count_array = Object.entries(tag_count)
+      // console.log(count_array)
+
+      var tag_lists = []
+      for (let item of all_tags) {
+        tag_lists.push({ "name": item })
+      };
+      tag_lists.sort(function (first, second) {
+        return first["name"].localeCompare(second["name"])
+      })
+
+
+      const papers_regex = /(<a\s)(.*)(\n)/g;
+      // debugger;
+      var papers = getMatches(data, papers_regex, 2);
+      var paper_lists = []
+      for (let paper of papers) {
+        var anchor = paper.split("\"")[1]
+        var paper_title = paper.split(".")[1].trim()
+        paper_lists.push({ "title": paper_title, "anchor": anchor })
+      }
+      //console.log(paper_lists);
+      //console.log(tags);
+      /*  document.write(papers);  */
+      function to_anchor_link(title, anchor) {
+        return "<a href=\"https://github.com/dmlc/dgl/blob/master/examples/README.md#" + anchor + "\">" + title + "</a>";
+      }
+      // Create a obj list where each obj is a matching of the Title and Tags
+      var obj = [];
+      for (var i = 0; i < paper_lists.length; i++) {
+        obj.push({
+          "Paper Title": to_anchor_link(paper_lists[i]["title"], paper_lists[i]["anchor"]),
+          "Tags": tags[i]
+        });
+      }
+      /* console.log(obj); */
+
+      // Just and example of building a dataTable from json
+      // Without Search **fully** enabled
+      var table = $('#table').DataTable({
+        data: obj,
+        columns: Object.keys(obj[0]).map(function (item) {
+          return {
+            data: item,
+            title: item
+          }
+        }),
+        pageLength: 5,
+      },)
+
+
+      multiselect = new Vue({
+        components: {
+          Multiselect: window.VueMultiselect.default
+        },
+        data: {
+          value: [],
+          options: tag_lists
+        },
+        methods: {
+          // customLabel (option) {
+          //   return `${option.library} - ${option.language}`
+          // },
+          onChange(option) {
+            var selected = [];
+            for (var i = 0; i < this.value.length; i++) {
+              selected.push(this.value[i]["name"])
+            }
+            // var regex = selected.join("|");
+            // console.log(regex)
+            if (selected.length == 0) {
+              $.fn.dataTable.ext.search = []
+            } else {
+              $.fn.dataTable.ext.search = [function (settings, data, dataIndex) {
+                var value = data[1]
+                for (var i = 0; i < selected.length; i++) {
+                  if (!value.toLowerCase().includes(selected[i].toLowerCase())) {
+                    return false
+                  }
+                }
+                return true
+              }]
+            }
+            $('#table').DataTable().draw();
+          }
+        }
+      }).$mount('#multiselect-paper')
+
+      var $canvas = $('.wordcloud-canvas');
+      var w = WordCloud(document.getElementById('wordcloud-canvas'),
+        {
+          list: count_array,
+          gridSize: Math.round(16 * $canvas.width() / 1024),
+          weightFactor: function (size) {
+            return Math.pow(size, 0.5) * 12 * $canvas.width() / 1024;
+          },
+          minSize: 12 * $canvas.width() / 1024 + 1,
+          shrinkToFit: true,
+          drawOutOfBound: false,
+          hover: function (item) {
+            if (item == null) {
+              $canvas.css('cursor', 'auto');
+            } else {
+              $canvas.css('cursor', 'pointer');
+            }
+          },
+          click: function (item) {
+            multiselect.value = [{"name": item[0]}]
+            multiselect.onChange()
+          },
+        })
+    });
+
+  });
+
+</script>
 
    <!-- Start Document Source Area -->
 <section>
@@ -678,6 +874,11 @@
 
     <!-- jquery min -->
     <script src="/assets/js/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    
 
     <!-- Bootstrap Js -->
     <script src="/assets/js/bootstrap.min.js"></script>
