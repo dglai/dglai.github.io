@@ -15,17 +15,20 @@
       <div class="col-sm-6">
         <div class="single-community">
           <h3>Rich Examples To Get Started With</h3>
-          <p>blah blah blah</p>
+          <p>90+ off-the-shelf implementations of popular models in graph deep learning for quick
+          experiments with research baselines, model innovation or simply learning by examples.
+          Search by picking tags from the picture or the list below.
+          </p>
         </div>
       </div>
       <div class="col-sm-6">
-        <canvas id="wordcloud" style="margin: 0, auto; width: 90%; height: auto;">
+        <canvas id="wordcloud-canvas" class="wordcloud-canvas" width="600" height="300"></canvas>
       </div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-top: 10px">
       <div style="margin-bottom: 10px;">
         <multiselect v-model="value" :options="options" :close-on-select="false" :clear-on-select="false"
-          :multiple="true" :hide-selected="true" :preserve-search="true" placeholder="Select tags" label="name"
+          :multiple="true" :hide-selected="true" :preserve-search="true" placeholder="Select tags to find examples" label="name"
           track-by="name" :preselect-first="false" id="multiselect-paper" @input="onChange">
         </multiselect>
       </div>
@@ -161,17 +164,24 @@
         }
       }).$mount('#multiselect-paper')
 
-      var w = WordCloud(document.getElementById('wordcloud'),
+      var $canvas = $('.wordcloud-canvas');
+      var w = WordCloud(document.getElementById('wordcloud-canvas'),
         {
           list: count_array,
-          gridSize: Math.round(16 * $('#wordcloud').width() / 1024),
+          gridSize: Math.round(16 * $canvas.width() / 1024),
           weightFactor: function (size) {
-            return Math.pow(size, 1.7) * $('#wordcloud').width() / 1024;
+            return Math.pow(size, 0.5) * 12 * $canvas.width() / 1024;
           },
-          minSize: 8,
+          minSize: 12 * $canvas.width() / 1024 + 1,
           shrinkToFit: true,
           drawOutOfBound: false,
-          hover: window.drawBox,
+          hover: function (item) {
+            if (item == null) {
+              $canvas.css('cursor', 'auto');
+            } else {
+              $canvas.css('cursor', 'pointer');
+            }
+          },
           click: function (item) {
             multiselect.value = [{"name": item[0]}]
             multiselect.onChange()
