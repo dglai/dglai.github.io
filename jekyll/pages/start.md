@@ -5,10 +5,23 @@ navigation: true
 sub_title: Install
 ---
 
+System Requirements
+---
+
+The minimal OS requirement is:
+
+* all Linux distributions no earlier than Ubuntu 16.04
+* macOS X 10.9+
+* Windows 10 (with [VC2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=48145) Installed)
+
+Minimal Python version: 3.6
+
+DGL works with [PyTorch](https://pytorch.org/) 1.5.0+, [Apache MXNet](https://mxnet.apache.org/) 1.6+, and [TensorFlow](https://tensorflow.org/) 2.3+.
+
 Install from source
 ---
 
-Check out our [guide on build from source](https://docs.dgl.ai/install/index.html#install-from-source).
+Check out the instructions to [build from source](https://docs.dgl.ai/install/index.html#install-from-source).
 
 Learning DGL
 ---
