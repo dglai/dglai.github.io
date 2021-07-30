@@ -1,4 +1,136 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2021-07-23T16:25:15+08:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">v0.6 Release Highlight</title><link href="https://www.dgl.ai/release/2021/02/25/release.html" rel="alternate" type="text/html" title="v0.6 Release Highlight" /><published>2021-02-25T00:00:00+08:00</published><updated>2021-02-25T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2021/02/25/release</id><content type="html" xml:base="https://www.dgl.ai/release/2021/02/25/release.html">&lt;p&gt;The recent DGL 0.6 release is a major update on many aspects of the project
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2021-07-26T16:43:22+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">v0.7 Release Highlights</title><link href="https://www.dgl.ai/release/2021/07/26/release.html" rel="alternate" type="text/html" title="v0.7 Release Highlights" /><published>2021-07-26T00:00:00+00:00</published><updated>2021-07-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2021/07/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2021/07/26/release.html">&lt;p&gt;v0.7 brings improvements on the low-level system infrastructure as well as on
+the high-level user-facing utilities. Many of
+them involve contributions from the user community. We are grateful to see such
+a growing trend and welcome more in the future. Here are the notable
+updates.&lt;/p&gt;
+
+&lt;h2 id=&quot;gpu-based-neighbor-sampling&quot;&gt;GPU-based Neighbor Sampling&lt;/h2&gt;
+
+&lt;p&gt;We worked with NVIDIA to make DGL support uniform neighbor sampling and MFG
+conversion on GPU. This removes the need to move samples from CPU to GPU in
+each iteration and at the same time accelerate the sampling step using GPU
+acceleration. As a result, experiment for GraphSAGE on the ogbn-product graph
+gets a &lt;strong&gt;&amp;gt;10x speedup&lt;/strong&gt; (reduced from 113s to 11s per epoch) on a g3.16x
+instance. To enable the feature, create a NodeDataLoader with a GPU graph and
+specify the sampling device to be on GPU:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;             &lt;span class=&quot;c&quot;&gt;# create a graph&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'cuda:0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# move the graph to GPU&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# create a data loader&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dataloader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataloading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NodeDataLoader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;                                &lt;span class=&quot;c&quot;&gt;# now accepts graph on GPU&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;train_nid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'cuda:0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;# specify the sampling device&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;num_workers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;                    &lt;span class=&quot;c&quot;&gt;# num_workers must be 0&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;batch_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;drop_last&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;shuffle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# training loop&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sample_graphs&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataloader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;# the produced sample_graphs are already on GPU&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;train_on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sample_graphs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The following docs have been updated accordingly:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A new user guide chapter &lt;a href=&quot;https://docs.dgl.ai/guide/minibatch-gpu-sampling.html&quot;&gt;Using GPU for Neighborhood
+Sampling&lt;/a&gt; about when
+and how to use this new feature.&lt;/li&gt;
+  &lt;li&gt;The API doc of &lt;a href=&quot;https://docs.dgl.ai/api/python/dgl.dataloading.html#dgl.dataloading.pytorch.NodeDataLoader&quot;&gt;NodeDataLoader&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;em&gt;We thank @nv-dlasalle from NVIDIA for contributing the CUDA kernels for
+performing neighbor sampling as well as MFG conversion.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;improved-cpu-message-passing-kernel&quot;&gt;Improved CPU Message Passing Kernel&lt;/h2&gt;
+
+&lt;p&gt;The core SpMM kernel for GNN message passing on CPU has been re-implemented.
+The new kernel performs tiling on CSR matrix and leverages Intel’s LibXSMM for
+kernel generation.  Please read the paper
+&lt;a href=&quot;https://arxiv.org/abs/2104.06700&quot;&gt;https://arxiv.org/abs/2104.06700&lt;/a&gt; for more
+details. The feature is turned on automatically for Xeon CPUs which shows significant
+speed boost. &lt;em&gt;We thank @sanchit-misra and Intel for contributing the new CPU kernel.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2021-07-26-release/cpu_kernel.png&quot; alt=&quot;cpu_kernel&quot; width=&quot;600x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;better-nodeembedding-for-multi-gpu-training-and-distributed-training&quot;&gt;Better NodeEmbedding for multi-GPU training and distributed training&lt;/h2&gt;
+
+&lt;p&gt;DGL now utilizes &lt;a href=&quot;https://developer.nvidia.com/nccl&quot;&gt;NCCL&lt;/a&gt; to synchronize the
+gradients of sparse node embeddings (&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.NodeEmbedding&lt;/code&gt;) during training. It
+is enabled automatically when users specify nccl as the backend for
+&lt;code class=&quot;highlighter-rouge&quot;&gt;torch.distributed.init_process_group&lt;/code&gt;. Our experiment shows a &lt;strong&gt;20% speedup&lt;/strong&gt;
+(reduced from 47.2s to 39.5s per epoch) on a g4dn.12xlarge (4 T4 GPU) instance
+for training RGCN on ogbn-mag graph. &lt;em&gt;We thank the effort from @nv-dlasalle and
+NVIDIA.&lt;/em&gt; Distributed node embedding now uses synchronized gradient update,
+making the training more stable.&lt;/p&gt;
+
+&lt;h2 id=&quot;dgl-kubernetes-operator&quot;&gt;DGL Kubernetes Operator&lt;/h2&gt;
+
+&lt;p&gt;Qihoo360 built a DGL Operator that makes running graph neural network
+distributed or non-distributed training on Kubernetes. Please check out their
+repository for usage: &lt;a href=&quot;https://github.com/Qihoo360/dgl-operator&quot;&gt;https://github.com/Qihoo360/dgl-operator&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;other-performance-gains&quot;&gt;Other Performance Gains&lt;/h2&gt;
+
+&lt;p&gt;Apart from the major feature improvement, we have also received helps from
+community contributors for fixing performance issues. Notably, DGL’s CPU random
+walk sampling is improved by 24x on medium to large size graphs; the memory
+consumption of distributed training set splitting drops by ~7x on graphs of
+billion scale.&lt;/p&gt;
+
+&lt;h2 id=&quot;more-than-more-models&quot;&gt;More than More Models&lt;/h2&gt;
+
+&lt;p&gt;As usual, the release brings a batch of &lt;strong&gt;19 new model examples&lt;/strong&gt; to the
+repository bringing the total number to be &lt;strong&gt;over 90&lt;/strong&gt;. To help users find examples
+that fit their needs (e.g. certain topic, datasets), we present a new search
+tool on &lt;a href=&quot;https://www.dgl.ai/&quot;&gt;dgl.ai&lt;/a&gt; which supports finding examples by
+keywords.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2021-07-26-release/0.7-high.gif&quot; alt=&quot;search&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Below are the new models added in v0.7.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Interaction Networks for Learning about Objects, Relations, and Physics&lt;/li&gt;
+  &lt;li&gt;Multi-GPU RGAT for OGB-LSC Node Classification&lt;/li&gt;
+  &lt;li&gt;Network Embedding with Completely-imbalanced Labels&lt;/li&gt;
+  &lt;li&gt;Temporal Graph Networks improved&lt;/li&gt;
+  &lt;li&gt;Diffusion Convolutional Recurrent Neural Network&lt;/li&gt;
+  &lt;li&gt;Gated Attention Networks for Learning on Large and Spatiotemporal Graphs&lt;/li&gt;
+  &lt;li&gt;DeeperGCN&lt;/li&gt;
+  &lt;li&gt;Deep Graph Contrastive Representation Learning&lt;/li&gt;
+  &lt;li&gt;Graph Neural Networks Inspired by Classical Iterative Algorithms&lt;/li&gt;
+  &lt;li&gt;GraphSAINT&lt;/li&gt;
+  &lt;li&gt;Label Propagation&lt;/li&gt;
+  &lt;li&gt;Combining Label Propagation and Simple Models Out-performs Graph Neural Networks&lt;/li&gt;
+  &lt;li&gt;GCNII&lt;/li&gt;
+  &lt;li&gt;Latent Dirichlet Allocation on GPU&lt;/li&gt;
+  &lt;li&gt;A Heterogeneous Information Network based Cross Domain Insurance Recommendation System for Cold Start Users&lt;/li&gt;
+  &lt;li&gt;Five heterogeneous graph models: HetGNN/GTN/HAN/NSHE/MAGNN.  Sparse matrix
+multiplication and addition with autograd are also added as a result.&lt;/li&gt;
+  &lt;li&gt;Heterogeneous Graph Attention Networks with minibatch sampling&lt;/li&gt;
+  &lt;li&gt;Learning Hierarchical Graph Neural Networks for Image Clustering&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;tutorials-for-multi-gpu-and-distributed-training&quot;&gt;Tutorials for Multi-GPU and Distributed Training&lt;/h2&gt;
+
+&lt;p&gt;With a growing interest in applying GNNs on large-scale graphs, we see many
+questions from our users about how to utilize multi-GPU or multi-machine for
+acceleration. In this release, we published two new tutorials about multi-GPU
+training for node classification and graph classification, respectively. There
+is also a new tutorial about distributed training across multiple machines. All
+of them are available at &lt;a href=&quot;https://docs.dgl.ai/&quot;&gt;docs.dgl.ai&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2021-07-26-release/multi-gpu-tut.png&quot; alt=&quot;tutorial&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;further-readings&quot;&gt;Further Readings&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/v0.7.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/v0.7.0&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">v0.7 brings improvements on the low-level system infrastructure as well as on the high-level user-facing utilities. Many of them involve contributions from the user community. We are grateful to see such a growing trend and welcome more in the future. Here are the notable updates.</summary></entry><entry><title type="html">v0.6 Release Highlight</title><link href="https://www.dgl.ai/release/2021/02/25/release.html" rel="alternate" type="text/html" title="v0.6 Release Highlight" /><published>2021-02-25T00:00:00+00:00</published><updated>2021-02-25T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2021/02/25/release</id><content type="html" xml:base="https://www.dgl.ai/release/2021/02/25/release.html">&lt;p&gt;The recent DGL 0.6 release is a major update on many aspects of the project
 including documentation, APIs, system speed, and scalability. This article
 highlights some of the new features and enhancements.&lt;/p&gt;
 
@@ -78,7 +210,7 @@ training loops and code snippets in DGL to realize them.&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/v0.6.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/v0.6.0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.6 release is a major update on many aspects of the project including documentation, APIs, system speed, and scalability. This article highlights some of the new features and enhancements.</summary></entry><entry><title type="html">DGL Empowers Service for Predictions on Connected Datasets with Graph Neural Networks</title><link href="https://www.dgl.ai/news/2020/12/15/neptuneml.html" rel="alternate" type="text/html" title="DGL Empowers Service for Predictions on Connected Datasets with Graph Neural Networks" /><published>2020-12-15T00:00:00+08:00</published><updated>2020-12-15T00:00:00+08:00</updated><id>https://www.dgl.ai/news/2020/12/15/neptuneml</id><content type="html" xml:base="https://www.dgl.ai/news/2020/12/15/neptuneml.html">&lt;p&gt;AWS just announced the availability of &lt;a href=&quot;http://aws.amazon.com/neptune/machine-learning/&quot;&gt;Neptune ML&lt;/a&gt;.
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.6 release is a major update on many aspects of the project including documentation, APIs, system speed, and scalability. This article highlights some of the new features and enhancements.</summary></entry><entry><title type="html">DGL Empowers Service for Predictions on Connected Datasets with Graph Neural Networks</title><link href="https://www.dgl.ai/news/2020/12/15/neptuneml.html" rel="alternate" type="text/html" title="DGL Empowers Service for Predictions on Connected Datasets with Graph Neural Networks" /><published>2020-12-15T00:00:00+00:00</published><updated>2020-12-15T00:00:00+00:00</updated><id>https://www.dgl.ai/news/2020/12/15/neptuneml</id><content type="html" xml:base="https://www.dgl.ai/news/2020/12/15/neptuneml.html">&lt;p&gt;AWS just announced the availability of &lt;a href=&quot;http://aws.amazon.com/neptune/machine-learning/&quot;&gt;Neptune ML&lt;/a&gt;.
 Amazon Neptune is a fast,
 reliable, fully managed graph database service that makes it easy to build and
 run applications that work with highly connected datasets. Neptune ML is a new
@@ -95,7 +227,7 @@ without the need to learn new tools and ML technologies.&lt;/p&gt;
 the future. For more information about Neptune ML, please visit the &lt;a href=&quot;https://aws.amazon.com/blogs/database/announcing-amazon-neptune-ml-easy-fast-and-accurate-predictions-on-graphs/&quot;&gt;AWS blog&lt;/a&gt;
 and &lt;a href=&quot;https://aws.amazon.com/neptune/machine-learning/&quot;&gt;product page&lt;/a&gt;. Watch the
 &lt;a href=&quot;https://reinvent.awsevents.com/keynotes/&quot;&gt;re:Invent 2020 Machine Learning Keynote&lt;/a&gt;
-by Swami Sivasubramanian for the full announcement.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">AWS just announced the availability of Neptune ML. Amazon Neptune is a fast, reliable, fully managed graph database service that makes it easy to build and run applications that work with highly connected datasets. Neptune ML is a new capability that uses graph neural networks (GNNs), a machine learning (ML) technique purpose-built for graphs, for making easy, fast, and accurate predictions on graphs. The accuracy of most predictions for graphs increases to 50% with Neptune ML when compared to non-graph methods. Neptune ML uses the Deep Graph Library (DGL), an open-source library to which AWS contributes that makes it easy to develop and apply GNN models on graph data. Now, developers can create, train, and apply ML on Neptune data in hours instead of weeks without the need to learn new tools and ML technologies.</summary></entry><entry><title type="html">v0.5.3 Patch Update</title><link href="https://www.dgl.ai/release/2020/12/04/release.html" rel="alternate" type="text/html" title="v0.5.3 Patch Update" /><published>2020-12-04T00:00:00+08:00</published><updated>2020-12-04T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2020/12/04/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/12/04/release.html">&lt;p&gt;This is a patch release mainly for supporting CUDA 11.0.  Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.&lt;/p&gt;
+by Swami Sivasubramanian for the full announcement.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">AWS just announced the availability of Neptune ML. Amazon Neptune is a fast, reliable, fully managed graph database service that makes it easy to build and run applications that work with highly connected datasets. Neptune ML is a new capability that uses graph neural networks (GNNs), a machine learning (ML) technique purpose-built for graphs, for making easy, fast, and accurate predictions on graphs. The accuracy of most predictions for graphs increases to 50% with Neptune ML when compared to non-graph methods. Neptune ML uses the Deep Graph Library (DGL), an open-source library to which AWS contributes that makes it easy to develop and apply GNN models on graph data. Now, developers can create, train, and apply ML on Neptune data in hours instead of weeks without the need to learn new tools and ML technologies.</summary></entry><entry><title type="html">v0.5.3 Patch Update</title><link href="https://www.dgl.ai/release/2020/12/04/release.html" rel="alternate" type="text/html" title="v0.5.3 Patch Update" /><published>2020-12-04T00:00:00+00:00</published><updated>2020-12-04T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2020/12/04/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/12/04/release.html">&lt;p&gt;This is a patch release mainly for supporting CUDA 11.0.  Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.&lt;/p&gt;
 
 &lt;p&gt;Other fixes include:&lt;/p&gt;
 &lt;ul&gt;
@@ -120,7 +252,7 @@ by Swami Sivasubramanian for the full announcement.&lt;/p&gt;</content><author><
 
 &lt;p&gt;The Chinese user guide has been released for chapter 1 to 4. Further chapters will be released soon.&lt;/p&gt;
 
-&lt;p&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.3&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.3&lt;/a&gt;&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">This is a patch release mainly for supporting CUDA 11.0. Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.</summary></entry><entry><title type="html">What is new in DGL v0.5 release?</title><link href="https://www.dgl.ai/release/2020/08/26/release.html" rel="alternate" type="text/html" title="What is new in DGL v0.5 release?" /><published>2020-08-26T00:00:00+08:00</published><updated>2020-08-26T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2020/08/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/08/26/release.html">&lt;p&gt;The recent DGL 0.5 release is a major update on many aspects of the project
+&lt;p&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.3&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.3&lt;/a&gt;&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">This is a patch release mainly for supporting CUDA 11.0. Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.</summary></entry><entry><title type="html">What is new in DGL v0.5 release?</title><link href="https://www.dgl.ai/release/2020/08/26/release.html" rel="alternate" type="text/html" title="What is new in DGL v0.5 release?" /><published>2020-08-26T00:00:00+00:00</published><updated>2020-08-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2020/08/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/08/26/release.html">&lt;p&gt;The recent DGL 0.5 release is a major update on many aspects of the project
 including documentation, APIs, system speed and scalability. This article
 highlights some of the new features and enhancements.&lt;/p&gt;
 
@@ -229,7 +361,7 @@ on the ogbn-paper100M dataset.&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Our updated white paper available at: &lt;a href=&quot;https://arxiv.org/abs/1909.01315&quot;&gt;https://arxiv.org/abs/1909.01315&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.5 release is a major update on many aspects of the project including documentation, APIs, system speed and scalability. This article highlights some of the new features and enhancements.</summary></entry><entry><title type="html">Fighting COVID-19 with Deep Graph</title><link href="https://www.dgl.ai/news/2020/06/09/covid.html" rel="alternate" type="text/html" title="Fighting COVID-19 with Deep Graph" /><published>2020-06-09T00:00:00+08:00</published><updated>2020-06-09T00:00:00+08:00</updated><id>https://www.dgl.ai/news/2020/06/09/covid</id><content type="html" xml:base="https://www.dgl.ai/news/2020/06/09/covid.html">&lt;p&gt;Since December 2019, the rapid spread of COVID-19 corona-viruses worldwide has
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.5 release is a major update on many aspects of the project including documentation, APIs, system speed and scalability. This article highlights some of the new features and enhancements.</summary></entry><entry><title type="html">Fighting COVID-19 with Deep Graph</title><link href="https://www.dgl.ai/news/2020/06/09/covid.html" rel="alternate" type="text/html" title="Fighting COVID-19 with Deep Graph" /><published>2020-06-09T00:00:00+00:00</published><updated>2020-06-09T00:00:00+00:00</updated><id>https://www.dgl.ai/news/2020/06/09/covid</id><content type="html" xml:base="https://www.dgl.ai/news/2020/06/09/covid.html">&lt;p&gt;Since December 2019, the rapid spread of COVID-19 corona-viruses worldwide has
 caused more than 7 million infections and more than 400,000 deaths. The rapid
 spread of COVID-19 demonstrates the dire need for quick and effective drug
 discovery. Drug repurposing is a drug discovery paradigm that uses existing
@@ -486,7 +618,7 @@ steps are as following:&lt;/p&gt;
   &lt;li&gt;Check out the &lt;a href=&quot;https://github.com/gnn4dr/DRKG&quot;&gt;DRKG repository&lt;/a&gt;.&lt;/li&gt;
   &lt;li&gt;Check out the &lt;a href=&quot;https://www.amazon.science/blog/amazon-web-services-open-sources-biological-knowledge-graph-to-fight-covid-19&quot;&gt;announcement&lt;/a&gt; on Amazon Science.&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/147329945&quot;&gt;Blog in chinese&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">Since December 2019, the rapid spread of COVID-19 corona-viruses worldwide has caused more than 7 million infections and more than 400,000 deaths. The rapid spread of COVID-19 demonstrates the dire need for quick and effective drug discovery. Drug repurposing is a drug discovery paradigm that uses existing drugs for new therapeutic indications. It has the advantages of significantly reducing time and cost relative to de novo drug discovery. Drug repurposing with knowledge graphs presents a promising strategy for COVID-19 treatment.</summary></entry><entry><title type="html">Learning Graph Neural Networks with DGL – The WebConf 2020 Tutorial</title><link href="https://www.dgl.ai/news/2020/05/24/webconf.html" rel="alternate" type="text/html" title="Learning Graph Neural Networks with DGL -- The WebConf 2020 Tutorial" /><published>2020-05-24T00:00:00+08:00</published><updated>2020-05-24T00:00:00+08:00</updated><id>https://www.dgl.ai/news/2020/05/24/webconf</id><content type="html" xml:base="https://www.dgl.ai/news/2020/05/24/webconf.html">&lt;p&gt;In the last few years, graph neural networks (GNNs) have emerged as a promising
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">Since December 2019, the rapid spread of COVID-19 corona-viruses worldwide has caused more than 7 million infections and more than 400,000 deaths. The rapid spread of COVID-19 demonstrates the dire need for quick and effective drug discovery. Drug repurposing is a drug discovery paradigm that uses existing drugs for new therapeutic indications. It has the advantages of significantly reducing time and cost relative to de novo drug discovery. Drug repurposing with knowledge graphs presents a promising strategy for COVID-19 treatment.</summary></entry><entry><title type="html">Learning Graph Neural Networks with DGL – The WebConf 2020 Tutorial</title><link href="https://www.dgl.ai/news/2020/05/24/webconf.html" rel="alternate" type="text/html" title="Learning Graph Neural Networks with DGL -- The WebConf 2020 Tutorial" /><published>2020-05-24T00:00:00+00:00</published><updated>2020-05-24T00:00:00+00:00</updated><id>https://www.dgl.ai/news/2020/05/24/webconf</id><content type="html" xml:base="https://www.dgl.ai/news/2020/05/24/webconf.html">&lt;p&gt;In the last few years, graph neural networks (GNNs) have emerged as a promising
 new supervised learning framework capable of bringing the power of deep
 representation learning to graph and relational data.&lt;/p&gt;
 
@@ -516,7 +648,7 @@ efficient GNN-based training and inference programs.&lt;/p&gt;
   &lt;li&gt;GNN models for basic graph tasks&lt;/li&gt;
   &lt;li&gt;GNN training on large graphs&lt;/li&gt;
   &lt;li&gt;GNN models for real-world applications&lt;/li&gt;
-&lt;/ol&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">In the last few years, graph neural networks (GNNs) have emerged as a promising new supervised learning framework capable of bringing the power of deep representation learning to graph and relational data.</summary></entry><entry><title type="html">What is new in DGL v0.4.3 release?</title><link href="https://www.dgl.ai/release/2020/04/01/release.html" rel="alternate" type="text/html" title="What is new in DGL v0.4.3 release?" /><published>2020-04-01T00:00:00+08:00</published><updated>2020-04-01T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2020/04/01/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/04/01/release.html">&lt;p&gt;The DGL v0.4.3 release brings many new features for an enhanced usability and
+&lt;/ol&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">In the last few years, graph neural networks (GNNs) have emerged as a promising new supervised learning framework capable of bringing the power of deep representation learning to graph and relational data.</summary></entry><entry><title type="html">What is new in DGL v0.4.3 release?</title><link href="https://www.dgl.ai/release/2020/04/01/release.html" rel="alternate" type="text/html" title="What is new in DGL v0.4.3 release?" /><published>2020-04-01T00:00:00+00:00</published><updated>2020-04-01T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2020/04/01/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/04/01/release.html">&lt;p&gt;The DGL v0.4.3 release brings many new features for an enhanced usability and
 system efficiency. The article takes a peek at some of the major highlights.&lt;/p&gt;
 
 &lt;h2 id=&quot;tensorflow-support&quot;&gt;TensorFlow support&lt;/h2&gt;
@@ -800,7 +932,7 @@ tutorials are coming.&lt;/p&gt;
   &lt;li&gt;Constructing &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; no longer requires a &lt;code class=&quot;highlighter-rouge&quot;&gt;multigraph&lt;/code&gt; flag.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;More details can be found in the &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.4.3&quot;&gt;full release note&lt;/a&gt;.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The DGL v0.4.3 release brings many new features for an enhanced usability and system efficiency. The article takes a peek at some of the major highlights.</summary></entry><entry><title type="html">DGL v0.4 Release (heterogeneous graph update)</title><link href="https://www.dgl.ai/release/2019/10/08/release.html" rel="alternate" type="text/html" title="DGL v0.4 Release (heterogeneous graph update)" /><published>2019-10-08T00:00:00+08:00</published><updated>2019-10-08T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2019/10/08/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/10/08/release.html">&lt;p&gt;We are thrilled to announce the 0.4 release!  This includes:&lt;/p&gt;
+&lt;p&gt;More details can be found in the &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.4.3&quot;&gt;full release note&lt;/a&gt;.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The DGL v0.4.3 release brings many new features for an enhanced usability and system efficiency. The article takes a peek at some of the major highlights.</summary></entry><entry><title type="html">DGL v0.4 Release (heterogeneous graph update)</title><link href="https://www.dgl.ai/release/2019/10/08/release.html" rel="alternate" type="text/html" title="DGL v0.4 Release (heterogeneous graph update)" /><published>2019-10-08T00:00:00+00:00</published><updated>2019-10-08T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2019/10/08/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/10/08/release.html">&lt;p&gt;We are thrilled to announce the 0.4 release!  This includes:&lt;/p&gt;
 
 &lt;h1 id=&quot;heterogeneous-graph-support&quot;&gt;Heterogeneous Graph Support&lt;/h1&gt;
 
@@ -1021,7 +1153,7 @@ tutorials are coming.&lt;/p&gt;
   &lt;li&gt;CoraFull, Amazon, KarateClub, Coauthor datasets (#855 @VoVAllen )&lt;/li&gt;
   &lt;li&gt;More performance improvements&lt;/li&gt;
   &lt;li&gt;More bugfixes&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are thrilled to announce the 0.4 release! This includes:</summary></entry><entry><title type="html">DGL v0.3.1 Release</title><link href="https://www.dgl.ai/release/2019/08/28/release.html" rel="alternate" type="text/html" title="DGL v0.3.1 Release" /><published>2019-08-28T00:00:00+08:00</published><updated>2019-08-28T00:00:00+08:00</updated><id>https://www.dgl.ai/release/2019/08/28/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/08/28/release.html">&lt;p&gt;We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.model_zoo&lt;/code&gt; namespace). We will continue explore this idea and release more domain specific models and packages.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are thrilled to announce the 0.4 release! This includes:</summary></entry><entry><title type="html">DGL v0.3.1 Release</title><link href="https://www.dgl.ai/release/2019/08/28/release.html" rel="alternate" type="text/html" title="DGL v0.3.1 Release" /><published>2019-08-28T00:00:00+00:00</published><updated>2019-08-28T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2019/08/28/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/08/28/release.html">&lt;p&gt;We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.model_zoo&lt;/code&gt; namespace). We will continue explore this idea and release more domain specific models and packages.&lt;/p&gt;
 
 &lt;h1 id=&quot;new-apis&quot;&gt;New APIs&lt;/h1&gt;
 
@@ -1156,162 +1288,4 @@ tutorials are coming.&lt;/p&gt;
 &lt;h1 id=&quot;new-model-example&quot;&gt;New model example&lt;/h1&gt;
 &lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1711.08028.pdf&quot;&gt;Recurrent Relational Networks&lt;/a&gt; in PyTorch (credit: @HuXiangkun )&lt;/p&gt;
 
-&lt;p&gt;There are also many bug fixes and minor changes. We will list them in the next 0.4 major release.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under dgl.model_zoo namespace). We will continue explore this idea and release more domain specific models and packages.</summary></entry><entry><title type="html">Large-Scale Training of Graph Neural Networks</title><link href="https://www.dgl.ai/blog/2019/06/13/giant.html" rel="alternate" type="text/html" title="Large-Scale Training of Graph Neural Networks" /><published>2019-06-13T00:00:00+08:00</published><updated>2019-06-13T00:00:00+08:00</updated><id>https://www.dgl.ai/blog/2019/06/13/giant</id><content type="html" xml:base="https://www.dgl.ai/blog/2019/06/13/giant.html">&lt;p&gt;Many graph applications deal with &lt;em&gt;giant&lt;/em&gt; scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.&lt;/p&gt;
-
-&lt;h2 id=&quot;sampling-methods-in-dgl&quot;&gt;Sampling methods in DGL&lt;/h2&gt;
-&lt;p&gt;Giant graphs are a classic challenge, and is even more so in graph neural networks (GNN). In a GNN model, computing the embedding of a node depends on the embeddings of its neighbors. Such dependency leads to exponential growth of the number of nodes involved with number of GNN layers.&lt;/p&gt;
-
-&lt;p&gt;A typical technique is sampling, and there are many variants, some of them are applicable to GNN and DGL supports a few of them. The basic idea is to prune the node dependency to reduce the computation while still estimating the embeddings of GNN accurately. We leave the exact formulation of these techniques at the end of the tutorial (and users are encouraged to read them!), and describe the gists of them breifly here:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1706.02216&quot;&gt;neighbor sampling&lt;/a&gt;. This is the most basic: simply pick a small number of random neighbors.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1809.05343&quot;&gt;layer-wise sampling&lt;/a&gt;. The problem with simple neighbor sampling is that number of nodes needed will continue to grow exponentially with deeper layers. The idea here is to consider a layer as a whole and constrain the amount of samples per layer.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1806.01973&quot;&gt;random-walk sampling&lt;/a&gt;. As the name suggests, samples are picked up by performing random walks.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Sampling estimators can suffer from high variance. Obviously, including more neighbors will reduce the variance but this defeats the purpose of sampling. One interesting soution is &lt;a href=&quot;https://arxiv.org/abs/1710.10568&quot;&gt;control-variate sampling&lt;/a&gt;, a standard variance reduction technique used in Monte Carlo methods.&lt;/p&gt;
-
-&lt;p&gt;The basic idea is simple: given a random variable &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and we wish to estimate its expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [X] = \theta&lt;/script&gt;, the control variate method finds another random variable &lt;script type=&quot;math/tex&quot;&gt;Y&lt;/script&gt; which is highly correlated with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and whose expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [Y]&lt;/script&gt; can be easily computed. Control variate needs to keep extra state, but otherwise is effective in reducing sample size. In fact, one neighbor is enough, for the Reddit dataset!
-&lt;!--
-We experiment neighbor sampling and control variate sampling to train GCN and GraphSage on Reddit to evaluate the effectiveness of these two sampling methods. The result is shown in the figure below. For GCN, control variate sampling is much more effective than neighbor sampling. Sampling only one neighbor is sufficient to train GCN on the Reddit dataset. Similarly, when training GraphSage, we only need to sample one neighbor to get its accuracy over 96%.
---&gt;
-&lt;img src=&quot;https://i.imgur.com/DTPQu5V.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;system-support-for-giant-graphs&quot;&gt;System support for giant graphs&lt;/h2&gt;
-&lt;p&gt;Sampling provides the nice possiblity of dealing with giant graphs with a data-parallel perspective. DGL adds two components, see figure below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;Sampler&lt;/strong&gt;: a sampler constructs small subgraphs (&lt;code class=&quot;highlighter-rouge&quot;&gt;NodeFlow&lt;/code&gt;) from a given (giant) graph; tutorials of &lt;code class=&quot;highlighter-rouge&quot;&gt;NodeFlow&lt;/code&gt; can be found &lt;a href=&quot;https://doc.dgl.ai/tutorials/models/5_giant_graph/1_sampling_mx.html#sphx-glr-tutorials-models-5-giant-graph-1-sampling-mx-py&quot;&gt;here&lt;/a&gt;. Multiple samplers can be launched locally, or remotely, and on many machines.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;Graph store&lt;/strong&gt;: this prepares the I/O substrate to scale out with a large number of trainers. The graph store contains graph embeddings as well as its structure. For now, the implementation is based on shared-memory, supporting multi-processing training on multi-GPU and/or non-uniform memory access (NUMA) machines.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The shared-memory graph store has a similar interface to &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; for programming. DGL will also support a distributed graph store that can store graph embeddings across machines in the future release.&lt;/p&gt;
-
-&lt;!--
-The figure below shows the interaction of the trainer with the samplers and the graph store. The trainer takes subgraphs (`NodeFlow`) from the sampler and fetches graph embeddings from the graph store before training. The trainer can push new graph embeddings to the graph store or invoke some computation on the graph store.
---&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/OmLVXfo.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Now, let’s demonstrate how good these supports are.&lt;/p&gt;
-
-&lt;h3 id=&quot;multi-processing-training-and-optimizations-on-a-numa-machine&quot;&gt;Multi-processing training and optimizations on a NUMA machine&lt;/h3&gt;
-&lt;p&gt;The speedup is almost linear, and on Reddit dataset takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/eaiEcEi.png&quot; alt=&quot;&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;X1.32xlarge instance has 4 processors, each of which has 16 physical CPU cores.&lt;/li&gt;
-  &lt;li&gt;We need to be aware of NUMA architecture, otherwise there’s hardly any speedup with more CPU processors. Please see &lt;a href=&quot;https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py&quot;&gt;our tutorial&lt;/a&gt; for more details.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;!--
-To demonstrate the effectiveness of multi-processing training with this architecture on a NUMA machine and on a multi-GPU machine, we train GraphSage on the Reddit dataset with control-variate sampling. To optimize the training in a NUMA machine, we need to bind trainers' processes to specific NUMA nodes. Please see [our tutorial](https://doc.dgl.ai/tutorials/models/5_giant_graph/2_giant.html#sphx-glr-tutorials-models-5-giant-graph-2-giant-py) for more details how to bind processes on a NUMA node.
-The figure below shows that NUMA-aware multi-processing training can accelerate training almost by a factor of 4 on an X1.32xlarge instance where there are 4 processors, each of which has 16 physical CPU cores. We can see that NUMA-unaware training cannot take advantage of computation power of the machine. It is even slightly slower than just using one of the processors in the machine. NUMA-aware training, on the other hand, takes about only 20 seconds to converge to the accuracy of 96% with 20 iterations.
---&gt;
-
-&lt;h3 id=&quot;distributed-sampler&quot;&gt;Distributed Sampler&lt;/h3&gt;
-
-&lt;p&gt;We can move samplers around. For GCN variants where computation aren’t that intense, running samplers on small (and cheaper) machines and training on NUMA is both faster and more cost-effective (additional 20%-40% speedups).&lt;/p&gt;
-
-&lt;!--
-are ran on different machines, we can 
-We also notice that the sampling in many tasks takes a significant amount of time for the training process on a giant graph. So DGL supports distributed samplers for speeding up the sampling process on giant graphs. DGL allows users to launch multiple samplers on different machines concurrently, and each sampler can send its sampled subgraph (`NodeFlow`) to trainer machines continuously. 
-The figure below shows the overall performance improvement of training GCN and GraphSage on the Reddit dataset after deploying NUMA optimizations and distributed sampling. Our NUMA optimization speeds up the training by a factor of 3. The distributed sampling achieves additional 20%-40% speed improvement for different tasks.
---&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/e0MXa5N.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;scale-to-giant-graphs&quot;&gt;Scale to giant graphs&lt;/h3&gt;
-&lt;!--Finally, we would like to demonstrate the scalability of DGL on giant graphs. 
---&gt;
-&lt;p&gt;We create three large power-law graphs with &lt;a href=&quot;http://www.cs.cmu.edu/~christos/PUBLICATIONS/siam04.pdf&quot;&gt;RMAT&lt;/a&gt;. Each node is associated with 100 features and we compute node embeddings with 64 dimensions. Below shows the training speed and memory consumption of GCN with neighbor sampling.&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;#Nodes&lt;/th&gt;
-      &lt;th&gt;#Edges&lt;/th&gt;
-      &lt;th&gt;Time per epoch (s)&lt;/th&gt;
-      &lt;th&gt;Memory (GB)&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;5M&lt;/td&gt;
-      &lt;td&gt;250M&lt;/td&gt;
-      &lt;td&gt;4.7&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;50M&lt;/td&gt;
-      &lt;td&gt;2.5B&lt;/td&gt;
-      &lt;td&gt;46&lt;/td&gt;
-      &lt;td&gt;75&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;500M&lt;/td&gt;
-      &lt;td&gt;25B&lt;/td&gt;
-      &lt;td&gt;505&lt;/td&gt;
-      &lt;td&gt;740&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;We can see that DGL can scale to graphs with 500M nodes and 25B edges on an X1.32xlarge instance.&lt;/p&gt;
-
-&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
-&lt;p&gt;We are looking forward to your feedbacks and would love to hear your use cases and models for giant graphs! All of these new features shown in this blog will be in our upcoming v0.3 release. Please try them out and give us feedbacks.&lt;/p&gt;
-
-&lt;p&gt;We are continuing working on our infrastructure for training graph neural networks on giant graphs, which includes:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;In the infrastructure, we will add a distributed graph store to support fully distributed training for graph neural networks.&lt;/li&gt;
-  &lt;li&gt;We will experiment various strategies to accelerate distributed training. For example, we will experiment fast and scalable graph partitioning algorithms to reduce network communication.&lt;/li&gt;
-  &lt;li&gt;We will also add more demonstrations of other sampling strategies. For example, we will scale PinSage with our random walk sampler.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;sampling-techniques-in-gnn&quot;&gt;Sampling techniques in GNN&lt;/h2&gt;
-
-&lt;p&gt;Let’s use graph convolution network as an example to show these sampling techniques. Given a graph &lt;script type=&quot;math/tex&quot;&gt;G=(V, E)&lt;/script&gt;, represented as an adjacency matrix &lt;script type=&quot;math/tex&quot;&gt;A&lt;/script&gt;, with node features &lt;script type=&quot;math/tex&quot;&gt;H^{(0)} = X \in \mathbb{R}^{|V| \times m}&lt;/script&gt;, graph convolution networks (GCNs) compute the hidden features &lt;script type=&quot;math/tex&quot;&gt;H^{(l+1)}&lt;/script&gt; of the &lt;script type=&quot;math/tex&quot;&gt;(l+1)&lt;/script&gt;-th layer by computing for each &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;
-&lt;script type=&quot;math/tex&quot;&gt;h_v^{(l+1)} = \sigma ( z_v^{(l)} W^{(l)}) \qquad z_v^{(l)} = \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} h_u^{(l)}&lt;/script&gt;
-where &lt;script type=&quot;math/tex&quot;&gt;\mathcal{N}(v)&lt;/script&gt; denotes the neighborhood of &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\tilde{A}&lt;/script&gt; is a normalized version of &lt;script type=&quot;math/tex&quot;&gt;A&lt;/script&gt; such as &lt;script type=&quot;math/tex&quot;&gt;D^{-1} A&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\sigma(\cdot)&lt;/script&gt; is the activation function, &lt;script type=&quot;math/tex&quot;&gt;W^{(l)}&lt;/script&gt; is a trainable parameter of the &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th layer. For a &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-layer GCN model, the computation of &lt;script type=&quot;math/tex&quot;&gt;H^{(L)}&lt;/script&gt; requires the propagation from all of its &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors. This is too expensive in mini-batch training because the receptive field of a node grows exponentially with respective to the number of layers &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Neighbor Sampling&lt;/strong&gt;
-Instead of using all the &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors of a node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;, neighbor sampling randomly samples a few neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}^{(l)}(v)&lt;/script&gt; to estimate the aggregation &lt;script type=&quot;math/tex&quot;&gt;z_v^{(l)}&lt;/script&gt; of its total neighbors &lt;script type=&quot;math/tex&quot;&gt;\mathcal{N}(v)&lt;/script&gt; in &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th GCN layer by an unbiased estimator &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt;&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} \hat{h}_u^{(l)} \\
-\hat{h}_v^{(l+1)} = \sigma ( \hat{z}_v^{(l)} W^{(l)} )&lt;/script&gt;
-
-&lt;p&gt;Let &lt;script type=&quot;math/tex&quot;&gt;D^{(l)}&lt;/script&gt; be the number of neighbors to be sampled for each node at the &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th layer, then the receptive field size of each node can be controlled under &lt;script type=&quot;math/tex&quot;&gt;\prod_{i=0}^{L-1} D^{(l)}&lt;/script&gt; by neighbor sampling.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Layer-Wise Sampling&lt;/strong&gt;
-In node-wise sampling, each parent node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; independently samples a few neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}(v)&lt;/script&gt;, which are not visible to other parent nodes &lt;script type=&quot;math/tex&quot;&gt;u&lt;/script&gt; except &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;. The receptive field size still grows exponentially if &lt;script type=&quot;math/tex&quot;&gt;\vert \hat{\mathcal{N}}(v) \vert &gt; 1&lt;/script&gt;. In layer-wise sampling, the sampling procedure is performed only once in each layer, where each node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; gets sampled into &lt;script type=&quot;math/tex&quot;&gt;\mathcal{S}^{(l)}&lt;/script&gt; with probability &lt;script type=&quot;math/tex&quot;&gt;p^{(l)}(v)&lt;/script&gt;,
-&lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)} = \sum_{u \in \mathcal{S}^{(l)}} \frac{1}{p^{(l)}(u)} \tilde{A}_{uv} \hat{h}_u^{(l)}&lt;/script&gt;
-The receptive field size can be controlled directly by &lt;script type=&quot;math/tex&quot;&gt;\vert \mathcal{S}^{(0)} \vert&lt;/script&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Random Walk Sampling&lt;/strong&gt;
-Given a source node &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; and a decay factor &lt;script type=&quot;math/tex&quot;&gt;\alpha&lt;/script&gt;, a random walk from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; is a trace beginning from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt;, at each step either proceeds to a neighbor uniformly at random, or stop with probability &lt;script type=&quot;math/tex&quot;&gt;\alpha&lt;/script&gt;. The personalized PageRank (PPR) score &lt;script type=&quot;math/tex&quot;&gt;\pi(s, t)&lt;/script&gt; is the probability that a random walk from &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; terminates at &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;.&lt;/p&gt;
-
-&lt;p&gt;In PinSage, each node &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; selects top-&lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; important nodes with highest PPR scores with respective to &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; as its neighbors &lt;script type=&quot;math/tex&quot;&gt;\hat{\mathcal{N}}(v)&lt;/script&gt;, and the hidden feature of each neighbor &lt;script type=&quot;math/tex&quot;&gt;u \in \hat{\mathcal{N}}(v)&lt;/script&gt; is weighted by &lt;script type=&quot;math/tex&quot;&gt;\pi(v, u)&lt;/script&gt;,&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}^{(l)}_v = \frac{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u) \tilde{A}_{uv} \hat{h}_u^{(l)}}{\sum_{u \in \hat{\mathcal{N}}(v)} \pi(v, u)}&lt;/script&gt;
-
-&lt;p&gt;Compared to GCNs which uses all the &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt;-hop neighbors, PinSage selects &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; topology-based important neighbors which have the largest influence.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Control Variate&lt;/strong&gt;
-Although unbiased, sampling estimators such as &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt; in neighbor sampling suffers from high variance, so it still requires a relatively large number of neighbors, e.g. &lt;script type=&quot;math/tex&quot;&gt;D^{(0)}=25&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;D^{(1)}=10&lt;/script&gt; in the GraphSage paper. With control variate, a standard variance reduction technique used in Monte Carlo methods, 2 neighbors for a node are sufficient in the experiments.&lt;/p&gt;
-
-&lt;p&gt;Given a random variable &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and we wish to estimate its expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [X] = \theta&lt;/script&gt;, the control variate method finds another random variable &lt;script type=&quot;math/tex&quot;&gt;Y&lt;/script&gt; which is highly correlated with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; and whose expectation &lt;script type=&quot;math/tex&quot;&gt;\mathbb{E} [Y]&lt;/script&gt; can be easily computed. The control variate estimator is&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;Z = X - Y + \mathbb{E} [Y]&lt;/script&gt;
-
-&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\mathbb{VAR} [Z] = \mathbb{VAR} [X] + \mathbb{VAR} [Y] - 2 \cdot \mathbb{COV} [X, Y]&lt;/script&gt;
-If &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
-\mathbb{VAR} [Y] - 2\mathbb{COV} [X, Y] &lt; 0 %]]&gt;&lt;/script&gt;, then &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
-\mathbb{VAR} [Z] &lt; \mathbb{VAR} [X] %]]&gt;&lt;/script&gt;.&lt;/p&gt;
-
-&lt;p&gt;For GCN, by using history &lt;script type=&quot;math/tex&quot;&gt;\bar{H}^{(l)}&lt;/script&gt; of the nodes which are not sampled, the modified estimator &lt;script type=&quot;math/tex&quot;&gt;\hat{z}_v^{(l)}&lt;/script&gt; is&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{z}_v^{(l)} = \frac{\vert \mathcal{N}(v) \vert }{\vert \hat{\mathcal{N}}^{(l)}(v) \vert} \sum_{u \in \hat{\mathcal{N}}^{(l)}(v)} \tilde{A}_{uv} ( \hat{h}_u^{(l)} - \bar{h}_u^{(l)} ) + \sum_{u \in \mathcal{N}(v)} \tilde{A}_{uv} \bar{h}_u^{(l)}&lt;/script&gt;</content><author><name>Da Zheng</name></author><category term="blog" /><category term="blog" /><summary type="html">Many graph applications deal with giant scale. Social networks, recommendation and knowledge graphs have nodes and edges in the order of hundreds of millions or even billions of nodes. For example, a recent snapshot of the friendship network of Facebook contains 800 million nodes and over 100 billion links.</summary></entry></feed>
+&lt;p&gt;There are also many bug fixes and minor changes. We will list them in the next 0.4 major release.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under dgl.model_zoo namespace). We will continue explore this idea and release more domain specific models and packages.</summary></entry></feed>
