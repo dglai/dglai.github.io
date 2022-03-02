@@ -16,7 +16,7 @@ The minimal OS requirement is:
 
 Minimal Python version: 3.6
 
-DGL works with [PyTorch](https://pytorch.org/) 1.5.0+, [Apache MXNet](https://mxnet.apache.org/) 1.6+, and [TensorFlow](https://tensorflow.org/) 2.3+.
+DGL works with [PyTorch](https://pytorch.org/) 1.9.0+, [Apache MXNet](https://mxnet.apache.org/) 1.6+, and [TensorFlow](https://tensorflow.org/) 2.3+.
 
 Install from source
 ---

@@ -1,4 +1,321 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2022-02-08T09:21:40+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">v0.7 Release Highlights</title><link href="https://www.dgl.ai/release/2021/07/26/release.html" rel="alternate" type="text/html" title="v0.7 Release Highlights" /><published>2021-07-26T00:00:00+00:00</published><updated>2021-07-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2021/07/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2021/07/26/release.html">&lt;p&gt;v0.7 brings improvements on the low-level system infrastructure as well as on
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2022-03-02T16:46:19+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">v0.8 Release Highlights</title><link href="https://www.dgl.ai/release/2022/03/01/release.html" rel="alternate" type="text/html" title="v0.8 Release Highlights" /><published>2022-03-01T00:00:00+00:00</published><updated>2022-03-01T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2022/03/01/release</id><content type="html" xml:base="https://www.dgl.ai/release/2022/03/01/release.html">&lt;p&gt;We are excited to announce the release of DGL v0.8, which brings many new
+features as well as improvement on system performance. The highlights are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A major update of the mini-batch sampling pipeline, better customizability,
+more optimizations; &lt;strong&gt;3.9x&lt;/strong&gt; and &lt;strong&gt;1.5x&lt;/strong&gt; faster for supervised and unsupervised
+GraphSAGE on OGBN-Products, with only one line of code change.&lt;/li&gt;
+  &lt;li&gt;Significant acceleration and code simplification of popular heterogeneous
+graph NN modules (Up to &lt;strong&gt;36x&lt;/strong&gt; for RGCN convolution and &lt;strong&gt;12x&lt;/strong&gt; for HGT
+convolution). 11 new off-the-shelf NN modules for building models for link
+prediction, heterogeneous graph learning and GNN explanation.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;GNNLens&lt;/strong&gt;: a DGL empowered tool to visualize and understand graph data using
+GNN explanation models.&lt;/li&gt;
+  &lt;li&gt;New functions to create, transform and augment graph datasets, making it
+easier to conduct research on graph contrastive learning or repurposing a
+graph for different tasks.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;DGL-Go&lt;/strong&gt;: a new GNN model training command line tool that utilizes a simple
+interface so that users can quickly apply GNNs to their problems and
+orchestrate experiments with state-of-the-art GNN models.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;mini-batch-sampling-pipeline-update&quot;&gt;Mini-batch Sampling Pipeline Update&lt;/h2&gt;
+
+&lt;p&gt;In training Neural Networks, minibatch sampling has been used to both improve
+model performance and enable scaling to large datasets.  Mini-batch training in
+the context of GNNs on graphs introduces new complexities, which can be broken
+down into four main steps:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Extract a subgraph from the original graph.&lt;/li&gt;
+  &lt;li&gt;Perform transformations on the subgraph.&lt;/li&gt;
+  &lt;li&gt;Fetch the node/edge features of the subgraph.&lt;/li&gt;
+  &lt;li&gt;Pass the subgraph and its features as the input to your GNN model and update parameters.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Among them, steps 1-3 are unique to GNNs and are quite costly. In v0.7, we have
+released the feature to speedup step 2 by transforming subgraphs on GPU, but
+the other two may continue to be the bottleneck. In this release, we further
+optimized the &lt;em&gt;entire&lt;/em&gt; pipeline to reach an even better performance. We then
+briefly describe our technical solutions behind that.&lt;/p&gt;
+
+&lt;p&gt;To speed up subgraph extraction, we utilized CUDA Unified Virtual Addressing(UVA).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2022-03-01-release/uva.png&quot; alt=&quot;uva&quot; width=&quot;400x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;(Image courtesy: &lt;a href=&quot;https://developer.download.nvidia.cn/CUDA/training/cuda_webinars_GPUDirect_uva.pdf&quot;&gt;https://developer.download.nvidia.cn/CUDA/training/cuda_webinars_GPUDirect_uva.pdf&lt;/a&gt;)&lt;/p&gt;
+
+&lt;p&gt;CUDA UVA allows users to create in-memory data beyond the size of GPU RAM
+capacity while still harnessing GPU kernels for fast computation. Storing the
+entire graph structure and its features in UVA enables efficient subgraph
+extraction using GPU kernels, which is effective for training large-scale GNNs
+[1][2]. In this release, users can turn on the UVA mode by setting the &lt;code class=&quot;highlighter-rouge&quot;&gt;use_uva&lt;/code&gt;
+flag in &lt;code class=&quot;highlighter-rouge&quot;&gt;DataLoader&lt;/code&gt;, as shown in the example below:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;                  &lt;span class=&quot;c&quot;&gt;# some DGLGraph data&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;train_nids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;         &lt;span class=&quot;c&quot;&gt;# training node IDs&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sampler&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataloading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MultiLayerNeighborSampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fanout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dataloader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataloading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DataLoader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;train_nids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'cuda:0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;c&quot;&gt;# perform sampling on GPU 0&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;batch_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;shuffle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;use_uva&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;         &lt;span class=&quot;c&quot;&gt;# turn on UVA optimization&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;To speed up feature fetching (step 3), DGL 0.8 supports pre-fetching node/edge
+features so that the model computation can happen in parallel with data
+movement. Users can specify the features as well as the labels to prefetch in
+the sampler object.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;           &lt;span class=&quot;c&quot;&gt;# some DGLGraph data&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;train_nids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# training node IDs&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sampler&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataloading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MultiLayerNeighborSampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fanout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;prefetch_node_feats&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'feat'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;   &lt;span class=&quot;c&quot;&gt;# prefetch node feature 'feat'&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;prefetch_labels&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'label'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;      &lt;span class=&quot;c&quot;&gt;# prefetch node label 'label'&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dataloader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataloading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DataLoader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;train_nids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'cuda:0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;c&quot;&gt;# perform sampling on GPU 0&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;batch_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;shuffle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;use_uva&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;         &lt;span class=&quot;c&quot;&gt;# turn on UVA optimization&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;These optimizations bring significant speedup for both supervised and
+unsupervised mini-batch training. We compared it against the original pipeline
+of sampling on CPU but training on GPU for training a two-layer GraphSAGE model
+on the ogbn-papers100M graph using A100 GPUs. We observed a speedup of 3.9x and
+1.5x for supervised and unsupervised GraphSAGE on a single GPU respectively.
+The speedup applies to multi-GPU training as well.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;&lt;img src=&quot;/assets/images/posts/2022-03-01-release/number1.png&quot; alt=&quot;number1&quot; /&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;img src=&quot;/assets/images/posts/2022-03-01-release/number2.png&quot; alt=&quot;number2&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Speedup of Supervised GraphSAGE&lt;/td&gt;
+      &lt;td&gt;Speedup of Unsupervised GraphSAGE&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Defining a new sampler in DGL v0.8 is also easier, with only one simple
+interface &lt;code class=&quot;highlighter-rouge&quot;&gt;sample&lt;/code&gt; to follow. Optionally, users can specify how to prefetch
+features for each sample. For example, the cluster sampler used by Cluster-GCN
+can be implemented in just a few lines of code.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClusterGCNSampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prefetch_ndata&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;part_ids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;metis_partition_assignment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# convert partition assignment to bins of nodes&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;part_sizes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;histogram&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;part_ids&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_bins&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argsort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;part_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;part_sizes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# save the node feature names to be prefetched&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prefetch_ndata&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prefetch_ndata&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;sample&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;part_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;Sample a subgraph given a list of partition IDs.&quot;&quot;&quot;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_ids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_bins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;part_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;sg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subgraph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# get an induced subgraph&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# tell which feature to pre-fetch&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_node_lazy_feature&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prefetch_ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sg&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;New samplers in v0.8:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.dgl.ai/generated/dgl.dataloading.ClusterGCNSampler.html#dgl.dataloading.ClusterGCNSampler&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.dataloading.ClusterGCNSampler&lt;/code&gt;&lt;/a&gt;: The sampler from &lt;a href=&quot;https://arxiv.org/abs/1905.07953&quot;&gt;Cluster-GCN: An
+Efficient Algorithm for Training Deep and Large Graph Convolutional Networks&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.dgl.ai/generated/dgl.dataloading.ShaDowKHopSampler.html#dgl.dataloading.ShaDowKHopSampler&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.dataloading.ShaDowKHopSampler&lt;/code&gt;&lt;/a&gt;: The sampler from &lt;a href=&quot;https://arxiv.org/abs/2012.01380&quot;&gt;Deep Graph Neural Networks with Shallow Subgraph Samplers&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This remarkable improvement would not happen without the help from the community.
+We want to thank Xin Yao (@yaox12) and Dominique LaSalle (@nv-dlasalle) from
+NVIDIA and David Min (@davidmin7) from UIUC for their contributions.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Further reading:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;User guide chapter for &lt;a href=&quot;https://docs.dgl.ai/guide/minibatch-custom-sampler.html&quot;&gt;customizing graph samplers&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;User guide chapter for &lt;a href=&quot;https://docs.dgl.ai/guide/minibatch-prefetching.html&quot;&gt;writing graph samplers with feature prefetching&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/cluster_gcn&quot;&gt;Example implementation&lt;/a&gt; of ClusterGCN.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;nn-module-update&quot;&gt;NN Module Update&lt;/h2&gt;
+&lt;p&gt;Heterogeneous GNNs are known to be both difficult to implement as well as
+difficult to optimize. In this release, we have significantly improved the
+speed of dgl.nn.RelGraphConv and dgl.nn.HGTConv – two state-of-the-art NN
+modules for training on heterogeneous graphs, by sometimes an order of
+magnitude compared with various baselines[3]:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;&lt;img src=&quot;/assets/images/posts/2022-03-01-release/number3.png&quot; alt=&quot;number3&quot; /&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;img src=&quot;/assets/images/posts/2022-03-01-release/number4.png&quot; alt=&quot;number4&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Speedup of RGCN convolution&lt;/td&gt;
+      &lt;td&gt;Speedup of HGT convolution&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;More importantly, writing an efficient heterogeneous graph convolution is
+substantially easier. Here is a minimal implementation of RGCN convolution in
+0.8 using the new &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.nn.pytorch.TypedLinear.html#dgl.nn.pytorch.TypedLinear&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;nn.TypedLinear&lt;/code&gt;&lt;/a&gt; module:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RGCNConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_etypes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# TypedLinear is a new module in 0.8!&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linear_r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TypedLinear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_etypes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;etype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'x'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;edata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'etype'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;etype&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linear_r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'etype'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This release also brings 11 new NN modules covering the most requested ones
+from the community. They include but are not limited to:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Commonly used &lt;a href=&quot;https://docs.dgl.ai/api/python/nn-pytorch.html#score-modules-for-link-prediction-and-knowledge-graph-completion&quot;&gt;edge score modules&lt;/a&gt; (e.g., TransE, TransR, etc.) for link
+prediction.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.dgl.ai/api/python/nn-pytorch.html#heterogeneous-learning-modules&quot;&gt;Linear projection module and embedding module for heterogeneous graphs&lt;/a&gt;
+(&lt;code class=&quot;highlighter-rouge&quot;&gt;nn.HeteroLinear&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.HeteroEmbedding&lt;/code&gt;).&lt;/li&gt;
+  &lt;li&gt;The &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.nn.pytorch.explain.GNNExplainer.html#dgl.nn.pytorch.explain.GNNExplainer&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GNNExplainer&lt;/code&gt;&lt;/a&gt; module.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;understand-graph-via-visualisation-and-gnn-based-explanation&quot;&gt;Understand Graph via Visualisation and GNN-based Explanation&lt;/h2&gt;
+&lt;p&gt;Understanding graph data using GNN-based explanation model has become an
+important research topic. We partnered with the HKUST VisLab team to release
+GNNLens, an interactive visualization tool for graph neural networks.&lt;/p&gt;
+
+&lt;p&gt;To install GNNLens, &lt;code class=&quot;highlighter-rouge&quot;&gt;pip install gnnlens&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;It provides Python APIs for specifying the data to be visualized. For example,
+the following shows how to load DGL’s built-in Cora graph dataset and visualize
+it:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.data&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CoraGraphDataset&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CoraGraphDataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;gnnlens&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Writer&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Specify the path to create a new directory for dumping data files.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;writer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Writer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'tutorial_graph'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;writer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add_graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Cora'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cora_graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;writer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add_graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Citeseer'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;citeseer_graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Finish dumping&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;writer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;After running the script, you can then launch GNNLens with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gnnlens --logdir tutorial_graph
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;And you will see the webpage in your browser:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2022-03-01-release/gnnlens.png&quot; alt=&quot;gnnlens&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;GNNLens is not only capable of visualizing raw graph data, but also designed
+for inspecting graph neural networks such as running explanation models to
+explain the prediction. Please check out the tutorials in the project README:
+&lt;a href=&quot;https://github.com/dmlc/gnnlens2&quot;&gt;https://github.com/dmlc/gnnlens2&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;composable-graph-data-transforms&quot;&gt;Composable Graph Data Transforms&lt;/h2&gt;
+
+&lt;p&gt;Graph data augmentation has become an important component for graph contrastive
+learning or structural prediction in general. The new release makes it easier
+to compose and apply various graph augmentation and transformation algorithms
+to all DGL’s built-in dataset. The new &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.transforms&lt;/code&gt; package follows the
+style of the PyTorch Dataset Transforms. Users can specify the transforms to
+use with the &lt;code class=&quot;highlighter-rouge&quot;&gt;transform&lt;/code&gt; keyword argument of all DGL datasets:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.transforms&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;T&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Compose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddSelfLoop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GCNNorm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CoraGraphDataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# graph and features will be transformed automatically&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;DGL v0.8 provides 16 commonly used data transform APIs. See the &lt;a href=&quot;https://docs.dgl.ai/api/python/transforms.html&quot;&gt;API
+doc&lt;/a&gt; for more information.&lt;/p&gt;
+
+&lt;p&gt;Making graph datasets easily accessible for all kinds of research is important. A common scenario is to adapt a dataset for a different task than it was originally designed for (e.g., training a link prediction model on Cora which is originally for node classification). We therefore add two dataset adapters (&lt;a href=&quot;https://docs.dgl.ai/generated/dgl.data.AsNodePredDataset.html#dgl.data.AsNodePredDataset&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.data.AsNodePredDataset&lt;/code&gt;&lt;/a&gt; and &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.data.AsLinkPredDataset.html#dgl.data.AsLinkPredDataset&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.data.AsLinkPredDataset&lt;/code&gt;&lt;/a&gt;) for this purpose. We also support generating new train/val/test split and save them for later use:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CoraGraphDataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# make a Cora dataset suitable for link prediction&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# add train/val/test split and negative samples&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AsLinkPredDataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;split_ratio&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;neg_ratio&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;one-more-thing&quot;&gt;One more thing&lt;/h2&gt;
+
+&lt;p&gt;As GNN is still a young and blooming domain, we received many “how to start” questions from our users:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;“I’ve heard about GNNs, how to start training a GNN model on my own datasets?”&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;“I want to learn more about GNNs, how to start experimenting with SOTA baselines?”&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;“I have some new research ideas, how to start building it upon existing GNN models?”&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To make those first steps easier, we developed &lt;strong&gt;DGL-Go&lt;/strong&gt;, a command line tool for
+users to quickly access the latest GNN research progress.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2022-03-01-release/dglgo.png&quot; alt=&quot;dglgo&quot; width=&quot;600x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Using DGL-Go is as easy as three steps:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl configure&lt;/code&gt; to pick the task, dataset and model of your interests.
+It generates a configuration file for later use. You could also use &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl
+recipe get&lt;/code&gt; to retrieve a configuration file we provided.&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl train&lt;/code&gt; to launch training according to the configuration and see
+the results.&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl export&lt;/code&gt; to generate a &lt;strong&gt;self-contained, reproducible&lt;/strong&gt; Python
+script for advanced customization, or try the model on custom data stored in
+CSV format.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Install DGL-Go simply by &lt;code class=&quot;highlighter-rouge&quot;&gt;pip install dglgo&lt;/code&gt; and check out the project &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/dglgo&quot;&gt;README&lt;/a&gt; for more details.&lt;/p&gt;
+
+&lt;h2 id=&quot;further-reading&quot;&gt;Further Reading&lt;/h2&gt;
+&lt;p&gt;The full &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.8.0&quot;&gt;release note&lt;/a&gt; of DGL v0.8.&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;p&gt;[1] PyTorch-Direct: Enabling GPU Centric Data Access for Very Large Graph Neural Network Training with Irregular Accesses&lt;/p&gt;
+
+&lt;p&gt;[2] TorchQuiver: &lt;a href=&quot;https://github.com/quiver-team/torch-quiver&quot;&gt;https://github.com/quiver-team/torch-quiver&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[3] We compared our new &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; module with multiple existing baselines from DGL and PyG. For DGL v0.7, Baseline#1 uses the old &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; module with &lt;code class=&quot;highlighter-rouge&quot;&gt;low_mem=False&lt;/code&gt;; Baseline#2 uses the old &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;low_mem=True&lt;/code&gt;; Baseline#3 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.HeteroGarphConv&lt;/code&gt;. For PyG, Baseline#1 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RGCNConv&lt;/code&gt; while Baseline#2 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.FastRGCNConv&lt;/code&gt;. All the benchmarks are tested on one NVIDIA T4 GPU card.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are excited to announce the release of DGL v0.8, which brings many new features as well as improvement on system performance. The highlights are:</summary></entry><entry><title type="html">v0.7 Release Highlights</title><link href="https://www.dgl.ai/release/2021/07/26/release.html" rel="alternate" type="text/html" title="v0.7 Release Highlights" /><published>2021-07-26T00:00:00+00:00</published><updated>2021-07-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2021/07/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2021/07/26/release.html">&lt;p&gt;v0.7 brings improvements on the low-level system infrastructure as well as on
 the high-level user-facing utilities. Many of
 them involve contributions from the user community. We are grateful to see such
 a growing trend and welcome more in the future. Here are the notable
@@ -1153,139 +1470,4 @@ tutorials are coming.&lt;/p&gt;
   &lt;li&gt;CoraFull, Amazon, KarateClub, Coauthor datasets (#855 @VoVAllen )&lt;/li&gt;
   &lt;li&gt;More performance improvements&lt;/li&gt;
   &lt;li&gt;More bugfixes&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are thrilled to announce the 0.4 release! This includes:</summary></entry><entry><title type="html">DGL v0.3.1 Release</title><link href="https://www.dgl.ai/release/2019/08/28/release.html" rel="alternate" type="text/html" title="DGL v0.3.1 Release" /><published>2019-08-28T00:00:00+00:00</published><updated>2019-08-28T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2019/08/28/release</id><content type="html" xml:base="https://www.dgl.ai/release/2019/08/28/release.html">&lt;p&gt;We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.model_zoo&lt;/code&gt; namespace). We will continue explore this idea and release more domain specific models and packages.&lt;/p&gt;
-
-&lt;h1 id=&quot;new-apis&quot;&gt;New APIs&lt;/h1&gt;
-
-&lt;h2 id=&quot;new-nn-modules&quot;&gt;New NN Modules&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GATConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1710.10903.pdf&quot;&gt;“Graph Attention Network”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;RelGraphConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/abs/1703.06103&quot;&gt;“Modeling Relational Data with Graph Convolutional Networks”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;TAGConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1710.10370.pdf&quot;&gt;“Topology Adaptive Graph Convolutional Networks”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;EdgeConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1801.07829&quot;&gt;“Dynamic Graph CNN for Learning on Point Clouds”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SAGEConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1706.02216.pdf&quot;&gt;“Inductive Representation Learning on Large Graphs”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GatedGraphConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1511.05493.pdf&quot;&gt;“Gated Graph Sequence Neural Networks”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GMMConv&lt;/code&gt; from &lt;a href=&quot;http://openaccess.thecvf.com/content_cvpr_2017/papers/Monti_Geometric_Deep_Learning_CVPR_2017_paper.pdf&quot;&gt;“Geometric Deep Learning on Graphs and Manifolds using Mixture Model CNNs”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GINConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1810.00826.pdf&quot;&gt;“How Powerful are Graph Neural Networks?”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ChebConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1606.09375.pdf&quot;&gt;“Convolutional Neural Networks on Graphs with Fast Localized Spectral Filtering”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SGConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1902.07153.pdf&quot;&gt;“Simplifying Graph Convolutional Networks”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;NNConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1704.01212.pdf&quot;&gt;“Neural Message Passing for Quantum Chemistry”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;APPNPConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1810.05997.pdf&quot;&gt;“Predict then Propagate: Graph Neural Networks meet Personalized PageRank”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AGNNConv&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/abs/1803.03735&quot;&gt;“Attention-based Graph Neural Network for Semi-Supervised Learning
-”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DenseGraphConv&lt;/code&gt; (Dense implementation of &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphConv&lt;/code&gt;)&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DenseSAGEConv&lt;/code&gt; (Dense implementation of &lt;code class=&quot;highlighter-rouge&quot;&gt;SAGEConv&lt;/code&gt;)&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DenseChebConv&lt;/code&gt; (Dense implementation of &lt;code class=&quot;highlighter-rouge&quot;&gt;ChebConv&lt;/code&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;new-global-pooling-module&quot;&gt;New global pooling module&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Sum/Avg/MaxPooling&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SortPooling&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GlobalAttentionPooling&lt;/code&gt; from GGNN model&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Set2Set&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1511.06391.pdf&quot;&gt;“Order Matters: Sequence to sequence for sets”&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SetTransformerEncoder&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;SetTransformerDecoder&lt;/code&gt; from &lt;a href=&quot;https://arxiv.org/pdf/1810.00825.pdf&quot;&gt;“Set Transformer: A Framework for Attention-based Permutation-Invariant Neural Networks”&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Please refer to the &lt;a href=&quot;https://docs.dgl.ai/api/python/nn.pytorch.html#module-dgl.nn.pytorch.glob&quot;&gt;API document&lt;/a&gt; for more details.&lt;/p&gt;
-
-&lt;h2 id=&quot;new-graph-transformation-routines&quot;&gt;New graph transformation routines&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.transform.khop_adj&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.transform.khop_graph&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.transform.laplacian_lambda_max&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.transform.knn_graph&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.transform.segmented_knn_graph&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Please refer to the &lt;a href=&quot;https://docs.dgl.ai/api/python/transform.html&quot;&gt;API document&lt;/a&gt; for more details.&lt;/p&gt;
-
-&lt;h1 id=&quot;model-zoo-for-chemistry-and-molecule-applications&quot;&gt;Model zoo for chemistry and molecule applications&lt;/h1&gt;
-&lt;p&gt;To make it easy for domain scientists, we are now releasing a model zoo for chemistry, with training scripts and pre-trained models, and focuses on two particular tasks: property prediction and targeted molecular generation/optimization.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Credit&lt;/strong&gt;: Shout out to @geekinglcq from Tencent Quantum Lab for contributing three models (MGCN, SchNet and MPNN). We also thank WuXi AppTec CADD team for their critical feedback on usability.&lt;/p&gt;
-
-&lt;h2 id=&quot;property-prediction&quot;&gt;Property prediction&lt;/h2&gt;
-&lt;p&gt;In practice, the determination of molecular properties is mostly achieved via wet lab experiments. We can cast the problem as a regression or classification problem.&lt;/p&gt;
-
-&lt;p&gt;Featurization is the beginning of prediction. Traditionally, chemists develop pre-defined rules to convert molecular graphs into binary strings where each bit indicates the presence or absence of a particular substructure.&lt;/p&gt;
-
-&lt;p&gt;Graph neural networks enable a data-driven representation of molecules out of the atoms, bonds and molecular graph topology, which may be viewed as a learned fingerprint. The message passing mechanism allows the model to learn the interactions between atoms in a molecule.&lt;/p&gt;
-
-&lt;p&gt;The following code script is self-explanatory.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.data.chem&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Tox21&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model_zoo&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Tox21&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model_zoo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_pretrained&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'GCN_Tox21'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Pretrained model loaded&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;smiles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;feats&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'h'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;label_pred&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;smiles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;                   &lt;span class=&quot;c&quot;&gt;# CCOc1ccc2nc(S(N)(=O)=O)sc2c1&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;label_pred&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Mask non-existing labels&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# tensor([[-0.7956,  0.4054,  0.4288, -0.5565, -0.0911,  &lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# 0.9981, -0.1663,  0.2311, -0.2376,  0.9196]])&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Supported Models&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Graph Convolution&lt;/li&gt;
-  &lt;li&gt;Graph Attention Networks&lt;/li&gt;
-  &lt;li&gt;SchNet&lt;/li&gt;
-  &lt;li&gt;Multilevel Graph Convolutional neural Network&lt;/li&gt;
-  &lt;li&gt;Message Passing Neural Networks&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;generative-models&quot;&gt;Generative Models&lt;/h2&gt;
-
-&lt;p&gt;Targeted molecular generation refers to finding new molecules with desired properties. This gives rise to the need for generative models for two purposes:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Distribution Learning&lt;/strong&gt;: Given a collection of molecules, we want to model their distribution and generate new molecules consistent with the distribution.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;Goal-directed Optimization&lt;/strong&gt;: Find molecules with desired properties.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For this model zoo, we provide only graph-based generative models. There are other generative models working with alternative representations like SMILES.&lt;/p&gt;
-
-&lt;p&gt;Example with Pre-trained Models&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# We recommend running the code below with Jupyter notebooks&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;IPython.display&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SVG&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;rdkit&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Chem&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;rdkit.Chem&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Draw&lt;/span&gt;
-
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model_zoo&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model_zoo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_pretrained&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'DGMG_ZINC_canonical'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;mols&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;SMILES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rdkit_mol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;mols&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Chem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MolFromSmiles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SMILES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# Generating 4 molecules takes less than a second.&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;SVG&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Draw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MolsToGridImage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mols&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;molsPerRow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;subImgSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;180&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;150&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;useSVG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://data.dgl.ai/model_zoo/drug_discovery/dgmg_model_zoo_example2.png&quot; alt=&quot;&quot; width=&quot;700x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Supported Models&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Learning Deep Generative Models of Graphs&lt;/li&gt;
-  &lt;li&gt;Junction Tree Variational Autoencoder for Molecular Graph Generation&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&quot;api-break&quot;&gt;API break&lt;/h1&gt;
-&lt;p&gt;We refactor the &lt;code class=&quot;highlighter-rouge&quot;&gt;nn&lt;/code&gt; package to make all APIs more consistent. Thus, there are following changes to the API that breaks the previous behavior:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Change the argument order of &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.pytorch.GraphConv&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.mxnet.GraphConv&lt;/code&gt;. The argument order is now first &lt;code class=&quot;highlighter-rouge&quot;&gt;graph&lt;/code&gt; and then &lt;code class=&quot;highlighter-rouge&quot;&gt;feat&lt;/code&gt;, which follows the convention of all the other new modules.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&quot;new-model-example&quot;&gt;New model example&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1711.08028.pdf&quot;&gt;Recurrent Relational Networks&lt;/a&gt; in PyTorch (credit: @HuXiangkun )&lt;/p&gt;
-
-&lt;p&gt;There are also many bug fixes and minor changes. We will list them in the next 0.4 major release.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We have received many requests from our community for more GNN layers, models and examples. This is the time to respond. In this minor release, we enriched DGL with a ton of common GNN modules. We have also verified their correctness on some popular datasets so feel free to try them out. Another direction we are working on is to build more domain friendly packages based on DGL. As a first step, we released several pretrained GNN models for molecular property prediction and molecule generation (currently grouped under dgl.model_zoo namespace). We will continue explore this idea and release more domain specific models and packages.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are thrilled to announce the 0.4 release! This includes:</summary></entry></feed>
