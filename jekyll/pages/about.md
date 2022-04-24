@@ -36,22 +36,20 @@ networks model family. We also want to make the combination of graph based
 modules and tensor based modules (PyTorch or MXNet) as smooth as possible.
 
 
-Core Team
+Committors
 ---
-Minjie Wang, Da Zheng, Guan Gan, Mufei Li, Zihao Ye, Chao Ma, Jinjing Zhou,
-Xiang Song, Tianjun Xiao, Tong He, Jian Zhang, Wen-ming Ye, George Karypis,
-Zheng Zhang
+
+* **Amazon Web Services AI Shanghai Lablet (ASAIL)**: Minjie Wang, Guan Gan, Mufei Li, Rui Ying,
+  Tiajun Xiao, Tong He, Jian Zhang, Xiangkun Hu, Jinjing Zhou\*, Zihao Ye\*, Chao Ma\*, Zheng Zhang
+* **Amazon Web Services Machine Learning**: Da Zheng, Xiang Song, Israt Nisa, George Karypis
+* **NVIDIA**: Dominique LaSalle, Xin Yao
+* **New York University**: Lingfan Yu, Yu Gai, Jinyang Li
+
+\* Alumini
 
 Contributors
 ---
-**New York Univeristy**: Lingfan Yu, Yu Gai, Jake Zhao, Jinyang Li
 
-**Intel**: Pawel Piotrowcz, Michal Szarmach, Izabela Mazur
-
-**NVIDIA**: Dominique LaSalle
-
-**NYU Shanghai**: Qi Huang
-
-**Fudan University**: Qipeng Guo
-
-Also see the list [here](https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md).
+Since released, DGL has received contributions from 200+ contributors. We are grateful to
+work with such an energetic community and looking forward to see more to join. See the
+list of contributors [here](https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md).
