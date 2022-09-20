@@ -1,4 +1,213 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2022-07-26T04:58:15+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">v0.9 Release Highlights</title><link href="https://www.dgl.ai/release/2022/07/25/release.html" rel="alternate" type="text/html" title="v0.9 Release Highlights" /><published>2022-07-25T00:00:00+00:00</published><updated>2022-07-25T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2022/07/25/release</id><content type="html" xml:base="https://www.dgl.ai/release/2022/07/25/release.html">&lt;p&gt;Six years after the first Graph Convolutional Networks paper, researchers are
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2022-09-20T07:46:45+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">Accelerating Partitioning of Billion-scale Graphs with DGL v0.9.1</title><link href="https://www.dgl.ai/release/2022/09/19/release.html" rel="alternate" type="text/html" title="Accelerating Partitioning of Billion-scale Graphs with DGL v0.9.1" /><published>2022-09-19T00:00:00+00:00</published><updated>2022-09-19T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2022/09/19/release</id><content type="html" xml:base="https://www.dgl.ai/release/2022/09/19/release.html">&lt;p&gt;Graphs is ubiquitous to represent relational data, and many real-world
+applications such as recommendation and fraud detection involve learning from
+massive graphs. As such, GNNs has emerged as a powerful family of models to
+learn their representations. However, training GNNs on massive graphs is
+challenging, one of the issues is high resource demand to distribute graph data
+to a cluster. For example, partitioning a random graph of 1 billion nodes and 5
+billion edges into 8 partitions requires a powerful AWS EC2 x1e.32xlarge
+instance (128 vCPU, 3.9TB RAM) running for 10 hours to finish the job.&lt;/p&gt;
+
+&lt;p&gt;In the latest DGL v0.9.1, we released a new pipeline for preprocess, partition
+and dispatch graph of billions of nodes or edges for distributed GNN training.
+At its core is a new data format called Chunked Graph Data Format (CGDF) which
+stores graph data by chunks. The new pipeline processes data chunks in parallel
+which not only reduces the memory requirement of each machine but also
+significantly accelerates the entire procedure. For the same random graph with
+1B nodes/5B edges, using a cluster of 8 AWS EC2 x1e.4xlarge (16 vCPU, 488GB RAM
+each), &lt;strong&gt;the new pipeline can reduce the running time to 2.7 hours and cut down
+the money cost by 3.7x.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In this blog, we will illustrate step-by-step how to partition and distribute a
+graph of billions of nodes and edges using this new feature.&lt;/p&gt;
+
+&lt;h2 id=&quot;distributed-gnn-training-101&quot;&gt;Distributed GNN Training 101&lt;/h2&gt;
+
+&lt;p&gt;A graph dataset typically consists of graph structure and the features
+associated with nodes/edges. If the graph is heterogeneous (i.e., having
+multiple types of nodes or edges), different types of nodes/edges may have
+different sets of features. Training a GNN model on a multi-machine cluster
+first requires users to partition their input graph, which involves two steps:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Run a graph partition algorithm (e.g., random, METIS) to assign each node to
+one partition.&lt;/li&gt;
+  &lt;li&gt;Shuffle and dispatch the graph structure and node/edge features to the
+target machine that owns the partition.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Once the graph is partitioned and provisioned, users can then launch the
+distributed training program using DGL’s launch tool, which will:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Launch one main graph server per machine that loads the local graph
+partition into RAM. Graph servers provide remove process calls (RPCs) to
+conduct computation like graph sampling. Optionally, users can launch more
+backup graph servers that share the in-memory data of the main graph server to
+increase service throughput.&lt;/li&gt;
+  &lt;li&gt;Launch a key-value store (KVStore) server per machine that loads the local
+node/edge features into RAM. KVStore service provides RPCs to fetch/update
+node/edge features.&lt;/li&gt;
+  &lt;li&gt;Launch one or more trainer processes per machine. Trainer processes are
+connected with each other via PyTorch’s &lt;a href=&quot;https://pytorch.org/tutorials/intermediate/ddp_tutorial.html&quot;&gt;DistributedDataParallel&lt;/a&gt;
+component. At each training iteration, they issue requests to local or remote graph servers
+and KVStore servers to get a mini-batch of samples, perform gradient descent
+and synchronize their gradients before the next iteration.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The figure below depicts the system architecture. For more information, check
+out the &lt;a href=&quot;https://docs.dgl.ai/en/0.9.x/guide/distributed.html&quot;&gt;Distributed Training chapter&lt;/a&gt; of DGL User Guide.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2022-09-19-release/dist_train.png&quot; alt=&quot;dist_train&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Due to the complexity of graph data, graph partitioning is typically run on a
+single machine, which demands the machine to have large enough memory to fit
+the entire graph and features as well as the runtime usage from the partition
+algorithm. For example, a random graph of 1 billion nodes and 5 billions edges
+and 50 features per nodes needs 268GB when stored in DGL graph format. Using
+the existing &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.distributed.partition_graph&lt;/code&gt; API to partition this graph
+requires a powerful AWS EC2 x1e.32xlarge instance (128 vCPU, 3.9TB RAM) and
+runs for 10 hours — a significant bottleneck for users to train GNNs at scale.&lt;/p&gt;
+
+&lt;p&gt;DGL v0.9.1 addressed the issue by a new distributed graph partitioning
+pipeline. Specifically,&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We designed a Chunked Graph Data Format (CGDF) for storing large graph data
+in chunks to avoid loading the entire graph into a single machine.&lt;/li&gt;
+  &lt;li&gt;We provided scripts to partition and dispatch chunked graph in parallel using
+multiple machines to reduce the memory requirement of each machine as well as
+to accelerate the procedure.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;chunked-graph-data-format&quot;&gt;Chunked Graph Data Format&lt;/h2&gt;
+
+&lt;p&gt;Chunked graph dataset is organized as a data folder with the following data
+files:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A &lt;code class=&quot;highlighter-rouge&quot;&gt;metadata.json&lt;/code&gt; file that stores the meta information of the graph, e.g.,
+graph name, node/edge types, chunk sizes, chunk file paths, etc.&lt;/li&gt;
+  &lt;li&gt;A list of &lt;em&gt;edge index chunk files&lt;/em&gt; that store the source and destination node
+IDs. They are typically in plain texts.&lt;/li&gt;
+  &lt;li&gt;A list of &lt;em&gt;node data chunk files&lt;/em&gt;. They are typically array data stored in
+&lt;a href=&quot;https://numpy.org/doc/stable/reference/generated/numpy.save.html#numpy.save&quot;&gt;NumPy array binary&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;A list of &lt;em&gt;edge data chunk files&lt;/em&gt;. They are also in NumPy array binary.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here, we illustrate the folder structure and the data files of a random social
+graph (nodes being users, edges being follow relation) where nodes have two
+data: “feat” and “label”. Check out the &lt;a href=&quot;https://docs.dgl.ai/en/0.9.x/guide/distributed-preprocessing.html#chunked-graph-format&quot;&gt;doc page&lt;/a&gt;
+for the full specification of the format and tips for how to convert your data
+to chunks.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//data/random_graph_chunked/
+  |-- metadata.json            # metadata JSON
+  |-- edge_index/              # edge index chunks
+    |-- user:follow:user0.txt  # user-follow-user edges chunk 0
+    |-- user:follow:user1.txt  # user-follow-user edges chunk 1
+    |-- user:follow:user2.txt  # user-follow-user edges chunk 2
+    |-- ...
+  |-- node_data/           # node data chunks
+    |-- user/              # user nodes have two data: &quot;feat&quot; and &quot;label&quot;
+      |-- feat0.npy        # feat chunk 0
+      |-- feat1.npy        # feat chunk 1
+      |-- feat2.npy        # feat chunk 2
+      |-- ...
+      |-- label0.npy       # label chunk 0
+      |-- label1.npy       # label chunk 1
+      |-- label2.npy       # label chunk 2
+      |-- ...
+  |-- edge_data/           # edge data chunks
+    |-- user:follow:user/
+       |-- ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;running-distributed-partitioning--dispatching&quot;&gt;Running Distributed Partitioning &amp;amp; Dispatching&lt;/h2&gt;
+
+&lt;p&gt;The first step is to get a cluster of machines to partition the graph. We
+recommend the total RAM size of the cluster to be 2-3x larger than the graph
+data size to accommodate the runtime memory needed. Next is to setup shared
+workspace and software environment.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Setup a shared folder that is accessible by each instance in the cluster
+(e.g., using &lt;a href=&quot;https://wiki.archlinux.org/title/NFS&quot;&gt;NFS&lt;/a&gt;). Make sure all
+instances can ssh to each other. Here, we suppose the folder is mounted to
+&lt;code class=&quot;highlighter-rouge&quot;&gt;/workspace&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Clone and download the scripts from DGL 0.9.x branch to &lt;code class=&quot;highlighter-rouge&quot;&gt;/workspace&lt;/code&gt;:
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/dmlc/dgl.git -b 0.9.x /workspace/dgl
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Copy/move the chunked graph data to &lt;code class=&quot;highlighter-rouge&quot;&gt;/workspace/&lt;/code&gt;. Here, we suppose the data
+folder is at &lt;code class=&quot;highlighter-rouge&quot;&gt;/workspace/random_graph_chunked/&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Create an &lt;code class=&quot;highlighter-rouge&quot;&gt;/workspace/ip_config.txt&lt;/code&gt; file that contains the IP address of each
+instance.
+    &lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# example IP config file of a 4 machine cluster&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;172.31.19.1&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;172.31.23.205&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;172.31.29.175&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;172.31.16.98&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;We can then run a partition algorithm to assign each node to a partition. Here,
+we choose random partitioning algorithm.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python /workspace/dgl/tools/partition_algo/random_partition.py &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    --in_dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/workspace/random_graph_chunked/
+    --out_dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/workspace/partition_assign/
+    --num_partitions&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The above script simply calculates which partition a node belongs to. We then
+pass both the chunked graph and the partition assignments to the
+&lt;code class=&quot;highlighter-rouge&quot;&gt;dispatch_data.py&lt;/code&gt; script to physically split the graph data into multiple pieces
+and distribute them to the entire cluster.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python /workspace/dgl/tools/dispatch_data.py &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    --in-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/workspace/random_graph_chunked/
+    --partitions-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/workspace/partition_assign/
+    --out-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/workspace/random_graph_dist/
+    --ip-config&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/workspace/ip_config.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The end result will look like the following. We can then launch distributed
+training following the instructions &lt;a href=&quot;https://docs.dgl.ai/en/0.9.x/guide/distributed-tools.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/workspace/random_graph_dist/
+  |-- medatdata.json      # metadata JSON file
+  |-- part0/              # partition 0
+    |-- graph.dgl         # graph structure of partition 0 in DGL binary format
+    |-- node_feat.dgl     # node feature of partition 0 in DGL binary format
+    |-- edge_feat.dgl     # edge feature of partition 0 in DGL binary format
+  |-- part1/              # partition 1
+    |-- graph.dgl         # graph structure of partition 1 in DGL binary format
+    |-- node_feat.dgl     # node feature of partition 1 in DGL binary format
+    |-- edge_feat.dgl     # edge feature of partition 1 in DGL binary format
+  |-- part2/
+  ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Note that the scripts utilize multiple machines to cooperatively partition and
+process the data. Therefore, the new pipeline is significantly faster. For the
+same random graph with 1B nodes/5B edges, the new pipeline can finish
+partitioning in 2.7 hours (3.7x faster) using an cluster of 8 AWS EC2
+x1e.4xlarge (16 vCPU, 488GB RAM).&lt;/p&gt;
+
+&lt;h2 id=&quot;further-readings&quot;&gt;Further Readings&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.dgl.ai/en/0.9.x/guide/distributed-preprocessing.html&quot;&gt;User guide for the new distributed graph partitioning pipeline&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/dmlc/dgl/tree/0.9.x/examples/pytorch/graphsage/dist&quot;&gt;Example for training a GraphSAGE model on a cluster of machines&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.9.1&quot;&gt;Other enhancement in the latest v0.9.1 release&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">Graphs is ubiquitous to represent relational data, and many real-world applications such as recommendation and fraud detection involve learning from massive graphs. As such, GNNs has emerged as a powerful family of models to learn their representations. However, training GNNs on massive graphs is challenging, one of the issues is high resource demand to distribute graph data to a cluster. For example, partitioning a random graph of 1 billion nodes and 5 billion edges into 8 partitions requires a powerful AWS EC2 x1e.32xlarge instance (128 vCPU, 3.9TB RAM) running for 10 hours to finish the job.</summary></entry><entry><title type="html">v0.9 Release Highlights</title><link href="https://www.dgl.ai/release/2022/07/25/release.html" rel="alternate" type="text/html" title="v0.9 Release Highlights" /><published>2022-07-25T00:00:00+00:00</published><updated>2022-07-25T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2022/07/25/release</id><content type="html" xml:base="https://www.dgl.ai/release/2022/07/25/release.html">&lt;p&gt;Six years after the first Graph Convolutional Networks paper, researchers are
 actively investigating more advanced GNN architecture or training methodology.
 As the developer team of DGL, we closely watch those new research trends and
 release features to facilitate them. Here, we highlighted some of the new
@@ -1257,261 +1466,4 @@ on the ogbn-paper100M dataset.&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Our updated white paper available at: &lt;a href=&quot;https://arxiv.org/abs/1909.01315&quot;&gt;https://arxiv.org/abs/1909.01315&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.5 release is a major update on many aspects of the project including documentation, APIs, system speed and scalability. This article highlights some of the new features and enhancements.</summary></entry><entry><title type="html">Fighting COVID-19 with Deep Graph</title><link href="https://www.dgl.ai/news/2020/06/09/covid.html" rel="alternate" type="text/html" title="Fighting COVID-19 with Deep Graph" /><published>2020-06-09T00:00:00+00:00</published><updated>2020-06-09T00:00:00+00:00</updated><id>https://www.dgl.ai/news/2020/06/09/covid</id><content type="html" xml:base="https://www.dgl.ai/news/2020/06/09/covid.html">&lt;p&gt;Since December 2019, the rapid spread of COVID-19 corona-viruses worldwide has
-caused more than 7 million infections and more than 400,000 deaths. The rapid
-spread of COVID-19 demonstrates the dire need for quick and effective drug
-discovery. Drug repurposing is a drug discovery paradigm that uses existing
-drugs for new therapeutic indications. It has the advantages of significantly
-reducing time and cost relative to de novo drug discovery. Drug repurposing
-with knowledge graphs presents a promising strategy for COVID-19 treatment.&lt;/p&gt;
-
-&lt;p&gt;A team of AWS scientists from Amazon Shanghai AI Lab and AWS Deep Engine
-Science team working along with academic collaborators from the University of
-Minnesota, The Ohio State University, and Hunan University have created the
-&lt;strong&gt;Drug Repurposing Knowledge Graph (DRKG)&lt;/strong&gt; and a set of machine learning tools
-that can be used to prioritize drugs for repurposing studies. DRKG and the ML
-tools are open sourced in github to help researchers conduct drug relocation
-research on COVID-19 and other diseases (such as Alzheimer’s disease).&lt;/p&gt;
-
-&lt;p&gt;DRKG is a comprehensive biological knowledge graph that relates human genes,
-compounds, biological processes, drug side effects, diseases and symptoms. DRKG
-includes, curates, and normalizes information from six publicly available
-databases and data that were collected from recent publications related to
-Covid-19. It has 97,238 entities belonging to 13 types of entities, and
-5,874,261 triplets belonging to 107 types of relations.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2020-06-09-drkg/drkg.png&quot; alt=&quot;drkg&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;
-&lt;center&gt;
-&lt;i&gt;The high-level structure of DRKG. Numerals indicate the number of different
-types of relationships between classes of entities; terms between parentheses
-are examples of those relationships.&lt;/i&gt;
-&lt;/center&gt;
-&lt;/p&gt;
-
-&lt;p&gt;The machine learning tools use DGL-KE to learn low dimension embedding
-representations of entities and relations in DRKG. The resulting embeddings are
-used to predict how likely a drug can treat a disease or how likely a drug can
-bind to a protein associated with the disease. &lt;a href=&quot;https://github.com/awslabs/dgl-ke&quot;&gt;DGL-KE&lt;/a&gt; is a high performance,
-easy-to-use, and scalable package for learning large-scale knowledge graph
-embeddings developed by Amazon Shanghai AI Lab. The package is implemented on
-the top of Deep Graph Library (DGL) and developers can run DGL-KE on CPU
-machine, GPU machine, as well as clusters with a set of popular models,
-including TransE, DistMult, ComplEx, RotatE and etc. It can train a knowledge
-graph consisting of over &lt;em&gt;86M&lt;/em&gt; nodes and &lt;em&gt;338M&lt;/em&gt; edges in 100 minutes on an EC2
-instance with 8 GPUs and 30 minutes on an EC2 cluster with 4 machines.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2020-06-09-drkg/dgl-ke.png&quot; alt=&quot;dglke&quot; width=&quot;400x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;DRKG github repository provides examples on using DGL-KE to &lt;a href=&quot;https://github.com/gnn4dr/DRKG/blob/master/embedding_analysis/Train_embeddings.ipynb&quot;&gt;learn low
-dimension embedding representations of entities and relations in
-DRKG&lt;/a&gt;
-and using pre-trained knowledge graph embedding of DRKG to do &lt;a href=&quot;https://github.com/gnn4dr/DRKG/blob/master/drug_repurpose/COVID-19_drug_repurposing.ipynb&quot;&gt;drug
-repurposing&lt;/a&gt;.
-Preliminary experimental results show that using certain machine learning tools
-for COVID-19 drug discovery can identify a variety of drugs currently in
-clinical trials with high ranking scores.&lt;/p&gt;
-
-&lt;h2 id=&quot;use-dgl-ke-to-learn-low-dimension-embedding-representations-of-entities-and-relations-in-drkg&quot;&gt;Use DGL-KE to Learn Low Dimension Embedding Representations of Entities and Relations in DRKG&lt;/h2&gt;
-
-&lt;p&gt;DRKG uses DGL-KE to learn knowledge graph embedding&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Step 1:&lt;/em&gt; Downloading DRKG from &lt;a href=&quot;https://dgl-data.s3-us-west-2.amazonaws.com/dataset/DRKG/drkg.tar.gz&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Step 2:&lt;/em&gt; Load DRKG as follows.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;sys&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'../utils'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;utils&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;download_and_extract&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;download_and_extract&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;drkg_file&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'../data/drkg/drkg.tsv'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 3:&lt;/em&gt; DRKG data package has a drkg.tsv file containing all triplets in the
-knowledge graph. Before training, We randomly divide the data set into training
-set, validation set and test set according to the ratio of 0.9:0.05:0.05.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pandas&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pd&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;np&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;df&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read_csv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;drkg_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tolist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;seed&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shuffle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;seed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;train_cnt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_triples&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;valid_cnt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_triples&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.05&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;train_set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_cnt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;train_set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;train_set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tolist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;valid_set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_cnt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_cnt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;valid_cnt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tolist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;test_set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_cnt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;valid_cnt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tolist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;train/drkg_train.tsv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'w+'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-   &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;train_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;writelines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt;
-      
-&lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;train/drkg_valid.tsv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'w+'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-   &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;valid_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;writelines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;train/drkg_test.tsv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'w+'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-   &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;writelines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;triples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 4:&lt;/em&gt; Then we directly invoke the command line toolkit provided by DGL-KE
-to learn low dimension embedding representations of entities and relations in
-DRKG. Here we choose the &lt;code class=&quot;highlighter-rouge&quot;&gt;TransE_l2&lt;/code&gt; model and use an AWS p3.16xlarge instance to
-train the model with multi-GPU in parallel. To use other KGE model or AWS
-instances please refer to DGL-KE’s &lt;a href=&quot;https://aws-dglke.readthedocs.io/en/latest/index.html&quot;&gt;documentation&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;DGLBACKEND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;pytorch dglke_train --dataset DRKG --data_path ./train &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-                               --data_files drkg_train.tsv drkg_valid.tsv drkg_test.tsv &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-                               --format &lt;span class=&quot;s1&quot;&gt;'raw_udd_hrt'&lt;/span&gt; --model_name TransE_l2 --batch_size 2048 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-                               --neg_sample_size 256 --hidden_dim 400 --gamma 12.0 --lr 0.1 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-                               --max_step 100000 --log_interval 1000 --batch_size_eval 16 -adv &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-                               --regularization_coef 1.00E-07 --test --num_thread 1 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-                               --gpu 0 1 2 3 4 5 6 7 --num_proc 8 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-                               --neg_sample_size_eval 10000 --async_update
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 5:&lt;/em&gt; After training, two files are generated: 1)
-&lt;code class=&quot;highlighter-rouge&quot;&gt;DRKG_TransE_l2_entity.npy&lt;/code&gt;, containing the low dimension embedding
-representations of entities in DRKG and 2) &lt;code class=&quot;highlighter-rouge&quot;&gt;DRKG_TransE_l2_relation.npy&lt;/code&gt;,
-containing the low dimension embeddings representations of relations in DRKG.
-These embeddings can be used in drug repurposing tasks.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;node_emb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'./ckpts/TransE_l2_DRKG_0/DRKG_TransE_l2_entity.npy'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;relation_emb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'./ckpts/TransE_l2_DRKG_0/DRKG_TransE_l2_relation.npy'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;The complete example code can be found &lt;a href=&quot;https://github.com/gnn4dr/DRKG/blob/master/embedding_analysis/Train_embeddings.ipynb&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Use Pre-trained Knowledge Graph Embedding for Repurposing Drugs for COVID-19
-— A collaboration work from Amazon AWS AI, Hunan University, Cleveland Clinic
-Lerner Center for Genomic Medicine, and University of Minnesota (Repurpose Open
-Data to Discover Therapeutics for COVID-19 using Deep Learning) proposed a new
-drug repurposing methodology for COVID-19 using the combination of knowledge
-graph embedding and gene-set enrichment analysis method. DRKG borrows the
-similar idea and provides pre-trained knowledge graph embedding of DRKG for
-drug repurposing for COVID-19.&lt;/p&gt;
-
-&lt;p&gt;First of all, we define the task of finding drugs for COVID-19 using DRKG
-knowledge graph as a task of predicting the possible connections between
-candidate drug entities and the COVID-19 related disease entities under the
-relation of &lt;code class=&quot;highlighter-rouge&quot;&gt;'Hetionet::CtD::Compound:Disease'&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;'GNBR::T::Compound:Disease'&lt;/code&gt;,
-i.e. the treatment relationship. We select FDA approved drugs with molecular
-weight larger than 250 from DRKG as drug candidates and use 34 COVID-19 virus
-related entities in DRKG as target entities. Then we predict the connection
-scores of all possible triplets (Drug, Treatment, Virus) under the &lt;code class=&quot;highlighter-rouge&quot;&gt;TransE_L2&lt;/code&gt;
-algorithm and sort the scores. Finally, we choose the top100 highest confident
-connections and take the corresponding drugs as repurposed drugs. The detailed
-steps are as following:&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Step 1:&lt;/em&gt; Setting target virus entities, drug entities and treatment relations.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# COVID-19 related virus entities&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;COV_disease_list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Disease::SARS-CoV2 E'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Disease::SARS-CoV2 M'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# treatment relations&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;treatment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Hetionet::CtD::Compound:Disease'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'GNBR::T::Compound:Disease'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# candidate drugs（provided in infer_drug.tsv along with the whole DRKG dataset)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;drug_list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;./infer_drug.tsv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'utf-8'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;csvfile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-   &lt;span class=&quot;n&quot;&gt;reader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;csv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DictReader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;csvfile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delimiter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fieldnames&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'drug'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'ids'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-   &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row_val&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;drug_list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;row_val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'drug'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 2:&lt;/em&gt; Get the pretrained DRKG knowledge graph embedding.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Reading pretrained embeddings&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;entity_emb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'../data/drkg/embed/DRKG_TransE_l2_entity.npy'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;rel_emb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'../data/drkg/embed/DRKG_TransE_l2_relation.npy'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;drug_ids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;drug_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;disease_ids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disease_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;treatment_rid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;treatment_rid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;drug_emb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;entity_emb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;drug_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;treatment_embs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rel_emb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rid&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;treatment_rid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 3:&lt;/em&gt; Predict the connection scores of all possible triplets (Drug, Treatment, Virus) under the &lt;code class=&quot;highlighter-rouge&quot;&gt;TransE_L2&lt;/code&gt; algorithm，the formula is as following:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\mathbf{d} = \gamma - ||\mathbf{h} + \mathbf{r} - \mathbf{t}||_2&lt;/script&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\mathbf{score} = \log\left(\frac{1}{1+e^{-\mathbf{d}}}\right)&lt;/script&gt;
-
-&lt;p&gt;, where &lt;script type=&quot;math/tex&quot;&gt;\mathbf{h}&lt;/script&gt; is for head (i.e., drugs), &lt;script type=&quot;math/tex&quot;&gt;\mathbf{r}&lt;/script&gt; for relation, &lt;script type=&quot;math/tex&quot;&gt;\mathbf{t}&lt;/script&gt; for tail
-(i.e., virus) and &lt;script type=&quot;math/tex&quot;&gt;\gamma&lt;/script&gt; is the constant value used in training.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;torch.nn.functional&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;fn&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;gamma&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;12.0&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;transE_l2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-   &lt;span class=&quot;n&quot;&gt;score&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tail&lt;/span&gt;
-   &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gamma&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;norm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;score&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dim&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;scores_per_disease&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;dids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# predict the connection scores of (Drug, Treatment, Virus) triplets &lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# for each treatment type and combine them together.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rid&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;treatment_embs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
-   &lt;span class=&quot;n&quot;&gt;treatment_emb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;treatment_embs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-   &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;disease_id&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;disease_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;disease_emb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entity_emb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disease_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;score&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logsigmoid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transE_l2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;drug_emb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;treatment_emb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;disease_emb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;scores_per_disease&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;score&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;dids&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;drug_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scores_per_disease&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 4:&lt;/em&gt; Sort the scores.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argsort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dims&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;dids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 5:&lt;/em&gt; Get the top-100 repurposed drugs.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;topk&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unique_indices&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;return_index&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;topk_indices&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unique_indices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# top-100 drug Ids&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;proposed_dids&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topk_indices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# top-100 drug scores&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;proposed_scores&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topk_indices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;Step 6:&lt;/em&gt; Six drugs in clinical trials appears in the top100 repurposed drugs. Their ranking and score is as following:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[0]    Ribavirin          -0.21416784822940826
-[4]    Dexamethasone      -0.9984006881713867
-[8]    Colchicine         -1.080674648284912
-[16]   Methylprednisolone -1.1618402004241943
-[49]   Oseltamivir        -1.3885014057159424
-[87]   Deferoxamine       -1.513066053390503
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;The complete example code can be found &lt;a href=&quot;https://github.com/gnn4dr/DRKG/blob/master/drug_repurpose/COVID-19_drug_repurposing.ipynb&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;further-read&quot;&gt;Further read&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Check out the &lt;a href=&quot;https://github.com/gnn4dr/DRKG&quot;&gt;DRKG repository&lt;/a&gt;.&lt;/li&gt;
-  &lt;li&gt;Check out the &lt;a href=&quot;https://www.amazon.science/blog/amazon-web-services-open-sources-biological-knowledge-graph-to-fight-covid-19&quot;&gt;announcement&lt;/a&gt; on Amazon Science.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/147329945&quot;&gt;Blog in chinese&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">Since December 2019, the rapid spread of COVID-19 corona-viruses worldwide has caused more than 7 million infections and more than 400,000 deaths. The rapid spread of COVID-19 demonstrates the dire need for quick and effective drug discovery. Drug repurposing is a drug discovery paradigm that uses existing drugs for new therapeutic indications. It has the advantages of significantly reducing time and cost relative to de novo drug discovery. Drug repurposing with knowledge graphs presents a promising strategy for COVID-19 treatment.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.5 release is a major update on many aspects of the project including documentation, APIs, system speed and scalability. This article highlights some of the new features and enhancements.</summary></entry></feed>
