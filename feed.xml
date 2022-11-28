@@ -1,4 +1,219 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2022-09-20T08:23:29+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">Accelerating Partitioning of Billion-scale Graphs with DGL v0.9.1</title><link href="https://www.dgl.ai/release/2022/09/19/release.html" rel="alternate" type="text/html" title="Accelerating Partitioning of Billion-scale Graphs with DGL v0.9.1" /><published>2022-09-19T00:00:00+00:00</published><updated>2022-09-19T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2022/09/19/release</id><content type="html" xml:base="https://www.dgl.ai/release/2022/09/19/release.html">&lt;p&gt;Graphs is ubiquitous to represent relational data, and many real-world
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2022-11-28T08:04:43+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">Improving Graph Neural Networks via Network-in-network Architecture</title><link href="https://www.dgl.ai/blog/2022/11/28/ngnn.html" rel="alternate" type="text/html" title="Improving Graph Neural Networks via Network-in-network Architecture" /><published>2022-11-28T00:00:00+00:00</published><updated>2022-11-28T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2022/11/28/ngnn</id><content type="html" xml:base="https://www.dgl.ai/blog/2022/11/28/ngnn.html">&lt;p&gt;As Graph Neural Networks (GNNs) has become increasingly popular, there is a
+wide interest of designing deeper GNN architecture. However, deep GNNs suffer
+from the &lt;em&gt;oversmoothing&lt;/em&gt; issue where the learnt node representations quickly
+become indistinguishable with more layers. This blog features a simple yet
+effective technique to build a deep GNN without the concern of oversmoothing.
+The new architecture, &lt;strong&gt;Network in Graph Neural Networks (NGNN)&lt;/strong&gt; inspired by the
+network-in-network architecture for computer vision, has shown superior
+performance on multiple Open Graph Benchmark (OGB) leaderboards.&lt;/p&gt;
+
+&lt;h2 id=&quot;introducing-ngnn&quot;&gt;Introducing NGNN&lt;/h2&gt;
+
+&lt;p&gt;At a high-level, a graph neural network (MPGNN) layer can be written as a non-linear function:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;h^{(l+1)}=\sigma\left(f_w\left(\mathcal{G}, h^l\right)\right)&lt;/script&gt;
+
+&lt;p&gt;with &lt;script type=&quot;math/tex&quot;&gt;h^{(0)}=X&lt;/script&gt; being the input node features, &lt;script type=&quot;math/tex&quot;&gt;\mathcal{G}&lt;/script&gt; being the input
+graph, &lt;script type=&quot;math/tex&quot;&gt;h^L&lt;/script&gt; being the node embeddings in the last layer used by downstream
+tasks, &lt;script type=&quot;math/tex&quot;&gt;L&lt;/script&gt; being the number of GNN layers. Additionally, the function
+&lt;script type=&quot;math/tex&quot;&gt;f_w\left(\mathcal{G}, h^l\right)&lt;/script&gt; is determined by learnable parameters &lt;script type=&quot;math/tex&quot;&gt;w&lt;/script&gt;
+and &lt;script type=&quot;math/tex&quot;&gt;\sigma(\cdot)&lt;/script&gt; is a non-linear activation function.&lt;/p&gt;
+
+&lt;p&gt;Instead of adding many more GNN layers, NGNN deepens a GNN model by inserting
+nonlinear feedforward neural network layer(s) within each GNN layer.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2022-11-28-ngnn/NGNN.png&quot; alt=&quot;ngnn&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In essence, NGNN is just a nonlinear transformation of the original embeddings
+of the nodes in the &lt;script type=&quot;math/tex&quot;&gt;l&lt;/script&gt;-th layer. Despite its simplicity, the NGNN technique is
+quite powerful (we will come to that in a moment). Additionally, it does not
+have large memory overhead and can work with various training methods such as
+neighbor sampling or subgraph sampling.&lt;/p&gt;
+
+&lt;p&gt;The intuition behind is straightforward. As the number of GNN layers and the
+number of training iterations increases, the representations of nodes within
+the same connected component will tend to converge to the same value. NGNN uses
+a simple MLP after certain GNN layers to tackle the so-called oversmoothing
+issue.&lt;/p&gt;
+
+&lt;h2 id=&quot;implementing-ngnn-in-deep-graph-library-dgl&quot;&gt;Implementing NGNN in Deep Graph Library (DGL)&lt;/h2&gt;
+
+&lt;p&gt;For better gaining insights into this trick, let us use DGL to implement a
+simple NGNN, using the GCN layer as the backbone.&lt;/p&gt;
+
+&lt;p&gt;With DGL’s builtin GCN layer &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.GraphConv&lt;/code&gt;, we can easily implement a
+minimal &lt;code class=&quot;highlighter-rouge&quot;&gt;NGNN_GCN&lt;/code&gt; layer, which just applies an &lt;script type=&quot;math/tex&quot;&gt;\rm{ReLU}&lt;/script&gt; activation and a
+linear transformation after a GCN layer.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.nn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GraphConv&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NGNN_GCNConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hidden_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NGNN_GCNConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GraphConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hidden_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hidden_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edge_weight&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edge_weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;relu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Afterwards, you can simply stack the &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.GraphConv&lt;/code&gt; layer and the
+&lt;code class=&quot;highlighter-rouge&quot;&gt;NGNN_GCN&lt;/code&gt; layer to form a multi-layer &lt;code class=&quot;highlighter-rouge&quot;&gt;NGNN_GCN&lt;/code&gt; network.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NGNN_GCN&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hidden_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conv1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NGNN_GCNConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hidden_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hidden_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conv2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GraphConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hidden_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conv1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_channels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;relu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conv2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You can replace &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.GraphConv&lt;/code&gt; with any other graph convolution layers in
+the NGNN architecture. DGL provides implementation of many popular
+convolutional layers and utility modules. You can easily invoke them with one
+line of code and build your own NGNN modules.&lt;/p&gt;
+
+&lt;h2 id=&quot;model-performance&quot;&gt;Model Performance&lt;/h2&gt;
+
+&lt;p&gt;NGNN can be used for many downstream tasks, such as Node
+Classification/Regression, Edge Classification/Regression, Link prediction and
+Graph Classification. In general, NGNN achieves better results than its
+backbone GNN on these tasks. For instance, &lt;strong&gt;NGNN+SEAL achieves top-1
+performance on the
+&lt;a href=&quot;https://ogb.stanford.edu/docs/leader_linkprop/#ogbl-ppa&quot;&gt;ogbl-ppa&lt;/a&gt; leaderboard
+with an improvement of Hit@100 by &lt;script type=&quot;math/tex&quot;&gt;10.91\%&lt;/script&gt; over the vanilla SEAL&lt;/strong&gt;. The table
+below shows the performance improvement of NGNN over various vanilla GNN
+backbones.&lt;/p&gt;
+
+&lt;table style=&quot;text-align: center;&quot;&gt;
+   &lt;tr&gt;
+      &lt;th&gt;Dataset&lt;/th&gt;
+      &lt;th&gt;Metric&lt;/th&gt;
+      &lt;th&gt;Model&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Performance&lt;/th&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;ogbn-proteins&lt;/td&gt;
+      &lt;td&gt;ROC-AUC(%)&lt;/td&gt;
+      &lt;td&gt;GraphSage+Cluster Sampling&lt;/td&gt;
+      &lt;td&gt;Vanilla&lt;/td&gt;
+      &lt;td&gt;67.45 ± 1.21&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;+NGNN&lt;/td&gt;
+      &lt;td&gt;&lt;b&gt;68.12 ± 0.96&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;ogbn-products&lt;/td&gt;
+      &lt;td&gt;Accuracy(%)&lt;/td&gt;
+      &lt;td&gt;GraphSage&lt;/td&gt;
+      &lt;td&gt;Vanilla&lt;/td&gt;
+      &lt;td&gt;78.27 ± 0.45&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;+NGNN&lt;/td&gt;
+      &lt;td&gt;&lt;b&gt;79.88 ± 0.34&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;GAT+Neighbor Sampling&lt;/td&gt;
+      &lt;td&gt;Vanilla&lt;/td&gt;
+      &lt;td&gt;79.23 ± 0.16&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;+NGNN&lt;/td&gt;
+      &lt;td&gt;&lt;b&gt;79.67 ± 0.09&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;ogbl-collab&lt;/td&gt;
+      &lt;td&gt;hit@50(%)&lt;/td&gt;
+      &lt;td&gt;GCN&lt;/td&gt;
+      &lt;td&gt;Vanilla&lt;/td&gt;
+      &lt;td&gt;49.52 ± 0.70&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;+NGNN&lt;/td&gt;
+      &lt;td&gt;&lt;b&gt;53.48 ± 0.40&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;GraphSage&lt;/td&gt;
+      &lt;td&gt;Vanilla&lt;/td&gt;
+      &lt;td&gt;51.66 ± 0.35&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;+NGNN&lt;/td&gt;
+      &lt;td&gt;&lt;b&gt;53.59 ± 0.56&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;ogbl-ppa&lt;/td&gt;
+      &lt;td&gt;hit@100(%)&lt;/td&gt;
+      &lt;td&gt;SEAL-DGCNN&lt;/td&gt;
+      &lt;td&gt;Vanilla&lt;/td&gt;
+      &lt;td&gt;48.80 ± 3.16&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;+NGNN&lt;/td&gt;
+      &lt;td&gt;&lt;b&gt;59.71 ± 2.45&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;GCN&lt;/td&gt;
+      &lt;td&gt;Vanilla&lt;/td&gt;
+      &lt;td&gt;18.67 ± 1.32&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;+NGNN&lt;/td&gt;
+      &lt;td&gt;&lt;b&gt;36.83 ± 0.99&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;further-readings&quot;&gt;Further Readings&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;NGNN Paper: &lt;a href=&quot;https://arxiv.org/abs/2111.11638&quot;&gt;https://arxiv.org/abs/2111.11638&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;NGNN+SEAL OGB submission: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/ogb/ngnn_seal&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/ogb/ngnn_seal&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;NGNN+GraphSAGE OGB submission: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/ogb/ngnn&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/ogb/ngnn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;DGL built-in GNN module list: &lt;a href=&quot;https://docs.dgl.ai/api/python/nn-pytorch.html&quot;&gt;https://docs.dgl.ai/api/python/nn-pytorch.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;About the author:&lt;/strong&gt; &lt;a href=&quot;https://github.com/Ereboas&quot;&gt;Yakun Song&lt;/a&gt; is an undergraduate student of Shanghai Jiao Tong University.
+The work was done during his internship in &lt;a href=&quot;https://www.amazonaws.cn/en/ailab/&quot;&gt;AWS Shanghai AI Lab&lt;/a&gt;.&lt;/p&gt;</content><author><name>Yakun Song</name></author><category term="blog" /><category term="blog" /><summary type="html">As Graph Neural Networks (GNNs) has become increasingly popular, there is a wide interest of designing deeper GNN architecture. However, deep GNNs suffer from the oversmoothing issue where the learnt node representations quickly become indistinguishable with more layers. This blog features a simple yet effective technique to build a deep GNN without the concern of oversmoothing. The new architecture, Network in Graph Neural Networks (NGNN) inspired by the network-in-network architecture for computer vision, has shown superior performance on multiple Open Graph Benchmark (OGB) leaderboards.</summary></entry><entry><title type="html">Accelerating Partitioning of Billion-scale Graphs with DGL v0.9.1</title><link href="https://www.dgl.ai/release/2022/09/19/release.html" rel="alternate" type="text/html" title="Accelerating Partitioning of Billion-scale Graphs with DGL v0.9.1" /><published>2022-09-19T00:00:00+00:00</published><updated>2022-09-19T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2022/09/19/release</id><content type="html" xml:base="https://www.dgl.ai/release/2022/09/19/release.html">&lt;p&gt;Graphs is ubiquitous to represent relational data, and many real-world
 applications such as recommendation and fraud detection involve learning from
 massive graphs. As such, GNNs has emerged as a powerful family of models to
 learn their representations. However, training GNNs on massive graphs is
@@ -1357,113 +1572,4 @@ by Swami Sivasubramanian for the full announcement.&lt;/p&gt;</content><author><
 
 &lt;p&gt;The Chinese user guide has been released for chapter 1 to 4. Further chapters will be released soon.&lt;/p&gt;
 
-&lt;p&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.3&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.3&lt;/a&gt;&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">This is a patch release mainly for supporting CUDA 11.0. Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.</summary></entry><entry><title type="html">What is new in DGL v0.5 release?</title><link href="https://www.dgl.ai/release/2020/08/26/release.html" rel="alternate" type="text/html" title="What is new in DGL v0.5 release?" /><published>2020-08-26T00:00:00+00:00</published><updated>2020-08-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2020/08/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/08/26/release.html">&lt;p&gt;The recent DGL 0.5 release is a major update on many aspects of the project
-including documentation, APIs, system speed and scalability. This article
-highlights some of the new features and enhancements.&lt;/p&gt;
-
-&lt;h2 id=&quot;more-docs-fewer-codes&quot;&gt;More docs, fewer codes&lt;/h2&gt;
-
-&lt;p&gt;DGL has been through several releases with numerous new APIs and
-features. While the development pace is rapid, DGL’s documentation has
-been lagging behind. We have been aware of this issue and finally got a hand on
-it in this release. There are two major changes. A new
-&lt;a href=&quot;https://docs.dgl.ai/en/0.5.x/guide/index.html&quot;&gt;user guide&lt;/a&gt; with dedicated chapters for the
-core concepts of DGL and how they connect with the pipeline of training/testing
-GNNs. There are currently seven chapters:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;em&gt;Graph&lt;/em&gt;: The chapter explains the basics about the graph data structure, the
-usage of the core &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; class, heterogeneous graph and so on.&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Message Passing&lt;/em&gt;: The chapter starts from the mathematical definition of the
-message passing neural networks and then explains how to express them in DGL.&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Building GNN Modules&lt;/em&gt;: The chapter walk-throughs the steps to define GNN
-layers/modules in DGL for both homogeneous and heterogeneous graphs.&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Graph Data Pipeline&lt;/em&gt;: The chapter explains how the datasets are organized in
-DGL and how to create with your own one.&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Training Graph Neural Networks&lt;/em&gt;: The chapter provides guidance on training
-GNNs in DGL for node, edge and graph prediction tasks.&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Stochastic Training on Large Graphs&lt;/em&gt;: The chapter introduces
-mini-batch training in the GNN domain and the designated DGL APIs.&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Distributed Training&lt;/em&gt;: The chapter explains DGL’s components for training
-graphs scaling beyond one machine.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Besides the user guide, we have re-worked the API document extensively and
-organized them by their namespaces. We also took this chance to prune the set
-of API, deprecate rare and redundant APIs and consolidate functionalities into
-fewer. For example, the creation of a graph in DGL now only involves &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.graph&lt;/code&gt;
-and &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.heterograph&lt;/code&gt; for homogeneous and heterogeneous graphs, respectively.
-Another noticeable simplification is that &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt; is now the only class for
-storing graph and feature. It can represent a homogeneous or heterogeneous
-graph, a subgraph or a batched graph.&lt;/p&gt;
-
-&lt;h2 id=&quot;more-flexibility-on-dglgraph&quot;&gt;More flexibility on &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph&lt;/code&gt;&lt;/h2&gt;
-
-&lt;p&gt;The 0.5 release enables more flexibility on the core graph structure. First, DGL
-now supports creating graphs stored in int32; it not only cuts the memory
-consumption by half compared with int64, but also enables many fast operators
-only available for int32 provided by cuSPARSE. Second, previous DGL only
-provides APIs to control the host device of node/edge features,  while in the new
-version, it allows changing the host device of the graph structure too (via
-&lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph.to&lt;/code&gt;). DGL has implemented many structure-related operators such as
-getting degrees, extracting subgraphs on CUDA. Third, to store giant graphs even
-more compactly, DGL adds the &lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph.formats&lt;/code&gt; API to control the internal
-sparse formats of graphs. This could reduce the memory
-consumption by half or more especially for storing the graph for sampling
-in mini-batch training. You can find the explanations of all these new features in
-the dedicated &lt;a href=&quot;https://docs.dgl.ai/guide/graph.html&quot;&gt;user guide chapter&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;faster-and-deterministic-kernels&quot;&gt;Faster and deterministic kernels&lt;/h2&gt;
-
-&lt;p&gt;Alongside the usability improvement, the DGL team always keeps system
-performance at heart. We have conducted an extensive code refactoring during
-this release to reduce the Python stack overhead and enhance the code
-readability. In addition, we upgrade the core CPU/GPU kernels for message
-passing computation. Specifically, we found that the message passing in GNNs
-can be reduced to two general computational patterns: g-SpMM and g-SDDMM. The
-two patterns have a number of choices of parallelization and DGL carefully
-chooses the suitable ones based on the sparse format and operator type.
-Moreover, DGL by default chooses deterministic implementations for a better
-reproducibility. Read the updated &lt;a href=&quot;https://arxiv.org/abs/1909.01315&quot;&gt;white paper&lt;/a&gt;
-for more details about the new kernel design.&lt;/p&gt;
-
-&lt;h2 id=&quot;scaling-beyond-one-machine&quot;&gt;Scaling beyond one machine&lt;/h2&gt;
-
-&lt;p&gt;&lt;em&gt;Can DGL scale to giant graphs that cannot be fit in one machine?&lt;/em&gt; This question
-has been on our watch from the genesis of the DGL project. Despite several
-attempts from the previous releases, 0.5 is the very first release that
-thoroughly defines the user-facing APIs and components for distributed
-training. The goal is to create a coherent user experience of mini-batch
-training from on a single machine to multiple machines, ideally with few or no
-code changes. Specifically, this release includes the following new components:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;To split a graph for distributed computation, DGL integrates a light-weight
-version of the highly-optimized METIS &lt;em&gt;*graph partition&lt;/em&gt; toolkit.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;DistGraphServer&lt;/strong&gt; stores the partitioned graph structure and node/edge
-features on each machine. These servers work together to serve the graph data
-to training processes. One can deploy multiple servers on one machine to boost
-the service throughput.&lt;/li&gt;
-  &lt;li&gt;New &lt;strong&gt;distributed sampler&lt;/strong&gt; that interacts with remote servers and supports
-sampling from partitioned graph.&lt;/li&gt;
-  &lt;li&gt;For training processes, DGL provides the &lt;strong&gt;DistGraph&lt;/strong&gt;, &lt;strong&gt;DistTensor&lt;/strong&gt; and
-&lt;strong&gt;DistEmbedding&lt;/strong&gt; abstractions for accessing graph structures, node/edge
-features and embeddings stored remotely. There is also a convenient
-&lt;strong&gt;DistDataLoader&lt;/strong&gt; to get mini-batches from the distributed sampler.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;DGL has performed several optimizations within the entire stack. For example,
-when the sampler and target server are located in the same machine, they can
-communicate with each other through the local shared-memory, instead of using
-IPC or TCP/IP communication. More optimizations are coming in the future
-releases. To get started, check out the &lt;a href=&quot;https://docs.dgl.ai/guide/distributed.html&quot;&gt;user guide chapter&lt;/a&gt; for distributed
-training and examples for training &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/graphsage/experimental&quot;&gt;GraphSAGE&lt;/a&gt;
-and &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn/experimental&quot;&gt;RGCN&lt;/a&gt;
-on the ogbn-paper100M dataset.&lt;/p&gt;
-
-&lt;h2 id=&quot;further-readings&quot;&gt;Further readings&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Our updated white paper available at: &lt;a href=&quot;https://arxiv.org/abs/1909.01315&quot;&gt;https://arxiv.org/abs/1909.01315&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.5 release is a major update on many aspects of the project including documentation, APIs, system speed and scalability. This article highlights some of the new features and enhancements.</summary></entry></feed>
+&lt;p&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.3&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.3&lt;/a&gt;&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">This is a patch release mainly for supporting CUDA 11.0. Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.</summary></entry></feed>
