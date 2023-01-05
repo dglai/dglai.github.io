@@ -39,7 +39,7 @@ modules and tensor based modules (PyTorch or MXNet) as smooth as possible.
 Committors
 ---
 
-* **Amazon Web Services AI Shanghai Lablet (ASAIL)**: Minjie Wang, Guan Gan, Mufei Li, Rui Ying,
+* **Amazon Web Services AI Shanghai Lablet (ASAIL)**: Minjie Wang, Quan Gan, Mufei Li, Rui Ying,
   Tiajun Xiao, Tong He, Jian Zhang, Xiangkun Hu, Jinjing Zhou\*, Zihao Ye\*, Chao Ma\*, Zheng Zhang
 * **Amazon Web Services Machine Learning**: Da Zheng, Xiang Song, Israt Nisa, George Karypis
 * **NVIDIA**: Dominique LaSalle, Xin Yao
