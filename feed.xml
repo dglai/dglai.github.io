@@ -1,4 +1,241 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2023-01-11T16:21:05+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">Improving Graph Neural Networks via Network-in-network Architecture</title><link href="https://www.dgl.ai/blog/2022/11/28/ngnn.html" rel="alternate" type="text/html" title="Improving Graph Neural Networks via Network-in-network Architecture" /><published>2022-11-28T00:00:00+00:00</published><updated>2022-11-28T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2022/11/28/ngnn</id><content type="html" xml:base="https://www.dgl.ai/blog/2022/11/28/ngnn.html">&lt;p&gt;As Graph Neural Networks (GNNs) has become increasingly popular, there is a
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2023-02-24T07:33:48+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">DGL 1.0: Empowering Graph Machine Learning for Everyone</title><link href="https://www.dgl.ai/release/2023/02/20/release.html" rel="alternate" type="text/html" title="DGL 1.0: Empowering Graph Machine Learning for Everyone" /><published>2023-02-20T00:00:00+00:00</published><updated>2023-02-20T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2023/02/20/release</id><content type="html" xml:base="https://www.dgl.ai/release/2023/02/20/release.html">&lt;p&gt;We are thrilled to announce the arrival of DGL 1.0, a cutting-edge machine
+learning framework for deep learning on graphs. Over the past three years,
+there has been growing interest from both academia and industry in this
+technology. Our framework has received requests from various scenarios, from
+academic research on state-of-the-art models to industrial demands for scaling
+Graph Neural Network (GNN) solutions to large, real-world problems. With DGL
+1.0, we aim to provide a comprehensive and user-friendly solution for all users
+to take advantage of graph machine learning.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2023-02-20-release/request.png&quot; alt=&quot;request&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;center&gt;Different levels of user requests and what DGL 1.0 provides to fulfill them&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;DGL 1.0 adopts a layered and modular design to fulfill various user requests. The key features of DGL 1.0 include:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch&quot;&gt;100+ examples&lt;/a&gt; of
+state-of-the-art GNN models, &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/ogb&quot;&gt;15+ top-ranked baselines&lt;/a&gt; on
+Open Graph Benchmark (OGB), available for learning and integration&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.dgl.ai/api/python/nn-pytorch.html&quot;&gt;150+ GNN utilities&lt;/a&gt;
+including GNN layers, datasets, graph data transform modules, graph samplers,
+etc. for building new model architectures or GNN-based solutions&lt;/li&gt;
+  &lt;li&gt;Flexible and efficient message passing and sparse matrix abstraction for
+developing new GNN building blocks&lt;/li&gt;
+  &lt;li&gt;Multi-GPU and distributed training capability to scale to graphs of billions
+of nodes and edges&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The new additions and updates in DGL 1.0 are depicted in the accompanying
+figure. One of the highlights of this release is the introduction of
+&lt;strong&gt;DGL-Sparse&lt;/strong&gt;, a new specialized package for graph ML models defined in sparse
+matrix notations. DGL-Sparse streamlines the programming process not just for
+well-established GNNs such as Graph Convolutional Networks, but also for the
+latest models, including diffusion-based GNNs, hypergraph neural networks, and
+Graph Transformers. In the following article, we will provide an overview of
+two popular paradigms for expressing GNNs, i.e., the message passing view and
+the matrix view, which motivated the creation of DGL-Sparse. We will then show
+you how to get started with this new and exciting feature.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2023-02-20-release/arch.png&quot; alt=&quot;arch&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;center&gt;DGL 1.0 stack&lt;/center&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;the-message-passing-view-vs-the-matrix-view&quot;&gt;The Message Passing View v.s. The Matrix View&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;“It’s the theory that the language you speak determines how you think and affects how you see everything.” — Louise Banks from Film Arrival&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Representing a Graph Neural Network can take two distinct forms. The first,
+known as the message passing view, approaches GNN models from a &lt;em&gt;fine-grained,
+local&lt;/em&gt; perspective, detailing how messages are exchanged along edges and how
+node states are updated accordingly. Alternatively, due to the algebraic
+equivalence of a graph to a sparse adjacency matrix, many researchers opt to
+express their GNN models from a coarse-grained, global perspective, emphasizing
+the operations involving the sparse adjacency matrix and dense feature tensors.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2023-02-20-release/view.png&quot; alt=&quot;view&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;These local and global perspectives are sometimes interchangeable, but more
+often, provide complementary insights into the fundamentals and limitations of
+GNNs. For instance, the message passing view highlights the connection between
+GNNs and the Weisfeiler Lehman (WL) graph isomorphism test, which also relies
+on aggregating information from neighbors (as described in &lt;a href=&quot;https://arxiv.org/abs/1810.00826&quot;&gt;Xu et al., 2018&lt;/a&gt;).
+Meanwhile, the matrix view provides valuable understanding of the algebraic
+properties of GNNs, leading to intriguing findings such as the &lt;em&gt;oversmoothing&lt;/em&gt;
+phenomenon (as discussed in &lt;a href=&quot;https://arxiv.org/abs/1801.07606&quot;&gt;Li et al., 2018&lt;/a&gt;). In conclusion, both the message
+passing view and matrix view are indispensable tools in studying and describing
+GNNs, and this is precisely what motivates the key feature we will be
+showcasing in DGL 1.0.&lt;/p&gt;
+
+&lt;h2 id=&quot;dgl-sparse-sparse-matrix-abstraction-for-graph-ml&quot;&gt;DGL Sparse: Sparse Matrix Abstraction for Graph ML&lt;/h2&gt;
+
+&lt;p&gt;In DGL 1.0, we are happy to announce the release of DGL Sparse, a new
+sub-package (&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.sparse&lt;/code&gt;) in addition to the existing message passing interface
+in DGL to accomplish the support of the entire spectrum of GNN models. DGL
+Sparse provides sparse matrix classes and operations specialized for Graph ML,
+making it easier to program GNNs described in the matrix view. In the following
+section, we will demonstrate a few examples of GNNs, showcasing their
+mathematical formulation and corresponding code implementation in DGL Sparse.&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;Graph Convolutional Network&lt;/strong&gt; (&lt;a href=&quot;https://arxiv.org/abs/1609.02907&quot;&gt;Kipf et al., 2017&lt;/a&gt;) is one of the pioneer works
+in GNN modeling. GCN can be expressed in both message passing view and matrix
+view. The code below compares the two different perspectives and
+implementations in DGL.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2023-02-20-release/gcn.png&quot; alt=&quot;gcn&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.function&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;fn&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# DGL message passing functions&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;GCNLayer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'X'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'deg'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in_degrees&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'X_neigh'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;X_neigh&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'X_neigh'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;relu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_neigh&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;c_ij&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'deg'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dst&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'deg'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'m'&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'X'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c_ij&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;center&gt;GCN in DGL's message passing API&lt;/center&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.sparse&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dglsp&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# DGL 1.0 sparse matrix package&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;GCNLayer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;D_invsqrt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglsp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;A_norm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_invsqrt&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_invsqrt&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;relu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A_norm&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;center&gt;GCN in DGL Sparse&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Graph Diffusion-based GNNs.&lt;/strong&gt; Graph diffusion is a process of propagating or
+smoothing node features/signals along edges. Many classical graph algorithms
+such as PageRank belong to this category. A series of research has shown that
+combining graph diffusion with neural networks is an effective and efficient
+way to enhance model predictions. The equation below describe the core
+computation of one representative model — &lt;em&gt;Approximated Personalized Propagation
+of Neural Prediction&lt;/em&gt; (&lt;a href=&quot;https://arxiv.org/abs/1810.05997&quot;&gt;Gasteiger et al., 2018&lt;/a&gt;), which can be implemented in DGL
+Sparse straightforwardly.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2023-02-20-release/appnp.png&quot; alt=&quot;appnp&quot; width=&quot;300x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;APPNP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Z_0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f_theta&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_hops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;A_drop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglsp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val_like&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A_dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A_drop&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z_0&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Hypergraph Neural Networks&lt;/strong&gt;. A hypergraph is a generalization of a graph in
+which an edge can join any number of nodes (called an hyperedge). Hypergraphs
+are particularly useful in scenarios that require capturing high-order
+relations such as co-purchase behaviors in e-commerce platforms, or
+co-authorship in citation networks, etc. A hypergraph is typically
+characterized by its sparse incidence matrix, and thus Hypergraph Neural
+Networks (HGNN) are commonly defined in sparse matrix notations. The equation
+and code implementation of Hypergraph Convolution, proposed by &lt;a href=&quot;https://arxiv.org/abs/1809.09401&quot;&gt;Feng et al.,
+2018&lt;/a&gt;, are presented below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2023-02-20-release/hypergraph.png&quot; alt=&quot;hypergraph&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HypergraphConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;d_V&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# node degree&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;d_E&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# edge degree&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;n_edges&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_E&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;D_V_invsqrt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglsp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# D_V ** (-1/2)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;D_E_inv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglsp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_E&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# D_E ** (-1)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglsp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;identity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n_edges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_edges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;L&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_V_invsqrt&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;H&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_E_inv&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_V_invsqrt&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Theta&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;L&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Graph Transformers&lt;/strong&gt;. The Transformer has proven to be an effective learning
+architecture in natural language processing and computer vision. Researchers
+have begun to extend the use of Transformers to graph learning as well. One of
+the pioneer work by (&lt;a href=&quot;https://arxiv.org/abs/2012.09699&quot;&gt;Dwivedi et al., 2020&lt;/a&gt;) proposed to constrain the all-pair
+multi-head attention to the connected node pairs in a graph. With DGL Sparse,
+implementing this new formulation is now a straightforward process, taking only
+about 10 lines of code.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2023-02-20-release/gt.png&quot; alt=&quot;gt&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;GraphMHA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;q&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;q_proj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_heads&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;q&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scaling&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k_proj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_heads&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v_proj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_heads&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;attn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglsp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bsddmm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transpose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# [N, N, nh]&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;attn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;attn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;softmax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dglsp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bspmm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;attn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out_proj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;key-features-of-dgl-sparse&quot;&gt;Key Features of DGL Sparse&lt;/h3&gt;
+
+&lt;p&gt;To handle diverse use cases in an efficient manner, DGL Sparse is designed with
+two key features that set it apart from other sparse matrix libraries such as
+&lt;code class=&quot;highlighter-rouge&quot;&gt;scipy.sparse&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;torch.sparse&lt;/code&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Automatic Sparse Format Selection&lt;/strong&gt;. DGL Sparse eliminates the complexity of
+choosing the right data structure for storing a sparse matrix (also known as
+the &lt;em&gt;sparse format&lt;/em&gt;). Users can create a sparse matrix with a single call to
+&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.sparse.spmatrix&lt;/code&gt; and the internal DGL’s sparse matrix will automatically
+select the optimal format based on the intended operation.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Scalar or Vector Non-zero Elements&lt;/strong&gt;. GNN models often associate edges with
+multi-channel weight vectors, such as multi-head attention vectors, as
+demonstrated in the Graph Transformer example. To accommodate this, DGL Sparse
+allows non-zero elements to have vector shapes and extends common sparse
+operations, such as sparse-dense-matrix multiplication (SpMM), to operate on
+this new form (as seen in the &lt;code class=&quot;highlighter-rouge&quot;&gt;bspmm&lt;/code&gt; operation in the Graph Transformer
+example).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By utilizing these design features, DGL Sparse reduces code length by &lt;strong&gt;2.7 times&lt;/strong&gt;
+on average when compared to previous implementations of matrix-view models with
+message passing interface. The simplified code also results in &lt;strong&gt;43% less
+overhead&lt;/strong&gt; in the framework. Additionally, DGL Sparse is PyTorch compatible,
+making it easy to integrate with the various tools and packages available
+within the PyTorch ecosystem.&lt;/p&gt;
+
+&lt;h2 id=&quot;get-started-with-dgl-10&quot;&gt;Get started with DGL 1.0&lt;/h2&gt;
+
+&lt;p&gt;The framework is readily available on all platforms and can be easily installed
+using &lt;a href=&quot;https://www.dgl.ai/pages/start.html&quot;&gt;pip or conda&lt;/a&gt;. To get started with DGL Sparse, check out the new
+&lt;a href=&quot;https://docs.dgl.ai/en/latest/notebooks/sparse/quickstart.html&quot;&gt;Quickstart tutorial&lt;/a&gt; and play with it in &lt;a href=&quot;https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/sparse/quickstart.ipynb&quot;&gt;Google Colab&lt;/a&gt; without having to set up a
+local environment. In addition to the examples you’ve seen above, the first
+release of DGL Sparse includes &lt;a href=&quot;https://docs.dgl.ai/en/latest/notebooks/sparse/index.html&quot;&gt;5 tutorials&lt;/a&gt; and &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/sparse&quot;&gt;11 end-to-end examples&lt;/a&gt; to help
+you learn and understand the different uses of this new package.&lt;/p&gt;
+
+&lt;p&gt;We welcome your feedback and are available via &lt;a href=&quot;https://github.com/dmlc/dgl/issues&quot;&gt;Github issues&lt;/a&gt; and &lt;a href=&quot;https://discuss.dgl.ai/&quot;&gt;Discuss posts&lt;/a&gt;.
+Join our &lt;a href=&quot;http://slack.dgl.ai/&quot;&gt;Slack channel&lt;/a&gt; to stay updated and to connect with the community.&lt;/p&gt;
+
+&lt;p&gt;For more information on the new additions and changes in DGL 1.0, please refer
+to our &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/1.0.0&quot;&gt;release note&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p align=&quot;right&quot;&gt;&lt;em&gt;(Banner image generated by Midjourney.)&lt;/em&gt;&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are thrilled to announce the arrival of DGL 1.0, a cutting-edge machine learning framework for deep learning on graphs. Over the past three years, there has been growing interest from both academia and industry in this technology. Our framework has received requests from various scenarios, from academic research on state-of-the-art models to industrial demands for scaling Graph Neural Network (GNN) solutions to large, real-world problems. With DGL 1.0, we aim to provide a comprehensive and user-friendly solution for all users to take advantage of graph machine learning.</summary></entry><entry><title type="html">Improving Graph Neural Networks via Network-in-network Architecture</title><link href="https://www.dgl.ai/blog/2022/11/28/ngnn.html" rel="alternate" type="text/html" title="Improving Graph Neural Networks via Network-in-network Architecture" /><published>2022-11-28T00:00:00+00:00</published><updated>2022-11-28T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2022/11/28/ngnn</id><content type="html" xml:base="https://www.dgl.ai/blog/2022/11/28/ngnn.html">&lt;p&gt;As Graph Neural Networks (GNNs) has become increasingly popular, there is a
 wide interest of designing deeper GNN architecture. However, deep GNNs suffer
 from the &lt;em&gt;oversmoothing&lt;/em&gt; issue where the learnt node representations quickly
 become indistinguishable with more layers. This blog features a simple yet
@@ -1547,29 +1784,4 @@ without the need to learn new tools and ML technologies.&lt;/p&gt;
 the future. For more information about Neptune ML, please visit the &lt;a href=&quot;https://aws.amazon.com/blogs/database/announcing-amazon-neptune-ml-easy-fast-and-accurate-predictions-on-graphs/&quot;&gt;AWS blog&lt;/a&gt;
 and &lt;a href=&quot;https://aws.amazon.com/neptune/machine-learning/&quot;&gt;product page&lt;/a&gt;. Watch the
 &lt;a href=&quot;https://reinvent.awsevents.com/keynotes/&quot;&gt;re:Invent 2020 Machine Learning Keynote&lt;/a&gt;
-by Swami Sivasubramanian for the full announcement.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">AWS just announced the availability of Neptune ML. Amazon Neptune is a fast, reliable, fully managed graph database service that makes it easy to build and run applications that work with highly connected datasets. Neptune ML is a new capability that uses graph neural networks (GNNs), a machine learning (ML) technique purpose-built for graphs, for making easy, fast, and accurate predictions on graphs. The accuracy of most predictions for graphs increases to 50% with Neptune ML when compared to non-graph methods. Neptune ML uses the Deep Graph Library (DGL), an open-source library to which AWS contributes that makes it easy to develop and apply GNN models on graph data. Now, developers can create, train, and apply ML on Neptune data in hours instead of weeks without the need to learn new tools and ML technologies.</summary></entry><entry><title type="html">v0.5.3 Patch Update</title><link href="https://www.dgl.ai/release/2020/12/04/release.html" rel="alternate" type="text/html" title="v0.5.3 Patch Update" /><published>2020-12-04T00:00:00+00:00</published><updated>2020-12-04T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2020/12/04/release</id><content type="html" xml:base="https://www.dgl.ai/release/2020/12/04/release.html">&lt;p&gt;This is a patch release mainly for supporting CUDA 11.0.  Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.&lt;/p&gt;
-
-&lt;p&gt;Other fixes include:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Performance fix of graph batching. Affect the &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.batch&lt;/code&gt; API.&lt;/li&gt;
-  &lt;li&gt;Speedup on graph readout. Affect &lt;a href=&quot;https://docs.dgl.ai/api/python/dgl.html#batching-and-reading-out-ops&quot;&gt;all APIs&lt;/a&gt; under &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.readout&lt;/code&gt;.&lt;/li&gt;
-  &lt;li&gt;Speedup in CPU SpMM with sum reducer.&lt;/li&gt;
-  &lt;li&gt;Performance optimization that removes redundant copies between CPU and GPU.&lt;/li&gt;
-  &lt;li&gt;Fix &lt;code class=&quot;highlighter-rouge&quot;&gt;segment_reduce()&lt;/code&gt; ignoring tailing 0 segments.&lt;/li&gt;
-  &lt;li&gt;Fix a crash bug due to unfound attribute.&lt;/li&gt;
-  &lt;li&gt;Performance optimization in COO-CSR conversion.&lt;/li&gt;
-  &lt;li&gt;Parallelization in heterogeneous graph format conversion.&lt;/li&gt;
-  &lt;li&gt;Fix a bug to enable distributed training of RGCN with CPU.&lt;/li&gt;
-  &lt;li&gt;Numerous documentation fixes.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;New examples:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Sparse embedding for GATNE-T for large graphs.&lt;/li&gt;
-  &lt;li&gt;LINE.&lt;/li&gt;
-  &lt;li&gt;SIGN for OGB.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The Chinese user guide has been released for chapter 1 to 4. Further chapters will be released soon.&lt;/p&gt;
-
-&lt;p&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/0.5.3&quot;&gt;https://github.com/dmlc/dgl/releases/tag/0.5.3&lt;/a&gt;&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">This is a patch release mainly for supporting CUDA 11.0. Now DGL supports CUDA 11.0 and PyTorch 1.7 on Linux/Windows/Mac.</summary></entry></feed>
+by Swami Sivasubramanian for the full announcement.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="news" /><category term="news" /><summary type="html">AWS just announced the availability of Neptune ML. Amazon Neptune is a fast, reliable, fully managed graph database service that makes it easy to build and run applications that work with highly connected datasets. Neptune ML is a new capability that uses graph neural networks (GNNs), a machine learning (ML) technique purpose-built for graphs, for making easy, fast, and accurate predictions on graphs. The accuracy of most predictions for graphs increases to 50% with Neptune ML when compared to non-graph methods. Neptune ML uses the Deep Graph Library (DGL), an open-source library to which AWS contributes that makes it easy to develop and apply GNN models on graph data. Now, developers can create, train, and apply ML on Neptune data in hours instead of weeks without the need to learn new tools and ML technologies.</summary></entry></feed>
