@@ -33,10 +33,10 @@ PyTorch ver. \ CUDA ver. | 10.2 | 11.3 | 11.6 | 11.7
 
 Windows: Windows 10+/Windows server 2016+
 
-PyTorch ver. \ CUDA ver. | 10.2 | 11.3 | 11.6 | 11.7
---   | -- | --   | -- | --
-1.12 | ✅ |  ✅  | ✅ |  
-1.13 |    |      | ✅ | ✅ 
+PyTorch ver. \ CUDA ver. | 11.3 | 11.6 | 11.7
+--   | --   | -- | --
+1.12 |  ✅  | ✅ |  
+1.13 |      | ✅ | ✅ 
 
 Install from source
 ---
