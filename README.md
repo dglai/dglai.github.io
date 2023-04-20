@@ -23,8 +23,8 @@ In `jekyll` folder:
 Scripts
 -------
 In the root folder:
-* Copy the jekyll generated sites to root folder: `bash script/ship.sh`
-* Build for production: `bash script/build_and_ship.sh`
+* Copy the jekyll generated sites to root folder: `bash scripts/ship.sh`
+* Build for production: `bash scripts/build_and_ship.sh`
 
 How to upload your change
 -------------------------
