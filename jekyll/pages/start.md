@@ -14,7 +14,7 @@ Supported OS:
 * macOS X 10.9+
 * Windows 10+ (with [VC2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=48145) Installed) / Windows server 2016+
 
-Supported Python versions: 3.6, 3.7, 3.8, 3.9, 3.10
+Supported Python versions: 3.7, 3.8, 3.9, 3.10
 
 Supported deep learning frameworks:
 
@@ -26,17 +26,19 @@ Additional supported CUDA version when using PyTorch:
 
 Linux: CentOS 7+ / Ubuntu 18.04+
 
-PyTorch ver. \ CUDA ver. | 10.2 | 11.3 | 11.6 | 11.7
---   | -- | --   | -- | --
-1.12 | ✅ |  ✅  | ✅ |  
-1.13 |    |      | ✅ | ✅ 
+PyTorch ver. \ CUDA ver. | 10.2 | 11.3 | 11.6 | 11.7 | 11.8
+--   | -- | --   | -- | -- | --
+1.12 | ✅ |  ✅  | ✅ |  |
+1.13 |    |      | ✅ | ✅ |
+2.0 |    |      |  | ✅ | ✅
 
 Windows: Windows 10+/Windows server 2016+
 
-PyTorch ver. \ CUDA ver. | 11.3 | 11.6 | 11.7
---   | --   | -- | --
-1.12 |  ✅  | ✅ |  
-1.13 |      | ✅ | ✅ 
+PyTorch ver. \ CUDA ver. | 11.3 | 11.6 | 11.7 | 11.8
+--   | --   | -- | -- | --
+1.12 |  ✅  | ✅ |  |
+1.13 |      | ✅ | ✅ |
+2.0 |      |  | ✅ |✅
 
 Install from source
 ---
