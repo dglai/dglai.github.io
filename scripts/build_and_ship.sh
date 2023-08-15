@@ -9,4 +9,4 @@ cd ..
 # ship
 cp -r jekyll/_site/* .
 # serve
-python -m http.server 8888
+python3 -m http.server 8898
