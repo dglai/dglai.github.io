@@ -38,6 +38,12 @@ PyTorch ver. \ CUDA ver. | 11.6 | 11.7 | 11.8
 1.13 | ✅ | ✅ |
 2.0  |    | ✅ |✅
 
+Recommended containers
+---
+
+You can download GPU enabled DGL [docker containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/dgl)
+(backended by PyTorch) from NVIDIA NGC for both x86 and ARM based linux systems.
+
 Install from source
 ---
 
