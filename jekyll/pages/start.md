@@ -34,10 +34,10 @@ PyTorch ver. \ CUDA ver. | 11.6 | 11.7 | 11.8 | 12.1
 
 Windows: Windows 10+/Windows server 2016+
 
-PyTorch ver. \ CUDA ver. | 11.6 | 11.7 | 11.8
---   | -- | -- | --
-1.13 | ✅ | ✅ |
-2.0  |    | ✅ |✅
+PyTorch ver. \ CUDA ver. | 11.8 | 12.1
+--   | -- | --
+2.0  | ✅ |
+2.1  | ✅ | ✅
 
 Recommended containers
 ---
