@@ -10,7 +10,7 @@ System Requirements
 
 Supported OS:
 
-* All Linux distributions no earlier than CentOS 7+ / Ubuntu 18.04.
+* All Linux distributions no earlier than CentOS 8+ / Ubuntu 20.04.
 * macOS X 10.9+
 * Windows 10+ (with [VC2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=48145) Installed) / Windows server 2016+
 
@@ -24,7 +24,7 @@ Supported deep learning frameworks:
 
 Additional supported CUDA version when using PyTorch:
 
-Linux: CentOS 7+ / Ubuntu 18.04+
+Linux: CentOS 8+ / Ubuntu 20.04+
 
 PyTorch ver. \ CUDA ver. | 11.6 | 11.7 | 11.8 | 12.1
 --   | -- | -- | -- | --
