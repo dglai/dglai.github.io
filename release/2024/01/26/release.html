@@ -350,20 +350,21 @@
 
    </header>
     <!-- End Header -->
-    <!-- Start Page Banner Area -->
-    <div class="page-banner-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="page-title">
-                        <h2>about</h2>
-                        <span class="sub-title"><a href="https://www.dgl.ai">Home</a> / about Page</span>
-                    </div>
-                </div>
-            </div>
+<!-- Start Page Banner Area -->
+<div class="page-banner-area">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="page-title">
+          <h2>Blog Details</h2>
+          <span class="sub-title"><a href="https://www.dgl.ai">Home</a> / Blog Details</span>
         </div>
+      </div>
     </div>
-    <!-- End Pages Banner Area -->
+  </div>
+</div>
+<!-- End Pages Banner Area -->
+
 <!-- Start Blog Area -->
 <section class="blog-area themeix-ptb">
   <div class="container">
@@ -371,155 +372,324 @@
       <!-- Start Blog Content -->
       <div class="col-md-12">
         <div class="blog-wrapper">
+
           <div class="single-blog-details">
+            <div class="blog-img">
+              <img src="/assets/images/posts/2024-01-26-release/blog_banner.png" alt="blog">
+            </div>
             <div class="blog-content-desc">
-              <h2 class="themeix-section-title text-center">Why DGL?</h2>
-              <p><p>In the last few years, deep learning has enjoyed plenty of extraordinary
-successes. Many challenging tasks have been solved or close to being solved by
-Deep Learning, such as image recognition, rich-resource machine translation,
-game playing. These were made possible by a set of techniques that are composed
-of a number of representationally powerful building-blocks, such as
-convolution, attention and recurrence, applied to images, video, text, speech
-and beyond.</p>
+              <h4 class="themeix-blog-h">DGL 2.0: Streamlining Your GNN Data Pipeline from Bottleneck to Boost</h4>
+              <p><p>We’re thrilled to announce the release of DGL 2.0, a major milestone in our
+mission to empower developers with cutting-edge tools for Graph Neural Networks
+(GNNs). Traditionally, data loading has been a significant bottleneck in GNN
+training. Complex graph structures and the need for efficient sampling often
+lead to slow data loading times and resource constraints. This can drastically
+hinder the training speed and scalability of your GNN models. DGL 2.0 breaks
+free from these limitations with the introduction of dgl.graphbolt, a
+revolutionary data loading framework that supercharges your GNN training by
+streamlining the data pipeline.</p>
 
-<p>The development and deployment of these techniques often depend on the simple
-correlation of the given data; for example, CNN is based on the spatial
-correlation between nearby pixels while RNN family dwells on the assumption
-that its input is sequence-like.</p>
+<p><img src="/assets/images/posts/2024-01-26-release/diagram.png" alt="diagram" width="800x" class="aligncenter" /></p>
+<p><center>High-Level Architecture of GraphBolt Data Pipeline</center></p>
 
-<p>More recently, there has been a steady flow of new deep learning research
-focusing on graph-structured data. Some of them are more conventional graph
-related problems, like social networks, chemical molecules and recommender
-systems, where how the entity interacts with its neighborhood is as informative
-as, if not more than, the features of the entity itself.</p>
+<h2 id="flexible-data-pipeline--customizable-stages">Flexible data pipeline &amp; customizable stages</h2>
 
-<p>Some others nevertheless have applied graph neural networks to images, text or
-games. Very broadly speaking, any of the data structures we have covered so far
-can be formalized to graphs. For instance an image can be seen as grid of
-pixel, text a sequence of words… Together with matured recognition modules,
-graph can also be defined at higher abstraction level for these data: scene
-graphs of images or dependency trees of language.</p>
-
-<p>To this end, we made <strong>DGL</strong>. We are keen to bringing graphs closer to deep
-learning researchers. We want to make it easy to implement graph neural
-networks model family. We also want to make the combination of graph based
-modules and tensor based modules (PyTorch or MXNet) as smooth as possible.</p>
-
-<h2 id="committors">Committors</h2>
+<p>One size doesn’t fit all - and especially not when it comes to dealing with a
+variety of graph data and GNN tasks. For instance, link prediction requires
+negative sampling but not node classification, some features are too large to be
+stored in memory, and occasionally, we might combine multiple sampling
+operations to form subgraphs. To offer adaptable operators while maintaining
+high performance, dgl.graphbolt integrates seamlessly with the PyTorch datapipe,
+relying on the unified “MiniBatch” data structure to connect processing stages.
+The core stages are defined as:</p>
 
 <ul>
-  <li><strong>Amazon Web Services AI Shanghai Lablet (ASAIL)</strong>: Dongyu Ru, Hongzhi (Steve) Chen, Jian Zhang, Minjie Wang, Peiyuan Zhou, Quan Gan, Rui Ying, Tiajun Xiao, Tong He, Xiangkun Hu, Zhenkun Cai, Chao Ma<em>, Jinjing Zhou</em>, Mufei Li<em>, Zihao Ye</em>, Zheng Zhang</li>
-  <li><strong>Amazon Web Services Machine Learning</strong>: Da Zheng, Xiang Song, Israt Nisa, George Karypis</li>
-  <li><strong>NVIDIA</strong>: Chang Liu, Dominique LaSalle, Joe Eaton, Triston Cao, Xin Yao</li>
-  <li><strong>New York University</strong>: Lingfan Yu, Yu Gai, Jinyang Li</li>
-  <li><strong>Georgia Institute of Technology</strong>: Muhammed Fatih Balın, Ümit V. Çatalyürek</li>
+  <li><strong>Item Sampling</strong>: randomly selects a subset (nodes, edges, graphs) from the
+entire training set as an initial mini-batch for downstream computation.</li>
+  <li><strong>Negative Sampling (for Link Prediction)</strong>: generates non-existing edges as
+negative examples.</li>
+  <li><strong>Subgraph Sampling</strong>: generates subgraphs based on the input nodes/edges.</li>
+  <li><strong>Feature Fetching</strong>: fetches related node/edge features from the dataset for
+the given input.</li>
+  <li><strong>Data Moving (for training on GPU)</strong>: moves the data to specified device for
+training.</li>
 </ul>
 
-<p>* Alumini</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># Seed edge sampler.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSampler</span><span class="p">(</span><span class="n">train_edge_set</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c"># Negative sampling.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">sample_uniform_negative</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">negative_ratio</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="c"># Neighbor sampling.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">sample_neighbor</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">fanouts</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="c"># Fetch features.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">fetch_feature</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">node_feature_keys</span><span class="o">=</span><span class="p">[</span><span class="s">"feat"</span><span class="p">])</span>
+<span class="c"># Copy to GPU for training.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="s">"cuda:0"</span><span class="p">)</span>
+</code></pre>
+</div>
 
-<h2 id="contributors">Contributors</h2>
+<p>The dgl.graphbolt allows you to plug in your own custom processing steps to
+build the perfect data pipeline for your needs, for example:</p>
 
-<p>Since released, DGL has received contributions from 200+ contributors. We are grateful to
-work with such an energetic community and looking forward to see more to join. See the
-list of contributors <a href="https://github.com/dmlc/dgl/blob/master/CONTRIBUTORS.md">here</a>.</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># Seed edge sampler.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSampler</span><span class="p">(</span><span class="n">train_edge_set</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c"># Negative sampling.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">sample_uniform_negative</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">negative_ratio</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="c"># Neighbor sampling.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">sample_neighbor</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">fanouts</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+
+<span class="c"># Exclude seed edges.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">exclude_seed_edges</span><span class="p">)</span>
+
+<span class="c"># Fetch features.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">fetch_feature</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">node_feature_keys</span><span class="o">=</span><span class="p">[</span><span class="s">"feat"</span><span class="p">])</span>
+<span class="c"># Copy to GPU for training.</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="s">"cuda:0"</span><span class="p">)</span>
+
+</code></pre>
+</div>
+
+<p>The dgl.graphbolt empowers you to customize stages in your data pipelines.
+Implement custom stages using pre-defined APIs, such as loading features from
+external storage or adding customized caching mechanisms (e.g.
+<a href="https://github.com/dmlc/dgl/blob/0cb309a1b406d896311b5cfc2b5b1a1915f57c3b/python/dgl/graphbolt/impl/gpu_cached_feature.py#L11">GPUCachedFeature</a>),
+and integrate the custom stages seamlessly without any modifications to your
+core training code.</p>
+
+<h2 id="speed-enhancement--memory-efficiency">Speed enhancement &amp; memory efficiency</h2>
+
+<p>The dgl.graphbolt doesn’t just give you flexibility, it also provides top
+performance under the hood. It features a compact graph data structure for
+efficient sampling, blazing-fast multi-threaded neighbor sampling operator and
+edge exclusion operator, and a built-in option to store large feature tensors
+outside your CPU’s main memory. Additionally, The dgl.graphbolt takes care of
+scheduling across all hardware, minimizing wait times and maximizing efficiency.</p>
+
+<p>The dgl.graphbolt brings impressive speed gains to your GNN training, showcasing
+over 30% faster node classification in our benchmark and a remarkable ~390%
+acceleration for link prediction  in our benchmark that involve edge exclusion.</p>
+
+<table style="text-align: center;">
+   <tr>
+      <th>Epoch Time(s)</th>
+      <th>GraphSAGE</th>
+      <th>R-GCN</th>
+   </tr>
+   <tr>
+      <td>DGL Dataloader</td>
+      <td>22.5</td>
+      <td>73.6</td>
+   </tr>
+   <tr>
+      <td>dgl.graphbolt</td>
+      <td>17.2</td>
+      <td>64.6</td>
+   </tr>
+   <tr>
+      <td>**Speedup**</td>
+      <td>**1.31x**</td>
+      <td>**1.14x**</td>
+   </tr>
+</table>
+<p><center>Node classification speedup (NVIDIA T4 GPU). GraphSAGE is tested on OGBN-Products. R-GCN is tested on OGBN-MAG</center></p>
+
+<table style="text-align: center;">
+   <tr>
+      <th>Epoch Time(s)</th>
+      <th>include seeds</th>
+      <th>exclude seeds</th>
+   </tr>
+   <tr>
+      <td>DGL Dataloader</td>
+      <td>37.75</td>
+      <td>135.32</td>
+   </tr>
+   <tr>
+      <td>dgl.graphbolt</td>
+      <td>15.51</td>
+      <td>27.62</td>
+   </tr>
+   <tr>
+      <td>**Speedup**</td>
+      <td>**2.43x**</td>
+      <td>**4.90x**</td>
+   </tr>
+</table>
+<p><center>Link prediction speedup (NVIDIA T4 GPU) on OGBN-Citation2</center></p>
+
+<p>For memory-constrained training on enormous graphs like OGBN-MAG240m, the
+dgl.graphbolt also proves its worth. While both utilize mmap-based optimization,
+compared to DGL dataloader, the dgl.graphbolt boasts a substantial speedup. The
+dgl.graphbolt’s well-defined component API streamlines the process for
+contributors to refine out-of-core RAM solutions for future optimization,
+ensuring even the most massive graphs can be tackled with ease.</p>
+
+<table style="text-align: center;">
+   <tr>
+      <th>Iteration time with different RAM size (s)</th>
+      <th>128GB RAM</th>
+      <th>256GB RAM</th>
+      <th>384GB RAM</th>
+   </tr>
+   <tr>
+      <td>Naïve DGL dataloader</td>
+      <td>OOM</td>
+      <td>OOM</td>
+      <td>OOM</td>
+   </tr>
+   <tr>
+      <td>Optimized DGL dataloader</td>
+      <td>65.42</td>
+      <td>3.86</td>
+      <td>0.30</td>
+   </tr>
+   <tr>
+      <td>dgl.graphbolt</td>
+      <td>60.99</td>
+      <td>3.21</td>
+      <td>0.23</td>
+   </tr>
+</table>
+<p><center>Node classification on OGBN-MAG240m under different RAM sizes. Optimized DGL dataloader baseline uses mmap to load features.</center></p>
+
+<h2 id="whats-more">What’s more</h2>
+
+<p>Furthermore, DGL 2.0 includes various new additions such as a hetero-relational
+GCN example and several datasets. Improvements have been introduced to the
+system, examples, and documentation, including updates to the CPU Docker
+tcmalloc, supporting sparse matrix slicing operators and enhancements in various
+examples. A set of <a href="https://docs.dgl.ai/api/python/nn-pytorch.html#utility-modules-for-graph-transformer">utilities</a> for building graph transformer models is released
+along with this version, including NN modules such as positional encoders and
+layers as building blocks, and <a href="https://github.com/dmlc/dgl/tree/master/examples/core/Graphormer">examples</a> and <a href="https://docs.dgl.ai/en/latest/graphtransformer/index.html">tutorials</a> demonstrating the usage of
+them. Additionally, numerous bug fixes have been implemented, resolving issues
+such as the cusparseCreateCsr format for cuda12, addressing the lazy device copy
+problem related to DGL node/edge features e.t.c. For more information on the new
+additions and changes in DGL 2.0, please refer to our <a href="https://github.com/dmlc/dgl/releases/tag/v2.0.0">release note</a>.</p>
+
+<h2 id="get-started-with-dgl-20">Get started with DGL 2.0</h2>
+
+<p>You can easily install DGL 2.0 with dgl.graphbolt on any platform using <a href="https://www.dgl.ai/pages/start.html">pip or conda</a>.
+To jump right in, dive into our brand-new <a href="https://docs.dgl.ai/en/latest/stochastic_training/index.html">Stochastic Training of GNNs with GraphBolt tutorial</a>
+and experiment with our <a href="https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/stochastic_training/node_classification.ipynb">node classification</a>
+and <a href="https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/stochastic_training/link_prediction.ipynb">link prediction</a>
+examples in Google Colab. No need to set up a local environment - just point and
+click! This first release of DGL 2.0 with dgl.graphbolt packs a punch with
+<a href="https://github.com/dmlc/dgl/tree/master/examples/sampling/graphbolt">7 comprehensive single-GPU examples</a>
+and <a href="https://github.com/dmlc/dgl/tree/master/examples/multigpu/graphbolt">1 multi-GPU example</a>, covering a wide range of tasks.</p>
+
+<p>We welcome your feedback and are available via <a href="https://github.com/dmlc/dgl/issues">Github issues</a> and <a href="https://discuss.dgl.ai/">Discuss posts</a>.
+Join our <a href="http://slack.dgl.ai/">Slack channel</a> to stay updated and to connect with the community.</p>
 </p>
+              <div class="blog-post-date">
+                <p>26 <span>January</span> </p>
+              </div>
+              <div class="tag-links mt-30">
+                <div class="widget">
+                  <div class="tagcloud">
+                    <a href="/tag/blog.html" class="set-2">blog</a> <a href="/tag/news.html" class="set-1">news</a> <a href="/tag/release.html" class="set-5">release</a>
+                  </div>
+                </div>
+                <div class="blog-data">
+                  <p>By 
+                  
+                  <a href="https://github.com/dmlc/dgl/">DGLTeam</a>,
+                   in <a href="#">release</a> </p>
+                </div>
+              </div>
+              <!-- Leave a Comment -->
+              <div id="respond">
+                <div class="comment-respond pb-50">
+                  <div id='discourse-comments'></div>
+                  <script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://discuss.dgl.ai/',
+                     discourseEmbedUrl: 'https://www.dgl.ai/release/2024/01/26/release.html' };
+
+  (function() {
+    var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+                </div>
+              </div>
+              <!-- End Leave a Comment -->
             </div>
           </div>
         </div>
       </div>
       <!-- End Blog Content -->
+      <!-- Start Blog Sidebar -->
+      <!--
+      <div class="col-md-3">
+        <div class="row">
+          <div class="blog-sidebar">
+            <div class="col-md-12 col-sm-6">
+              <aside id="dwqa-categories-2" class="widget widget_categories dwqa_widget dwqa_widget_categories sidebar-list">
+                <h4 class="list-title">Categories</h4>
+<ul>
+	
+	
+    
+	 <li><a href="topics/AngularJS">AngularJS</a></li> 
+	
+
+</ul>
+
+
+
+              </aside>
+            </div>
+            <div class="col-md-12 col-sm-6">
+              <aside class="widget dwqa-widget dwqa-popular-question">
+                <div class="sidebar-popular-post dwqa-popular-questions">
+                  <div class="popular-questions"> 
+<h2 class="widget-title">Popular Questions</h2>
+<ul>
+
+    
+
+    
+     <li><a href="/category_one/question_two">Can I Start Learning AngularJS Framework ?</a></li>
+    
+     <li><a href="/category_one/question_one">What is AngularJS ?</a></li>
+    
+
+    
+    
+     <li><a href="/category_two/question_three">How Can I Learning ReactJS Framework ?</a></li>
+    
+     <li><a href="/category_two/question_two">How Can I Learning ReactJS Framework ?</a></li>
+    
+
+    
+    
+     <li><a href="/category_three/question_three">Can I Learning EmberJS Framework ?</a></li>
+    
+     <li><a href="/category_three/question_two">How Can I Learning EmberJS Framework ?</a></li>
+    
+
+    
+    
+     <li><a href="/category_four/question_one">What is VueJS ?</a></li>
+    
+     <li><a href="/category_four/question_two">How Can I Learning VueJS Framework ?</a></li>
+    
+
+ </ul>
+</div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+      <!-- End Blog Sidebar -->
     </div>
   </div>
 </section>
-
-<!-- Start Our History Area -->
-<div class="our-history-area themeix-ptb info-bg">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-offset-3 col-md-6">
-        <div class="themeix-section-title text-center">
-          <h2>Our History</h2>
-          <p>How the journey started.</p>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="timeline timeline-line-dotted">
-        <span class="timeline-label">
-          <span class="label label-primary">Spring.2018</span>
-        </span>
-        <div class="timeline-item">
-          <div class="timeline-point timeline-point-success">
-            <i class="fa fa-angle-double-down"></i>
-          </div>
-          <div class="timeline-event">
-            <div class="timeline-heading">
-              <h4>First Prototype</h4>
-            </div>
-            <div class="timeline-body">
-              <p>Designed by Prof. Zheng Zhang and Quan Gan at NYU Shanghai.</p>
-            </div>
-          </div>
-        </div>
-        <span class="timeline-label">
-          <span class="label label-primary">06.2018</span>
-        </span>
-        <div class="timeline-item">
-          <div class="timeline-point timeline-point-success">
-            <i class="fa fa-angle-double-down"></i>
-          </div>
-          <div class="timeline-event">
-            <div class="timeline-heading">
-              <h4>Serious Development Began</h4>
-            </div>
-            <div class="timeline-body">
-              <p>When Minjie, Lingfan, and Prof. Jinyang Li from NYU's
-              system group joined, flanked by a team of student volunteers at NYU Shanghai and Fudan.</p>
-            </div>
-          </div>
-        </div>
-        <span class="timeline-label">
-          <span class="label label-primary">09.2018</span>
-        </span>
-        <div class="timeline-item">
-          <div class="timeline-point timeline-point-success">
-            <i class="fa fa-angle-double-down"></i>
-          </div>
-          <div class="timeline-event">
-            <div class="timeline-heading">
-              <h4>Development with Industry Team</h4>
-            </div>
-            <div class="timeline-body">
-              <p>With AWS MXNet Science team including Da Zheng, Alex Smola, Haibin Lin,
-              Chao Ma and a number of others.</p>
-            </div>
-          </div>
-        </div>
-        <span class="timeline-label">
-          <span class="label label-primary">12.07.2018</span>
-        </span>
-        <div class="timeline-item">
-          <div class="timeline-point timeline-point-success">
-            <i class="fa fa-angle-double-down"></i>
-          </div>
-          <div class="timeline-event">
-            <div class="timeline-heading">
-              <h4>v0.1 Release</h4>
-            </div>
-            <div class="timeline-body">
-              <p>First open release.</p>
-            </div>
-          </div>
-        </div>
-        <span class="timeline-label">
-          <span class="label label-primary"><a href="https://github.com/dmlc/dgl/releases">More Releases</a><span>
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- End Our History Area -->
-
+<!-- End Blog Area -->
 
 
     <!-- Start Footer Area -->
