@@ -1,4 +1,202 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2024-03-05T07:35:01+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">DGL 2.0: Streamlining Your GNN Data Pipeline from Bottleneck to Boost</title><link href="https://www.dgl.ai/release/2024/01/26/release.html" rel="alternate" type="text/html" title="DGL 2.0: Streamlining Your GNN Data Pipeline from Bottleneck to Boost" /><published>2024-01-26T00:00:00+00:00</published><updated>2024-01-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2024/01/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2024/01/26/release.html">&lt;p&gt;We’re thrilled to announce the release of DGL 2.0, a major milestone in our
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2024-03-07T07:23:14+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">DGL 2.1: GPU Acceleration for Your GNN Data Pipeline</title><link href="https://www.dgl.ai/release/2024/03/06/release.html" rel="alternate" type="text/html" title="DGL 2.1: GPU Acceleration for Your GNN Data Pipeline" /><published>2024-03-06T00:00:00+00:00</published><updated>2024-03-06T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2024/03/06/release</id><content type="html" xml:base="https://www.dgl.ai/release/2024/03/06/release.html">&lt;p&gt;We are happy to announce the release of DGL 2.1. In this release, we are making
+GNN data loading lightning fast. We introduce GPU acceleration for the whole GNN
+data loading pipeline in GraphBolt, including the graph sampling and feature
+fetching stages.&lt;/p&gt;
+
+&lt;h2 id=&quot;flexible-data-pipeline--customizable-stages-all-accelerated-on-your-gpu&quot;&gt;Flexible data pipeline &amp;amp; customizable stages, all accelerated on your GPU&lt;/h2&gt;
+
+&lt;p&gt;Starting from this release, the data moving stage can now be moved earlier in
+the data pipeline to enable GPU acceleration. With this in mind, the following
+permutations of the core stages are now possible:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-03-06-release/workstream.png&quot; alt=&quot;diagram&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To execute all of the data loading stages on the GPU, the graph and the features
+need to be GPU accessible. As the GPU memory may be limited, GraphBolt offers an
+in-place pinning operation to enable GPU access to the graph and features
+resident in main memory.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Pin the graph and features in-place.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pin_memory_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;features&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;feature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pin_memory_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;However, if GPU has sufficient memory, either graph and/or its features can be
+moved to the GPU as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Move the graph and features to the GPU.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;cuda:0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;features&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;feature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;cuda:0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;It may be the case that the GPU has a large memory, however it may not be large
+enough to fit all the features. In that case, it is possible to cache some part
+of the features using &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.graphbolt.GPUCachedFeature.html#dgl.graphbolt.GPUCachedFeature&quot;&gt;gb.GPUCachedFeature&lt;/a&gt;,
+please see the &lt;a href=&quot;https://github.com/dmlc/dgl/blob/3ced3411e55bca803ed5ec5e1de6f62e1f21478f/examples/multigpu/graphbolt/node_classification.py#L288-L292&quot;&gt;GraphBolt multiGPU example&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;By placing the copy operation earlier in the pipeline enables GPU execution for
+the rest of the operations. All of the GraphBolt components compose as you
+expect.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Seed edge sampler.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ItemSampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_edge_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;batch_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shuffle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Copy here to execute the remaining operations on the GPU.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;copy_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;cuda:0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Negative sampling.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample_uniform_negative&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;negative_ratio&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Neighbor sampling.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample_neighbor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fanouts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Fetch features.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fetch_feature&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_feature_keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;feat&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The descriptive nature of the PyTorch datapipe lets us take a defined data
+pipeline, make modifications to it to support GPU specific optimizations with no
+change to the user experience. Two such examples are the &lt;code class=&quot;highlighter-rouge&quot;&gt;overlap_feature_fetch&lt;/code&gt;
+and &lt;code class=&quot;highlighter-rouge&quot;&gt;overlap_graph_fetch&lt;/code&gt; arguments of &lt;a href=&quot;https://docs.dgl.ai/en/latest/generated/dgl.graphbolt.DataLoader.html&quot;&gt;gb.DataLoader&lt;/a&gt;,
+where the feature fetching and graph access operations are overlapped with the
+rest of the operations using a separate CUDA stream via pipeline parallelism.&lt;/p&gt;
+
+&lt;h2 id=&quot;gpu-acceleration-speedups&quot;&gt;GPU acceleration speedups&lt;/h2&gt;
+
+&lt;p&gt;The dgl.graphbolt doesn’t just give you flexibility, it also provides top
+performance under the hood. As for the 2.1 release, almost all dgl.graphbolt
+operations are GPU accelerated, except for sampling with replacement.
+Additionally, the feature fetch operation now runs in parallel with everything
+else, via pipeline parallelism. This has the potential to cut runtimes by up to
+&lt;strong&gt;2x&lt;/strong&gt; depending on the scenario. Moreover, utilizing &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.graphbolt.GPUCachedFeature.html#dgl.graphbolt.GPUCachedFeature&quot;&gt;gb.GPUCachedFeature&lt;/a&gt;
+can cut feature transfer times even more, our multi-GPU benchmarks show up to
+&lt;strong&gt;1.6x&lt;/strong&gt; speedup.&lt;/p&gt;
+
+&lt;p&gt;To evaluate the performance of GraphBolt, we have tested 4 different scenarios:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Single-GPU Node Classification&lt;/li&gt;
+  &lt;li&gt;Single-GPU Link Prediction&lt;/li&gt;
+  &lt;li&gt;Single-GPU Heterogeneous Node Classification&lt;/li&gt;
+  &lt;li&gt;Multi-GPU Node Classification&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In these scenarios, we will compare 5 different configurations. First two are
+the existing baselines, and the last three are new configurations enabled by the
+DGL 2.1 release:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;GraphBolt CPU backend, denoted as “dgl.graphbolt (cpu)”.&lt;/li&gt;
+  &lt;li&gt;The legacy DGL dataloader with UVA on GPU, denoted as “Legacy DGL (pinned)” by
+pinning the dataset in system memory.&lt;/li&gt;
+  &lt;li&gt;GraphBolt GPU backend, denoted as “dgl.graphbolt (pinned)” by pinning the
+dataset in system memory.&lt;/li&gt;
+  &lt;li&gt;GraphBolt GPU backend, denoted as “dgl.graphbolt (pinned, 5M)” by pinning the
+dataset in system memory, utilizing &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.graphbolt.GPUCachedFeature.html#dgl.graphbolt.GPUCachedFeature&quot;&gt;gb.GPUCachedFeature&lt;/a&gt;
+to cache 5M of the node features.&lt;/li&gt;
+  &lt;li&gt;GraphBolt GPU backend, denoted as “dgl.graphbolt (cuda)” by moving the dataset
+to the GPU memory.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All the experiments were run on an NVIDIA DGX-A100 system with 8 GPUs.&lt;/p&gt;
+
+&lt;h3 id=&quot;single-gpu-node-classification&quot;&gt;Single-GPU Node Classification&lt;/h3&gt;
+
+&lt;p&gt;We evaluate the performance of GraphBolt and the Legacy DGL dataloader when the
+dataset is stored in pinned memory (UVA) against the CPU GraphBolt baseline. We
+use a 3 layer GraphSage model with batch size 1024 and fanout 10 in each layer
+and evaluate the performance on the ogbn-products and ogbn-papers100M datasets
+using the listed baselines above.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-03-06-release/single-gpu-node-classification.png&quot; alt=&quot;diagram&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As one can see, GraphBolt’s new GPU backend can get up to &lt;strong&gt;4.2x&lt;/strong&gt; speedup
+compared to the GraphBolt CPU baseline while the legacy DGL dataloader can get
+at most &lt;strong&gt;2.5x&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;single-gpu-link-prediction&quot;&gt;Single-GPU Link Prediction&lt;/h3&gt;
+
+&lt;p&gt;Here, we shift our focus to the link prediction scenario on the ogbl-citation2
+dataset with a similar setting as the previous section. Here, two different
+modes are evaluated, including or excluding reverse edges.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-03-06-release/single-gpu-link-prediction.png&quot; alt=&quot;diagram&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We observe that GraphBolt’s new GPU backend can get up to &lt;strong&gt;5x&lt;/strong&gt; speedup
+compared to its CPU baselines. Legacy DGL dataloader is slow due to missing GPU
+counterparts of some operations required for link prediction dataloading.&lt;/p&gt;
+
+&lt;h3 id=&quot;single-gpu-heterogeneous-node-classification&quot;&gt;Single-GPU Heterogeneous Node Classification&lt;/h3&gt;
+
+&lt;p&gt;You can accelerate heterogeneous sampling on your GPU as well. The
+&lt;a href=&quot;https://github.com/dmlc/dgl/blob/master/examples/sampling/graphbolt/rgcn/hetero_rgcn.py&quot;&gt;R-GCN example&lt;/a&gt;
+runtime on the ogbn-mag dataset was 43.5s with the “dgl.graphbolt (cpu)”
+baseline and it went down to 25.2s with the new “dgl.graphbolt (pinned)” for a
+&lt;strong&gt;1.73x&lt;/strong&gt; speedup. You can expect the speedup numbers to increase as we optimize
+the different use cases for the GPU.&lt;/p&gt;
+
+&lt;h3 id=&quot;multi-gpu-node-classification&quot;&gt;Multi-GPU Node Classification&lt;/h3&gt;
+
+&lt;p&gt;Here, we evaluate the node classification use case in the multi-GPU setting with
+GraphSage model on the ogbn-papers100M dataset (111M nodes and 3.2B edges). A
+similar setting is used as the single-GPU scenario except that each GPU is using
+a batch size of 1024 with global batch size increasing linearly with the number
+of GPUs.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-03-06-release/multi-gpu-node-classification.png&quot; alt=&quot;diagram&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;40GB memory on each of our A100 GPUs can be utilized by the GPU cache feature in
+GraphBolt. We can achieve &lt;strong&gt;1.75x&lt;/strong&gt; improvement on a single GPU and &lt;strong&gt;2.31x&lt;/strong&gt;
+improvement on 8 GPUs compared to previous state-of-the-art baseline, Legacy DGL
+(pinned). Moreover, compared to the GraphBolt CPU baseline, we achieve over
+&lt;strong&gt;10x&lt;/strong&gt; improvement.&lt;/p&gt;
+
+&lt;h2 id=&quot;reduced-graph-storage-space-requirements&quot;&gt;Reduced graph storage space requirements&lt;/h2&gt;
+
+&lt;p&gt;Many large-scale graphs and existing GNN datasets have fewer than 2 billion
+nodes but more than 2 billion edges. One such example is the ogbn-papers100M
+graph with its 111 million nodes and 3.2 billion edges. dgl.graphbolt uses the
+CSC (Compressed Sparse Column) format to store your graph in a memory efficient
+way. With our latest additions, the memory usage now scales by 4 bytes (int32)
+w.r.t. # edges and 8 bytes (int64) w.r.t. # nodes, meaning close to &lt;strong&gt;2x&lt;/strong&gt; space
+savings for graph storage by using mixed data types. The provided preprocessing
+functionality casts the tensors in your dataset into the smallest data types
+automatically for optimum space use and performance such as the edge type
+information in the heterogeneous case. With these optimizations, you get &lt;strong&gt;3x&lt;/strong&gt;
+space savings for the heterogenous ogb-lsc-mag240m graph compared to our
+previous release.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-more&quot;&gt;What’s more&lt;/h2&gt;
+
+&lt;p&gt;Furthermore, dgl.graphbolt is compatible with Pytorch Geometric as well. In the
+figure below, the notation in the parentheses represents where the graph and the
+features are placed. “(cpu-cuda)” means that the graph is placed on the CPU
+while the features are moved to the GPU. We compare our &lt;a href=&quot;https://github.com/dmlc/dgl/blob/master/examples/sampling/graphbolt/pyg/node_classification_advanced.py&quot;&gt;advanced PyG example&lt;/a&gt;
+against the &lt;a href=&quot;https://github.com/pyg-team/pytorch_geometric/blob/master/examples/ogbn_products_sage.py&quot;&gt;PyG official example&lt;/a&gt;,
+both using the PyG GraphSAGE model. We run the Node Classification task on the
+ogbn-products dataset with [15, 10, 5] fanout.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-03-06-release/pyg-graphsage.png&quot; alt=&quot;diagram&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;While providing an extremely optimized Neighbor Sampler implementation, we also
+offer a new drop-in replacement called Layer Neighbor Sampler from NeurIPS 2023.
+One can see that we provide up to &lt;strong&gt;5.5x&lt;/strong&gt; speedup over PyG, combining GPU
+acceleration, pipeline parallelism and the state-of-the-art algorithms. For more
+information on the new features in DGL 2.1, please refer to our &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/v2.1.0&quot;&gt;release notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;get-started-with-dgl-21&quot;&gt;Get started with DGL 2.1&lt;/h2&gt;
+
+&lt;p&gt;You can easily install DGL 2.1 with dgl.graphbolt on any platform using &lt;a href=&quot;https://www.dgl.ai/pages/start.html&quot;&gt;pip or conda&lt;/a&gt;.
+Dive into our updated &lt;a href=&quot;https://docs.dgl.ai/en/latest/stochastic_training/index.html&quot;&gt;Stochastic Training of GNNs with GraphBolt tutorial&lt;/a&gt;
+and experiment with our &lt;a href=&quot;https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/stochastic_training/node_classification.ipynb&quot;&gt;node classification&lt;/a&gt;
+and &lt;a href=&quot;https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/stochastic_training/link_prediction.ipynb&quot;&gt;link prediction&lt;/a&gt;
+examples in Google Colab. No need to set up a local environment - just point and
+click! We also updated the existing &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/sampling/graphbolt&quot;&gt;7 comprehensive single-GPU examples&lt;/a&gt;
+and &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/multigpu/graphbolt&quot;&gt;1 multi-GPU example&lt;/a&gt;
+with GPU Acceleration options. DGL 2.1 will be featured in the NVIDIA DGL
+container 24.03 release which will be released before the end of March 2024.&lt;/p&gt;
+
+&lt;p&gt;We welcome your feedback and are available via &lt;a href=&quot;https://github.com/dmlc/dgl/issues&quot;&gt;Github issues&lt;/a&gt; and &lt;a href=&quot;https://discuss.dgl.ai/&quot;&gt;Discuss posts&lt;/a&gt;.
+Join our &lt;a href=&quot;http://slack.dgl.ai/&quot;&gt;Slack channel&lt;/a&gt; to stay updated and to connect with the community.&lt;/p&gt;</content><author><name>Muhammed Fatih Balin</name></author><category term="release" /><category term="release" /><summary type="html">We are happy to announce the release of DGL 2.1. In this release, we are making GNN data loading lightning fast. We introduce GPU acceleration for the whole GNN data loading pipeline in GraphBolt, including the graph sampling and feature fetching stages.</summary></entry><entry><title type="html">DGL 2.0: Streamlining Your GNN Data Pipeline from Bottleneck to Boost</title><link href="https://www.dgl.ai/release/2024/01/26/release.html" rel="alternate" type="text/html" title="DGL 2.0: Streamlining Your GNN Data Pipeline from Bottleneck to Boost" /><published>2024-01-26T00:00:00+00:00</published><updated>2024-01-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2024/01/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2024/01/26/release.html">&lt;p&gt;We’re thrilled to announce the release of DGL 2.0, a major milestone in our
 mission to empower developers with cutting-edge tools for Graph Neural Networks
 (GNNs). Traditionally, data loading has been a significant bottleneck in GNN
 training. Complex graph structures and the need for efficient sampling often
@@ -1886,84 +2084,4 @@ of them are available at &lt;a href=&quot;https://docs.dgl.ai/&quot;&gt;docs.dgl
 
 &lt;ul&gt;
   &lt;li&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/v0.7.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/v0.7.0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">v0.7 brings improvements on the low-level system infrastructure as well as on the high-level user-facing utilities. Many of them involve contributions from the user community. We are grateful to see such a growing trend and welcome more in the future. Here are the notable updates.</summary></entry><entry><title type="html">v0.6 Release Highlight</title><link href="https://www.dgl.ai/release/2021/02/25/release.html" rel="alternate" type="text/html" title="v0.6 Release Highlight" /><published>2021-02-25T00:00:00+00:00</published><updated>2021-02-25T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2021/02/25/release</id><content type="html" xml:base="https://www.dgl.ai/release/2021/02/25/release.html">&lt;p&gt;The recent DGL 0.6 release is a major update on many aspects of the project
-including documentation, APIs, system speed, and scalability. This article
-highlights some of the new features and enhancements.&lt;/p&gt;
-
-&lt;h2 id=&quot;a-blitz-introduction-to-dgl-in-120-minutes&quot;&gt;A Blitz Introduction to DGL in 120 minutes&lt;/h2&gt;
-
-&lt;p&gt;The brand new set of tutorials come from our past hands-on tutorials in several
-major academic conferences (e.g., KDD’19, KDD’20, WWW’20). They start from an
-end-to-end example of using GNNs for node classification, and gradually unveil
-the core components in DGL such as DGLGraph, GNN modules, and graph datasets.
-The tutorials are now available on &lt;a href=&quot;https://docs.dgl.ai/tutorials/blitz/index.html&quot;&gt;docs.dgl.ai&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2021-02-25-release/blitz-intro.png&quot; alt=&quot;blitz&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;a-gentle-tutorial-on-mini-batch-training-of-gnns&quot;&gt;A Gentle Tutorial on Mini-batch Training of GNNs&lt;/h2&gt;
-
-&lt;p&gt;The scale of real world data can be massive, which demands training GNNs
-stochastically by mini-batches. However, unlike images or text corpus where
-data samples are independent, stochastic training of GNNs is more complex
-because one must handle the dependencies among samples. We observed that
-stochastic training is one of the most-asked topics on our discuss forum. In
-0.6, we summarize the answers to those common questions in a set of
-&lt;a href=&quot;https://docs.dgl.ai/tutorials/large/index.html&quot;&gt;tutorials&lt;/a&gt; on stochastic
-training of GNNs, including the insight into neighbor sampling algorithms,
-training loops and code snippets in DGL to realize them.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://data.dgl.ai/tutorial/img/sampling.gif&quot; alt=&quot;sampling&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;more-examples&quot;&gt;More Examples&lt;/h2&gt;
-
-&lt;p&gt;The release includes &lt;strong&gt;13 new examples&lt;/strong&gt;, brings &lt;strong&gt;a total of 72 models&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;MixHop: Higher-Order Graph Convolutional Architectures via Sparsified Neighborhood Mixing: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/mixhop&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/mixhop&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Self-Attention Graph Pooling: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/sagpool]&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/sagpool&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;GNN-FiLM: Graph Neural Networks with Feature-wise Linear Modulation: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/GNN-FiLM&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/GNN-FiLM&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;TensorFlow implementation of Simplifying Graph Convolutional Networks: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/tensorflow/sgc&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/tensorflow/sgc&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Graph Representation Learning via Hard and Channel-Wise Attention Networks: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/hardgat&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/hardgat&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Graph Random Neural Network for Semi-Supervised Learning on Graphs: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/grand&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/grand&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Hierarchical Graph Pooling with Structure Learning: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/hgp_sl&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/hgp_sl&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Towards Deeper Graph Neural Networks: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/dagnn&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/dagnn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation/PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space (part segmentation): &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/pointcloud/pointnet&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/pointcloud/pointnet&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Graph Cross Networks with Vertex Infomax Pooling: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/gxn&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/gxn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Neural Graph Collaborative Filtering: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/NGCF&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/NGCF&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Link Prediction Based on Graph Neural Networks: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/seal&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/seal&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Graph Neural Networks with Convolutional ARMA Filters: &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples/pytorch/arma&quot;&gt;https://github.com/dmlc/dgl/tree/master/examples/pytorch/arma&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The &lt;a href=&quot;https://github.com/dmlc/dgl/tree/master/examples&quot;&gt;official example folder&lt;/a&gt; now indexes the examples by their notable tags such as their targeted tasks and so on.&lt;/p&gt;
-
-&lt;h2 id=&quot;usability-enhancements&quot;&gt;Usability Enhancements&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Two new APIs &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.DGLGraph.set_batch_num_nodes.html#dgl.DGLGraph.set_batch_num_nodes&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph.set_batch_num_nodes&lt;/code&gt;&lt;/a&gt; and &lt;a href=&quot;https://docs.dgl.ai/generated/dgl.DGLGraph.set_batch_num_edges.html#dgl.DGLGraph.set_batch_num_edges&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DGLGraph.set_batch_num_edges&lt;/code&gt;&lt;/a&gt; for setting batch information manually, which are useful for transforming a batched graph into another or constructing a new batched graph manually.&lt;/li&gt;
-  &lt;li&gt;A new API &lt;a href=&quot;https://docs.dgl.ai/api/python/dgl.dataloading.html#dgl.dataloading.pytorch.GraphDataLoader&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GraphDataLoader&lt;/code&gt;&lt;/a&gt;, a data loader wrapper for graph classification tasks.&lt;/li&gt;
-  &lt;li&gt;A new dataset class &lt;a href=&quot;https://docs.dgl.ai/api/python/dgl.data.html#qm9-dataset&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;QM9Dataset&lt;/code&gt;&lt;/a&gt;.&lt;/li&gt;
-  &lt;li&gt;A new namespace &lt;a href=&quot;https://docs.dgl.ai/api/python/nn.functional.html&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.functional&lt;/code&gt;&lt;/a&gt; for hosting NN related utility functions.&lt;/li&gt;
-  &lt;li&gt;DGL now supports training with half precision and is compatible with PyTorch’s automatic mixed precision package. See the &lt;a href=&quot;https://docs.dgl.ai/guide/mixed_precision.html&quot;&gt;user guide chapter&lt;/a&gt; for how to use it.&lt;/li&gt;
-  &lt;li&gt;(Experimental) Users can now use DistGraph with heterogeneous graph data. This also applies to &lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.sample_neighbors&lt;/code&gt; on DistGraph. In addition, DGL supports distributed graph partitioning on a cluster of machines. See the &lt;a href=&quot;https://docs.dgl.ai/guide/distributed.html&quot;&gt;user guide chapter&lt;/a&gt; for more details.&lt;/li&gt;
-  &lt;li&gt;(Experimental) Several new APIs for training sparse embeddings:
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;https://docs.dgl.ai/api/python/nn.pytorch.html#nodeembedding-module&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.NodeEmbedding&lt;/code&gt;&lt;/a&gt; is a dedicated class for storing trainable node embeddings that can scale to graphs with millions of nodes.&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://docs.dgl.ai/api/python/dgl.optim.html#dgl.optim.pytorch.SparseAdagrad&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.optim.SparseAdagrad&lt;/code&gt;&lt;/a&gt; and &lt;a href=&quot;https://docs.dgl.ai/api/python/dgl.optim.html#dgl.optim.pytorch.SparseAdam&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.optim.SparseAdam&lt;/code&gt;&lt;/a&gt; are two optimizers for the NodeEmbedding class.&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;system-efficiency-improvements&quot;&gt;System Efficiency Improvements&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;With PyTorch backend, DGL will use PyTorch’s native memory management to cache repeated memory allocation and deallocation.&lt;/li&gt;
-  &lt;li&gt;A new implementation for &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; when &lt;code class=&quot;highlighter-rouge&quot;&gt;low_mem=True&lt;/code&gt; (PyTorch backend). A benchmark on V100 GPU shows it gives a &lt;strong&gt;4.8x&lt;/strong&gt; boost in training speed on AIFB dataset.&lt;/li&gt;
-  &lt;li&gt;Faster CPU kernels using AVX512 instructions.&lt;/li&gt;
-  &lt;li&gt;Faster GPU kernels on CUDA 11.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;further-readings&quot;&gt;Further Readings&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/v0.6.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/v0.6.0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">The recent DGL 0.6 release is a major update on many aspects of the project including documentation, APIs, system speed, and scalability. This article highlights some of the new features and enhancements.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">v0.7 brings improvements on the low-level system infrastructure as well as on the high-level user-facing utilities. Many of them involve contributions from the user community. We are grateful to see such a growing trend and welcome more in the future. Here are the notable updates.</summary></entry></feed>
