@@ -393,9 +393,9 @@
                 <i-col span="19">
                   <div id="vbtn_div">
                   <radio-group id="version_button" v-model="button_pytorch" type="button" size="large" style="width: 100%;">
-                    <radio label="2.0.x"></radio>
                     <radio label="2.1.x"></radio>
                     <radio label="2.2.x"></radio>
+                    <radio label="2.3.x"></radio>
                   </radio-group>
                 </div>
                 </i-col>
@@ -409,7 +409,6 @@
                   <div id="vbtn_div">
                   <radio-group id="version_button" v-model="button_cuda" type="button" size="large" style="width: 100%;">
                     <radio label="None"></radio>
-                    <radio label="11.7"></radio>
                     <radio label="11.8"></radio>
                     <radio label="12.1"></radio>
                   </radio-group>
@@ -472,7 +471,7 @@
 <p>Supported deep learning frameworks:</p>
 
 <ul>
-  <li><a href="https://pytorch.org/">PyTorch</a> 2.0.0+</li>
+  <li><a href="https://pytorch.org/">PyTorch</a> 2.1.0+</li>
   <li><a href="https://mxnet.apache.org/">Apache MXNet</a> 1.6+</li>
   <li><a href="https://tensorflow.org/">TensorFlow</a> 2.3+.</li>
 </ul>
@@ -485,27 +484,23 @@
   <thead>
     <tr>
       <th>PyTorch ver. \ CUDA ver.</th>
-      <th>11.7</th>
       <th>11.8</th>
       <th>12.1</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>2.0</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td> </td>
-    </tr>
-    <tr>
       <td>2.1</td>
-      <td> </td>
       <td>✅</td>
       <td>✅</td>
     </tr>
     <tr>
       <td>2.2</td>
-      <td> </td>
+      <td>✅</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>2.3</td>
       <td>✅</td>
       <td>✅</td>
     </tr>
@@ -610,27 +605,29 @@ below:</p>
 
 <script>
   Vue.component('vue-multiselect', window.VueMultiselect.default)
-  function pip_path_cuda(pytorch_version, _build_dir, _pkg) {
+  function pip_path_cuda(target_os, pytorch_version, _build_dir, _pkg) {
     var valid_pytorch_cuda = {
-      '2.0.x': ['None', '11.7', '11.8'],
       '2.1.x': ['None', '11.8', '12.1'],
       '2.2.x': ['None', '11.8', '12.1'],
+      '2.3.x': ['None', '11.8', '12.1'],
     };
     if (!valid_pytorch_cuda[pytorch_version].includes(_build_dir)) {
       return "# PyTorch " + pytorch_version + " does not support CUDA " + _build_dir + ".";
     }
     var pytorch_dir = {
-      '2.0.x': 'torch-2.0',
       '2.1.x': 'torch-2.1',
       '2.2.x': 'torch-2.2',
+      '2.3.x': 'torch-2.3',
     }[pytorch_version];
     var build_dir = {
-      '11.7': 'cu117',
       '11.8': 'cu118',
       '12.1': 'cu121',
       'None': '',
     }[_build_dir];
-    var prefix = (_pkg == 'Pip(Nightly Build)') ? 'wheels-test/' + pytorch_dir : 'wheels';
+    var prefix = (_pkg == 'Pip(Nightly Build)') ? 'wheels-test' : 'wheels';
+    if (target_os == 'Linux') {
+      prefix += '/' + pytorch_dir;
+    }
     var flag = (_pkg == 'Pip(Nightly Build)') ? '--pre' : '';
     var slash = build_dir == "" ? "" : "/";
     var cmd = "# If you have installed dgl-cuXX package, please uninstall it first.\n";
@@ -641,7 +638,6 @@ below:</p>
   function conda_path(cuda) {
     var link_dict = {
       'None': 'conda install -c dglteam dgl',
-      '11.7': 'conda install -c dglteam/label/cu117 dgl',
       '11.8': 'conda install -c dglteam/label/cu118 dgl',
       '12.1': 'conda install -c dglteam/label/cu121 dgl'
     };
@@ -652,7 +648,7 @@ below:</p>
   var vm = new Vue({
     el: "#app",
     data: {
-      button_pytorch: '2.0.x',
+      button_pytorch: '2.1.x',
       button_cuda: 'None',
       button_os: 'Linux',
       button_pkg: 'Conda(Stable)',
@@ -673,9 +669,9 @@ below:</p>
             return conda_path(this.button_cuda)
           } else {
             if (this.button_os === 'Windows' && this.button_pkg === 'Pip(Nightly Build)') {
-              return pip_path_cuda(this.button_pytorch, this.button_cuda, 'Pip(Stable)') + "\nWindows binary does not have nightly build version. Install from source if needed."
+              return pip_path_cuda(this.button_os, this.button_pytorch, this.button_cuda, 'Pip(Stable)') + "\nWindows binary does not have nightly build version. Install from source if needed."
             } else {
-              return pip_path_cuda(this.button_pytorch, this.button_cuda, this.button_pkg)
+              return pip_path_cuda(this.button_os, this.button_pytorch, this.button_cuda, this.button_pkg)
             }
           }
         }
@@ -710,7 +706,7 @@ below:</p>
 <p>Supported deep learning frameworks:</p>
 
 <ul>
-  <li><a href="https://pytorch.org/">PyTorch</a> 2.0.0+</li>
+  <li><a href="https://pytorch.org/">PyTorch</a> 2.1.0+</li>
   <li><a href="https://mxnet.apache.org/">Apache MXNet</a> 1.6+</li>
   <li><a href="https://tensorflow.org/">TensorFlow</a> 2.3+.</li>
 </ul>
@@ -723,27 +719,23 @@ below:</p>
   <thead>
     <tr>
       <th>PyTorch ver. \ CUDA ver.</th>
-      <th>11.7</th>
       <th>11.8</th>
       <th>12.1</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>2.0</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td> </td>
-    </tr>
-    <tr>
       <td>2.1</td>
-      <td> </td>
       <td>✅</td>
       <td>✅</td>
     </tr>
     <tr>
       <td>2.2</td>
-      <td> </td>
+      <td>✅</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>2.3</td>
       <td>✅</td>
       <td>✅</td>
     </tr>

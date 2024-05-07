@@ -18,7 +18,7 @@ Supported Python versions: 3.8, 3.9, 3.10, 3.11, 3.12
 
 Supported deep learning frameworks:
 
-* [PyTorch](https://pytorch.org/) 2.0.0+
+* [PyTorch](https://pytorch.org/) 2.1.0+
 * [Apache MXNet](https://mxnet.apache.org/) 1.6+
 * [TensorFlow](https://tensorflow.org/) 2.3+.
 
@@ -26,11 +26,11 @@ Additional supported CUDA version when using PyTorch:
 
 Linux: CentOS 8+ / Ubuntu 20.04+
 
-PyTorch ver. \ CUDA ver. | 11.7 | 11.8 | 12.1
---   | -- | -- | --
-2.0  | ✅ | ✅ |
-2.1  |    | ✅ | ✅
-2.2  |    | ✅ | ✅
+PyTorch ver. \ CUDA ver. | 11.8 | 12.1
+--   | -- | --
+2.1  | ✅ | ✅
+2.2  | ✅ | ✅
+2.3  | ✅ | ✅
 
 Windows: Windows 10+/Windows server 2016+
 
