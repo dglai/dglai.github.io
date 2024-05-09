@@ -164,13 +164,27 @@
     return cmd;
   }
 
-  function conda_path(cuda) {
+  function conda_path(cuda, target_os, pytorch_version) {
     var link_dict = {
       'None': 'conda install -c dglteam dgl',
       '11.8': 'conda install -c dglteam/label/cu118 dgl',
       '12.1': 'conda install -c dglteam/label/cu121 dgl'
     };
-    return "# If you have installed dgl-cudaXX.X package, please uninstall it first.\n" + link_dict[cuda];
+    var install_cmd = link_dict[cuda];
+    if (target_os === 'Linux') {
+      var pytorch_label = {
+        '2.1.x': 'th21',
+        '2.2.x': 'th22',
+        '2.3.x': 'th23',
+      }[pytorch_version];
+      var cuda_label = {
+        '11.8': 'cu118',
+        '12.1': 'cu121',
+        'None': 'cpu',
+      }[cuda];
+      install_cmd = 'conda install -c dglteam/label/' + pytorch_label + '_' + cuda_label + ' dgl';
+    }
+    return "# If you have installed dgl-cudaXX.X package, please uninstall it first.\n" + install_cmd;
   }
 
 
@@ -184,8 +198,11 @@
     },
     computed: {
       path_value: function () {
+        if (this.button_pytorch === '2.3.x') {
+          return "# `torchdata`(the key dependency of DGL) is not compatible with PyTorch 2.3.0. Please use PyTorch 2.2.x or 2.1.x instead."
+        }
         if (this.button_os === 'Mac') {
-          var cmd = (this.button_pkg === 'Conda(Stable)') ? conda_path('None') : "pip install dgl -f https://data.dgl.ai/wheels/repo.html";
+          var cmd = (this.button_pkg === 'Conda(Stable)') ? conda_path('None', this.button_os, this.button_pytorch) : "pip install dgl -f https://data.dgl.ai/wheels/repo.html";
           if (this.button_pkg === 'Pip(Nightly Build)') {
             cmd += '\nMacOS binary does not have nightly build version. Install from source if needed.'
           }
@@ -195,7 +212,7 @@
           return cmd
         } else {
           if (this.button_pkg === 'Conda(Stable)') {
-            return conda_path(this.button_cuda)
+            return conda_path(this.button_cuda, this.button_os, this.button_pytorch)
           } else {
             if (this.button_os === 'Windows' && this.button_pkg === 'Pip(Nightly Build)') {
               return pip_path_cuda(this.button_os, this.button_pytorch, this.button_cuda, 'Pip(Stable)') + "\nWindows binary does not have nightly build version. Install from source if needed."
