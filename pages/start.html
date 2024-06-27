@@ -669,6 +669,7 @@ below:</p>
     },
     computed: {
       path_value: function () {
+        var ret_cmd = '';
         if (this.button_os === 'Mac') {
           var cmd = (this.button_pkg === 'Conda(Stable)') ? conda_path('None', this.button_os, this.button_pytorch) : "pip install dgl -f https://data.dgl.ai/wheels/repo.html";
           if (this.button_pkg === 'Pip(Nightly Build)') {
@@ -677,18 +678,20 @@ below:</p>
           if (this.button_cuda !== 'None') {
             cmd += '\nMacOS binary does not support CUDA. Install from source if needed.'
           }
-          return cmd
+          ret_cmd = cmd;
         } else {
           if (this.button_pkg === 'Conda(Stable)') {
-            return conda_path(this.button_cuda, this.button_os, this.button_pytorch)
+            ret_cmd = conda_path(this.button_cuda, this.button_os, this.button_pytorch)
           } else {
             if (this.button_os === 'Windows' && this.button_pkg === 'Pip(Nightly Build)') {
-              return pip_path_cuda(this.button_os, this.button_pytorch, this.button_cuda, 'Pip(Stable)') + "\nWindows binary does not have nightly build version. Install from source if needed."
+              ret_cmd = pip_path_cuda(this.button_os, this.button_pytorch, this.button_cuda, 'Pip(Stable)') + "\nWindows binary does not have nightly build version. Install from source if needed."
             } else {
-              return pip_path_cuda(this.button_os, this.button_pytorch, this.button_cuda, this.button_pkg)
+              ret_cmd = pip_path_cuda(this.button_os, this.button_pytorch, this.button_cuda, this.button_pkg)
             }
           }
         }
+        var warning = (this.button_os === 'Linux') ? '' : '# Since 2024.06.27, we have stopped providing packages for Windows and MacOS. The latest version of available package is 2.2.1. For newer versions, please install from source.\n';
+        return warning + ret_cmd;
       }
     }
   })
