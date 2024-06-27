@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.data.graph_serialize &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.data.graph_serialize</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.data.graph_serialize</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;For Graph Serialization&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">.._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+<span class="kn">from</span> <span class="nn">.._ffi.object</span> <span class="kn">import</span> <span class="n">ObjectBase</span><span class="p">,</span> <span class="n">register_object</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">dgl_warning</span><span class="p">,</span> <span class="n">DGLError</span>
+<span class="kn">from</span> <span class="nn">..heterograph</span> <span class="kn">import</span> <span class="n">DGLGraph</span>
+<span class="kn">from</span> <span class="nn">.heterograph_serialize</span> <span class="kn">import</span> <span class="n">save_heterographs</span>
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.data.graph_serialize&quot;</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;save_graphs&quot;</span><span class="p">,</span> <span class="s2">&quot;load_graphs&quot;</span><span class="p">,</span> <span class="s2">&quot;load_labels&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@register_object</span><span class="p">(</span><span class="s2">&quot;graph_serialize.StorageMetaData&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">StorageMetaData</span><span class="p">(</span><span class="n">ObjectBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;StorageMetaData Object</span>
+<span class="sd">    attributes available:</span>
+<span class="sd">      num_graph [int]: return numbers of graphs</span>
+<span class="sd">      nodes_num_list Value of NDArray: return number of nodes for each graph</span>
+<span class="sd">      edges_num_list Value of NDArray: return number of edges for each graph</span>
+<span class="sd">      labels [dict of backend tensors]: return dict of labels</span>
+<span class="sd">      graph_data [list of GraphData]: return list of GraphData Object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">is_local_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">filepath</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;hdfs://&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">filepath</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;viewfs://&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">filepath</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;s3://&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">check_local_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_local_path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">{}</span><span class="s2"> does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+
+<span class="nd">@register_object</span><span class="p">(</span><span class="s2">&quot;graph_serialize.GraphData&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">GraphData</span><span class="p">(</span><span class="n">ObjectBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;GraphData Object&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create GraphData&quot;&quot;&quot;</span>
+        <span class="c1"># TODO(zihao): support serialize batched graph in the future.</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="s2">&quot;Batched DGLGraph is not supported for serialization&quot;</span>
+        <span class="n">ghandle</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">_graph</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">node_tensors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">node_tensors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_to_dgl_ndarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">node_tensors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">edge_tensors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">edge_tensors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_to_dgl_ndarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edge_tensors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">_CAPI_MakeGraphData</span><span class="p">(</span><span class="n">ghandle</span><span class="p">,</span> <span class="n">node_tensors</span><span class="p">,</span> <span class="n">edge_tensors</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get DGLGraph from GraphData&quot;&quot;&quot;</span>
+        <span class="n">ghandle</span> <span class="o">=</span> <span class="n">_CAPI_GDataGraphHandle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">hgi</span> <span class="o">=</span> <span class="n">_CAPI_DGLAsHeteroGraph</span><span class="p">(</span><span class="n">ghandle</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">hgi</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;_U&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;_E&quot;</span><span class="p">])</span>
+        <span class="n">node_tensors_items</span> <span class="o">=</span> <span class="n">_CAPI_GDataNodeTensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="n">edge_tensors_items</span> <span class="o">=</span> <span class="n">_CAPI_GDataEdgeTensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">node_tensors_items</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edge_tensors_items</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span>
+
+
+<div class="viewcode-block" id="save_graphs">
+<a class="viewcode-back" href="../../../generated/dgl.save_graphs.html#dgl.data.utils.save_graphs">[docs]</a>
+<span class="k">def</span> <span class="nf">save_graphs</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">g_list</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Save graphs and optionally their labels to file.</span>
+
+<span class="sd">    Besides saving to local files, DGL supports writing the graphs directly</span>
+<span class="sd">    to S3 (by providing a ``&quot;s3://...&quot;`` path) or to HDFS (by providing</span>
+<span class="sd">    ``&quot;hdfs://...&quot;`` a path).</span>
+
+<span class="sd">    The function saves both the graph structure and node/edge features to file</span>
+<span class="sd">    in DGL&#39;s own binary format. For graph-level features, pass them via</span>
+<span class="sd">    the :attr:`labels` argument.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        The file name to store the graphs and labels.</span>
+<span class="sd">    g_list: list</span>
+<span class="sd">        The graphs to be saved.</span>
+<span class="sd">    labels: dict[str, Tensor]</span>
+<span class="sd">        labels should be dict of tensors, with str as keys</span>
+<span class="sd">    formats: str or list[str]</span>
+<span class="sd">        Save graph in specified formats. It could be any combination of</span>
+<span class="sd">        ``coo``, ``csc`` and ``csr``. If not specified, save one format</span>
+<span class="sd">        only according to what format is available. If multiple formats</span>
+<span class="sd">        are available, selection priority from high to low is ``coo``,</span>
+<span class="sd">        ``csc``, ``csr``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create :class:`DGLGraph` objects and initialize node</span>
+<span class="sd">    and edge features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1, 2], [1, 2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 2], [2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; g2.edata[&quot;e&quot;] = th.ones(2, 4)</span>
+
+<span class="sd">    Save Graphs into file</span>
+
+<span class="sd">    &gt;&gt;&gt; from dgl.data.utils import save_graphs</span>
+<span class="sd">    &gt;&gt;&gt; graph_labels = {&quot;glabel&quot;: th.tensor([0, 1])}</span>
+<span class="sd">    &gt;&gt;&gt; save_graphs(&quot;./data.bin&quot;, [g1, g2], graph_labels)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    load_graphs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if it is local file, do some sanity check</span>
+    <span class="k">if</span> <span class="n">is_local_path</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;Filename </span><span class="si">{}</span><span class="s2"> is an existing directory.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">f_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">f_path</span><span class="p">)</span>
+    <span class="n">g_sample</span> <span class="o">=</span> <span class="n">g_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">g_list</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">g_sample</span><span class="p">)</span> <span class="o">==</span> <span class="n">DGLGraph</span><span class="p">:</span>  <span class="c1"># Doesn&#39;t support DGLGraph&#39;s derived class</span>
+        <span class="n">save_heterographs</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">g_list</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">formats</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid argument g_list. Must be a DGLGraph or a list of DGLGraphs.&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_graphs">
+<a class="viewcode-back" href="../../../generated/dgl.load_graphs.html#dgl.data.utils.load_graphs">[docs]</a>
+<span class="k">def</span> <span class="nf">load_graphs</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">idx_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load graphs and optionally their labels from file saved by :func:`save_graphs`.</span>
+
+<span class="sd">    Besides loading from local files, DGL supports loading the graphs directly</span>
+<span class="sd">    from S3 (by providing a ``&quot;s3://...&quot;`` path) or from HDFS (by providing</span>
+<span class="sd">    ``&quot;hdfs://...&quot;`` a path).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename: str</span>
+<span class="sd">        The file name to load graphs from.</span>
+<span class="sd">    idx_list: list[int], optional</span>
+<span class="sd">        The indices of the graphs to be loaded if the file contains multiple graphs.</span>
+<span class="sd">        Default is loading all the graphs stored in the file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    graph_list: list[DGLGraph]</span>
+<span class="sd">        The loaded graphs.</span>
+<span class="sd">    labels: dict[str, Tensor]</span>
+<span class="sd">        The graph labels stored in file. If no label is stored, the dictionary is empty.</span>
+<span class="sd">        Regardless of whether the ``idx_list`` argument is given or not,</span>
+<span class="sd">        the returned dictionary always contains the labels of all the graphs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Following the example in :func:`save_graphs`.</span>
+
+<span class="sd">    &gt;&gt;&gt; from dgl.data.utils import load_graphs</span>
+<span class="sd">    &gt;&gt;&gt; glist, label_dict = load_graphs(&quot;./data.bin&quot;) # glist will be [g1, g2]</span>
+<span class="sd">    &gt;&gt;&gt; glist, label_dict = load_graphs(&quot;./data.bin&quot;, [0]) # glist will be [g1]</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    save_graphs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if it is local file, do some sanity check</span>
+    <span class="n">check_local_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">_CAPI_GetFileVersion</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">dgl_warning</span><span class="p">(</span>
+            <span class="s2">&quot;You are loading a graph file saved by old version of dgl.  </span><span class="se">\</span>
+<span class="s2">            Please consider saving it again with the current format.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">load_graph_v1</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">idx_list</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_graph_v2</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">idx_list</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;Invalid DGL Version Number.&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">load_graph_v2</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">idx_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal functions for loading DGLGraphs.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">idx_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">idx_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+    <span class="n">heterograph_list</span> <span class="o">=</span> <span class="n">_CAPI_LoadGraphFiles_V2</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">idx_list</span><span class="p">)</span>
+    <span class="n">label_dict</span> <span class="o">=</span> <span class="n">load_labels_v2</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">gdata</span><span class="o">.</span><span class="n">get_graph</span><span class="p">()</span> <span class="k">for</span> <span class="n">gdata</span> <span class="ow">in</span> <span class="n">heterograph_list</span><span class="p">],</span> <span class="n">label_dict</span>
+
+
+<span class="k">def</span> <span class="nf">load_graph_v1</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">idx_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;Internal functions for loading DGLGraphs (V0).&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">idx_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">idx_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">_CAPI_LoadGraphFiles_V1</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">idx_list</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">label_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">label_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">gdata</span><span class="o">.</span><span class="n">get_graph</span><span class="p">()</span> <span class="k">for</span> <span class="n">gdata</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">graph_data</span><span class="p">],</span> <span class="n">label_dict</span>
+
+
+<div class="viewcode-block" id="load_labels">
+<a class="viewcode-back" href="../../../generated/dgl.data.utils.load_labels.html#dgl.data.utils.load_labels">[docs]</a>
+<span class="k">def</span> <span class="nf">load_labels</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load label dict from file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename: str</span>
+<span class="sd">        filename to load DGLGraphs</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    labels: dict</span>
+<span class="sd">        dict of labels stored in file (empty dict returned if no</span>
+<span class="sd">        label stored)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Following the example in save_graphs.</span>
+
+<span class="sd">    &gt;&gt;&gt; from dgl.data.utils import load_labels</span>
+<span class="sd">    &gt;&gt;&gt; label_dict = load_graphs(&quot;./data.bin&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if it is local file, do some sanity check</span>
+    <span class="n">check_local_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="n">_CAPI_GetFileVersion</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_labels_v1</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_labels_v2</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid DGL Version Number&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">load_labels_v2</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal functions for loading labels from V2 format&quot;&quot;&quot;</span>
+    <span class="n">label_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">nd_dict</span> <span class="o">=</span> <span class="n">_CAPI_LoadLabels_V2</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nd_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">label_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">label_dict</span>
+
+
+<span class="k">def</span> <span class="nf">load_labels_v1</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal functions for loading labels from V1 format&quot;&quot;&quot;</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">_CAPI_LoadGraphFiles_V1</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="p">[],</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">label_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">label_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">label_dict</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

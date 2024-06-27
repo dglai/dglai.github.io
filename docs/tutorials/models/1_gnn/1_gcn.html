@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Convolutional Network &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Relational Graph Convolutional Network" href="4_rgcn.html" />
+    <link rel="prev" title="Graph neural networks and its variants" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dist/index.html">Distributed training</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Paper Study with DGL</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Graph neural networks and its variants</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Graph Convolutional Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4_rgcn.html">Relational Graph Convolutional Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6_line_graph.html">Line Graph Neural Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="9_gat.html">Understand Graph Attention Network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../2_small_graph/index.html">Batching many small graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3_generative_model/index.html">Generative models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4_old_wines/index.html">Revisit classic models from a graph perspective</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Paper Study with DGL</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Graph neural networks and its variants</a></li>
+      <li class="breadcrumb-item active">Graph Convolutional Network</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/tutorials/models/1_gnn/1_gcn.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Graph-Convolutional-Network">
+<h1>Graph Convolutional Network<a class="headerlink" href="#Graph-Convolutional-Network" title="Link to this heading"></a></h1>
+<p><strong>Author:</strong> <a class="reference external" href="https://github.com/HQ01">Qi Huang</a>, <a class="reference external" href="https://jermainewang.github.io/">Minjie Wang</a>, Yu Gai, Quan Gan, Zheng Zhang</p>
+<div class="alert alert-danger"><h4><p>Warning</p>
+</h4><p><p>The tutorial aims at gaining insights into the paper, with code as a mean of explanation. The implementation thus is NOT optimized for running efficiency. For recommended implementation, please refer to the <a class="reference external" href="https://github.com/dmlc/dgl/tree/master/examples">official examples</a>.</p>
+</p></div><p>This is a gentle introduction of using DGL to implement Graph Convolutional Networks (Kipf &amp; Welling et al., <a class="reference external" href="https://arxiv.org/pdf/1609.02907.pdf">Semi-Supervised Classification with Graph Convolutional Networks</a>). We explain what is under the hood of the :class:<code class="docutils literal notranslate"><span class="pre">~dgl.nn.GraphConv</span></code> module. The reader is expected to learn how to define a new GNN layer using DGL’s message passing APIs.</p>
+<section id="Model-Overview">
+<h2>Model Overview<a class="headerlink" href="#Model-Overview" title="Link to this heading"></a></h2>
+<p>GCN from the perspective of message passing ``````````````````````````````````````````````` We describe a layer of graph convolutional neural network from a message passing perspective; the math can be found <a href="#id1"><span class="problematic" id="id2">`here &lt;math_&gt;`__</span></a>. It boils down to the following step, for each node <span class="math notranslate nohighlight">\(u\)</span>:</p>
+<ol class="arabic simple">
+<li><p>Aggregate neighbors’ representations <span class="math notranslate nohighlight">\(h_{v}\)</span> to produce an intermediate representation <span class="math notranslate nohighlight">\(\hat{h}_u\)</span>. 2) Transform the aggregated representation <span class="math notranslate nohighlight">\(\hat{h}_{u}\)</span> with a linear projection followed by a non-linearity: <span class="math notranslate nohighlight">\(h_{u} = f(W_{u} \hat{h}_u)\)</span>.</p></li>
+</ol>
+<p>We will implement step 1 with DGL message passing, and step 2 by PyTorch <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code>.</p>
+<section id="GCN-implementation-with-DGL">
+<h3>GCN implementation with DGL<a class="headerlink" href="#GCN-implementation-with-DGL" title="Link to this heading"></a></h3>
+<p>We first define the message and reduce function as usual. Since the aggregation on a node <span class="math notranslate nohighlight">\(u\)</span> only involves summing over the neighbors’ representations <span class="math notranslate nohighlight">\(h_v\)</span>, we can simply use builtin functions:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;DGLBACKEND&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+<span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">import</span> <span class="nn">dgl.function</span> <span class="k">as</span> <span class="nn">fn</span>
+<span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">dgl</span> <span class="kn">import</span> <span class="n">DGLGraph</span>
+
+<span class="n">gcn_msg</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+<span class="n">gcn_reduce</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We then proceed to define the GCNLayer module. A GCNLayer essentially performs message passing on all the nodes then applies a fully-connected layer.</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>This is showing how to implement a GCN from scratch. DGL provides a more efficient :class:<code class="docutils literal notranslate"><span class="pre">builtin</span> <span class="pre">GCN</span> <span class="pre">layer</span> <span class="pre">module</span> <span class="pre">&lt;dgl.nn.pytorch.conv.GraphConv&gt;</span></code>.</p>
+</p></div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GCNLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GCNLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="c1"># Creating a local scope so that all the stored ndata and edata</span>
+        <span class="c1"># (such as the `&#39;h&#39;` ndata below) are automatically popped out</span>
+        <span class="c1"># when the scope exits.</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feature</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">gcn_msg</span><span class="p">,</span> <span class="n">gcn_reduce</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The forward function is essentially the same as any other commonly seen NNs model in PyTorch. We can initialize GCN like any <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code>. For example, let’s define a simple neural network consisting of two GCN layers. Suppose we are training the classifier for the cora dataset (the input feature size is 1433 and the number of classes is 7). The last GCN layer computes node embeddings, so the last layer in general does not apply activation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Net</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span> <span class="o">=</span> <span class="n">GCNLayer</span><span class="p">(</span><span class="mi">1433</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span> <span class="o">=</span> <span class="n">GCNLayer</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer1</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Net(
+  (layer1): GCNLayer(
+    (linear): Linear(in_features=1433, out_features=16, bias=True)
+  )
+  (layer2): GCNLayer(
+    (linear): Linear(in_features=16, out_features=7, bias=True)
+  )
+)
+</pre></div></div>
+</div>
+<p>We load the cora dataset using DGL’s built-in data module.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">CoraGraphDataset</span>
+
+
+<span class="k">def</span> <span class="nf">load_cora_data</span><span class="p">():</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">CoraGraphDataset</span><span class="p">()</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+    <span class="n">train_mask</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;train_mask&quot;</span><span class="p">]</span>
+    <span class="n">test_mask</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;test_mask&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">,</span> <span class="n">test_mask</span>
+</pre></div>
+</div>
+</div>
+<p>When a model is trained, we can use the following method to evaluate the performance of the model on the test dataset:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">th</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">indices</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">correct</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We then train the network as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">,</span> <span class="n">test_mask</span> <span class="o">=</span> <span class="n">load_cora_data</span><span class="p">()</span>
+<span class="c1"># Add edges between each node and itself to preserve old node representations</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dur</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+        <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
+    <span class="n">logp</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">logp</span><span class="p">[</span><span class="n">train_mask</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">train_mask</span><span class="p">])</span>
+
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dur</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="p">)</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acc</span></a> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_mask</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Epoch </span><span class="si">{:05d}</span><span class="s2"> | Loss </span><span class="si">{:.4f}</span><span class="s2"> | Test Acc </span><span class="si">{:.4f}</span><span class="s2"> | Time(s) </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acc</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dur</span></a><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  NumNodes: 2708
+  NumEdges: 10556
+  NumFeats: 1433
+  NumClasses: 7
+  NumTrainingSamples: 140
+  NumValidationSamples: 500
+  NumTestSamples: 1000
+Done loading data from cached files.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/conda/envs/cpu/lib/python3.10/site-packages/numpy/core/fromnumeric.py:3504: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/opt/conda/envs/cpu/lib/python3.10/site-packages/numpy/core/_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Epoch 00000 | Loss 1.9459 | Test Acc 0.3180 | Time(s) nan
+Epoch 00001 | Loss 1.8051 | Test Acc 0.3760 | Time(s) nan
+Epoch 00002 | Loss 1.6360 | Test Acc 0.5000 | Time(s) nan
+Epoch 00003 | Loss 1.4931 | Test Acc 0.6090 | Time(s) 0.0046
+Epoch 00004 | Loss 1.3684 | Test Acc 0.6850 | Time(s) 0.0046
+Epoch 00005 | Loss 1.2541 | Test Acc 0.7260 | Time(s) 0.0046
+Epoch 00006 | Loss 1.1448 | Test Acc 0.7200 | Time(s) 0.0046
+Epoch 00007 | Loss 1.0397 | Test Acc 0.7110 | Time(s) 0.0046
+Epoch 00008 | Loss 0.9406 | Test Acc 0.7190 | Time(s) 0.0046
+Epoch 00009 | Loss 0.8489 | Test Acc 0.7210 | Time(s) 0.0046
+Epoch 00010 | Loss 0.7658 | Test Acc 0.7300 | Time(s) 0.0046
+Epoch 00011 | Loss 0.6897 | Test Acc 0.7390 | Time(s) 0.0046
+Epoch 00012 | Loss 0.6196 | Test Acc 0.7380 | Time(s) 0.0046
+Epoch 00013 | Loss 0.5565 | Test Acc 0.7380 | Time(s) 0.0046
+Epoch 00014 | Loss 0.4996 | Test Acc 0.7420 | Time(s) 0.0048
+Epoch 00015 | Loss 0.4483 | Test Acc 0.7480 | Time(s) 0.0048
+Epoch 00016 | Loss 0.4024 | Test Acc 0.7480 | Time(s) 0.0048
+Epoch 00017 | Loss 0.3619 | Test Acc 0.7550 | Time(s) 0.0048
+Epoch 00018 | Loss 0.3262 | Test Acc 0.7540 | Time(s) 0.0048
+Epoch 00019 | Loss 0.2944 | Test Acc 0.7580 | Time(s) 0.0048
+Epoch 00020 | Loss 0.2660 | Test Acc 0.7590 | Time(s) 0.0048
+Epoch 00021 | Loss 0.2402 | Test Acc 0.7580 | Time(s) 0.0048
+Epoch 00022 | Loss 0.2169 | Test Acc 0.7570 | Time(s) 0.0047
+Epoch 00023 | Loss 0.1957 | Test Acc 0.7560 | Time(s) 0.0048
+Epoch 00024 | Loss 0.1764 | Test Acc 0.7530 | Time(s) 0.0048
+Epoch 00025 | Loss 0.1591 | Test Acc 0.7510 | Time(s) 0.0049
+Epoch 00026 | Loss 0.1434 | Test Acc 0.7460 | Time(s) 0.0049
+Epoch 00027 | Loss 0.1294 | Test Acc 0.7450 | Time(s) 0.0049
+Epoch 00028 | Loss 0.1167 | Test Acc 0.7410 | Time(s) 0.0049
+Epoch 00029 | Loss 0.1054 | Test Acc 0.7420 | Time(s) 0.0049
+Epoch 00030 | Loss 0.0952 | Test Acc 0.7430 | Time(s) 0.0049
+Epoch 00031 | Loss 0.0860 | Test Acc 0.7430 | Time(s) 0.0049
+Epoch 00032 | Loss 0.0778 | Test Acc 0.7420 | Time(s) 0.0048
+Epoch 00033 | Loss 0.0704 | Test Acc 0.7440 | Time(s) 0.0048
+Epoch 00034 | Loss 0.0639 | Test Acc 0.7440 | Time(s) 0.0048
+Epoch 00035 | Loss 0.0580 | Test Acc 0.7440 | Time(s) 0.0048
+Epoch 00036 | Loss 0.0527 | Test Acc 0.7430 | Time(s) 0.0048
+Epoch 00037 | Loss 0.0480 | Test Acc 0.7440 | Time(s) 0.0048
+Epoch 00038 | Loss 0.0438 | Test Acc 0.7440 | Time(s) 0.0049
+Epoch 00039 | Loss 0.0400 | Test Acc 0.7430 | Time(s) 0.0049
+Epoch 00040 | Loss 0.0367 | Test Acc 0.7430 | Time(s) 0.0048
+Epoch 00041 | Loss 0.0337 | Test Acc 0.7440 | Time(s) 0.0048
+Epoch 00042 | Loss 0.0310 | Test Acc 0.7430 | Time(s) 0.0049
+Epoch 00043 | Loss 0.0285 | Test Acc 0.7430 | Time(s) 0.0049
+Epoch 00044 | Loss 0.0264 | Test Acc 0.7410 | Time(s) 0.0049
+Epoch 00045 | Loss 0.0244 | Test Acc 0.7410 | Time(s) 0.0049
+Epoch 00046 | Loss 0.0226 | Test Acc 0.7400 | Time(s) 0.0049
+Epoch 00047 | Loss 0.0210 | Test Acc 0.7400 | Time(s) 0.0049
+Epoch 00048 | Loss 0.0196 | Test Acc 0.7390 | Time(s) 0.0049
+Epoch 00049 | Loss 0.0183 | Test Acc 0.7380 | Time(s) 0.0049
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="GCN-in-one-formula">
+<h2>GCN in one formula<a class="headerlink" href="#GCN-in-one-formula" title="Link to this heading"></a></h2>
+<p>Mathematically, the GCN model follows this formula:</p>
+<p><span class="math notranslate nohighlight">\(H^{(l+1)} = \sigma(\tilde{D}^{-\frac{1}{2}}\tilde{A}\tilde{D}^{-\frac{1}{2}}H^{(l)}W^{(l)})\)</span></p>
+<p>Here, <span class="math notranslate nohighlight">\(H^{(l)}\)</span> denotes the <span class="math notranslate nohighlight">\(l^{th}\)</span> layer in the network, <span class="math notranslate nohighlight">\(\sigma\)</span> is the non-linearity, and <span class="math notranslate nohighlight">\(W\)</span> is the weight matrix for this layer. <span class="math notranslate nohighlight">\(\tilde{D}\)</span> and <span class="math notranslate nohighlight">\(\tilde{A}\)</span> are separately the degree and adjacency matrices for the graph. With the superscript ~, we are referring to the variant where we add additional edges between each node and itself to preserve its old representation in graph convolutions. The shape of the input <span class="math notranslate nohighlight">\(H^{(0)}\)</span> is <span class="math notranslate nohighlight">\(N \times D\)</span>,
+where <span class="math notranslate nohighlight">\(N\)</span> is the number of nodes and <span class="math notranslate nohighlight">\(D\)</span> is the number of input features. We can chain up multiple layers as such to produce a node-level representation output with shape <span class="math notranslate nohighlight">\(N \times F\)</span>, where <span class="math notranslate nohighlight">\(F\)</span> is the dimension of the output node feature vector.</p>
+<p>The equation can be efficiently implemented using sparse matrix multiplication kernels (such as Kipf’s <a class="reference external" href="https://github.com/tkipf/pygcn">pygcn</a> code). The above DGL implementation in fact has already used this trick due to the use of builtin functions.</p>
+<p>Note that the tutorial code implements a simplified version of GCN where we replace <span class="math notranslate nohighlight">\(\tilde{D}^{-\frac{1}{2}}\tilde{A}\tilde{D}^{-\frac{1}{2}}\)</span> with <span class="math notranslate nohighlight">\(\tilde{A}\)</span>. For a full implementation, see our example <a class="reference external" href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/gcn">here</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Graph neural networks and its variants" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="4_rgcn.html" class="btn btn-neutral float-right" title="Relational Graph Convolutional Network" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

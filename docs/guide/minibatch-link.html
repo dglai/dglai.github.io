@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.3 Training GNN for Link Prediction with Neighborhood Sampling &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.4 Implementing Custom Graph Samplers" href="minibatch-custom-sampler.html" />
+    <link rel="prev" title="6.2 Training GNN for Edge Classification with Neighborhood Sampling" href="minibatch-edge.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 Training GNN for Node Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 Training GNN for Edge Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.3 Training GNN for Link Prediction with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 Implementing Custom Graph Samplers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-sparse.html">6.5 Training GNN with DGL sparse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.6 Implementing Custom GNN Module for Mini-batch Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.7 Exact Offline Inference on Large Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-gpu-sampling.html">6.8 Using GPU for Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-parallelism.html">6.9 Data Loading Parallelism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+      <li class="breadcrumb-item active">6.3 Training GNN for Link Prediction with Neighborhood Sampling</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/minibatch-link.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="training-gnn-for-link-prediction-with-neighborhood-sampling">
+<span id="guide-minibatch-link-classification-sampler"></span><h1>6.3 Training GNN for Link Prediction with Neighborhood Sampling<a class="headerlink" href="#training-gnn-for-link-prediction-with-neighborhood-sampling" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide_cn/minibatch-link.html#guide-cn-minibatch-link-classification-sampler"><span class="std std-ref">(中文版)</span></a></p>
+<section id="define-a-data-loader-with-neighbor-and-negative-sampling">
+<h2>Define a data loader with neighbor and negative sampling<a class="headerlink" href="#define-a-data-loader-with-neighbor-and-negative-sampling" title="Link to this heading"></a></h2>
+<p>You can still use the same data loader as the one in node/edge classification.
+The only difference is that you need to add an additional stage
+<cite>negative sampling</cite> before neighbor sampling stage. The following data loader
+will pick 5 negative destination nodes uniformly for each source node of an
+edge.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">sample_uniform_negative</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The whole data loader pipeline is as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">datapipe</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSampler</span><span class="p">(</span><span class="n">itemset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">sample_uniform_negative</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">sample_neighbor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span> <span class="c1"># 2 layers.</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">exclude_seed_edges</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">fetch_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">node_feature_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">])</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">datapipe</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the details about the builtin uniform negative sampler please see
+<a class="reference internal" href="../generated/dgl.graphbolt.UniformNegativeSampler.html#dgl.graphbolt.UniformNegativeSampler" title="dgl.graphbolt.UniformNegativeSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">UniformNegativeSampler</span></code></a>.</p>
+<p>You can also give your own negative sampler function, as long as it inherits
+from <a class="reference internal" href="../generated/dgl.graphbolt.NegativeSampler.html#dgl.graphbolt.NegativeSampler" title="dgl.graphbolt.NegativeSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">NegativeSampler</span></code></a> and overrides the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">_sample_with_etype()</span></code> method which takes in
+the node pairs in minibatch, and returns the negative node pairs back.</p>
+<p>The following gives an example of custom negative sampler that samples
+negative destination nodes according to a probability distribution
+proportional to a power of degrees.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@functional_datapipe</span><span class="p">(</span><span class="s2">&quot;customized_sample_negative&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">CustomizedNegativeSampler</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">graphbolt</span><span class="o">.</span><span class="n">NegativeSampler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datapipe</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">node_degrees</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datapipe</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="c1"># caches the probability distribution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">node_degrees</span> <span class="o">**</span> <span class="mf">0.75</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+
+    <span class="k">def</span> <span class="nf">_sample_with_etype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">src</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">seeds</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">replacement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span>
+
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">customized_sample_negative</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">node_degrees</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="define-a-graphsage-model-for-minibatch-training">
+<h2>Define a GraphSAGE model for minibatch training<a class="headerlink" href="#define-a-graphsage-model-for-minibatch-training" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SAGE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">in_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">hidden_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">for</span> <span class="n">layer_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">,</span> <span class="n">blocks</span><span class="p">)):</span>
+            <span class="n">hidden_x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">hidden_x</span><span class="p">)</span>
+            <span class="n">is_last_layer</span> <span class="o">=</span> <span class="n">layer_idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_last_layer</span><span class="p">:</span>
+                <span class="n">hidden_x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">hidden_x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hidden_x</span>
+</pre></div>
+</div>
+<p>When a negative sampler is provided, the data loader will generate positive and
+negative node pairs for each minibatch besides the <em>Message Flow Graphs</em> (MFGs).
+Use <cite>compacted_seeds</cite> and <cite>labels</cite> to get compact node pairs and corresponding
+labels.</p>
+</section>
+<section id="training-loop">
+<h2>Training loop<a class="headerlink" href="#training-loop" title="Link to this heading"></a></h2>
+<p>The training loop simply involves iterating over the data loader and
+feeding in the graphs as well as the input features to the model defined
+above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">trange</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">epochs</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">total_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">start_epoch_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+        <span class="c1"># Unpack MiniBatch.</span>
+        <span class="n">compacted_seeds</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compacted_seeds</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+        <span class="n">node_feature</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">node_features</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]</span>
+        <span class="c1"># Convert sampled subgraphs to DGL blocks.</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">blocks</span>
+
+        <span class="c1"># Get the embeddings of the input nodes.</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">node_feature</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predictor</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">compacted_seeds</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">compacted_seeds</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+        <span class="c1"># Compute loss.</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">binary_cross_entropy_with_logits</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">end_epoch_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>DGL provides the
+<a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/sampling/graphbolt/link_prediction.py">unsupervised learning GraphSAGE</a>
+that shows an example of link prediction on homogeneous graphs.</p>
+</section>
+<section id="for-heterogeneous-graphs">
+<h2>For heterogeneous graphs<a class="headerlink" href="#for-heterogeneous-graphs" title="Link to this heading"></a></h2>
+<p>The previous model could be easily extended to heterogeneous graphs. The only
+difference is that you need to use <code class="xref py py-class docutils literal notranslate"><span class="pre">HeteroGraphConv</span></code> to wrap
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SAGEConv</span></code> according to edge types.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SAGE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+                <span class="n">rel</span> <span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">in_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span>
+            <span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+                <span class="n">rel</span> <span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span>
+            <span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+                <span class="n">rel</span> <span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span>
+            <span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">hidden_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">for</span> <span class="n">layer_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">,</span> <span class="n">blocks</span><span class="p">)):</span>
+            <span class="n">hidden_x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">hidden_x</span><span class="p">)</span>
+            <span class="n">is_last_layer</span> <span class="o">=</span> <span class="n">layer_idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_last_layer</span><span class="p">:</span>
+                <span class="n">hidden_x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">hidden_x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hidden_x</span>
+</pre></div>
+</div>
+<p>Data loader definition is also very similar to that for homogeneous graph. The
+only difference is that you need to give edge types for feature fetching.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">datapipe</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSampler</span><span class="p">(</span><span class="n">itemset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">sample_uniform_negative</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">sample_neighbor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span> <span class="c1"># 2 layers.</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">exclude_seed_edges</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">fetch_feature</span><span class="p">(</span>
+    <span class="n">feature</span><span class="p">,</span>
+    <span class="n">node_feature_keys</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">],</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]}</span>
+<span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">datapipe</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want to give your own negative sampling function, just inherit from the
+<a class="reference internal" href="../generated/dgl.graphbolt.NegativeSampler.html#dgl.graphbolt.NegativeSampler" title="dgl.graphbolt.NegativeSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">NegativeSampler</span></code></a> class and override the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">_sample_with_etype()</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@functional_datapipe</span><span class="p">(</span><span class="s2">&quot;customized_sample_negative&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">CustomizedNegativeSampler</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">graphbolt</span><span class="o">.</span><span class="n">NegativeSampler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datapipe</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">node_degrees</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datapipe</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="c1"># caches the probability distribution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">etype</span><span class="p">:</span> <span class="n">node_degrees</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">**</span> <span class="mf">0.75</span> <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">node_degrees</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+
+    <span class="k">def</span> <span class="nf">_sample_with_etype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+        <span class="n">src</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">seeds</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">replacement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span>
+
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">customized_sample_negative</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">node_degrees</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For heterogeneous graphs, node pairs are grouped by edge types. The training
+loop is again almost the same as that on homogeneous graph, except for computing
+loss on specific edge type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">trange</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">epochs</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">total_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">start_epoch_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+        <span class="c1"># Unpack MiniBatch.</span>
+        <span class="n">compacted_seeds</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compacted_seeds</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+        <span class="n">node_features</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ntype</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">node_features</span><span class="p">[(</span><span class="n">ntype</span><span class="p">,</span> <span class="s2">&quot;feat&quot;</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srctypes</span>
+        <span class="p">}</span>
+        <span class="c1"># Convert sampled subgraphs to DGL blocks.</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">blocks</span>
+        <span class="c1"># Get the embeddings of the input nodes.</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">node_feature</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predictor</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">compacted_pairs</span><span class="p">[</span><span class="n">category</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]]</span>
+            <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">compacted_pairs</span><span class="p">[</span><span class="n">category</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+        <span class="c1"># Compute loss.</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">binary_cross_entropy_with_logits</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">[</span><span class="n">category</span><span class="p">])</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">end_epoch_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-edge.html" class="btn btn-neutral float-left" title="6.2 Training GNN for Edge Classification with Neighborhood Sampling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-custom-sampler.html" class="btn btn-neutral float-right" title="6.4 Implementing Custom Graph Samplers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

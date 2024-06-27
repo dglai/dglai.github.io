@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>第6章：在大图上的随机（批次）训练 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.1 针对节点分类任务的邻居采样训练方法" href="minibatch-node.html" />
+    <link rel="prev" title="5.4 整图分类" href="training-graph.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">用户指南【包含过时信息】</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">第1章：图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">第2章：消息传递范式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">第3章：构建图神经网络（GNN）模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">第4章：图数据处理管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">第5章：训练图神经网络</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">第6章：在大图上的随机（批次）训练</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 针对节点分类任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 针对边分类任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 针对链接预测任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 定制用户自己的邻居采样器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.5 为小批次训练实现定制化的GNN模块</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.6 超大图上的精准离线推断</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">第7章：分布式训练</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">用户指南【包含过时信息】</a></li>
+      <li class="breadcrumb-item active">第6章：在大图上的随机（批次）训练</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_cn/minibatch.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-cn-minibatch">
+<span id="id1"></span><h1>第6章：在大图上的随机（批次）训练<a class="headerlink" href="#guide-cn-minibatch" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/minibatch.html#guide-minibatch"><span class="std std-ref">(English Version)</span></a></p>
+<p>如果用户有包含数百万甚至数十亿个节点或边的大图，通常无法进行
+<a class="reference internal" href="training.html#guide-cn-training"><span class="std std-ref">第5章：训练图神经网络</span></a>
+中所述的全图训练。考虑在一个有 <span class="math notranslate nohighlight">\(N\)</span> 个节点的图上运行的、隐层大小为 <span class="math notranslate nohighlight">\(H\)</span> 的 <span class="math notranslate nohighlight">\(L\)</span> 层图卷积网络，
+存储隐层表示需要 <span class="math notranslate nohighlight">\(O(NLH)\)</span> 的内存空间，当 <span class="math notranslate nohighlight">\(N\)</span> 较大时，这很容易超过一块GPU的显存限制。</p>
+<p>本章介绍了一种在大图上进行随机小批次训练的方法，可以让用户不用一次性把所有节点特征拷贝到GPU上。</p>
+<section id="id2">
+<h2>邻居采样方法概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>邻居节点采样的工作流程通常如下：每次梯度下降，选择一个小批次的图节点，
+其最终表示将在神经网络的第 <span class="math notranslate nohighlight">\(L\)</span> 层进行计算，然后在网络的第 <span class="math notranslate nohighlight">\(L-1\)</span> 层选择该批次节点的全部或部分邻居节点。
+重复这个过程，直到到达输入层。这个迭代过程会构建计算的依赖关系图，从输出开始，一直到输入，如下图所示：</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_0_0.png" />
+</figure>
+<p>该方法能节省在大图上训练图神经网络的开销和计算资源。</p>
+<p>DGL实现了一些邻居节点采样的方法和使用邻居节点采样训练图神经网络的管道，同时也支持让用户自定义采样策略。</p>
+</section>
+<section id="id3">
+<h2>本章路线图<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>本章的前半部分介绍了不同场景下如何进行随机训练的方法。</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="minibatch-node.html#guide-cn-minibatch-node-classification-sampler"><span class="std std-ref">6.1 针对节点分类任务的邻居采样训练方法</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-edge.html#guide-cn-minibatch-edge-classification-sampler"><span class="std std-ref">6.2 针对边分类任务的邻居采样训练方法</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-link.html#guide-cn-minibatch-link-classification-sampler"><span class="std std-ref">6.3 针对链接预测任务的邻居采样训练方法</span></a></p></li>
+</ul>
+<p>本章余下的小节介绍了更多的高级主题，面向那些想要开发新的采样算法、
+想要实现与小批次训练兼容的图神经网络模块、以及想要了解如何在小批次数据上进行评估和推理模型的用户。</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="minibatch-custom-sampler.html#guide-cn-minibatch-customizing-neighborhood-sampler"><span class="std std-ref">6.4 定制用户自己的邻居采样器</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-nn.html#guide-cn-minibatch-custom-gnn-module"><span class="std std-ref">6.5 为小批次训练实现定制化的GNN模块</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-inference.html#guide-cn-minibatch-inference"><span class="std std-ref">6.6 超大图上的精准离线推断</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="training-graph.html" class="btn btn-neutral float-left" title="5.4 整图分类" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-node.html" class="btn btn-neutral float-right" title="6.1 针对节点分类任务的邻居采样训练方法" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

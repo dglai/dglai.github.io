@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.3 링크 예측 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5.4 그래프 분류" href="training-graph.html" />
+    <link rel="prev" title="5.2 에지 분류 및 리그레션(Regression)" href="training-edge.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="training-node.html">5.1 노드 분류/리그래션(Regression)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="training-edge.html">5.2 에지 분류 및 리그레션(Regression)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">5.3 링크 예측</a></li>
+<li class="toctree-l3"><a class="reference internal" href="training-graph.html">5.4 그래프 분류</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">7장: 분산 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+      <li class="breadcrumb-item active">5.3 링크 예측</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/training-link.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-ko-training-link-prediction">
+<span id="id1"></span><h1>5.3 링크 예측<a class="headerlink" href="#guide-ko-training-link-prediction" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/training-link.html#guide-training-link-prediction"><span class="std std-ref">(English Version)</span></a></p>
+<p>어떤 두 노드들 사이에 에지가 존재하는지 아닌지를 예측하고 싶은 경우가 있고, 이를 <em>링크 예측 과제</em> 라고 한다.</p>
+<section id="id2">
+<h2>개요<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>GNN 기반의 링크 예측 모델은 두 노드 <span class="math notranslate nohighlight">\(u\)</span> 와 <span class="math notranslate nohighlight">\(v\)</span> 간의 연결 가능도(likelihood)를 <span class="math notranslate nohighlight">\(\boldsymbol{h}_u^{(L)}\)</span> 의 함수로 표현하는데, 여기서 <span class="math notranslate nohighlight">\(\boldsymbol{h}_v^{(L)}\)</span> 는 멀티-레이어 GNN을 통해서 계단된 노드 representation이다.</p>
+<div class="math notranslate nohighlight">
+\[y_{u,v} = \phi(\boldsymbol{h}_u^{(L)}, \boldsymbol{h}_v^{(L)})\]</div>
+<p><span class="math notranslate nohighlight">\(y_{u,v}\)</span> 는 노드 <span class="math notranslate nohighlight">\(u\)</span> 와 <span class="math notranslate nohighlight">\(v\)</span> 사이의 점수를 뜻 한다.</p>
+<p>링크 예측 모델을 학습시키는 것은 에지로 연결된 두 노드들에 대한 점수와 임의의 두 노드 쌍에 대한 점수를 비교하면서 이뤄진다. 예를 들어, 노드 <span class="math notranslate nohighlight">\(u\)</span> 와 <span class="math notranslate nohighlight">\(v\)</span> 사이에 에지가 존재하는 경우 노드 <span class="math notranslate nohighlight">\(u\)</span> 와 <span class="math notranslate nohighlight">\(v\)</span> 사이의 점수가 노드 <span class="math notranslate nohighlight">\(u\)</span> 와 임의의 <em>노이즈</em> 분표 <span class="math notranslate nohighlight">\(v' \sim P_n(v)`에 따라 샘플링된 노드 :math:`v'\)</span> 간의 점수보다 높도록 하는 학습이다.</p>
+<p>위를 달성하기 위한 다양한 loss 함수가 있다. 몇 가지 예는 다음과 같다:</p>
+<ul class="simple">
+<li><p>Cross-entropy loss:
+<span class="math notranslate nohighlight">\(\mathcal{L} = - \log \sigma (y_{u,v}) - \sum_{v_i \sim P_n(v), i=1,\dots,k}\log \left[ 1 - \sigma (y_{u,v_i})\right]\)</span></p></li>
+<li><p>BPR loss:
+<span class="math notranslate nohighlight">\(\mathcal{L} = \sum_{v_i \sim P_n(v), i=1,\dots,k} - \log \sigma (y_{u,v} - y_{u,v_i})\)</span></p></li>
+<li><p>Margin loss:
+<span class="math notranslate nohighlight">\(\mathcal{L} = \sum_{v_i \sim P_n(v), i=1,\dots,k} \max(0, M - y_{u, v} + y_{u, v_i})\)</span>, 여기서 <span class="math notranslate nohighlight">\(M\)</span> 은 상수 하이퍼-파라메터이다.</p></li>
+</ul>
+<p><a class="reference external" href="https://arxiv.org/ftp/arxiv/papers/1205/1205.2618.pdf">implicit feedback</a> 이나 <a class="reference external" href="http://proceedings.mlr.press/v9/gutmann10a/gutmann10a.pdf">noise-contrastive estimation</a> 를 알고 있다면, 이 아이디어는 친숙할 것이다.</p>
+<p><span class="math notranslate nohighlight">\(u\)</span> 와 <span class="math notranslate nohighlight">\(v\)</span> 사이의 점수를 계산하는 뉴럴 네트워크 모델은 <a class="reference internal" href="training-edge.html#guide-ko-training-edge-classification"><span class="std std-ref">위에서 설명한</span></a>  에지 리그레션 모델과 동일하다.</p>
+<p>다음은 dot product를 사용해서 에지들의 점수를 계산하는 예제이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DotProductPredictor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="c1"># h contains the node representations computed from the GNN defined</span>
+        <span class="c1"># in the node classification section (Section 5.1).</span>
+        <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">u_dot_v</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>학습 룹<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>점수를 예측하는 모델은 그래프들에 적용되기 때문에, 네가티브 샘들은 별도의 그래프로 표현되어야 한다. 즉, 그것은 에지들이 모두 네가티브 노드들의 쌍들로만 구성된 그래프이다.</p>
+<p>아래 코드는 네가티브 샘들로 구성된 그래프를 만드는 예제이다. 각 에지 <span class="math notranslate nohighlight">\((u,v)\)</span> 는 <span class="math notranslate nohighlight">\(k\)</span> 개의 네가티브 셈플들 <span class="math notranslate nohighlight">\((u,v_i)\)</span> 을 갖는다. 여기서 <span class="math notranslate nohighlight">\(v_i\)</span> 는 균등 분포에서 샘플링된다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">construct_negative_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+
+    <span class="n">neg_src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">neg_dst</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><span class="n">neg_src</span><span class="p">,</span> <span class="n">neg_dst</span><span class="p">),</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>에지 점수를 예측하는 모델은 에지 분류 또는 에지 리그레션 모델과 같다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sage</span> <span class="o">=</span> <span class="n">SAGE</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred</span> <span class="o">=</span> <span class="n">DotProductPredictor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">neg_g</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sage</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">neg_g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>그런 다음, 학습 룹은 반복적으로 네가티브 그래프를 만들고 loss를 계산한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">):</span>
+    <span class="c1"># Margin loss</span>
+    <span class="n">n_edges</span> <span class="o">=</span> <span class="n">pos_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pos_score</span> <span class="o">+</span> <span class="n">neg_score</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">n_edges</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="n">node_features</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
+<span class="n">n_features</span> <span class="o">=</span> <span class="n">node_features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">negative_graph</span> <span class="o">=</span> <span class="n">construct_negative_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">negative_graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>학습이 종료되면, 노드 representation은 다음과 같이 얻을 수 있다:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sage</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>노드 임베딩을 사용하는 방법은 여러가지가 있다. 몇가지 예를 들면, 다운스트림 분류기 학습, 관련된 엔터리 추천을 위한 nearest neighbor search 또는 maximum inner product search와 같은 것이 있다.</p>
+</section>
+<section id="heterogeneous">
+<h2>Heterogeneous 그래프들<a class="headerlink" href="#heterogeneous" title="Link to this heading"></a></h2>
+<p>Heterogeneous 그래프에서의 링크 예측은 homogeneous 그래프에서의 링크 예측과 많이 다르지 않다. 다음 예제는 하나의 에지 타입에 대해서 예측을 수행한다고 가정하고 있는데, 이를 여러 에지 타입으로 확장하는 것은 쉽다.</p>
+<p>링크 예측을 위해서 <a class="reference internal" href="training-edge.html#guide-ko-training-edge-classification-heterogeneous-graph"><span class="std std-ref">앞에서</span></a> 의 <code class="docutils literal notranslate"><span class="pre">HeteroDotProductPredictor</span></code> 를 재활용해서 한 에지 타입에 대한 에지의 점수를 계산할 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">HeteroDotProductPredictor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+        <span class="c1"># h contains the node representations for each node type computed from</span>
+        <span class="c1"># the GNN defined in the previous section (Section 5.1).</span>
+        <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">u_dot_v</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">),</span> <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>네가티브 샘플링을 수행하기 위해서, 링크 예측을 수행할 에지 타입에 대한 네가티브 그램프를 생성하면 된다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">construct_negative_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+    <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+    <span class="n">neg_src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">neg_dst</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">vtype</span><span class="p">),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="n">dgl</span><span class="o">.</span><span class="n">heterograph</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">etype</span><span class="p">:</span> <span class="p">(</span><span class="n">neg_src</span><span class="p">,</span> <span class="n">neg_dst</span><span class="p">)},</span>
+        <span class="n">num_nodes_dict</span><span class="o">=</span><span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>모델을 heterogeneous 그래프들에서 에지 분류하는 모델과는 약간 다른데, 그 이유는 링크 예측을 할 때 에지 타입을 지정해야하기 때문이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sage</span> <span class="o">=</span> <span class="n">RGCN</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred</span> <span class="o">=</span> <span class="n">HeteroDotProductPredictor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">neg_g</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sage</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">etype</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">neg_g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">etype</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>학습 룹은 homogeneous 그래프에 대한 학습 룹과 비슷하다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">):</span>
+    <span class="c1"># Margin loss</span>
+    <span class="n">n_edges</span> <span class="o">=</span> <span class="n">pos_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pos_score</span> <span class="o">+</span> <span class="n">neg_score</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">n_edges</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+<span class="n">user_feats</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span>
+<span class="n">item_feats</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span>
+<span class="n">node_features</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_feats</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item_feats</span><span class="p">}</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">negative_graph</span> <span class="o">=</span> <span class="n">construct_negative_graph</span><span class="p">(</span><span class="n">hetero_graph</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">))</span>
+    <span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">hetero_graph</span><span class="p">,</span> <span class="n">negative_graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">))</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="training-edge.html" class="btn btn-neutral float-left" title="5.2 에지 분류 및 리그레션(Regression)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="training-graph.html" class="btn btn-neutral float-right" title="5.4 그래프 분류" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Distributed Link Prediction &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Paper Study with DGL" href="../models/index.html" />
+    <link rel="prev" title="Distributed Node Classification" href="1_node_classification.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Distributed training</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_node_classification.html">Distributed Node Classification</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Distributed Link Prediction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Distributed training</a></li>
+      <li class="breadcrumb-item active">Distributed Link Prediction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorials/dist/2_link_prediction.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Distributed-Link-Prediction">
+<h1>Distributed Link Prediction<a class="headerlink" href="#Distributed-Link-Prediction" title="Link to this heading"></a></h1>
+<p>In this tutorial, we will walk through the steps of performing distributed GNN training for a link prediction task. This tutorial assumes that you have read the <a class="reference external" href="https://docs.dgl.ai/en/latest/tutorials/dist/1_node_classification.html">Distributed Node Classification</a> and <a class="reference external" href="https://docs.dgl.ai/en/latest/tutorials/large/L2_large_link_prediction.html#sphx-glr-tutorials-large-l2-large-link-prediction-py">Stochastic Training of GNN for Link Prediction</a>. The general pipeline is shown below.</p>
+<figure class="align-default">
+<img alt="https://data.dgl.ai/tutorial/link.png:alt:Imgur" src="https://data.dgl.ai/tutorial/link.png:alt:Imgur" />
+</figure>
+<section id="Partition-a-graph">
+<h2>Partition a graph<a class="headerlink" href="#Partition-a-graph" title="Link to this heading"></a></h2>
+<p>In this tutorial, we will use <a class="reference external" href="https://ogb.stanford.edu/docs/linkprop/#ogbl-citation2">OGBL citation2 graph</a> as an example to illustrate the graph partitioning. Let’s first load the graph into a DGL graph and convert it into a training graph, validation edges and test edges with :class:<code class="docutils literal notranslate"><span class="pre">~dgl.data.AsLinkPredDataset</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import os
+os.environ[&#39;DGLBACKEND&#39;] = &#39;pytorch&#39;
+import dgl
+import torch as th
+from ogb.linkproppred import DglLinkPropPredDataset
+data = DglLinkPropPredDataset(name=&#39;ogbl-citation2&#39;)
+graph = data[0]
+data = dgl.data.AsLinkPredDataset(data, [0.8, 0.1, 0.1])
+graph_train = data[0]
+dgl.distributed.partition_graph(graph_train, graph_name=&#39;ogbl-citation2&#39;, num_parts=4,
+                            out_path=&#39;4part_data&#39;,
+                            balance_edges=True)
+</pre></div>
+</div>
+<p>Then, we store the validation and test edges with the graph partitions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import pickle
+with open(&#39;4part_data/val.pkl&#39;, &#39;wb&#39;) as f:
+    pickle.dump(data.val_edges, f)
+with open(&#39;4part_data/test.pkl&#39;, &#39;wb&#39;) as f:
+    pickle.dump(data.test_edges, f)
+</pre></div>
+</div>
+</section>
+<section id="Distributed-training-script">
+<h2>Distributed training script<a class="headerlink" href="#Distributed-training-script" title="Link to this heading"></a></h2>
+<p>The distributed link prediction script is very similar to distributed node classification script with just a few modifications.</p>
+<section id="Initialize-network-communication">
+<h3>Initialize network communication<a class="headerlink" href="#Initialize-network-communication" title="Link to this heading"></a></h3>
+<p>We first initialize the network communication and Pytorch’s distributed communication.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+<span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">ip_config</span><span class="o">=</span><span class="s1">&#39;ip_config.txt&#39;</span><span class="p">)</span>
+<span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">init_process_group</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;gloo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The configuration file <code class="docutils literal notranslate"><span class="pre">ip_config.txt</span></code> has the following format:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ip_addr1<span class="w"> </span><span class="o">[</span>port1<span class="o">]</span>
+ip_addr2<span class="w"> </span><span class="o">[</span>port2<span class="o">]</span>
+</pre></div>
+</div>
+<p>Each row is a machine. The first column is the IP address and the second column is the port for connecting to the DGL server on the machine. The port is optional and the default port is 30050.</p>
+</section>
+<section id="Reference-to-the-distributed-graph">
+<h3>Reference to the distributed graph<a class="headerlink" href="#Reference-to-the-distributed-graph" title="Link to this heading"></a></h3>
+<p>DGL’s servers load the graph partitions automatically. After the servers load the partitions, trainers connect to the servers and can start to reference to the distributed graph in the cluster as below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;ogbl-citation2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As shown in the code, we refer to a distributed graph by its name. This name is basically the one passed to the <code class="docutils literal notranslate"><span class="pre">partition_graph</span></code> function as shown in the section above.</p>
+</section>
+<section id="Get-training-and-validation-node-IDs">
+<h3>Get training and validation node IDs<a class="headerlink" href="#Get-training-and-validation-node-IDs" title="Link to this heading"></a></h3>
+<p>For distributed training, each trainer can run its own set of training nodes. We can get the current graph in the trainer with its node ids and edge ids by invoking <code class="docutils literal notranslate"><span class="pre">node_split</span></code> and <code class="docutils literal notranslate"><span class="pre">edge_split</span></code>. We can also get the valid edges and test edges by loading the pickle files.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_eids</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">edge_split</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">(),),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">bool</span><span class="p">),</span> <span class="n">g</span><span class="o">.</span><span class="n">get_partition_book</span><span class="p">(),</span> <span class="n">force_even</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">train_nids</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">node_split</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">bool</span><span class="p">),</span> <span class="n">g</span><span class="o">.</span><span class="n">get_partition_book</span><span class="p">())</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;4part_data/val.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">global_valid_eid</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;4part_data/test.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">global_test_eid</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="Define-a-GNN-model">
+<h3>Define a GNN model<a class="headerlink" href="#Define-a-GNN-model" title="Link to this heading"></a></h3>
+<p>For distributed training, we define a GNN model exactly in the same way as <a class="reference external" href="https://doc.dgl.ai/guide/minibatch.html#">mini-batch training</a> or <a class="reference external" href="https://doc.dgl.ai/guide/training-node.html#guide-training-node-classification">full-graph training</a>. The code below defines the GraphSage model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">dgl.nn</span> <span class="k">as</span> <span class="nn">dglnn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+
+<span class="k">class</span> <span class="nc">SAGE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_layers</span> <span class="o">=</span> <span class="n">n_layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="o">=</span> <span class="n">n_hidden</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="n">n_classes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_layers</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">n_hidden</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">n_hidden</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">,</span> <span class="n">blocks</span><span class="p">)):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">l</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_layers</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+<span class="n">num_hidden</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">num_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()]))</span>
+<span class="n">num_layers</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SAGE</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">num_hidden</span><span class="p">,</span> <span class="n">num_labels</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">)</span>
+<span class="n">loss_fcn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For distributed training, we need to convert the model into a distributed model with Pytorch’s <code class="docutils literal notranslate"><span class="pre">DistributedDataParallel</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">parallel</span><span class="o">.</span><span class="n">DistributedDataParallel</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We also define an edge predictor :class:<code class="docutils literal notranslate"><span class="pre">~dgl.nn.pytorch.link.EdgePredictor</span></code> to predict the edge scores of pairs of node representations</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dgl.nn</span> <span class="kn">import</span> <span class="n">EdgePredictor</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">EdgePredictor</span><span class="p">(</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="Distributed-mini-batch-sampler">
+<h3>Distributed mini-batch sampler<a class="headerlink" href="#Distributed-mini-batch-sampler" title="Link to this heading"></a></h3>
+<p>We can use :class:<code class="docutils literal notranslate"><span class="pre">~dgl.dataloading.pytorch.DistEdgeDataLoader</span></code>, the distributed counterpart of :class:<code class="docutils literal notranslate"><span class="pre">~dgl.dataloading.pytorch.EdgeDataLoader</span></code>, to create a distributed mini-batch sampler for link prediction.</p>
+</section>
+<section id="Training-loop">
+<h3>Training loop<a class="headerlink" href="#Training-loop" title="Link to this heading"></a></h3>
+<p>The training loop for distributed training is also exactly the same as the single-process training.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sklearn.metrics</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">epoch</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">input_nodes</span><span class="p">,</span> <span class="n">pos_graph</span><span class="p">,</span> <span class="n">neg_graph</span><span class="p">,</span> <span class="n">mfgs</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+        <span class="n">pos_graph</span> <span class="o">=</span> <span class="n">pos_graph</span>
+        <span class="n">neg_graph</span> <span class="o">=</span> <span class="n">neg_graph</span>
+        <span class="n">node_inputs</span> <span class="o">=</span> <span class="n">mfgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+        <span class="n">batch_inputs</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">][</span><span class="n">node_inputs</span><span class="p">]</span>
+
+        <span class="n">batch_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">mfgs</span><span class="p">,</span> <span class="n">batch_inputs</span><span class="p">)</span>
+        <span class="n">pos_feature</span> <span class="o">=</span> <span class="n">batch_pred</span>
+        <span class="n">pos_graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_pred</span>
+        <span class="n">pos_src</span><span class="p">,</span> <span class="n">pos_dst</span> <span class="o">=</span> <span class="n">pos_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+        <span class="n">pos_score</span> <span class="o">=</span> <span class="n">predictor</span><span class="p">(</span><span class="n">pos_feature</span><span class="p">[</span><span class="n">pos_src</span><span class="p">],</span> <span class="n">pos_feature</span><span class="p">[</span><span class="n">pos_dst</span><span class="p">])</span>
+
+        <span class="n">neg_feature</span> <span class="o">=</span> <span class="n">batch_pred</span>
+        <span class="n">neg_graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_pred</span>
+        <span class="n">neg_src</span><span class="p">,</span> <span class="n">neg_dst</span> <span class="o">=</span> <span class="n">neg_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+        <span class="n">neg_score</span> <span class="o">=</span> <span class="n">predictor</span><span class="p">(</span><span class="n">neg_feature</span><span class="p">[</span><span class="n">pos_src</span><span class="p">],</span> <span class="n">neg_feature</span><span class="p">[</span><span class="n">pos_dst</span><span class="p">])</span>
+
+        <span class="n">score</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">])</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">th</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">pos_score</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">neg_score</span><span class="p">)])</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">binary_cross_entropy_with_logits</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="Inference">
+<h3>Inference<a class="headerlink" href="#Inference" title="Link to this heading"></a></h3>
+<p>In the inference stage, we use the model after training loop to get the embedding of nodes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">inference</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">th</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">MultiLayerNeighborSampler</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+        <span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">DistNodeDataLoader</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()),</span> <span class="n">sampler</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+            <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">mfgs</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
+            <span class="n">node_inputs</span> <span class="o">=</span> <span class="n">mfgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">node_features</span><span class="p">[</span><span class="n">node_inputs</span><span class="p">]</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">mfgs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="n">node_reprs</span> <span class="o">=</span> <span class="n">inference</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">],</span> <span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The test edges is encoded as ((positive_edge_src, positive_edge_dst), (negative_edge_src, negative_edge_dst)). Therefore, we can get the ground truth with positive pairs and negative pairs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">test_pos_src</span> <span class="o">=</span> <span class="n">global_test_eid</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">test_pos_dst</span> <span class="o">=</span> <span class="n">global_test_eid</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">test_neg_src</span> <span class="o">=</span> <span class="n">global_test_eid</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">test_neg_dst</span> <span class="o">=</span> <span class="n">global_test_eid</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">test_labels</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">th</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">test_pos_src</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">test_neg_src</span><span class="p">)])</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then, we use the dot product predictor to get the score of positive and negative test pairs to compute metrics such as AUC:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">h_pos_src</span> <span class="o">=</span> <span class="n">node_reprs</span><span class="p">[</span><span class="n">test_pos_src</span><span class="p">]</span>
+<span class="n">h_pos_dst</span> <span class="o">=</span> <span class="n">node_reprs</span><span class="p">[</span><span class="n">test_pos_dst</span><span class="p">]</span>
+<span class="n">h_neg_src</span> <span class="o">=</span> <span class="n">node_reprs</span><span class="p">[</span><span class="n">test_neg_src</span><span class="p">]</span>
+<span class="n">h_neg_dst</span> <span class="o">=</span> <span class="n">node_reprs</span><span class="p">[</span><span class="n">test_neg_dst</span><span class="p">]</span>
+<span class="n">score_pos</span> <span class="o">=</span> <span class="n">predictor</span><span class="p">(</span><span class="n">h_pos_src</span><span class="p">,</span> <span class="n">h_pos_dst</span><span class="p">)</span>
+<span class="n">score_neg</span> <span class="o">=</span> <span class="n">predictor</span><span class="p">(</span><span class="n">h_neg_src</span><span class="p">,</span> <span class="n">h_neg_dst</span><span class="p">)</span>
+
+<span class="n">test_preds</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">score_pos</span><span class="p">,</span> <span class="n">score_neg</span><span class="p">])</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">auc</span> <span class="o">=</span> <span class="n">skm</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">test_preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="Set-up-distributed-training-environment">
+<h2>Set up distributed training environment<a class="headerlink" href="#Set-up-distributed-training-environment" title="Link to this heading"></a></h2>
+<p>The distributed training environment set up is similar to the distributed node classification. Please refer here for more details: <a class="reference external" href="https://docs.dgl.ai/en/latest/tutorials/dist/1_node_classification.html#set-up-distributed-training-environment">Set up distributed training environment</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="1_node_classification.html" class="btn btn-neutral float-left" title="Distributed Node Classification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../models/index.html" class="btn btn-neutral float-right" title="Paper Study with DGL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

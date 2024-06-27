@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DGL Foreign Function Interface (FFI) &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Performance Benchmarks" href="../performance.html" />
+    <link rel="prev" title="Contribute to DGL" href="../contribute.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DGL Foreign Function Interface (FFI)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#defining-new-types">Defining new types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#containers">Containers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DGL Foreign Function Interface (FFI)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developer/ffi.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dgl-foreign-function-interface-ffi">
+<h1>DGL Foreign Function Interface (FFI)<a class="headerlink" href="#dgl-foreign-function-interface-ffi" title="Link to this heading"></a></h1>
+<p>We all like Python because it is easy to manipulate. We all like C because it
+is fast, reliable and typed. To have the merits of both ends, DGL is mostly in
+python, for quick prototyping, while lowers the performance-critical part to C.
+Thus, DGL developers frequently face the scenario to write a C routine and has
+it exposed to python, via a mechanism called <em>Foreign Function Interface (FFI)</em>.</p>
+<p>There are many FFI solutions out there. In DGL, we want to keep it simple,
+intuitive and efficient for critical use cases. That’s why when we came across the
+FFI solution in the TVM project, we immediately fell for it. It exploits the idea of
+functional programming so that it exposes only a dozens of C APIs and new APIs
+can be built upon it.</p>
+<p>We decided to borrow the idea (shamelessly). For example, to define a C
+API that is exposed to python is only a few lines of codes:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// file: calculator.cc (put it in dgl/src folder)</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;dgl/runtime/packed_func.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;dgl/runtime/registry.h&gt;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">dgl</span><span class="o">::</span><span class="nn">runtime</span><span class="p">;</span>
+
+<span class="n">DGL_REGISTER_GLOBAL</span><span class="p">(</span><span class="s">&quot;calculator.MyAdd&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">set_body</span><span class="p">([]</span><span class="w"> </span><span class="p">(</span><span class="n">DGLArgs</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">DGLRetValue</span><span class="o">*</span><span class="w"> </span><span class="n">rv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="o">*</span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">  </span><span class="p">});</span>
+</pre></div>
+</div>
+<p>Compile and build the library. On the python side, create a
+<code class="docutils literal notranslate"><span class="pre">calculator.py</span></code> file under <code class="docutils literal notranslate"><span class="pre">dgl/python/dgl/</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file: calculator.py</span>
+<span class="kn">from</span> <span class="nn">._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+  <span class="c1"># MyAdd has been registered via `_ini_api` call below</span>
+  <span class="k">return</span> <span class="n">MyAdd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.calculator&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The trick is that the FFI system first masks the type information of the
+function arguments, so all the C function calls can go through one C API
+(<code class="docutils literal notranslate"><span class="pre">DGLFuncCall</span></code>). The type information is retrieved in the function body by
+static conversion, and we will do runtime type check to make sure that the type
+conversion is correct. The overhead of such back-and-forth is negligible as
+long as the function call is not too light (the above example is actually a bad
+one). TVM’s <a class="reference external" href="https://docs.tvm.ai/dev/runtime.html#packedfunc">PackedFunc
+document</a> has more details.</p>
+<section id="defining-new-types">
+<h2>Defining new types<a class="headerlink" href="#defining-new-types" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DGLArgs</span></code> and <code class="docutils literal notranslate"><span class="pre">DGLRetValue</span></code> only support a limited number of types:</p>
+<ul class="simple">
+<li><p>Numerical values: int, float, double, …</p></li>
+<li><p>string</p></li>
+<li><p>Function (in the form of PackedFunc)</p></li>
+<li><p>NDArray</p></li>
+</ul>
+<p>Though limited, the above type system is very powerful because it supports
+function as a first-class citizen. For example, if you want to return multiple
+values, you can return a PackedFunc which returns each value given an integer
+index. However, in many cases, new types are still desired to ease the
+development process:</p>
+<ul class="simple">
+<li><p>The argument/return value is a composition of collections (e.g. dictionary of
+dictionary of list).</p></li>
+<li><p>Sometimes we just want to have a notion of “structure” (e.g. given an apple,
+get its color by <code class="docutils literal notranslate"><span class="pre">apple.color</span></code>).</p></li>
+</ul>
+<p>To achieve this, we introduce the Object type system. For example, to define a
+new type <code class="docutils literal notranslate"><span class="pre">Calculator</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// file: calculator.cc</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;dgl/packed_func_ext.h&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">runtime</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CalculatorObject</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">brand</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">price</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">VisitAttrs</span><span class="p">(</span><span class="n">AttrVisitor</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">v</span><span class="o">-&gt;</span><span class="n">Visit</span><span class="p">(</span><span class="s">&quot;brand&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">brand</span><span class="p">);</span>
+<span class="w">    </span><span class="n">v</span><span class="o">-&gt;</span><span class="n">Visit</span><span class="p">(</span><span class="s">&quot;price&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">price</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">_type_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Calculator&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">DGL_DECLARE_OBJECT_TYPE_INFO</span><span class="p">(</span><span class="n">CalculatorObject</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// This is to define a reference class (the wrapper of an object shared pointer).</span>
+<span class="c1">// A minimal implementation is as follows, but you could define extra methods.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Calculator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ObjectRef</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CalculatorObject</span><span class="o">*</span><span class="w"> </span><span class="k">operator</span><span class="o">-&gt;</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">CalculatorObject</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">obj_</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">ContainerType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CalculatorObject</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">DGL_REGISTER_GLOBAL</span><span class="p">(</span><span class="s">&quot;calculator.CreateCaculator&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">set_body</span><span class="p">([]</span><span class="w"> </span><span class="p">(</span><span class="n">DGLArgs</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">DGLRetValue</span><span class="o">*</span><span class="w"> </span><span class="n">rv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">brand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">CalculatorObject</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="n">o</span><span class="o">-&gt;</span><span class="n">brand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">brand</span><span class="p">;</span>
+<span class="w">  </span><span class="n">o</span><span class="o">-&gt;</span><span class="n">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">price</span><span class="p">;</span>
+<span class="w">  </span><span class="o">*</span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">o</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>On the python side:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file: calculator.py</span>
+<span class="kn">from</span> <span class="nn">dgl._ffi.object</span> <span class="kn">import</span> <span class="n">register_object</span><span class="p">,</span> <span class="n">ObjectBase</span>
+<span class="kn">from</span> <span class="nn">._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+
+<span class="nd">@register_object</span>
+<span class="k">class</span> <span class="nc">Calculator</span><span class="p">(</span><span class="n">ObjectBase</span><span class="p">):</span>
+  <span class="nd">@staticmethod</span>
+  <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">brand</span><span class="p">,</span> <span class="n">price</span><span class="p">):</span>
+    <span class="c1"># invoke a C API, the return value is of `Calculator` type</span>
+    <span class="k">return</span> <span class="n">CreateCalculator</span><span class="p">(</span><span class="n">brand</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.calculator&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can then simply create <code class="docutils literal notranslate"><span class="pre">Calculator</span></code> object by:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">calc</span> <span class="o">=</span> <span class="n">Calculator</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;casio&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>What is nice about this object is that, it defines a visitor pattern that is
+essentially a reflection mechanism to get its internal attributes. For example,
+you can print the calculator’s brand and by simply accessing its attributes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">calc</span><span class="o">.</span><span class="n">brand</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">calc</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The reflection is indeed a little bit slow due to the string key lookup. To
+speed it up, you could define an attribute access API:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// file: calculator.cc</span>
+<span class="n">DGL_REGISTER_GLOBAL</span><span class="p">(</span><span class="s">&quot;calculator.CaculatorGetBrand&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">set_body</span><span class="p">([]</span><span class="w"> </span><span class="p">(</span><span class="n">DGLArgs</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">DGLRetValue</span><span class="o">*</span><span class="w"> </span><span class="n">rv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Calculator</span><span class="w"> </span><span class="n">calc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">  </span><span class="o">*</span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calc</span><span class="o">-&gt;</span><span class="n">brand</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="containers">
+<h2>Containers<a class="headerlink" href="#containers" title="Link to this heading"></a></h2>
+<p>Containers are also objects. For example, the C API below accepts a list of
+integers and return their sum:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// in file: calculator.cc</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;dgl/runtime/container.h&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">runtime</span><span class="p">;</span>
+<span class="n">DGL_REGISTER_GLOBAL</span><span class="p">(</span><span class="s">&quot;calculator.Sum&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">set_body</span><span class="p">([]</span><span class="w"> </span><span class="p">(</span><span class="n">DGLArgs</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">DGLRetValue</span><span class="o">*</span><span class="w"> </span><span class="n">rv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// All the DGL supported values are represented as a ValueObject, which</span>
+<span class="w">  </span><span class="c1">//   contains a data field.</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">values</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Invoking this API is simple – just pass a python list of integers. DGL FFI will
+automatically convert python list/tuple/dictionary to the corresponding object
+type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in file: calculator.py</span>
+<span class="kn">from</span> <span class="nn">._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+
+<span class="n">Sum</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.calculator&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The elements in the containers can be any objects, which allows the containers
+to be composed. Below is an API that accepts a list of calculators and print
+out their price:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// in file: calculator.cc</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;dgl/runtime/container.h&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">runtime</span><span class="p">;</span>
+<span class="n">DGL_REGISTER_GLOBAL</span><span class="p">(</span><span class="s">&quot;calculator.PrintCalculators&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">set_body</span><span class="p">([]</span><span class="w"> </span><span class="p">(</span><span class="n">DGLArgs</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">DGLRetValue</span><span class="o">*</span><span class="w"> </span><span class="n">rv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Calculator</span><span class="o">&gt;</span><span class="w"> </span><span class="n">calcs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">calcs</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">calcs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">price</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Please note that containers are NOT meant for passing a large collection of
+items from/to C APIs. It will be quite slow in these cases. It is recommended
+to benchmark first. As an alternative, use NDArray for a large collection of
+numerical values and use <code class="docutils literal notranslate"><span class="pre">dgl.batch</span></code> to batch a lot of <code class="docutils literal notranslate"><span class="pre">DGLGraph</span></code>’s into
+a single <code class="docutils literal notranslate"><span class="pre">DGLGraph</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../contribute.html" class="btn btn-neutral float-left" title="Contribute to DGL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../performance.html" class="btn btn-neutral float-right" title="Performance Benchmarks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

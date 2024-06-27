@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.subgraph &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.subgraph</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.subgraph</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions for extracting subgraphs.</span>
+
+<span class="sd">The module only contains functions for extracting subgraphs deterministically.</span>
+<span class="sd">For stochastic subgraph extraction, please see functions under :mod:`dgl.sampling`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">F</span><span class="p">,</span> <span class="n">graph_index</span><span class="p">,</span> <span class="n">heterograph_index</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DGLError</span>
+<span class="kn">from</span> <span class="nn">.heterograph</span> <span class="kn">import</span> <span class="n">DGLGraph</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">context_of</span><span class="p">,</span> <span class="n">recursive_apply</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;node_subgraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;edge_subgraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;node_type_subgraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;edge_type_subgraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;in_subgraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;out_subgraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;khop_in_subgraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;khop_out_subgraph&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="node_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.node_subgraph.html#dgl.node_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">node_subgraph</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a subgraph induced on the given nodes.</span>
+
+<span class="sd">    A node-induced subgraph is a graph with edges whose endpoints are both in the</span>
+<span class="sd">    specified node set. In addition to extracting the subgraph, DGL also copies</span>
+<span class="sd">    the features of the extracted nodes and edges to the resulting graph. The copy</span>
+<span class="sd">    is *lazy* and incurs data movement only when needed.</span>
+
+<span class="sd">    If the graph is heterogeneous, DGL extracts a subgraph per relation and composes</span>
+<span class="sd">    them as the resulting graph. Thus, the resulting graph has the same set of relations</span>
+<span class="sd">    as the input one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph to extract subgraphs from.</span>
+<span class="sd">    nodes : nodes or dict[str, nodes]</span>
+<span class="sd">        The nodes to form the subgraph, which cannot have any duplicate value. The result</span>
+<span class="sd">        will be undefined otherwise. The allowed nodes formats are:</span>
+
+<span class="sd">        * Int Tensor: Each element is a node ID. The tensor must have the same device type</span>
+<span class="sd">          and ID data type as the graph&#39;s.</span>
+<span class="sd">        * iterable[int]: Each element is a node ID.</span>
+<span class="sd">        * Bool Tensor: Each :math:`i^{th}` element is a bool flag indicating whether</span>
+<span class="sd">          node :math:`i` is in the subgraph.</span>
+
+<span class="sd">        If the graph is homogeneous, one can directly pass the above formats.</span>
+<span class="sd">        Otherwise, the argument must be a dictionary with keys being node types</span>
+<span class="sd">        and values being the node IDs in the above formats.</span>
+<span class="sd">    relabel_nodes : bool, optional</span>
+<span class="sd">        If True, the extracted subgraph will only have the nodes in the specified node set</span>
+<span class="sd">        and it will relabel the nodes in order.</span>
+<span class="sd">    store_ids : bool, optional</span>
+<span class="sd">        If True, it will store the raw IDs of the extracted edges in the ``edata`` of the</span>
+<span class="sd">        resulting graph under name ``dgl.EID``; if ``relabel_nodes`` is ``True``, it will</span>
+<span class="sd">        also store the raw IDs of the specified nodes in the ``ndata`` of the resulting</span>
+<span class="sd">        graph under name ``dgl.NID``.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    This function discards the batch information. Please use</span>
+<span class="sd">    :func:`dgl.DGLGraph.set_batch_num_nodes`</span>
+<span class="sd">    and :func:`dgl.DGLGraph.set_batch_num_edges` on the transformed graph</span>
+<span class="sd">    to maintain the information.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Extract a subgraph from a homogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 1, 2, 3, 4], [1, 2, 3, 4, 0]))  # 5-node cycle</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.node_subgraph(g, [0, 1, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([0, 2]), tensor([1, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.ndata[dgl.NID]  # original node IDs</span>
+<span class="sd">    tensor([0, 1, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([0, 4])</span>
+
+<span class="sd">    Specify nodes using a boolean mask.</span>
+
+<span class="sd">    &gt;&gt;&gt; nodes = torch.tensor([True, True, False, False, True])  # choose nodes [0, 1, 4]</span>
+<span class="sd">    &gt;&gt;&gt; dgl.node_subgraph(g, nodes)</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+
+<span class="sd">    The resulting subgraph also copies features from the parent graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g.ndata[&#39;x&#39;] = torch.arange(10).view(5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.node_subgraph(g, [0, 1, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;x&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.ndata[&#39;x&#39;]</span>
+<span class="sd">    tensor([[0, 1],</span>
+<span class="sd">            [2, 3],</span>
+<span class="sd">            [8, 9]])</span>
+
+<span class="sd">    Extract a subgraph from a hetergeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1, 1], [1, 2, 2])</span>
+<span class="sd">    &gt;&gt;&gt; })</span>
+<span class="sd">    &gt;&gt;&gt; sub_g = dgl.node_subgraph(g, {&#39;user&#39;: [1, 2]})</span>
+<span class="sd">    &gt;&gt;&gt; sub_g</span>
+<span class="sd">    Graph(num_nodes={&#39;game&#39;: 0, &#39;user&#39;: 2},</span>
+<span class="sd">          num_edges={(&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): 2, (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): 0},</span>
+<span class="sd">          metagraph=[(&#39;user&#39;, &#39;user&#39;, &#39;follows&#39;), (&#39;user&#39;, &#39;game&#39;, &#39;plays&#39;)])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    edge_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;Extracting subgraph from a block graph is not allowed.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="s2">&quot;need a dict of node type and IDs for graph with multiple node types&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">nodes</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_process_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">and</span> <span class="n">F</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="n">F</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">nonzero_1d</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">device</span><span class="p">)),</span> <span class="n">graph</span><span class="o">.</span><span class="n">idtype</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="s1">&#39;nodes[&quot;</span><span class="si">{}</span><span class="s1">&quot;]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ntype</span><span class="p">))</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">_process_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="n">induced_nodes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">graph</span><span class="o">.</span><span class="n">idtype</span><span class="p">),</span> <span class="n">device</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span>
+    <span class="p">]</span>
+    <span class="n">sgi</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">node_subgraph</span><span class="p">(</span><span class="n">induced_nodes</span><span class="p">)</span>
+    <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">sgi</span><span class="o">.</span><span class="n">induced_edges</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">relabel_nodes</span><span class="p">:</span>
+        <span class="n">sgi</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">induced_edges</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># (BarclayII) should not write induced_nodes = sgi.induced_nodes due to the same</span>
+    <span class="c1"># bug in #1453.</span>
+    <span class="n">induced_nodes_or_device</span> <span class="o">=</span> <span class="n">induced_nodes</span> <span class="k">if</span> <span class="n">relabel_nodes</span> <span class="k">else</span> <span class="n">device</span>
+    <span class="n">subg</span> <span class="o">=</span> <span class="n">_create_hetero_subgraph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">sgi</span><span class="p">,</span> <span class="n">induced_nodes_or_device</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">subg</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">subg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">node_subgraph</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="edge_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.edge_subgraph.html#dgl.edge_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">edge_subgraph</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a subgraph induced on the given edges.</span>
+
+<span class="sd">    An edge-induced subgraph is equivalent to creating a new graph using the given</span>
+<span class="sd">    edges. In addition to extracting the subgraph, DGL also copies the features</span>
+<span class="sd">    of the extracted nodes and edges to the resulting graph. The copy is *lazy*</span>
+<span class="sd">    and incurs data movement only when needed.</span>
+
+<span class="sd">    If the graph is heterogeneous, DGL extracts a subgraph per relation and composes</span>
+<span class="sd">    them as the resulting graph. Thus, the resulting graph has the same set of relations</span>
+<span class="sd">    as the input one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph to extract the subgraph from.</span>
+<span class="sd">    edges : edges or dict[(str, str, str), edges]</span>
+<span class="sd">        The edges to form the subgraph. The allowed edges formats are:</span>
+
+<span class="sd">        * Int Tensor: Each element is an edge ID. The tensor must have the same device type</span>
+<span class="sd">          and ID data type as the graph&#39;s.</span>
+<span class="sd">        * iterable[int]: Each element is an edge ID.</span>
+<span class="sd">        * Bool Tensor: Each :math:`i^{th}` element is a bool flag indicating whether</span>
+<span class="sd">          edge :math:`i` is in the subgraph.</span>
+
+<span class="sd">        If the graph is homogeneous, one can directly pass the above formats.</span>
+<span class="sd">        Otherwise, the argument must be a dictionary with keys being edge types</span>
+<span class="sd">        and values being the edge IDs in the above formats.</span>
+<span class="sd">    relabel_nodes : bool, optional</span>
+<span class="sd">        If True, it will remove the isolated nodes and relabel the incident nodes in the</span>
+<span class="sd">        extracted subgraph.</span>
+<span class="sd">    store_ids : bool, optional</span>
+<span class="sd">        If True, it will store the raw IDs of the extracted edges in the ``edata`` of the</span>
+<span class="sd">        resulting graph under name ``dgl.EID``; if ``relabel_nodes`` is ``True``, it will</span>
+<span class="sd">        also store the raw IDs of the incident nodes in the ``ndata`` of the resulting</span>
+<span class="sd">        graph under name ``dgl.NID``.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    This function discards the batch information. Please use</span>
+<span class="sd">    :func:`dgl.DGLGraph.set_batch_num_nodes`</span>
+<span class="sd">    and :func:`dgl.DGLGraph.set_batch_num_edges` on the transformed graph</span>
+<span class="sd">    to maintain the information.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Extract a subgraph from a homogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 1, 2, 3, 4], [1, 2, 3, 4, 0]))  # 5-node cycle</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.edge_subgraph(g, [0, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([0, 1]), tensor([2, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.ndata[dgl.NID]  # original node IDs</span>
+<span class="sd">    tensor([0, 4, 1])</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([0, 4])</span>
+
+<span class="sd">    Extract a subgraph without node relabeling.</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.edge_subgraph(g, [0, 4], relabel_nodes=False)</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=5, num_edges=2,</span>
+<span class="sd">          ndata_schemes={}</span>
+<span class="sd">          edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([0, 4]), tensor([1, 0]))</span>
+
+<span class="sd">    Specify edges using a boolean mask.</span>
+
+<span class="sd">    &gt;&gt;&gt; nodes = torch.tensor([True, False, False, False, True])  # choose edges [0, 4]</span>
+<span class="sd">    &gt;&gt;&gt; dgl.edge_subgraph(g, nodes)</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+
+<span class="sd">    The resulting subgraph also copies features from the parent graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g.ndata[&#39;x&#39;] = torch.arange(10).view(5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.edge_subgraph(g, [0, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;x&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.ndata[dgl.NID]</span>
+<span class="sd">    tensor([0, 4, 1])</span>
+<span class="sd">    &gt;&gt;&gt; sg.ndata[&#39;x&#39;]</span>
+<span class="sd">    tensor([[0, 1],</span>
+<span class="sd">            [8, 9],</span>
+<span class="sd">            [2, 3]])</span>
+
+<span class="sd">    Extract a subgraph from a hetergeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1, 1], [1, 2, 2])</span>
+<span class="sd">    &gt;&gt;&gt; })</span>
+<span class="sd">    &gt;&gt;&gt; sub_g = dgl.edge_subgraph(g, {(&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): [1, 2],</span>
+<span class="sd">    ...                               (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): [2]})</span>
+<span class="sd">    &gt;&gt;&gt; print(sub_g)</span>
+<span class="sd">    Graph(num_nodes={&#39;game&#39;: 1, user&#39;: 2},</span>
+<span class="sd">          num_edges={(&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): 2, (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): 1},</span>
+<span class="sd">          metagraph=[(&#39;user&#39;, &#39;user&#39;, &#39;follows&#39;), (&#39;user&#39;, &#39;game&#39;, &#39;plays&#39;)])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    node_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_block</span> <span class="ow">and</span> <span class="n">relabel_nodes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;Extracting subgraph from a block graph is not allowed.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="s2">&quot;need a dict of edge type and IDs for graph with multiple edge types&quot;</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">graph</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">edges</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_process_edges</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="n">F</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="n">F</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">nonzero_1d</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">device</span><span class="p">)),</span> <span class="n">graph</span><span class="o">.</span><span class="n">idtype</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="s1">&#39;edges[&quot;</span><span class="si">{}</span><span class="s1">&quot;]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">etype</span><span class="p">))</span>
+
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">graph</span><span class="o">.</span><span class="n">to_canonical_etype</span><span class="p">(</span><span class="n">etype</span><span class="p">):</span> <span class="n">e</span> <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">etype</span><span class="p">:</span> <span class="n">_process_edges</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">context_of</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+    <span class="n">induced_edges</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cetype</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">graph</span><span class="o">.</span><span class="n">idtype</span><span class="p">),</span> <span class="n">device</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">cetype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">canonical_etypes</span>
+    <span class="p">]</span>
+
+    <span class="n">sgi</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">induced_edges</span><span class="p">,</span> <span class="ow">not</span> <span class="n">relabel_nodes</span><span class="p">)</span>
+    <span class="n">induced_nodes_or_device</span> <span class="o">=</span> <span class="n">sgi</span><span class="o">.</span><span class="n">induced_nodes</span> <span class="k">if</span> <span class="n">relabel_nodes</span> <span class="k">else</span> <span class="n">device</span>
+    <span class="n">subg</span> <span class="o">=</span> <span class="n">_create_hetero_subgraph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">sgi</span><span class="p">,</span> <span class="n">induced_nodes_or_device</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">subg</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">subg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">edge_subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">edge_subgraph</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="in_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.in_subgraph.html#dgl.in_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">in_subgraph</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the subgraph induced on the inbound edges of all the edge types of the</span>
+<span class="sd">    given nodes.</span>
+
+<span class="sd">    An in subgraph is equivalent to creating a new graph using the incoming edges of the</span>
+<span class="sd">    given nodes. In addition to extracting the subgraph, DGL also copies the features of</span>
+<span class="sd">    the extracted nodes and edges to the resulting graph. The copy is *lazy* and incurs</span>
+<span class="sd">    data movement only when needed.</span>
+
+<span class="sd">    If the graph is heterogeneous, DGL extracts a subgraph per relation and composes</span>
+<span class="sd">    them as the resulting graph. Thus, the resulting graph has the same set of relations</span>
+<span class="sd">    as the input one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    nodes : nodes or dict[str, nodes]</span>
+<span class="sd">        The nodes to form the subgraph, which cannot have any duplicate value. The result</span>
+<span class="sd">        will be undefined otherwise. The allowed nodes formats are:</span>
+
+<span class="sd">        * Int Tensor: Each element is a node ID. The tensor must have the same device type</span>
+<span class="sd">          and ID data type as the graph&#39;s.</span>
+<span class="sd">        * iterable[int]: Each element is a node ID.</span>
+
+<span class="sd">        If the graph is homogeneous, one can directly pass the above formats.</span>
+<span class="sd">        Otherwise, the argument must be a dictionary with keys being node types</span>
+<span class="sd">        and values being the node IDs in the above formats.</span>
+<span class="sd">    relabel_nodes : bool, optional</span>
+<span class="sd">        If True, it will remove the isolated nodes and relabel the rest nodes in the</span>
+<span class="sd">        extracted subgraph.</span>
+<span class="sd">    store_ids : bool, optional</span>
+<span class="sd">        If True, it will store the raw IDs of the extracted edges in the ``edata`` of the</span>
+<span class="sd">        resulting graph under name ``dgl.EID``; if ``relabel_nodes`` is ``True``, it will</span>
+<span class="sd">        also store the raw IDs of the extracted nodes in the ``ndata`` of the resulting</span>
+<span class="sd">        graph under name ``dgl.NID``.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    This function discards the batch information. Please use</span>
+<span class="sd">    :func:`dgl.DGLGraph.set_batch_num_nodes`</span>
+<span class="sd">    and :func:`dgl.DGLGraph.set_batch_num_edges` on the transformed graph</span>
+<span class="sd">    to maintain the information.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Extract a subgraph from a homogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 1, 2, 3, 4], [1, 2, 3, 4, 0]))  # 5-node cycle</span>
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;w&#39;] = torch.arange(10).view(5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.in_subgraph(g, [2, 0])</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=5, num_edges=2,</span>
+<span class="sd">          ndata_schemes={}</span>
+<span class="sd">          edata_schemes={&#39;w&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([1, 4]), tensor([2, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([1, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[&#39;w&#39;]  # also extract the features</span>
+<span class="sd">    tensor([[2, 3],</span>
+<span class="sd">            [8, 9]])</span>
+
+<span class="sd">    Extract a subgraph with node labeling.</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.in_subgraph(g, [2, 0], relabel_nodes=True)</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=4, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64}</span>
+<span class="sd">          edata_schemes={&#39;w&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([1, 3]), tensor([2, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([1, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg.ndata[dgl.NID]  # original node IDs</span>
+<span class="sd">    tensor([0, 1, 2, 4])</span>
+
+<span class="sd">    Extract a subgraph from a heterogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1, 1], [1, 2, 2])})</span>
+<span class="sd">    &gt;&gt;&gt; sub_g = g.in_subgraph({&#39;user&#39;: [2], &#39;game&#39;: [2]})</span>
+<span class="sd">    &gt;&gt;&gt; sub_g</span>
+<span class="sd">    Graph(num_nodes={&#39;game&#39;: 3, &#39;user&#39;: 3},</span>
+<span class="sd">          num_edges={(&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): 1, (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): 2},</span>
+<span class="sd">          metagraph=[(&#39;user&#39;, &#39;game&#39;, &#39;plays&#39;), (&#39;user&#39;, &#39;user&#39;, &#39;follows&#39;)])</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    out_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;Extracting subgraph of a block graph is not allowed.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;Must specify node type when the graph is not homogeneous.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">nodes</span><span class="p">}</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor_dict</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">nodes_all_types</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">graph</span><span class="o">.</span><span class="n">idtype</span><span class="p">),</span> <span class="n">device</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span>
+    <span class="p">]</span>
+
+    <span class="n">sgi</span> <span class="o">=</span> <span class="n">_CAPI_DGLInSubgraph</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">nodes_all_types</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="p">)</span>
+    <span class="n">induced_nodes_or_device</span> <span class="o">=</span> <span class="n">sgi</span><span class="o">.</span><span class="n">induced_nodes</span> <span class="k">if</span> <span class="n">relabel_nodes</span> <span class="k">else</span> <span class="n">device</span>
+    <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">sgi</span><span class="o">.</span><span class="n">induced_edges</span>
+    <span class="n">subg</span> <span class="o">=</span> <span class="n">_create_hetero_subgraph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">sgi</span><span class="p">,</span> <span class="n">induced_nodes_or_device</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">subg</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">subg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">in_subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">in_subgraph</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="out_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.out_subgraph.html#dgl.out_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">out_subgraph</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the subgraph induced on the outbound edges of all the edge types of the</span>
+<span class="sd">    given nodes.</span>
+
+<span class="sd">    An out subgraph is equivalent to creating a new graph using the outcoming edges of</span>
+<span class="sd">    the given nodes. In addition to extracting the subgraph, DGL also copies the features</span>
+<span class="sd">    of the extracted nodes and edges to the resulting graph. The copy is *lazy* and incurs</span>
+<span class="sd">    data movement only when needed.</span>
+
+<span class="sd">    If the graph is heterogeneous, DGL extracts a subgraph per relation and composes</span>
+<span class="sd">    them as the resulting graph. Thus, the resulting graph has the same set of relations</span>
+<span class="sd">    as the input one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    nodes : nodes or dict[str, nodes]</span>
+<span class="sd">        The nodes to form the subgraph, which cannot have any duplicate value. The result</span>
+<span class="sd">        will be undefined otherwise. The allowed nodes formats are:</span>
+
+<span class="sd">        * Int Tensor: Each element is a node ID. The tensor must have the same device type</span>
+<span class="sd">          and ID data type as the graph&#39;s.</span>
+<span class="sd">        * iterable[int]: Each element is a node ID.</span>
+
+<span class="sd">        If the graph is homogeneous, one can directly pass the above formats.</span>
+<span class="sd">        Otherwise, the argument must be a dictionary with keys being node types</span>
+<span class="sd">        and values being the node IDs in the above formats.</span>
+<span class="sd">    relabel_nodes : bool, optional</span>
+<span class="sd">        If True, it will remove the isolated nodes and relabel the rest nodes in the</span>
+<span class="sd">        extracted subgraph.</span>
+<span class="sd">    store_ids : bool, optional</span>
+<span class="sd">        If True, it will store the raw IDs of the extracted edges in the ``edata`` of the</span>
+<span class="sd">        resulting graph under name ``dgl.EID``; if ``relabel_nodes`` is ``True``, it will</span>
+<span class="sd">        also store the raw IDs of the extracted nodes in the ``ndata`` of the resulting</span>
+<span class="sd">        graph under name ``dgl.NID``.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    This function discards the batch information. Please use</span>
+<span class="sd">    :func:`dgl.DGLGraph.set_batch_num_nodes`</span>
+<span class="sd">    and :func:`dgl.DGLGraph.set_batch_num_edges` on the transformed graph</span>
+<span class="sd">    to maintain the information.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Extract a subgraph from a homogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 1, 2, 3, 4], [1, 2, 3, 4, 0]))  # 5-node cycle</span>
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;w&#39;] = torch.arange(10).view(5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.out_subgraph(g, [2, 0])</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=5, num_edges=2,</span>
+<span class="sd">          ndata_schemes={}</span>
+<span class="sd">          edata_schemes={&#39;w&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([2, 0]), tensor([3, 1]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([2, 0])</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[&#39;w&#39;]  # also extract the features</span>
+<span class="sd">    tensor([[4, 5],</span>
+<span class="sd">            [0, 1]])</span>
+
+<span class="sd">    Extract a subgraph with node labeling.</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.out_subgraph(g, [2, 0], relabel_nodes=True)</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=4, num_edges=2,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;w&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([2, 0]), tensor([3, 1]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([2, 0])</span>
+<span class="sd">    &gt;&gt;&gt; sg.ndata[dgl.NID]  # original node IDs</span>
+<span class="sd">    tensor([0, 1, 2, 3])</span>
+
+<span class="sd">    Extract a subgraph from a heterogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1, 1], [1, 2, 2])})</span>
+<span class="sd">    &gt;&gt;&gt; sub_g = g.out_subgraph({&#39;user&#39;: [1]})</span>
+<span class="sd">    &gt;&gt;&gt; sub_g</span>
+<span class="sd">    Graph(num_nodes={&#39;game&#39;: 3, &#39;user&#39;: 3},</span>
+<span class="sd">          num_edges={(&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): 2, (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): 2},</span>
+<span class="sd">          metagraph=[(&#39;user&#39;, &#39;game&#39;, &#39;plays&#39;), (&#39;user&#39;, &#39;user&#39;, &#39;follows&#39;)])</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    in_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;Extracting subgraph of a block graph is not allowed.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;Must specify node type when the graph is not homogeneous.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">nodes</span><span class="p">}</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor_dict</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">nodes_all_types</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">graph</span><span class="o">.</span><span class="n">idtype</span><span class="p">),</span> <span class="n">device</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span>
+    <span class="p">]</span>
+
+    <span class="n">sgi</span> <span class="o">=</span> <span class="n">_CAPI_DGLOutSubgraph</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">nodes_all_types</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="p">)</span>
+    <span class="n">induced_nodes_or_device</span> <span class="o">=</span> <span class="n">sgi</span><span class="o">.</span><span class="n">induced_nodes</span> <span class="k">if</span> <span class="n">relabel_nodes</span> <span class="k">else</span> <span class="n">device</span>
+    <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">sgi</span><span class="o">.</span><span class="n">induced_edges</span>
+    <span class="n">subg</span> <span class="o">=</span> <span class="n">_create_hetero_subgraph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">sgi</span><span class="p">,</span> <span class="n">induced_nodes_or_device</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">subg</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">subg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">out_subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">out_subgraph</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="khop_in_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.khop_in_subgraph.html#dgl.khop_in_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">khop_in_subgraph</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the subgraph induced by k-hop in-neighborhood of the specified node(s).</span>
+
+<span class="sd">    We can expand a set of nodes by including the predecessors of them. From a</span>
+<span class="sd">    specified node set, a k-hop in subgraph is obtained by first repeating the node set</span>
+<span class="sd">    expansion for k times and then creating a node induced subgraph. In addition to</span>
+<span class="sd">    extracting the subgraph, DGL also copies the features of the extracted nodes and</span>
+<span class="sd">    edges to the resulting graph. The copy is *lazy* and incurs data movement only</span>
+<span class="sd">    when needed.</span>
+
+<span class="sd">    If the graph is heterogeneous, DGL extracts a subgraph per relation and composes</span>
+<span class="sd">    them as the resulting graph. Thus the resulting graph has the same set of relations</span>
+<span class="sd">    as the input one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    nodes : nodes or dict[str, nodes]</span>
+<span class="sd">        The starting node(s) to expand, which cannot have any duplicate value. The result</span>
+<span class="sd">        will be undefined otherwise. The allowed formats are:</span>
+
+<span class="sd">        * Int: ID of a single node.</span>
+<span class="sd">        * Int Tensor: Each element is a node ID. The tensor must have the same device</span>
+<span class="sd">          type and ID data type as the graph&#39;s.</span>
+<span class="sd">        * iterable[int]: Each element is a node ID.</span>
+
+<span class="sd">        If the graph is homogeneous, one can directly pass the above formats.</span>
+<span class="sd">        Otherwise, the argument must be a dictionary with keys being node types</span>
+<span class="sd">        and values being the node IDs in the above formats.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The number of hops.</span>
+<span class="sd">    relabel_nodes : bool, optional</span>
+<span class="sd">        If True, it will remove the isolated nodes and relabel the rest nodes in the</span>
+<span class="sd">        extracted subgraph.</span>
+<span class="sd">    store_ids : bool, optional</span>
+<span class="sd">        If True, it will store the raw IDs of the extracted edges in the ``edata`` of the</span>
+<span class="sd">        resulting graph under name ``dgl.EID``; if ``relabel_nodes`` is ``True``, it will</span>
+<span class="sd">        also store the raw IDs of the extracted nodes in the ``ndata`` of the resulting</span>
+<span class="sd">        graph under name ``dgl.NID``.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+<span class="sd">    Tensor or dict[str, Tensor], optional</span>
+<span class="sd">        The new IDs of the input :attr:`nodes` after node relabeling. This is returned</span>
+<span class="sd">        only when :attr:`relabel_nodes` is True. It is in the same form as :attr:`nodes`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    When k is 1, the result subgraph is different from the one obtained by</span>
+<span class="sd">    :func:`dgl.in_subgraph`. The 1-hop in subgraph also includes the edges</span>
+<span class="sd">    among the neighborhood.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Extract a two-hop subgraph from a homogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([1, 1, 2, 3, 4], [0, 2, 0, 4, 2]))</span>
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;w&#39;] = torch.arange(10).view(5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sg, inverse_indices = dgl.khop_in_subgraph(g, 0, k=2)</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=4, num_edges=4,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;w&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([1, 1, 2, 3]), tensor([0, 2, 0, 2]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([0, 1, 2, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[&#39;w&#39;]  # also extract the features</span>
+<span class="sd">    tensor([[0, 1],</span>
+<span class="sd">            [2, 3],</span>
+<span class="sd">            [4, 5],</span>
+<span class="sd">            [8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; inverse_indices</span>
+<span class="sd">    tensor([0])</span>
+
+<span class="sd">    Extract a subgraph from a heterogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1, 1], [1, 2, 2])})</span>
+<span class="sd">    &gt;&gt;&gt; sg, inverse_indices = dgl.khop_in_subgraph(g, {&#39;game&#39;: 0}, k=2)</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes={&#39;game&#39;: 1, &#39;user&#39;: 2},</span>
+<span class="sd">          num_edges={(&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): 1, (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): 2},</span>
+<span class="sd">          metagraph=[(&#39;user&#39;, &#39;user&#39;, &#39;follows&#39;), (&#39;user&#39;, &#39;game&#39;, &#39;plays&#39;)])</span>
+<span class="sd">    &gt;&gt;&gt; inverse_indices</span>
+<span class="sd">    {&#39;game&#39;: tensor([0])}</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    khop_out_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;Extracting subgraph of a block graph is not allowed.&quot;</span><span class="p">)</span>
+
+    <span class="n">is_mapping</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_mapping</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="s2">&quot;need a dict of node type and IDs for graph with multiple node types&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">nodes</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">nty</span><span class="p">,</span> <span class="n">nty_nodes</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">nty_nodes</span><span class="p">,</span> <span class="s1">&#39;nodes[&quot;</span><span class="si">{}</span><span class="s1">&quot;]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nty</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">last_hop_nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+    <span class="n">k_hop_nodes_</span> <span class="o">=</span> <span class="p">[</span><span class="n">last_hop_nodes</span><span class="p">]</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">place_holder</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">idtype</span><span class="p">),</span> <span class="n">device</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">current_hop_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">nty</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">cetype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">srctype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dsttype</span> <span class="o">=</span> <span class="n">cetype</span>
+            <span class="n">in_nbrs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span>
+                <span class="n">last_hop_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dsttype</span><span class="p">,</span> <span class="n">place_holder</span><span class="p">),</span> <span class="n">etype</span><span class="o">=</span><span class="n">cetype</span>
+            <span class="p">)</span>
+            <span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">srctype</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_nbrs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">place_holder</span>
+                <span class="k">continue</span>
+            <span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">k_hop_nodes_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_hop_nodes</span><span class="p">)</span>
+        <span class="n">last_hop_nodes</span> <span class="o">=</span> <span class="n">current_hop_nodes</span>
+
+    <span class="n">k_hop_nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">inverse_indices</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+        <span class="n">k_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+            <span class="n">F</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">hop_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nty</span><span class="p">,</span> <span class="n">place_holder</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">hop_nodes</span> <span class="ow">in</span> <span class="n">k_hop_nodes_</span>
+                <span class="p">],</span>
+                <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">sub_g</span> <span class="o">=</span> <span class="n">node_subgraph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">k_hop_nodes</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="n">relabel_nodes</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sub_g</span> <span class="o">=</span> <span class="n">sub_g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">relabel_nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_mapping</span><span class="p">:</span>
+            <span class="n">seed_inverse_indices</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="n">seed_inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">slice_axis</span><span class="p">(</span>
+                    <span class="n">inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">])</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">seed_inverse_indices</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">slice_axis</span><span class="p">(</span>
+                <span class="n">inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seed_inverse_indices</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span>
+                <span class="n">seed_inverse_indices</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">output_device</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sub_g</span><span class="p">,</span> <span class="n">seed_inverse_indices</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sub_g</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">khop_in_subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">khop_in_subgraph</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="khop_out_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.khop_out_subgraph.html#dgl.khop_out_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">khop_out_subgraph</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the subgraph induced by k-hop out-neighborhood of the specified node(s).</span>
+
+<span class="sd">    We can expand a set of nodes by including the successors of them. From a</span>
+<span class="sd">    specified node set, a k-hop out subgraph is obtained by first repeating the node set</span>
+<span class="sd">    expansion for k times and then creating a node induced subgraph. In addition to</span>
+<span class="sd">    extracting the subgraph, DGL also copies the features of the extracted nodes and</span>
+<span class="sd">    edges to the resulting graph. The copy is *lazy* and incurs data movement only</span>
+<span class="sd">    when needed.</span>
+
+<span class="sd">    If the graph is heterogeneous, DGL extracts a subgraph per relation and composes</span>
+<span class="sd">    them as the resulting graph. Thus the resulting graph has the same set of relations</span>
+<span class="sd">    as the input one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    nodes : nodes or dict[str, nodes]</span>
+<span class="sd">        The starting node(s) to expand, which cannot have any duplicate value. The result</span>
+<span class="sd">        will be undefined otherwise. The allowed formats are:</span>
+
+<span class="sd">        * Int: ID of a single node.</span>
+<span class="sd">        * Int Tensor: Each element is a node ID. The tensor must have the same device</span>
+<span class="sd">          type and ID data type as the graph&#39;s.</span>
+<span class="sd">        * iterable[int]: Each element is a node ID.</span>
+
+<span class="sd">        If the graph is homogeneous, one can directly pass the above formats.</span>
+<span class="sd">        Otherwise, the argument must be a dictionary with keys being node types</span>
+<span class="sd">        and values being the node IDs in the above formats.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The number of hops.</span>
+<span class="sd">    relabel_nodes : bool, optional</span>
+<span class="sd">        If True, it will remove the isolated nodes and relabel the rest nodes in the</span>
+<span class="sd">        extracted subgraph.</span>
+<span class="sd">    store_ids : bool, optional</span>
+<span class="sd">        If True, it will store the raw IDs of the extracted edges in the ``edata`` of the</span>
+<span class="sd">        resulting graph under name ``dgl.EID``; if ``relabel_nodes`` is ``True``, it will</span>
+<span class="sd">        also store the raw IDs of the extracted nodes in the ``ndata`` of the resulting</span>
+<span class="sd">        graph under name ``dgl.NID``.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+<span class="sd">    Tensor or dict[str, Tensor], optional</span>
+<span class="sd">        The new IDs of the input :attr:`nodes` after node relabeling. This is returned</span>
+<span class="sd">        only when :attr:`relabel_nodes` is True. It is in the same form as :attr:`nodes`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    When k is 1, the result subgraph is different from the one obtained by</span>
+<span class="sd">    :func:`dgl.out_subgraph`. The 1-hop out subgraph also includes the edges</span>
+<span class="sd">    among the neighborhood.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Extract a two-hop subgraph from a homogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 2, 0, 4, 2], [1, 1, 2, 3, 4]))</span>
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;w&#39;] = torch.arange(10).view(5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sg, inverse_indices = dgl.khop_out_subgraph(g, 0, k=2)</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes=4, num_edges=4,</span>
+<span class="sd">          ndata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)}</span>
+<span class="sd">          edata_schemes={&#39;w&#39;: Scheme(shape=(2,), dtype=torch.int64),</span>
+<span class="sd">                         &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges()</span>
+<span class="sd">    (tensor([0, 0, 2, 2]), tensor([1, 2, 1, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]  # original edge IDs</span>
+<span class="sd">    tensor([0, 2, 1, 4])</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[&#39;w&#39;]  # also extract the features</span>
+<span class="sd">    tensor([[0, 1],</span>
+<span class="sd">            [4, 5],</span>
+<span class="sd">            [2, 3],</span>
+<span class="sd">            [8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; inverse_indices</span>
+<span class="sd">    tensor([0])</span>
+
+<span class="sd">    Extract a subgraph from a heterogeneous graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1], [1, 3])})</span>
+<span class="sd">    &gt;&gt;&gt; sg, inverse_indices = dgl.khop_out_subgraph(g, {&#39;user&#39;: 0}, k=2)</span>
+<span class="sd">    &gt;&gt;&gt; sg</span>
+<span class="sd">    Graph(num_nodes={&#39;game&#39;: 2, &#39;user&#39;: 3},</span>
+<span class="sd">          num_edges={(&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): 2, (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): 2},</span>
+<span class="sd">          metagraph=[(&#39;user&#39;, &#39;user&#39;, &#39;follows&#39;), (&#39;user&#39;, &#39;game&#39;, &#39;plays&#39;)])</span>
+<span class="sd">    &gt;&gt;&gt; inverse_indices</span>
+<span class="sd">    {&#39;user&#39;: tensor([0])}</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    khop_in_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;Extracting subgraph of a block graph is not allowed.&quot;</span><span class="p">)</span>
+
+    <span class="n">is_mapping</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_mapping</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="s2">&quot;need a dict of node type and IDs for graph with multiple node types&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">nodes</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">nty</span><span class="p">,</span> <span class="n">nty_nodes</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">nty_nodes</span><span class="p">,</span> <span class="s1">&#39;nodes[&quot;</span><span class="si">{}</span><span class="s1">&quot;]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nty</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">last_hop_nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+    <span class="n">k_hop_nodes_</span> <span class="o">=</span> <span class="p">[</span><span class="n">last_hop_nodes</span><span class="p">]</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">place_holder</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">idtype</span><span class="p">),</span> <span class="n">device</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">current_hop_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">nty</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">cetype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">srctype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dsttype</span> <span class="o">=</span> <span class="n">cetype</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">out_nbrs</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">out_edges</span><span class="p">(</span>
+                <span class="n">last_hop_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">srctype</span><span class="p">,</span> <span class="n">place_holder</span><span class="p">),</span> <span class="n">etype</span><span class="o">=</span><span class="n">cetype</span>
+            <span class="p">)</span>
+            <span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">dsttype</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_nbrs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">place_holder</span>
+                <span class="k">continue</span>
+            <span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">current_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">k_hop_nodes_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_hop_nodes</span><span class="p">)</span>
+        <span class="n">last_hop_nodes</span> <span class="o">=</span> <span class="n">current_hop_nodes</span>
+
+    <span class="n">k_hop_nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">inverse_indices</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+        <span class="n">k_hop_nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+            <span class="n">F</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">hop_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nty</span><span class="p">,</span> <span class="n">place_holder</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">hop_nodes</span> <span class="ow">in</span> <span class="n">k_hop_nodes_</span>
+                <span class="p">],</span>
+                <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">sub_g</span> <span class="o">=</span> <span class="n">node_subgraph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">k_hop_nodes</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="n">relabel_nodes</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sub_g</span> <span class="o">=</span> <span class="n">sub_g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">relabel_nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_mapping</span><span class="p">:</span>
+            <span class="n">seed_inverse_indices</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="n">seed_inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">slice_axis</span><span class="p">(</span>
+                    <span class="n">inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">])</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">seed_inverse_indices</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">slice_axis</span><span class="p">(</span>
+                <span class="n">inverse_indices</span><span class="p">[</span><span class="n">nty</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">nty</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seed_inverse_indices</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span>
+                <span class="n">seed_inverse_indices</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">output_device</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sub_g</span><span class="p">,</span> <span class="n">seed_inverse_indices</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sub_g</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">khop_out_subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">khop_out_subgraph</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="node_type_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.node_type_subgraph.html#dgl.node_type_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">node_type_subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">ntypes</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the subgraph induced on given node types.</span>
+
+<span class="sd">    A node-type-induced subgraph contains all the nodes of the given subset of</span>
+<span class="sd">    the node types of a graph and any edges whose endpoints are both in this subset.</span>
+<span class="sd">    In addition to extracting the subgraph, DGL also copies the features of the</span>
+<span class="sd">    extracted nodes and edges to the resulting graph.</span>
+<span class="sd">    The copy is *lazy* and incurs data movement only when needed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph to extract subgraphs from.</span>
+<span class="sd">    ntypes : list[str]</span>
+<span class="sd">        The type names of the nodes in the subgraph.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    This function discards the batch information. Please use</span>
+<span class="sd">    :func:`dgl.DGLGraph.set_batch_num_nodes`</span>
+<span class="sd">    and :func:`dgl.DGLGraph.set_batch_num_edges` on the transformed graph</span>
+<span class="sd">    to maintain the information.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Instantiate a heterograph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1, 1], [1, 2, 2])</span>
+<span class="sd">    &gt;&gt;&gt; })</span>
+<span class="sd">    &gt;&gt;&gt; # Set node features</span>
+<span class="sd">    &gt;&gt;&gt; g.nodes[&#39;user&#39;].data[&#39;h&#39;] = torch.tensor([[0.], [1.], [2.]])</span>
+
+<span class="sd">    Get subgraphs.</span>
+
+<span class="sd">    &gt;&gt;&gt; sub_g = g.node_type_subgraph([&#39;user&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; print(sub_g)</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=3,</span>
+<span class="sd">          ndata_schemes={&#39;h&#39;: Scheme(shape=(1,), dtype=torch.float32)}</span>
+<span class="sd">          edata_schemes={})</span>
+
+<span class="sd">    Get the extracted node features.</span>
+
+<span class="sd">    &gt;&gt;&gt; sub_g.nodes[&#39;user&#39;].data[&#39;h&#39;]</span>
+<span class="sd">    tensor([[0.],</span>
+<span class="sd">            [1.],</span>
+<span class="sd">            [2.]])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    edge_type_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ntid</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">get_ntype_id</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">ntypes</span><span class="p">]</span>
+    <span class="n">stids</span><span class="p">,</span> <span class="n">dtids</span><span class="p">,</span> <span class="n">etids</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">metagraph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="s2">&quot;eid&quot;</span><span class="p">)</span>
+    <span class="n">stids</span><span class="p">,</span> <span class="n">dtids</span><span class="p">,</span> <span class="n">etids</span> <span class="o">=</span> <span class="n">stids</span><span class="o">.</span><span class="n">tonumpy</span><span class="p">(),</span> <span class="n">dtids</span><span class="o">.</span><span class="n">tonumpy</span><span class="p">(),</span> <span class="n">etids</span><span class="o">.</span><span class="n">tonumpy</span><span class="p">()</span>
+    <span class="n">etypes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">stid</span><span class="p">,</span> <span class="n">dtid</span><span class="p">,</span> <span class="n">etid</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">stids</span><span class="p">,</span> <span class="n">dtids</span><span class="p">,</span> <span class="n">etids</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">stid</span> <span class="ow">in</span> <span class="n">ntid</span> <span class="ow">and</span> <span class="n">dtid</span> <span class="ow">in</span> <span class="n">ntid</span><span class="p">:</span>
+            <span class="n">etypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">[</span><span class="n">etid</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">etypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;There are no edges among nodes of the specified types.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">edge_type_subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">etypes</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">node_type_subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">node_type_subgraph</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="edge_type_subgraph">
+<a class="viewcode-back" href="../../generated/dgl.edge_type_subgraph.html#dgl.edge_type_subgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">edge_type_subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">etypes</span><span class="p">,</span> <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the subgraph induced on given edge types.</span>
+
+<span class="sd">    An edge-type-induced subgraph contains all the edges of the given subset of</span>
+<span class="sd">    the edge types of a graph. It also contains all nodes of a particular type</span>
+<span class="sd">    if some nodes of the type are incident to these edges.</span>
+<span class="sd">    In addition to extracting the subgraph, DGL also copies the features of the</span>
+<span class="sd">    extracted nodes and edges to the resulting graph.</span>
+<span class="sd">    The copy is *lazy* and incurs data movement only when needed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph to extract subgraphs from.</span>
+<span class="sd">    etypes : list[str] or list[(str, str, str)]</span>
+<span class="sd">        The type names of the edges in the subgraph. The allowed type name</span>
+<span class="sd">        formats are:</span>
+
+<span class="sd">        * ``(str, str, str)`` for source node type, edge type and destination node type.</span>
+<span class="sd">        * or one ``str`` for the edge type name  if the name can uniquely identify a</span>
+<span class="sd">          triplet format in the graph.</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : DGLGraph</span>
+<span class="sd">        The subgraph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    This function discards the batch information. Please use</span>
+<span class="sd">    :func:`dgl.DGLGraph.set_batch_num_nodes`</span>
+<span class="sd">    and :func:`dgl.DGLGraph.set_batch_num_edges` on the transformed graph</span>
+<span class="sd">    to maintain the information.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example uses PyTorch backend.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+
+<span class="sd">    Instantiate a heterograph.</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;plays&#39;, &#39;game&#39;): ([0, 1, 1, 2], [0, 0, 2, 1]),</span>
+<span class="sd">    &gt;&gt;&gt;     (&#39;user&#39;, &#39;follows&#39;, &#39;user&#39;): ([0, 1, 1], [1, 2, 2])</span>
+<span class="sd">    &gt;&gt;&gt; })</span>
+<span class="sd">    &gt;&gt;&gt; # Set edge features</span>
+<span class="sd">    &gt;&gt;&gt; g.edges[&#39;follows&#39;].data[&#39;h&#39;] = torch.tensor([[0.], [1.], [2.]])</span>
+
+<span class="sd">    Get subgraphs.</span>
+
+<span class="sd">    &gt;&gt;&gt; sub_g = g.edge_type_subgraph([&#39;follows&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; sub_g</span>
+<span class="sd">    Graph(num_nodes=3, num_edges=3,</span>
+<span class="sd">          ndata_schemes={}</span>
+<span class="sd">          edata_schemes={&#39;h&#39;: Scheme(shape=(1,), dtype=torch.float32)})</span>
+
+<span class="sd">    Get the shared edge features.</span>
+
+<span class="sd">    &gt;&gt;&gt; sub_g.edges[&#39;follows&#39;].data[&#39;h&#39;]</span>
+<span class="sd">    tensor([[0.],</span>
+<span class="sd">            [1.],</span>
+<span class="sd">            [2.]])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    node_type_subgraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">etype_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">get_etype_id</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span> <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">etypes</span><span class="p">]</span>
+    <span class="c1"># meta graph is homogeneous graph, still using int64</span>
+    <span class="n">meta_src</span><span class="p">,</span> <span class="n">meta_dst</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">metagraph</span><span class="o">.</span><span class="n">find_edges</span><span class="p">(</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">etype_ids</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">rel_graphs</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">get_relation_graph</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">etype_ids</span><span class="p">]</span>
+    <span class="n">meta_src</span> <span class="o">=</span> <span class="n">meta_src</span><span class="o">.</span><span class="n">tonumpy</span><span class="p">()</span>
+    <span class="n">meta_dst</span> <span class="o">=</span> <span class="n">meta_dst</span><span class="o">.</span><span class="n">tonumpy</span><span class="p">()</span>
+    <span class="n">ntypes_invmap</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">meta_src</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">meta_dst</span><span class="p">))}</span>
+    <span class="n">mapped_meta_src</span> <span class="o">=</span> <span class="p">[</span><span class="n">ntypes_invmap</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">meta_src</span><span class="p">]</span>
+    <span class="n">mapped_meta_dst</span> <span class="o">=</span> <span class="p">[</span><span class="n">ntypes_invmap</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">meta_dst</span><span class="p">]</span>
+    <span class="n">node_frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">_node_frames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ntypes_invmap</span><span class="p">]</span>
+    <span class="n">edge_frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">_edge_frames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">etype_ids</span><span class="p">]</span>
+    <span class="n">induced_ntypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">_ntypes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ntypes_invmap</span><span class="p">]</span>
+    <span class="n">induced_etypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">_etypes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">etype_ids</span>
+    <span class="p">]</span>  <span class="c1"># get the &quot;name&quot; of edge type</span>
+    <span class="n">num_nodes_per_induced_type</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">induced_ntypes</span>
+    <span class="p">]</span>
+
+    <span class="n">metagraph</span> <span class="o">=</span> <span class="n">graph_index</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">mapped_meta_src</span><span class="p">,</span> <span class="n">mapped_meta_dst</span><span class="p">),</span> <span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="c1"># num_nodes_per_type should be int64</span>
+    <span class="n">hgidx</span> <span class="o">=</span> <span class="n">heterograph_index</span><span class="o">.</span><span class="n">create_heterograph_from_relations</span><span class="p">(</span>
+        <span class="n">metagraph</span><span class="p">,</span>
+        <span class="n">rel_graphs</span><span class="p">,</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">num_nodes_per_induced_type</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">hg</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span>
+        <span class="n">hgidx</span><span class="p">,</span> <span class="n">induced_ntypes</span><span class="p">,</span> <span class="n">induced_etypes</span><span class="p">,</span> <span class="n">node_frames</span><span class="p">,</span> <span class="n">edge_frames</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">hg</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">edge_type_subgraph</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">edge_type_subgraph</span><span class="p">)</span>
+
+<span class="c1">#################### Internal functions ####################</span>
+
+
+<span class="k">def</span> <span class="nf">_create_hetero_subgraph</span><span class="p">(</span>
+    <span class="n">parent</span><span class="p">,</span>
+    <span class="n">sgi</span><span class="p">,</span>
+    <span class="n">induced_nodes_or_device</span><span class="p">,</span>
+    <span class="n">induced_edges_or_device</span><span class="p">,</span>
+    <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal function to create a subgraph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : DGLGraph</span>
+<span class="sd">        The parent DGLGraph.</span>
+<span class="sd">    sgi : HeteroSubgraphIndex</span>
+<span class="sd">        Subgraph object returned by CAPI.</span>
+<span class="sd">    induced_nodes_or_device : list[Tensor] or device or None</span>
+<span class="sd">        Induced node IDs or the device. Will store it as the dgl.NID ndata unless it</span>
+<span class="sd">        is None, which means the induced node IDs are the same as the parent node IDs.</span>
+<span class="sd">        If a device is given, the features will be copied to the given device.</span>
+<span class="sd">    induced_edges_or_device : list[Tensor] or device or None</span>
+<span class="sd">        Induced edge IDs. Will store it as the dgl.EID ndata unless it</span>
+<span class="sd">        is None, which means the induced edge IDs are the same as the parent edge IDs.</span>
+<span class="sd">        If a device is given, the features will be copied to the given device.</span>
+<span class="sd">    store_ids : bool</span>
+<span class="sd">        If True and induced_nodes is not None, it will store the raw IDs of the extracted</span>
+<span class="sd">        nodes in the ``ndata`` of the resulting graph under name ``dgl.NID``.</span>
+<span class="sd">        If True and induced_edges is not None, it will store the raw IDs of the extracted</span>
+<span class="sd">        edges in the ``edata`` of the resulting graph under name ``dgl.EID``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        Graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># (BarclayII) Giving a device argument to induced_nodes_or_device is necessary for</span>
+    <span class="c1"># UVA subgraphing, where the node features are not sliced but the device changed.</span>
+    <span class="c1"># Not having this will give us a subgraph on GPU but node features on CPU if we don&#39;t</span>
+    <span class="c1"># relabel the nodes.</span>
+    <span class="n">node_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_node_subframes</span><span class="p">(</span>
+        <span class="n">parent</span><span class="p">,</span> <span class="n">induced_nodes_or_device</span><span class="p">,</span> <span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="n">edge_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_edge_subframes</span><span class="p">(</span>
+        <span class="n">parent</span><span class="p">,</span> <span class="n">induced_edges_or_device</span><span class="p">,</span> <span class="n">store_ids</span>
+    <span class="p">)</span>
+    <span class="n">hsg</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">sgi</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">ntypes</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">hsg</span><span class="p">,</span> <span class="n">node_frames</span><span class="o">=</span><span class="n">node_frames</span><span class="p">,</span> <span class="n">edge_frames</span><span class="o">=</span><span class="n">edge_frames</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hsg</span>
+
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.subgraph&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

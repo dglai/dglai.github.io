@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.2 DGL NN 모듈의 Forward 함수 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.3 Heterogeneous GraphConv 모듈" href="nn-heterograph.html" />
+    <link rel="prev" title="3.1 DGL NN 모듈 생성 함수" href="nn-construction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nn-construction.html">3.1 DGL NN 모듈 생성 함수</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.2 DGL NN 모듈의 Forward 함수</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nn-heterograph.html">3.3 Heterogeneous GraphConv 모듈</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">7장: 분산 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="nn.html">3장: GNN 모듈 만들기</a></li>
+      <li class="breadcrumb-item active">3.2 DGL NN 모듈의 Forward 함수</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/nn-forward.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dgl-nn-forward">
+<span id="guide-ko-nn-forward"></span><h1>3.2 DGL NN 모듈의 Forward 함수<a class="headerlink" href="#dgl-nn-forward" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/nn-forward.html#guide-nn-forward"><span class="std std-ref">(English Versin)</span></a></p>
+<p>NN 모듈에서 <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 함수는 실제 메시지 전달과 연산을 수행한다. 일반적으로 텐서들을 파라메터로 받는 PyTorch의 NN 모듈과 비교하면, DGL NN 모듈은 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code></a> 를 추가 파라메터로 받는다. <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 함수는 3단계로 수행된다.</p>
+<ul class="simple">
+<li><p>그래프 체크 및 그래프 타입 명세화</p></li>
+<li><p>메시지 전달</p></li>
+<li><p>피쳐 업데이트</p></li>
+</ul>
+<p>이 절에서는 SAGEConv에서 사용되는 <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 함수를 자세하게 살펴보겠다.</p>
+<section id="graph-type-specification">
+<h2>그래프 체크와 그래프 타입 명세화(graph type specification)<a class="headerlink" href="#graph-type-specification" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+        <span class="c1"># Specify graph type then expand input feature according to graph type</span>
+        <span class="n">feat_src</span><span class="p">,</span> <span class="n">feat_dst</span> <span class="o">=</span> <span class="n">expand_as_pair</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">forward()</span></code> 는 계산 및 메시지 전달 과정에서 유효하지 않은 값을 만들 수 있는 여러 특별한 케이스들을 다룰 수 있어야 한다. <a class="reference internal" href="../generated/dgl.nn.pytorch.conv.GraphConv.html#dgl.nn.pytorch.conv.GraphConv" title="dgl.nn.pytorch.conv.GraphConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConv</span></code></a> 와 같은 그래프 conv 모듈에서 수행하는 가장 전형적인 점검은 입력 그래프가 in-degree가 0인 노드를 갖지 않는지 확인하는 것이다. in-degree가 0인 경우에, <code class="docutils literal notranslate"><span class="pre">mailbox</span></code> 에 아무것도 없게 되고, 축약 함수는 모두 0인 값을 만들어낼 것이다. 이는 잠재적인 모델 성능 문제를 일이킬 수도 있다. 하지만, <a class="reference internal" href="../generated/dgl.nn.pytorch.conv.SAGEConv.html#dgl.nn.pytorch.conv.SAGEConv" title="dgl.nn.pytorch.conv.SAGEConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">SAGEConv</span></code></a> 모듈의 경우, aggregated representation은 원래의 노드 피쳐와 연결(concatenated)되기 때문에, <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 의 결과는 항상 0이 아니기 때문에, 이런 체크가 필요 없다.</p>
+<p>DGL NN 모듈은 여러 종류의 그래프, 단종 그래프, 이종 그래프(<a class="reference internal" href="graph-heterogeneous.html#guide-ko-graph-heterogeneous"><span class="std std-ref">1.5 이종 그래프 (Heterogeneous Graph)</span></a>), 서브그래프 블록(<a class="reference internal" href="minibatch.html#guide-ko-minibatch"><span class="std std-ref">6장: 큰 그래프에 대한 stochastic 학습</span></a> ), 입력에 걸쳐서 재사용될 수 있다.</p>
+<p>SAGEConv의 수학 공식은 다음과 같다:</p>
+<div class="math notranslate nohighlight">
+\[h_{\mathcal{N}(dst)}^{(l+1)}  = \mathrm{aggregate}
+        \left(\{h_{src}^{l}, \forall src \in \mathcal{N}(dst) \}\right)\]</div>
+<div class="math notranslate nohighlight">
+\[h_{dst}^{(l+1)} = \sigma \left(W \cdot \mathrm{concat}
+       (h_{dst}^{l}, h_{\mathcal{N}(dst)}^{l+1}) + b \right)\]</div>
+<div class="math notranslate nohighlight">
+\[h_{dst}^{(l+1)} = \mathrm{norm}(h_{dst}^{l+1})\]</div>
+<p>그래프 타입에 따라서 소스 노드 피쳐(<code class="docutils literal notranslate"><span class="pre">feat_src</span></code>)와 목적지 노드 피쳐(<code class="docutils literal notranslate"><span class="pre">feat_dst</span></code>)를 명시해야 한다. <code class="xref py py-meth docutils literal notranslate"><span class="pre">expand_as_pair()</span></code> 는 명시된 그래프 타입에 따라 <code class="docutils literal notranslate"><span class="pre">feat</span></code> 를 <code class="docutils literal notranslate"><span class="pre">feat_src</span></code> 와 <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> 로 확장하는 함수이다. 이 함수의 동작은 다음과 같다.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">expand_as_pair</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="c1"># Bipartite graph case</span>
+        <span class="k">return</span> <span class="n">input_</span>
+    <span class="k">elif</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="c1"># Subgraph block case</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">input_dst</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">narrow_row</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_dst</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">narrow_row</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">input_</span><span class="p">,</span> <span class="n">input_dst</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Homogeneous graph case</span>
+        <span class="k">return</span> <span class="n">input_</span><span class="p">,</span> <span class="n">input_</span>
+</pre></div>
+</div>
+<p>homogeneous 그래프 전체를 학습시키는 경우, 소스 노드와 목적지 노드들의 타입이 같다. 이것들은 그래프의 전체 노드들이다.</p>
+<p>Heterogeneous 그래프의 경우, 그래프는 여러 이분 그래프로 나뉠 수 있다. 즉, 각 관계당 하나의 그래프로. 관계는 <code class="docutils literal notranslate"><span class="pre">(src_type,</span> <span class="pre">edge_type,</span> <span class="pre">dst_dtype)</span></code> 로 표현된다. 입력 피쳐 <code class="docutils literal notranslate"><span class="pre">feat</span></code> 가 tuple 이라고 확인되면, 이 함수는 그 그래프는 이분 그래프로 취급한다. Tuple의 첫번째 요소는 소스 노드 피처이고, 두번째는 목적지 노드의 피처이다.</p>
+<p>미니-배치 학습의 경우, 연산이 여러 목적지 노드들을 기반으로 샘플된 서브 그래프에 적용된다. DGL에서 서브 그래프는 <code class="docutils literal notranslate"><span class="pre">block</span></code> 이라고 한다. 블록이 생성되는 단계에서, <code class="docutils literal notranslate"><span class="pre">dst_nodes</span></code> 가 노드 리스트의 앞에 놓이게 된다. <code class="docutils literal notranslate"><span class="pre">[0:g.number_of_dst_nodes()]</span></code> 인덱스를 이용해서 <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> 를 찾아낼 수 있다.</p>
+<p><code class="docutils literal notranslate"><span class="pre">feat_src</span></code> 와 <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> 가 정해진 후에는, 세가지 그래프 타입들에 대한 연산은 모두 동일하다.</p>
+</section>
+<section id="id1">
+<h2>메시지 전달과 축약<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.function</span> <span class="k">as</span> <span class="nn">fn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">dgl.utils</span> <span class="kn">import</span> <span class="n">check_eq_shape</span>
+
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_src</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span>
+<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
+    <span class="n">check_eq_shape</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_src</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_dst</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="c1"># divide in_degrees</span>
+    <span class="n">degs</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">feat_dst</span><span class="p">)</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">degs</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;pool&#39;</span><span class="p">:</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc_pool</span><span class="p">(</span><span class="n">feat_src</span><span class="p">))</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Aggregator type </span><span class="si">{}</span><span class="s1"> not recognized.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span><span class="p">))</span>
+
+<span class="c1"># GraphSAGE GCN does not require fc_self.</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_neigh</span><span class="p">(</span><span class="n">h_neigh</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_self</span><span class="p">(</span><span class="n">h_self</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_neigh</span><span class="p">(</span><span class="n">h_neigh</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>이 코드는 실제로 메시지 전달과 축약 연산을 실행하고 있다. 이 부분의 코드는 모듈에 따라 다르게 구현된다. 이 코드의 모든 메시지 전달은 <a class="reference internal" href="../generated/dgl.DGLGraph.update_all.html#dgl.DGLGraph.update_all" title="dgl.DGLGraph.update_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_all()</span></code></a> API와 <code class="docutils literal notranslate"><span class="pre">built-in</span></code>  메시지/축약 함수들로 구현되어 있는데, 이는 <a class="reference internal" href="message-efficient.html#guide-ko-message-passing-efficient"><span class="std std-ref">2.2 효율적인 메시지 전달 코드 작성 방법</span></a> 에서 설명된 DGL의 성능 최적화를 모두 활용하기 위해서이다.</p>
+</section>
+<section id="id2">
+<h2>출력값을 위한 축약 후 피쳐 업데이트<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># activation</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="c1"># normalization</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">rst</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">forward()</span></code> 함수의 마지막 부분은 <code class="docutils literal notranslate"><span class="pre">reduce</span> <span class="pre">function</span></code> 다음에 피쳐를 업데이트하는 것이다. 일반적인 업데이트 연산들은 활성화 함수를 적용하고, 객체 생성 단계에서 설정된 옵션에 따라 normalization을 수행한다.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="nn-construction.html" class="btn btn-neutral float-left" title="3.1 DGL NN 모듈 생성 함수" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="nn-heterograph.html" class="btn btn-neutral float-right" title="3.3 Heterogeneous GraphConv 모듈" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.nn.pytorch.sparse_emb &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.nn.pytorch.sparse_emb</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.nn.pytorch.sparse_emb</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Torch NodeEmbedding.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+
+<span class="kn">from</span> <span class="nn">...backend</span> <span class="kn">import</span> <span class="n">pytorch</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">...cuda</span> <span class="kn">import</span> <span class="n">nccl</span>
+<span class="kn">from</span> <span class="nn">...partition</span> <span class="kn">import</span> <span class="n">NDArrayPartition</span>
+<span class="kn">from</span> <span class="nn">...utils</span> <span class="kn">import</span> <span class="n">create_shared_mem_array</span><span class="p">,</span> <span class="n">get_shared_mem_array</span>
+
+<span class="n">_STORE</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="NodeEmbedding">
+<a class="viewcode-back" href="../../../../generated/dgl.nn.pytorch.sparse_emb.NodeEmbedding.html#dgl.nn.pytorch.sparse_emb.NodeEmbedding">[docs]</a>
+<span class="k">class</span> <span class="nc">NodeEmbedding</span><span class="p">:</span>  <span class="c1"># NodeEmbedding</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for storing node embeddings.</span>
+
+<span class="sd">    The class is optimized for training large-scale node embeddings. It updates the embedding in</span>
+<span class="sd">    a sparse way and can scale to graphs with millions of nodes. It also supports partitioning</span>
+<span class="sd">    to multiple GPUs (on a single machine) for more acceleration. It does not support partitioning</span>
+<span class="sd">    across machines.</span>
+
+<span class="sd">    Currently, DGL provides two optimizers that work with this NodeEmbedding</span>
+<span class="sd">    class: ``SparseAdagrad`` and ``SparseAdam``.</span>
+
+<span class="sd">    The implementation is based on torch.distributed package. It depends on the pytorch</span>
+<span class="sd">    default distributed process group to collect multi-process information and uses</span>
+<span class="sd">    ``torch.distributed.TCPStore`` to share meta-data information across multiple gpu processes.</span>
+<span class="sd">    It use the local address of &#39;127.0.0.1:12346&#39; to initialize the TCPStore.</span>
+
+<span class="sd">    NOTE: The support of NodeEmbedding is experimental.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num_embeddings : int</span>
+<span class="sd">        The number of embeddings. Currently, the number of embeddings has to be the same as</span>
+<span class="sd">        the number of nodes.</span>
+<span class="sd">    embedding_dim : int</span>
+<span class="sd">        The dimension size of embeddings.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the embeddings. The name should uniquely identify the embeddings in the system.</span>
+<span class="sd">    init_func : callable, optional</span>
+<span class="sd">        The function to create the initial data. If the init function is not provided,</span>
+<span class="sd">        the values of the embeddings are initialized to zero.</span>
+<span class="sd">    device : th.device</span>
+<span class="sd">        Device to store the embeddings on.</span>
+<span class="sd">    parittion : NDArrayPartition</span>
+<span class="sd">        The partition to use to distributed the embeddings between</span>
+<span class="sd">        processes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Before launching multiple gpu processes</span>
+
+<span class="sd">    &gt;&gt;&gt; def initializer(emb):</span>
+<span class="sd">            th.nn.init.xavier_uniform_(emb)</span>
+<span class="sd">            return emb</span>
+
+<span class="sd">    In each training process</span>
+
+<span class="sd">    &gt;&gt;&gt; emb = dgl.nn.NodeEmbedding(g.num_nodes(), 10, &#39;emb&#39;, init_func=initializer)</span>
+<span class="sd">    &gt;&gt;&gt; optimizer = dgl.optim.SparseAdam([emb], lr=0.001)</span>
+<span class="sd">    &gt;&gt;&gt; for blocks in dataloader:</span>
+<span class="sd">    ...     ...</span>
+<span class="sd">    ...     feats = emb(nids, gpu_0)</span>
+<span class="sd">    ...     loss = F.sum(feats + 1, 0)</span>
+<span class="sd">    ...     loss.backward()</span>
+<span class="sd">    ...     optimizer.step()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_embeddings</span><span class="p">,</span>
+        <span class="n">embedding_dim</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">init_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">partition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">global</span> <span class="n">_STORE</span>
+
+        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check whether it is multi-gpu training or not.</span>
+        <span class="k">if</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
+            <span class="n">rank</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+            <span class="n">world_size</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rank</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">world_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">rank</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">=</span> <span class="n">world_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span> <span class="o">=</span> <span class="n">partition</span>
+
+        <span class="n">host_name</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="mi">12346</span>
+
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># for multi-gpu training, setup a TCPStore for</span>
+            <span class="c1"># embeding status synchronization across GPU processes</span>
+            <span class="k">if</span> <span class="n">_STORE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_STORE</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">TCPStore</span><span class="p">(</span>
+                    <span class="n">host_name</span><span class="p">,</span>
+                    <span class="n">port</span><span class="p">,</span>
+                    <span class="n">world_size</span><span class="p">,</span>
+                    <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="o">=</span> <span class="n">_STORE</span>
+
+        <span class="c1"># embeddings is stored in CPU memory.</span>
+        <span class="k">if</span> <span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="o">==</span> <span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rank</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">emb</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">num_embeddings</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">init_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">emb</span> <span class="o">=</span> <span class="n">init_func</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># the master gpu process</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">world_size</span><span class="p">):</span>
+                    <span class="c1"># send embs</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">rank</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># receive</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">name</span><span class="p">])</span>
+                <span class="n">emb</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">num_embeddings</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span> <span class="o">=</span> <span class="n">emb</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># embeddings is stored in GPU memory.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_comm</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">:</span>
+                <span class="c1"># for communication we need a partition</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span> <span class="o">=</span> <span class="n">NDArrayPartition</span><span class="p">(</span>
+                    <span class="n">num_embeddings</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="c1"># create local tensors for the weights</span>
+            <span class="n">local_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="o">.</span><span class="n">local_size</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="c1"># TODO(dlasalle): support 16-bit/half embeddings</span>
+            <span class="n">emb</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">local_size</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">],</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">init_func</span><span class="p">:</span>
+                <span class="n">emb</span> <span class="o">=</span> <span class="n">init_func</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span> <span class="o">=</span> <span class="n">emb</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_embeddings</span> <span class="o">=</span> <span class="n">num_embeddings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embedding_dim</span> <span class="o">=</span> <span class="n">embedding_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># track optimizer state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trace</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># track minibatch</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        node_ids : th.tensor</span>
+<span class="sd">            Index of the embeddings to collect.</span>
+<span class="sd">        device : th.device</span>
+<span class="sd">            Target device to put the collected embeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comm</span><span class="p">:</span>
+            <span class="c1"># For embeddings stored on the CPU.</span>
+            <span class="n">emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">[</span><span class="n">node_ids</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># For embeddings stored on the GPU.</span>
+            <span class="c1"># The following method is designed to perform communication</span>
+            <span class="c1"># across multiple GPUs and can handle situations where only one GPU</span>
+            <span class="c1"># is present gracefully, a.k.a. self._world_size == 1 or</span>
+            <span class="c1"># 0 (when th.distributed.is_initialized() is false).</span>
+            <span class="n">emb</span> <span class="o">=</span> <span class="n">nccl</span><span class="o">.</span><span class="n">sparse_all_to_all_pull</span><span class="p">(</span>
+                <span class="n">node_ids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span>
+            <span class="p">)</span>
+            <span class="n">emb</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">is_recording</span><span class="p">():</span>
+            <span class="n">emb</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">attach_grad</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trace</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node_ids</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">emb</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">emb</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return torch.distributed.TCPStore for</span>
+<span class="sd">        meta data sharing across processes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.distributed.TCPStore</span>
+<span class="sd">            KVStore used for meta data sharing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the partition identifying how the tensor is split across</span>
+<span class="sd">        processes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        String</span>
+<span class="sd">            The mode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return rank of current process.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The rank of current process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">world_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return world size of the pytorch distributed training env.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The world size of the pytorch distributed training env.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name of NodeEmbedding.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The name of NodeEmbedding.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of embeddings.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of embeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_embeddings</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">embedding_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dimension of embeddings.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The dimension of embeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding_dim</span>
+
+    <span class="k">def</span> <span class="nf">set_optm_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store the optimizer related state tensor.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state : tuple of torch.Tensor</span>
+<span class="sd">            Optimizer related state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span> <span class="o">=</span> <span class="n">state</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">optm_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the optimizer related state tensor.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple of torch.Tensor</span>
+<span class="sd">            The optimizer related state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a trace of the indices of embeddings</span>
+<span class="sd">        used in the training step(s).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        [torch.Tensor]</span>
+<span class="sd">            The indices of embeddings used in the training step(s).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trace</span>
+
+    <span class="k">def</span> <span class="nf">reset_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up the trace of the indices of embeddings</span>
+<span class="sd">        used in the training step(s).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trace</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the tensor storing the node embeddings</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The tensor storing the node embeddings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span>
+
+    <span class="k">def</span> <span class="nf">all_set_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the values of the embedding. This method must be called by all</span>
+<span class="sd">        processes sharing the embedding with identical tensors for</span>
+<span class="sd">        :attr:`values`.</span>
+
+<span class="sd">        NOTE: This method must be called by all processes sharing the</span>
+<span class="sd">        embedding, or it may result in a deadlock.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : Tensor</span>
+<span class="sd">            The global tensor to pull values from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">:</span>
+            <span class="n">idxs</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="o">.</span><span class="n">get_local_indices</span><span class="p">(</span>
+                    <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">gather_row</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">idxs</span><span class="p">),</span> <span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">)</span>
+            <span class="p">)[:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span>
+                    <span class="n">values</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">)</span>
+                <span class="p">)[:]</span>
+        <span class="k">if</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
+            <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_all_get_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared_name</span><span class="p">,</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A helper function to get model-parallel tensors.</span>
+
+<span class="sd">        This method must and only need to be called in multi-GPU DDP training.</span>
+<span class="sd">        For now, it&#39;s only used in ``all_get_embedding`` and</span>
+<span class="sd">        ``_all_get_optm_state``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create a shared memory tensor</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># root process creates shared memory</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                <span class="n">shared_name</span><span class="p">,</span>
+                <span class="n">shape</span><span class="p">,</span>
+                <span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">shared_name</span><span class="p">,</span> <span class="n">shared_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">shared_name</span><span class="p">])</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                <span class="n">shared_name</span><span class="p">,</span>
+                <span class="n">shape</span><span class="p">,</span>
+                <span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># need to map indices and slice into existing tensor</span>
+        <span class="n">idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="o">.</span><span class="n">map_to_global</span><span class="p">(</span>
+            <span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">tensor</span><span class="p">)),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">val</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">delete_key</span><span class="p">(</span><span class="n">shared_name</span><span class="p">)</span>
+        <span class="c1"># wait for all processes to finish</span>
+        <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">all_get_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of the embedding stored in CPU memory. If this is a</span>
+<span class="sd">        multi-processing instance, the tensor will be returned in shared</span>
+<span class="sd">        memory. If the embedding is currently stored on multiple GPUs, all</span>
+<span class="sd">        processes must call this method in the same order.</span>
+
+<span class="sd">        NOTE: This method must be called by all processes sharing the</span>
+<span class="sd">        embedding, or it may result in a deadlock.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The tensor storing the node embeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># non-multiprocessing</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_get_tensor</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">_gather&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_embeddings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding_dim</span><span class="p">),</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># already stored in CPU memory</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span>
+
+    <span class="k">def</span> <span class="nf">_all_get_optm_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of the whole optimizer states stored in CPU memory.</span>
+<span class="sd">        If this is a multi-processing instance, the states will be returned in</span>
+<span class="sd">        shared memory. If the embedding is currently stored on multiple GPUs,</span>
+<span class="sd">        all processes must call this method in the same order.</span>
+
+<span class="sd">        NOTE: This method must be called by all processes sharing the</span>
+<span class="sd">        embedding, or it may result in a deadlock.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple of torch.Tensor</span>
+<span class="sd">            The optimizer states stored in CPU memory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># non-multiprocessing</span>
+                <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+                    <span class="n">state</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_all_get_tensor</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;state_gather_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">state</span><span class="p">,</span>
+                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_embeddings</span><span class="p">,</span> <span class="o">*</span><span class="n">state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># already stored in CPU memory</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span>
+
+    <span class="k">def</span> <span class="nf">_all_set_optm_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the optimizer states of the embedding. This method must be</span>
+<span class="sd">        called by all processes sharing the embedding with identical</span>
+<span class="sd">        :attr:`states`.</span>
+
+<span class="sd">        NOTE: This method must be called by all processes sharing the</span>
+<span class="sd">        embedding, or it may result in a deadlock.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        states : tuple of torch.Tensor</span>
+<span class="sd">            The global states to pull values from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">:</span>
+            <span class="n">idxs</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="o">.</span><span class="n">get_local_indices</span><span class="p">(</span>
+                    <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">new_state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+                <span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span>
+                    <span class="n">F</span><span class="o">.</span><span class="n">gather_row</span><span class="p">(</span><span class="n">new_state</span><span class="p">,</span> <span class="n">idxs</span><span class="p">),</span> <span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">)</span>
+                <span class="p">)[:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># stored in CPU memory</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">new_state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_optm_state</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+                    <span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span>
+                        <span class="n">new_state</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">)</span>
+                    <span class="p">)[:]</span>
+        <span class="k">if</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
+            <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

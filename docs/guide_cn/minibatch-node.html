@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.1 针对节点分类任务的邻居采样训练方法 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.2 针对边分类任务的邻居采样训练方法" href="minibatch-edge.html" />
+    <link rel="prev" title="第6章：在大图上的随机（批次）训练" href="minibatch.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">用户指南【包含过时信息】</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">第1章：图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">第2章：消息传递范式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">第3章：构建图神经网络（GNN）模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">第4章：图数据处理管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">第5章：训练图神经网络</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">第6章：在大图上的随机（批次）训练</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.1 针对节点分类任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 针对边分类任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 针对链接预测任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 定制用户自己的邻居采样器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.5 为小批次训练实现定制化的GNN模块</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.6 超大图上的精准离线推断</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">第7章：分布式训练</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">用户指南【包含过时信息】</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">第6章：在大图上的随机（批次）训练</a></li>
+      <li class="breadcrumb-item active">6.1 针对节点分类任务的邻居采样训练方法</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_cn/minibatch-node.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-cn-minibatch-node-classification-sampler">
+<span id="id1"></span><h1>6.1 针对节点分类任务的邻居采样训练方法<a class="headerlink" href="#guide-cn-minibatch-node-classification-sampler" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/minibatch-node.html#guide-minibatch-node-classification-sampler"><span class="std std-ref">(English Version)</span></a></p>
+<p>为了随机(批次)训练模型，需要进行以下操作：</p>
+<ul class="simple">
+<li><p>定义邻居采样器。</p></li>
+<li><p>调整模型以进行小批次训练。</p></li>
+<li><p>修改模型训练循环部分。</p></li>
+</ul>
+<p>以下小节将逐一介绍这些步骤。</p>
+<section id="id2">
+<h2>定义邻居采样器和数据加载器<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>DGL提供了几个邻居采样类，这些类会生成需计算的节点在每一层计算时所需的依赖图。</p>
+<p>最简单的邻居采样器是
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerFullNeighborSampler</span></code>，它可获取节点的所有邻居。</p>
+<p>要使用DGL提供的采样器，还需要将其与
+<code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code>
+结合使用，后者可以以小批次的形式对一个节点的集合进行迭代。</p>
+<p>例如，以下代码创建了一个PyTorch的 DataLoader，它分批迭代训练节点ID数组 <code class="docutils literal notranslate"><span class="pre">train_nids</span></code>，
+并将生成的子图列表放到GPU上。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">import</span> <span class="nn">dgl.nn</span> <span class="k">as</span> <span class="nn">dglnn</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">MultiLayerFullNeighborSampler</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">NodeDataLoader</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">train_nids</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>对DataLoader进行迭代，将会创建一个特定图的列表，这些图表示每层的计算依赖。在DGL中称之为 <em>块</em>。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>上面的dataloader一次迭代会生成三个输出。 <code class="docutils literal notranslate"><span class="pre">input_nodes</span></code> 代表计算 <code class="docutils literal notranslate"><span class="pre">output_nodes</span></code> 的表示所需的节点。
+<code class="docutils literal notranslate"><span class="pre">块</span></code> 包含了每个GNN层要计算哪些节点表示作为输出，要将哪些节点表示作为输入，以及来自输入节点的表示如何传播到输出节点。</p>
+<p>完整的内置采样方法清单，用户可以参考
+<a class="reference internal" href="../api/python/dgl.dataloading.html#api-dataloading-neighbor-sampling"><span class="std std-ref">neighborhood sampler API reference</span></a>。</p>
+<p>如果用户希望编写自己的邻居采样器，或者想要关于块的更深入的介绍，读者可以参考
+<a class="reference internal" href="minibatch-custom-sampler.html#guide-cn-minibatch-customizing-neighborhood-sampler"><span class="std std-ref">6.4 定制用户自己的邻居采样器</span></a>。</p>
+</section>
+<section id="guide-cn-minibatch-node-classification-model">
+<span id="id3"></span><h2>调整模型以进行小批次训练<a class="headerlink" href="#guide-cn-minibatch-node-classification-model" title="Link to this heading"></a></h2>
+<p>如果用户的消息传递模块全使用的是DGL内置模块，则模型在进行小批次训练时只需做很小的调整。
+以多层GCN为例。如果用户模型在全图上是按以下方式实现的：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TwoLayerGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>然后，用户所需要做的就是用上面生成的块( <code class="docutils literal notranslate"><span class="pre">block</span></code> )来替换图( <code class="docutils literal notranslate"><span class="pre">g</span></code> )。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StochasticTwoLayerGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>上面的DGL <code class="docutils literal notranslate"><span class="pre">GraphConv</span></code> 模块接受的一个参数是数据加载器生成的 <code class="docutils literal notranslate"><span class="pre">块</span></code> 中的一个元素。</p>
+<p>用户可以查阅 <span class="xref std std-ref">NN模块的API参考</span> 来查看DGL的内置模型模块是否支持接受 <code class="docutils literal notranslate"><span class="pre">块</span></code> 作为参数。</p>
+<p>如果希望使用自定义的消息传递模块，用户可以参考
+<a class="reference internal" href="minibatch-nn.html#guide-cn-minibatch-custom-gnn-module"><span class="std std-ref">6.5 为小批次训练实现定制化的GNN模块</span></a>。</p>
+</section>
+<section id="id4">
+<h2>模型的训练<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>这里的模型的训练循环仅包含使用定制的批处理迭代器遍历数据集的内容。在每个生成块列表的迭代中：</p>
+<ol class="arabic">
+<li><p>将与输入节点相对应的节点特征加载到GPU上。节点特征可以存储在内存或外部存储中。
+请注意，用户只需要加载输入节点的特征，而不是像整图训练那样加载所有节点的特征。</p>
+<p>如果特征存储在 <code class="docutils literal notranslate"><span class="pre">g.ndata</span></code> 中，则可以通过 <code class="docutils literal notranslate"><span class="pre">blocks[0].srcdata</span></code> 来加载第一个块的输入节点的特征，
+这些节点是计算节点最终表示所需的所有必需的节点。</p>
+</li>
+<li><p>将块列表和输入节点特征传入多层GNN并获取输出。</p></li>
+<li><p>将与输出节点相对应的节点标签加载到GPU上。同样，节点标签可以存储在内存或外部存储器中。
+再次提醒下，用户只需要加载输出节点的标签，而不是像整图训练那样加载所有节点的标签。</p>
+<p>如果特征存储在 <code class="docutils literal notranslate"><span class="pre">g.ndata</span></code> 中，则可以通过访问 <code class="docutils literal notranslate"><span class="pre">blocks[-1].dstdata</span></code> 中的特征来加载标签，
+它是最后一个块的输出节点的特征，这些节点与用户希望计算最终表示的节点相同。</p>
+</li>
+<li><p>计算损失并反向传播。</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">StochasticTwoLayerGCN</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">]</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
+    <span class="n">output_labels</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+    <span class="n">output_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">output_labels</span><span class="p">,</span> <span class="n">output_predictions</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>DGL提供了一个端到端的随机批次训练示例
+<a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/graphsage/node_classification.py">GraphSAGE的实现</a>。</p>
+</section>
+<section id="id5">
+<h2>异构图上模型的训练<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>在异构图上训练图神经网络进行节点分类的方法也是类似的。</p>
+<p>例如，在
+<a class="reference internal" href="training-node.html#guide-cn-training-rgcn-node-classification"><span class="std std-ref">异构图上的节点分类模型的训练</span></a>
+中介绍了如何在整图上训练一个2层的RGCN模型。
+RGCN小批次训练的代码与它非常相似(为简单起见，这里删除了自环、非线性和基分解)：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StochasticTwoLayerRGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feat</span><span class="p">,</span> <span class="n">hidden_feat</span><span class="p">,</span> <span class="n">out_feat</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+                <span class="n">rel</span> <span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_feat</span><span class="p">,</span> <span class="n">hidden_feat</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span>
+            <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+                <span class="n">rel</span> <span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hidden_feat</span><span class="p">,</span> <span class="n">out_feat</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span>
+            <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>DGL提供的一些采样方法也支持异构图。例如，用户仍然可以使用
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerFullNeighborSampler</span></code> 类和
+<code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code> 类进行随机批次训练。
+对于全邻居采样，唯一的区别是用户需要为训练集指定节点类型和节点ID的字典。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">MultiLayerFullNeighborSampler</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">NodeDataLoader</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">train_nid_dict</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>模型的训练与同构图几乎相同。不同之处在于， <code class="docutils literal notranslate"><span class="pre">compute_loss</span></code> 的实现会包含两个字典：节点类型和预测结果。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">StochasticTwoLayerRGCN</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">etypes</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">]</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span>     <span class="c1"># returns a dict</span>
+    <span class="n">output_labels</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dstdata</span>     <span class="c1"># returns a dict</span>
+    <span class="n">output_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">output_labels</span><span class="p">,</span> <span class="n">output_predictions</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>DGL提供了端到端随机批次训练的
+<a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/rgcn-hetero/entity_classify_mb.py">RGCN的实现</a>。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch.html" class="btn btn-neutral float-left" title="第6章：在大图上的随机（批次）训练" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-edge.html" class="btn btn-neutral float-right" title="6.2 针对边分类任务的邻居采样训练方法" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

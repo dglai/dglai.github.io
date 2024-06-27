@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.4 Implementing Custom Graph Samplers &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.5 Training GNN with DGL sparse" href="minibatch-sparse.html" />
+    <link rel="prev" title="6.3 Training GNN for Link Prediction with Neighborhood Sampling" href="minibatch-link.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 Training GNN for Node Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 Training GNN for Edge Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 Training GNN for Link Prediction with Neighborhood Sampling</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.4 Implementing Custom Graph Samplers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-sparse.html">6.5 Training GNN with DGL sparse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.6 Implementing Custom GNN Module for Mini-batch Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.7 Exact Offline Inference on Large Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-gpu-sampling.html">6.8 Using GPU for Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-parallelism.html">6.9 Data Loading Parallelism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+      <li class="breadcrumb-item active">6.4 Implementing Custom Graph Samplers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/minibatch-custom-sampler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="implementing-custom-graph-samplers">
+<span id="guide-minibatch-customizing-neighborhood-sampler"></span><h1>6.4 Implementing Custom Graph Samplers<a class="headerlink" href="#implementing-custom-graph-samplers" title="Link to this heading"></a></h1>
+<p>Implementing custom samplers involves subclassing the
+<a class="reference internal" href="../generated/dgl.graphbolt.SubgraphSampler.html#dgl.graphbolt.SubgraphSampler" title="dgl.graphbolt.SubgraphSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.graphbolt.SubgraphSampler</span></code></a> base class and implementing its abstract
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">sample_subgraphs</span></code> method. The <code class="xref py py-attr docutils literal notranslate"><span class="pre">sample_subgraphs</span></code> method should
+take in seed nodes which are the nodes to sample neighbors from:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sample_subgraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">sampled_subgraphs</span>
+</pre></div>
+</div>
+<p>The method should return the input node IDs list and a list of subgraphs. Each
+subgraph is a <a class="reference internal" href="../generated/dgl.graphbolt.SampledSubgraph.html#dgl.graphbolt.SampledSubgraph" title="dgl.graphbolt.SampledSubgraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampledSubgraph</span></code></a> object.</p>
+<p>Any other data that are required during sampling such as the graph structure,
+fanout size, etc. should be passed to the sampler via the constructor.</p>
+<p>The code below implements a classical neighbor sampler:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@functional_datapipe</span><span class="p">(</span><span class="s2">&quot;customized_sample_neighbor&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">CustomizedNeighborSampler</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">graphbolt</span><span class="o">.</span><span class="n">SubgraphSampler</span><span class="p">):</span>
+   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datapipe</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">fanouts</span><span class="p">):</span>
+       <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datapipe</span><span class="p">)</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">fanouts</span> <span class="o">=</span> <span class="n">fanouts</span>
+
+   <span class="k">def</span> <span class="nf">sample_subgraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">):</span>
+       <span class="n">subgs</span> <span class="o">=</span> <span class="p">[]</span>
+       <span class="k">for</span> <span class="n">fanout</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fanouts</span><span class="p">):</span>
+           <span class="c1"># Sample a fixed number of neighbors of the current seed nodes.</span>
+           <span class="n">input_nodes</span><span class="p">,</span> <span class="n">sg</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">seed_nodes</span><span class="p">,</span> <span class="n">fanout</span><span class="p">)</span>
+           <span class="n">subgs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sg</span><span class="p">)</span>
+           <span class="n">seed_nodes</span> <span class="o">=</span> <span class="n">input_nodes</span>
+       <span class="k">return</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">subgs</span>
+</pre></div>
+</div>
+<p>To use this sampler with <a class="reference internal" href="../generated/dgl.graphbolt.DataLoader.html#dgl.graphbolt.DataLoader" title="dgl.graphbolt.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">datapipe</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSampler</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">customized_sample_neighbor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span> <span class="c1"># 2 layers.</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">fetch_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">node_feature_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">])</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">datapipe</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">node_features</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]</span>
+    <span class="n">output_labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+    <span class="n">output_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">blocks</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">output_labels</span><span class="p">,</span> <span class="n">output_predictions</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="sampler-for-heterogeneous-graphs">
+<h2>Sampler for Heterogeneous Graphs<a class="headerlink" href="#sampler-for-heterogeneous-graphs" title="Link to this heading"></a></h2>
+<p>To write a sampler for heterogeneous graphs, one needs to be aware that
+the argument <cite>graph</cite> is a heterogeneous graph while <cite>seeds</cite> could be a
+dictionary of ID tensors. Most of DGL’s graph sampling operators (e.g.,
+the <code class="docutils literal notranslate"><span class="pre">sample_neighbors</span></code> and <code class="docutils literal notranslate"><span class="pre">to_block</span></code> functions in the above example) can
+work on heterogeneous graph natively, so many samplers are automatically
+ready for heterogeneous graph. For example, the above <code class="docutils literal notranslate"><span class="pre">CustomizedNeighborSampler</span></code>
+can be used on heterogeneous graphs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.graphbolt</span> <span class="k">as</span> <span class="nn">gb</span>
+<span class="n">hg</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">FusedCSCSamplingGraph</span><span class="p">()</span>
+<span class="n">train_set</span> <span class="o">=</span> <span class="n">item_set</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">HeteroItemSet</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSet</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;seeds&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSet</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">)),</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;seeds&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">ItemSampler</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">customized_sample_neighbor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span> <span class="c1"># 2 layers.</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">fetch_feature</span><span class="p">(</span>
+    <span class="n">feature</span><span class="p">,</span> <span class="n">node_feature_keys</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">],</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]}</span>
+<span class="p">)</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">datapipe</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ntype</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">node_features</span><span class="p">[(</span><span class="n">ntype</span><span class="p">,</span> <span class="s2">&quot;feat&quot;</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srctypes</span>
+    <span class="p">}</span>
+    <span class="n">output_labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span>
+    <span class="n">output_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">blocks</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">output_labels</span><span class="p">,</span> <span class="n">output_predictions</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="exclude-edges-after-sampling">
+<h2>Exclude Edges After Sampling<a class="headerlink" href="#exclude-edges-after-sampling" title="Link to this heading"></a></h2>
+<p>In some cases, we may want to exclude seed edges from the sampled subgraph. For
+example, in link prediction tasks, we want to exclude the edges in the
+training set from the sampled subgraph to prevent information leakage. To
+do so, we need to add an additional datapipe right after sampling as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">customized_sample_neighbor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span> <span class="c1"># 2 layers.</span>
+<span class="n">datapipe</span> <span class="o">=</span> <span class="n">datapipe</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">exclude_seed_edges</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Please check the API page of <a class="reference internal" href="../generated/dgl.graphbolt.exclude_seed_edges.html#dgl.graphbolt.exclude_seed_edges" title="dgl.graphbolt.exclude_seed_edges"><code class="xref py py-func docutils literal notranslate"><span class="pre">exclude_seed_edges()</span></code></a> for more
+details.</p>
+<p>The above API is based on <code class="xref py py-meth docutils literal notranslate"><span class="pre">exclude_edges()</span></code>.
+If you want to exclude edges from the sampled subgraph based on some other
+criteria, you could write your own transform function. Please check the method
+for reference.</p>
+<p>You could also refer to examples in
+<a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/sampling/graphbolt/link_prediction.py">Link Prediction</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-link.html" class="btn btn-neutral float-left" title="6.3 Training GNN for Link Prediction with Neighborhood Sampling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-sparse.html" class="btn btn-neutral float-right" title="6.5 Training GNN with DGL sparse" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

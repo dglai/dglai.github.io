@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.4 Advanced Graph Partitioning &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.5 Heterogeneous Graph Under The Hood" href="distributed-hetero.html" />
+    <link rel="prev" title="7.3 Programming APIs" href="distributed-apis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="distributed-preprocessing.html">7.1 Data Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-tools.html">7.2 Tools for launching distributed training/inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-apis.html">7.3 Programming APIs</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">7.4 Advanced Graph Partitioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-hetero.html">7.5 Heterogeneous Graph Under The Hood</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="distributed.html">Chapter 7: Distributed Training</a></li>
+      <li class="breadcrumb-item active">7.4 Advanced Graph Partitioning</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/distributed-partition.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="advanced-graph-partitioning">
+<span id="guide-distributed-partition"></span><h1>7.4 Advanced Graph Partitioning<a class="headerlink" href="#advanced-graph-partitioning" title="Link to this heading"></a></h1>
+<p>The chapter covers some of the advanced topics for graph partitioning.</p>
+<section id="metis-partition-algorithm">
+<h2>METIS partition algorithm<a class="headerlink" href="#metis-partition-algorithm" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="http://glaros.dtc.umn.edu/gkhome/views/metis">METIS</a> is a state-of-the-art
+graph partitioning algorithm that can generate partitions with minimal number
+of cross-partition edges, making it suitable for distributed message passing
+where the amount of network communication is proportional to the number of
+cross-partition edges. DGL has integrated METIS as the default partitioning
+algorithm in its <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> API.</p>
+</section>
+<section id="output-format">
+<h2>Output format<a class="headerlink" href="#output-format" title="Link to this heading"></a></h2>
+<p>Regardless of the partitioning algorithm in use, the partitioned results are stored
+in data files organized as follows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>data_root_dir/
+  |-- graph_name.json       # partition configuration file in JSON
+  |-- part0/                # data for partition 0
+  |  |-- node_feats.dgl     # node features stored in binary format
+  |  |-- edge_feats.dgl     # edge features stored in binary format
+  |  |-- graph.dgl          # graph structure of this partition stored in binary format
+  |
+  |-- part1/                # data for partition 1
+  |  |-- node_feats.dgl
+  |  |-- edge_feats.dgl
+  |  |-- graph.dgl
+  |
+  |-- ...                   # data for other partitions
+</pre></div>
+</div>
+<p>When distributed to a cluster, the metadata JSON should be copied to all the machines
+while the <code class="docutils literal notranslate"><span class="pre">partX</span></code> folders should be dispatched accordingly.</p>
+<p>DGL provides a <a class="reference internal" href="../generated/dgl.distributed.load_partition.html#dgl.distributed.load_partition" title="dgl.distributed.load_partition"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.load_partition()</span></code></a> function to load one partition
+for inspection.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load partition 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_data</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">load_partition</span><span class="p">(</span><span class="s1">&#39;data_root_dir/graph_name.json&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="p">,</span> <span class="n">nfeat</span><span class="p">,</span> <span class="n">efeat</span><span class="p">,</span> <span class="n">partition_book</span><span class="p">,</span> <span class="n">graph_name</span><span class="p">,</span> <span class="n">ntypes</span><span class="p">,</span> <span class="n">etypes</span> <span class="o">=</span> <span class="n">part_data</span>  <span class="c1"># unpack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="go">Graph(num_nodes=966043, num_edges=34270118,</span>
+<span class="go">      ndata_schemes={&#39;orig_id&#39;: Scheme(shape=(), dtype=torch.int64),</span>
+<span class="go">                     &#39;part_id&#39;: Scheme(shape=(), dtype=torch.int64),</span>
+<span class="go">                     &#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64),</span>
+<span class="go">                     &#39;inner_node&#39;: Scheme(shape=(), dtype=torch.int32)}</span>
+<span class="go">      edata_schemes={&#39;_ID&#39;: Scheme(shape=(), dtype=torch.int64),</span>
+<span class="go">                     &#39;inner_edge&#39;: Scheme(shape=(), dtype=torch.int8),</span>
+<span class="go">                     &#39;orig_id&#39;: Scheme(shape=(), dtype=torch.int64)})</span>
+</pre></div>
+</div>
+<p>As mentioned in the <a href="#id1"><span class="problematic" id="id2">`ID mapping`_</span></a> section, each partition carries auxiliary information
+saved as ndata or edata such as original node/edge IDs, partition IDs, etc. Each partition
+not only saves nodes/edges it owns, but also includes node/edges that are adjacent to
+the partition (called <strong>HALO</strong> nodes/edges). The <code class="docutils literal notranslate"><span class="pre">inner_node</span></code> and <code class="docutils literal notranslate"><span class="pre">inner_edge</span></code>
+indicate whether a node/edge truely belongs to the partition (value is <code class="docutils literal notranslate"><span class="pre">True</span></code>)
+or is a HALO node/edge (value is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+<p>The <a class="reference internal" href="../generated/dgl.distributed.load_partition.html#dgl.distributed.load_partition" title="dgl.distributed.load_partition"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_partition()</span></code></a> function loads all data at once. Users can
+load features or the partition book using the <a class="reference internal" href="../generated/dgl.distributed.load_partition_feats.html#dgl.distributed.load_partition_feats" title="dgl.distributed.load_partition_feats"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.load_partition_feats()</span></code></a>
+and <a class="reference internal" href="../generated/dgl.distributed.load_partition_book.html#dgl.distributed.load_partition_book" title="dgl.distributed.load_partition_book"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.load_partition_book()</span></code></a> APIs respectively.</p>
+</section>
+<section id="parallel-metis-partitioning">
+<h2>Parallel METIS partitioning<a class="headerlink" href="#parallel-metis-partitioning" title="Link to this heading"></a></h2>
+<p>For massive graphs where parallel preprocessing is desired, DGL supports
+<a class="reference external" href="http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview">ParMETIS</a> as one
+of the choices of partitioning algorithms.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because ParMETIS does not support heterogeneous graph, users need to
+conduct ID conversion before and after running ParMETIS.
+Check out chapter <a class="reference internal" href="distributed-hetero.html#guide-distributed-hetero"><span class="std std-ref">7.5 Heterogeneous Graph Under The Hood</span></a> for explanation.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please make sure that the input graph to ParMETIS does not have
+duplicate edges (or parallel edges) and self-loop edges.</p>
+</div>
+<section id="parmetis-installation">
+<h3>ParMETIS Installation<a class="headerlink" href="#parmetis-installation" title="Link to this heading"></a></h3>
+<p>ParMETIS requires METIS and GKLib. Please follow the instructions <a class="reference external" href="https://github.com/KarypisLab/GKlib">here</a> to compile and install GKLib. For
+compiling and install METIS, please follow the instructions below to clone
+METIS with GIT and compile it with int64 support.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/KarypisLab/METIS.git
+make<span class="w"> </span>config<span class="w"> </span><span class="nv">shared</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">cc</span><span class="o">=</span>gcc<span class="w"> </span><span class="nv">prefix</span><span class="o">=</span>~/local<span class="w"> </span><span class="nv">i64</span><span class="o">=</span><span class="m">1</span>
+make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>For now, we need to compile and install ParMETIS manually. We clone the DGL branch of ParMETIS as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>dgl<span class="w"> </span>https://github.com/KarypisLab/ParMETIS.git
+</pre></div>
+</div>
+<p>Then compile and install ParMETIS.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>config<span class="w"> </span><span class="nv">cc</span><span class="o">=</span>mpicc<span class="w"> </span><span class="nv">prefix</span><span class="o">=</span>~/local
+make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Before running ParMETIS, we need to set two environment variables: <code class="docutils literal notranslate"><span class="pre">PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$HOME</span>/local/bin
+<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:<span class="nv">$HOME</span>/local/lib/
+</pre></div>
+</div>
+</section>
+<section id="input-format">
+<h3>Input format<a class="headerlink" href="#input-format" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As a prerequisite, read chapter <span class="xref std std-doc">guide-distributed-hetero</span> to understand
+how DGL organize heterogeneous graph for distributed training.</p>
+</div>
+<p>The input graph for ParMETIS is stored in three files with the following names:
+<code class="docutils literal notranslate"><span class="pre">xxx_nodes.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">xxx_edges.txt</span></code> and <code class="docutils literal notranslate"><span class="pre">xxx_stats.txt</span></code>, where <code class="docutils literal notranslate"><span class="pre">xxx</span></code> is a
+graph name.</p>
+<p>Each row in <code class="docutils literal notranslate"><span class="pre">xxx_nodes.txt</span></code> stores the information of a node. Row ID is
+also the <em>homogeneous</em> ID of a node, e.g., row 0 is for node 0; row 1 is for
+node 1, etc. Each row has the following format:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;node_type_id&gt; &lt;node_weight_list&gt; &lt;type_wise_node_id&gt;
+</pre></div>
+</div>
+<p>All fields are separated by whitespace:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;node_type_id&gt;</span></code> is an integer starting from 0. Each node type is mapped to
+an integer. For a homogeneous graph, its value is always 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;node_weight_list&gt;</span></code> are integers (separated by whitespace) that indicate
+the node weights used by ParMETIS to balance graph partitions. For homogeneous
+graphs, the list has only one integer while for heterogeneous graphs with
+<span class="math notranslate nohighlight">\(T\)</span> node types, the list should has <span class="math notranslate nohighlight">\(T\)</span> integers. If the node
+belongs to node type <span class="math notranslate nohighlight">\(t\)</span>, then all the integers except the <span class="math notranslate nohighlight">\(t^{th}\)</span>
+one are zero; the <span class="math notranslate nohighlight">\(t^{th}\)</span> integer is the weight of that node. ParMETIS
+will try to balance the total node weight of each partition. For heterogeneous
+graph, it will try to distribute nodes of the same type to all partitions.
+The recommended node weights are 1 for balancing the number of nodes in each
+partition or node degrees for balancing the number of edges in each partition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;type_wise_node_id&gt;</span></code> is an integer representing the node ID in its own type.</p></li>
+</ul>
+<p>Below shows an example of a node file for a heterogeneous graph with two node
+types. Node type 0 has three nodes; node type 1 has four nodes. It uses two
+node weights to ensure that ParMETIS will generate partitions with roughly the
+same number of nodes for type 0 and the same number of nodes for type 1.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0 1 0 0
+0 1 0 1
+0 1 0 2
+1 0 1 0
+1 0 1 1
+1 0 1 2
+1 0 1 3
+</pre></div>
+</div>
+<p>Similarly, each row in <code class="docutils literal notranslate"><span class="pre">xxx_edges.txt</span></code> stores the information of an edge. Row ID is
+also the <em>homogeneous</em> ID of an edge, e.g., row 0 is for edge 0; row 1 is for
+edge 1, etc. Each row has the following format:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;src_node_id&gt; &lt;dst_node_id&gt; &lt;type_wise_edge_id&gt; &lt;edge_type_id&gt;
+</pre></div>
+</div>
+<p>All fields are separated by whitespace:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;src_node_id&gt;</span></code> is the <em>homogeneous</em> ID of the source node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;dst_node_id&gt;</span></code> is the <em>homogeneous</em> ID of the destination node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;type_wise_edge_id&gt;</span></code> is the edge ID for the edge type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;edge_type_id&gt;</span></code> is an integer starting from 0. Each edge type is mapped to
+an integer. For a homogeneous graph, its value is always 0.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">xxx_stats.txt</span></code> stores some basic statistics of the graph. It has only one line with three fields
+separated by whitespace:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;num_nodes&gt; &lt;num_edges&gt; &lt;total_node_weights&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">num_nodes</span></code> stores the total number of nodes regardless of node types.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_edges</span></code> stores the total number of edges regardless of edge types.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">total_node_weights</span></code> stores the number of node weights in the node file.</p></li>
+</ul>
+</section>
+<section id="run-parmetis-and-output-format">
+<h3>Run ParMETIS and output format<a class="headerlink" href="#run-parmetis-and-output-format" title="Link to this heading"></a></h3>
+<p>ParMETIS contains a command called <code class="docutils literal notranslate"><span class="pre">pm_dglpart</span></code>, which loads the graph stored
+in the three files from the machine where <code class="docutils literal notranslate"><span class="pre">pm_dglpart</span></code> is invoked, distributes
+data to all machines in the cluster and invokes ParMETIS to partition the
+graph. When it completes, it generates three files for each partition:
+<code class="docutils literal notranslate"><span class="pre">p&lt;part_id&gt;-xxx_nodes.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">p&lt;part_id&gt;-xxx_edges.txt</span></code>,
+<code class="docutils literal notranslate"><span class="pre">p&lt;part_id&gt;-xxx_stats.txt</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ParMETIS reassigns IDs to nodes during the partitioning. After ID reassignment,
+the nodes in a partition are assigned with contiguous IDs; furthermore, the nodes of
+the same type are assigned with contiguous IDs.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">p&lt;part_id&gt;-xxx_nodes.txt</span></code> stores the node data of the partition. Each row represents
+a node with the following fields:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;node_id&gt; &lt;node_type_id&gt; &lt;node_weight_list&gt; &lt;type_wise_node_id&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;node_id&gt;</span></code> is the <em>homogeneous</em> node ID after ID reassignment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;node_type_id&gt;</span></code> is the node type ID.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;node_weight_list&gt;</span></code> is the node weight used by ParMETIS (copied from the input file).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;type_wise_node_id&gt;</span></code> is an integer representing the node ID in its own type.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">p&lt;part_id&gt;-xxx_edges.txt</span></code> stores the edge data of the partition. Each row represents
+an edge with the following fields:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;src_id&gt; &lt;dst_id&gt; &lt;orig_src_id&gt; &lt;orig_dst_id&gt; &lt;type_wise_edge_id&gt; &lt;edge_type_id&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;src_id&gt;</span></code> is the <em>homogeneous</em> ID of the source node after ID reassignment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;dst_id&gt;</span></code> is the <em>homogeneous</em> ID of the destination node after ID reassignment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;orig_src_id&gt;</span></code> is the <em>homogeneous</em> ID of the source node in the input graph.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;orig_dst_id&gt;</span></code> is the <em>homogeneous</em> ID of the destination node in the input graph.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;type_wise_edge_id&gt;</span></code> is the edge ID in its own type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;edge_type_id&gt;</span></code> is the edge type ID.</p></li>
+</ul>
+<p>When invoking <code class="docutils literal notranslate"><span class="pre">pm_dglpart</span></code>, the three input files: <code class="docutils literal notranslate"><span class="pre">xxx_nodes.txt</span></code>,
+<code class="docutils literal notranslate"><span class="pre">xxx_edges.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">xxx_stats.txt</span></code> should be located in the directory where
+<code class="docutils literal notranslate"><span class="pre">pm_dglpart</span></code> runs. The following command run four ParMETIS processes to
+partition the graph named <code class="docutils literal notranslate"><span class="pre">xxx</span></code> into eight partitions (each process handles
+two partitions).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">4</span><span class="w"> </span>pm_dglpart<span class="w"> </span>xxx<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<p>The output files from ParMETIS then need to be converted to the
+<a class="reference internal" href="distributed-preprocessing.html#guide-distributed-prep-partition"><span class="std std-ref">partition assignment format</span></a> to in
+order to run subsequent preprocessing steps.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="distributed-apis.html" class="btn btn-neutral float-left" title="7.3 Programming APIs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed-hetero.html" class="btn btn-neutral float-right" title="7.5 Heterogeneous Graph Under The Hood" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

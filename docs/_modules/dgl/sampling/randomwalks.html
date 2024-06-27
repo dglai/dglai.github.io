@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.sampling.randomwalks &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.sampling.randomwalks</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.sampling.randomwalks</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Random walk routines</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">F</span><span class="p">,</span> <span class="n">ndarray</span> <span class="k">as</span> <span class="n">nd</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">DGLError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;random_walk&quot;</span><span class="p">,</span> <span class="s2">&quot;pack_traces&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="random_walk">
+<a class="viewcode-back" href="../../../generated/dgl.sampling.random_walk.html#dgl.sampling.random_walk">[docs]</a>
+<span class="k">def</span> <span class="nf">random_walk</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">metapath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">prob</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">restart_prob</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_eids</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate random walk traces from an array of starting nodes based on the given metapath.</span>
+
+<span class="sd">    Each starting node will have one trace generated, which</span>
+
+<span class="sd">    1. Start from the given node and set ``t`` to 0.</span>
+<span class="sd">    2. Pick and traverse along edge type ``metapath[t]`` from the current node.</span>
+<span class="sd">    3. If no edge can be found, halt.  Otherwise, increment ``t`` and go to step 2.</span>
+
+<span class="sd">    To generate multiple traces for a single node, you can specify the same node multiple</span>
+<span class="sd">    times.</span>
+
+<span class="sd">    The returned traces all have length ``len(metapath) + 1``, where the first node</span>
+<span class="sd">    is the starting node itself.</span>
+
+<span class="sd">    If a random walk stops in advance, DGL pads the trace with -1 to have the same</span>
+<span class="sd">    length.</span>
+
+<span class="sd">    This function supports the graph on GPU and UVA sampling.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The graph.</span>
+<span class="sd">    nodes : Tensor</span>
+<span class="sd">        Node ID tensor from which the random walk traces starts.</span>
+
+<span class="sd">        The tensor must have the same dtype as the ID type of the graph.</span>
+<span class="sd">        The tensor must be on the same device as the graph or</span>
+<span class="sd">        on the GPU when the graph is pinned (UVA sampling).</span>
+<span class="sd">    metapath : list[str or tuple of str], optional</span>
+<span class="sd">        Metapath, specified as a list of edge types.</span>
+
+<span class="sd">        Mutually exclusive with :attr:`length`.</span>
+
+<span class="sd">        If omitted, DGL assumes that ``g`` only has one node &amp; edge type.  In this</span>
+<span class="sd">        case, the argument ``length`` specifies the length of random walk traces.</span>
+<span class="sd">    length : int, optional</span>
+<span class="sd">        Length of random walks.</span>
+
+<span class="sd">        Mutually exclusive with :attr:`metapath`.</span>
+
+<span class="sd">        Only used when :attr:`metapath` is None.</span>
+<span class="sd">    prob : str, optional</span>
+<span class="sd">        The name of the edge feature tensor on the graph storing the (unnormalized)</span>
+<span class="sd">        probabilities associated with each edge for choosing the next node.</span>
+
+<span class="sd">        The feature tensor must be non-negative and the sum of the probabilities</span>
+<span class="sd">        must be positive for the outbound edges of all nodes (although they don&#39;t have</span>
+<span class="sd">        to sum up to one).  The result will be undefined otherwise.</span>
+
+<span class="sd">        The feature tensor must be on the same device as the graph.</span>
+
+<span class="sd">        If omitted, DGL assumes that the neighbors are picked uniformly.</span>
+<span class="sd">    restart_prob : float or Tensor, optional</span>
+<span class="sd">        Probability to terminate the current trace before each transition.</span>
+
+<span class="sd">        If a tensor is given, :attr:`restart_prob` should be on the same device as the graph</span>
+<span class="sd">        or on the GPU when the graph is pinned (UVA sampling),</span>
+<span class="sd">        and have the same length as :attr:`metapath` or :attr:`length`.</span>
+<span class="sd">    return_eids : bool, optional</span>
+<span class="sd">        If True, additionally return the edge IDs traversed.</span>
+
+<span class="sd">        Default: False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    traces : Tensor</span>
+<span class="sd">        A 2-dimensional node ID tensor with shape ``(num_seeds, len(metapath) + 1)`` or</span>
+<span class="sd">        ``(num_seeds, length + 1)`` if :attr:`metapath` is None.</span>
+<span class="sd">    eids : Tensor, optional</span>
+<span class="sd">        A 2-dimensional edge ID tensor with shape ``(num_seeds, len(metapath))`` or</span>
+<span class="sd">        ``(num_seeds, length)`` if :attr:`metapath` is None.  Only returned if</span>
+<span class="sd">        :attr:`return_eids` is True.</span>
+<span class="sd">    types : Tensor</span>
+<span class="sd">        A 1-dimensional node type ID tensor with shape ``(len(metapath) + 1)`` or</span>
+<span class="sd">        ``(length + 1)``.</span>
+<span class="sd">        The type IDs match the ones in the original graph ``g``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following creates a homogeneous graph:</span>
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1, 1, 2, 3], [1, 2, 3, 0, 0]))</span>
+
+<span class="sd">    Normal random walk:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.sampling.random_walk(g1, [0, 1, 2, 0], length=4)</span>
+<span class="sd">    (tensor([[0, 1, 2, 0, 1],</span>
+<span class="sd">             [1, 3, 0, 1, 3],</span>
+<span class="sd">             [2, 0, 1, 3, 0],</span>
+<span class="sd">             [0, 1, 2, 0, 1]]), tensor([0, 0, 0, 0, 0]))</span>
+
+<span class="sd">    Or returning edge IDs:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.sampling.random_walk(g1, [0, 1, 2, 0], length=4, return_eids=True)</span>
+<span class="sd">    (tensor([[0, 1, 2, 0, 1],</span>
+<span class="sd">             [1, 3, 0, 1, 2],</span>
+<span class="sd">             [2, 0, 1, 3, 0],</span>
+<span class="sd">             [0, 1, 3, 0, 1]]),</span>
+<span class="sd">     tensor([[0, 1, 3, 0],</span>
+<span class="sd">             [2, 4, 0, 1],</span>
+<span class="sd">             [3, 0, 2, 4],</span>
+<span class="sd">             [0, 2, 4, 0]]),</span>
+<span class="sd">     tensor([0, 0, 0, 0, 0]))</span>
+
+<span class="sd">    The first tensor indicates the random walk path for each seed node.</span>
+<span class="sd">    The j-th element in the second tensor indicates the node type ID of the j-th node</span>
+<span class="sd">    in every path.  In this case, it is returning all 0.</span>
+
+<span class="sd">    Random walk with restart:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.sampling.random_walk_with_restart(g1, [0, 1, 2, 0], length=4, restart_prob=0.5)</span>
+<span class="sd">    (tensor([[ 0, -1, -1, -1, -1],</span>
+<span class="sd">             [ 1,  3,  0, -1, -1],</span>
+<span class="sd">             [ 2, -1, -1, -1, -1],</span>
+<span class="sd">             [ 0, -1, -1, -1, -1]]), tensor([0, 0, 0, 0, 0]))</span>
+
+<span class="sd">    Non-uniform random walk:</span>
+
+<span class="sd">    &gt;&gt;&gt; g1.edata[&#39;p&#39;] = torch.FloatTensor([1, 0, 1, 1, 1])     # disallow going from 1 to 2</span>
+<span class="sd">    &gt;&gt;&gt; dgl.sampling.random_walk(g1, [0, 1, 2, 0], length=4, prob=&#39;p&#39;)</span>
+<span class="sd">    (tensor([[0, 1, 3, 0, 1],</span>
+<span class="sd">             [1, 3, 0, 1, 3],</span>
+<span class="sd">             [2, 0, 1, 3, 0],</span>
+<span class="sd">             [0, 1, 3, 0, 1]]), tensor([0, 0, 0, 0, 0]))</span>
+
+<span class="sd">    Metapath-based random walk:</span>
+
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.heterograph({</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;follow&#39;, &#39;user&#39;): ([0, 1, 1, 2, 3], [1, 2, 3, 0, 0]),</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;view&#39;, &#39;item&#39;): ([0, 0, 1, 2, 3, 3], [0, 1, 1, 2, 2, 1]),</span>
+<span class="sd">    ...     (&#39;item&#39;, &#39;viewed-by&#39;, &#39;user&#39;): ([0, 1, 1, 2, 2, 1], [0, 0, 1, 2, 3, 3])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.sampling.random_walk(</span>
+<span class="sd">    ...     g2, [0, 1, 2, 0], metapath=[&#39;follow&#39;, &#39;view&#39;, &#39;viewed-by&#39;] * 2)</span>
+<span class="sd">    (tensor([[0, 1, 1, 1, 2, 2, 3],</span>
+<span class="sd">             [1, 3, 1, 1, 2, 2, 2],</span>
+<span class="sd">             [2, 0, 1, 1, 3, 1, 1],</span>
+<span class="sd">             [0, 1, 1, 0, 1, 1, 3]]), tensor([0, 0, 1, 0, 0, 1, 0]))</span>
+
+<span class="sd">    Metapath-based random walk, with restarts only on items (i.e. after traversing a &quot;view&quot;</span>
+<span class="sd">    relationship):</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.sampling.random_walk(</span>
+<span class="sd">    ...     g2, [0, 1, 2, 0], metapath=[&#39;follow&#39;, &#39;view&#39;, &#39;viewed-by&#39;] * 2,</span>
+<span class="sd">    ...     restart_prob=torch.FloatTensor([0, 0.5, 0, 0, 0.5, 0]))</span>
+<span class="sd">    (tensor([[ 0,  1, -1, -1, -1, -1, -1],</span>
+<span class="sd">             [ 1,  3,  1,  0,  1,  1,  0],</span>
+<span class="sd">             [ 2,  0,  1,  1,  3,  2,  2],</span>
+<span class="sd">             [ 0,  1,  1,  3,  0,  0,  0]]), tensor([0, 0, 1, 0, 0, 1, 0]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_etypes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">)</span>
+    <span class="n">n_ntypes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">metapath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n_etypes</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">n_ntypes</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;metapath not specified and the graph is not homogeneous.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Please specify either the metapath or the random walk length.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">metapath</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">length</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">metapath</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">get_etype_id</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span> <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">metapath</span><span class="p">]</span>
+
+    <span class="n">gidx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">_graph</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="c1"># (Xin) Since metapath array is created by us, safe to skip the check</span>
+    <span class="c1">#       and keep it on CPU to make max_nodes sanity check easier.</span>
+    <span class="n">metapath</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">metapath</span><span class="p">),</span> <span class="n">g</span><span class="o">.</span><span class="n">idtype</span><span class="p">))</span>
+
+    <span class="c1"># Load the probability tensor from the edge frames</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_dgl_context</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prob</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">p_nd</span> <span class="o">=</span> <span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">p_nd</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="n">prob_nd</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">prob</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prob_nd</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="n">p_nd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prob_nd</span><span class="p">)</span>
+
+    <span class="c1"># Actual random walk</span>
+    <span class="k">if</span> <span class="n">restart_prob</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">traces</span><span class="p">,</span> <span class="n">eids</span><span class="p">,</span> <span class="n">types</span> <span class="o">=</span> <span class="n">_CAPI_DGLSamplingRandomWalk</span><span class="p">(</span>
+            <span class="n">gidx</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">metapath</span><span class="p">,</span> <span class="n">p_nd</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">restart_prob</span><span class="p">):</span>
+        <span class="n">restart_prob</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">restart_prob</span><span class="p">)</span>
+        <span class="n">traces</span><span class="p">,</span> <span class="n">eids</span><span class="p">,</span> <span class="n">types</span> <span class="o">=</span> <span class="n">_CAPI_DGLSamplingRandomWalkWithStepwiseRestart</span><span class="p">(</span>
+            <span class="n">gidx</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">metapath</span><span class="p">,</span> <span class="n">p_nd</span><span class="p">,</span> <span class="n">restart_prob</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">restart_prob</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">traces</span><span class="p">,</span> <span class="n">eids</span><span class="p">,</span> <span class="n">types</span> <span class="o">=</span> <span class="n">_CAPI_DGLSamplingRandomWalkWithRestart</span><span class="p">(</span>
+            <span class="n">gidx</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">metapath</span><span class="p">,</span> <span class="n">p_nd</span><span class="p">,</span> <span class="n">restart_prob</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;restart_prob should be float or Tensor.&quot;</span><span class="p">)</span>
+
+    <span class="n">traces</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">types</span><span class="p">)</span>
+    <span class="n">eids</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">eids</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">traces</span><span class="p">,</span> <span class="n">eids</span><span class="p">,</span> <span class="n">types</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_eids</span> <span class="k">else</span> <span class="p">(</span><span class="n">traces</span><span class="p">,</span> <span class="n">types</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="pack_traces">
+<a class="viewcode-back" href="../../../generated/dgl.sampling.pack_traces.html#dgl.sampling.pack_traces">[docs]</a>
+<span class="k">def</span> <span class="nf">pack_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span> <span class="n">types</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pack the padded traces returned by ``random_walk()`` into a concatenated array.</span>
+<span class="sd">    The padding values (-1) are removed, and the length and offset of each trace is</span>
+<span class="sd">    returned along with the concatenated node ID and node type arrays.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    traces : Tensor</span>
+<span class="sd">        A 2-dimensional node ID tensor.  Must be on CPU and either ``int32`` or ``int64``.</span>
+<span class="sd">    types : Tensor</span>
+<span class="sd">        A 1-dimensional node type ID tensor.  Must be on CPU and either ``int32`` or ``int64``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    concat_vids : Tensor</span>
+<span class="sd">        An array of all node IDs concatenated and padding values removed.</span>
+<span class="sd">    concat_types : Tensor</span>
+<span class="sd">        An array of node types corresponding for each node in ``concat_vids``.</span>
+<span class="sd">        Has the same length as ``concat_vids``.</span>
+<span class="sd">    lengths : Tensor</span>
+<span class="sd">        Length of each trace in the original traces tensor.</span>
+<span class="sd">    offsets : Tensor</span>
+<span class="sd">        Offset of each trace in the originial traces tensor in the new concatenated tensor.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The returned tensors are on CPU.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.heterograph({</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;follow&#39;, &#39;user&#39;): ([0, 1, 1, 2, 3], [1, 2, 3, 0, 0]),</span>
+<span class="sd">    ...     (&#39;user&#39;, &#39;view&#39;, &#39;item&#39;): ([0, 0, 1, 2, 3, 3], [0, 1, 1, 2, 2, 1]),</span>
+<span class="sd">    ...     (&#39;item&#39;, &#39;viewed-by&#39;, &#39;user&#39;): ([0, 1, 1, 2, 2, 1], [0, 0, 1, 2, 3, 3])</span>
+<span class="sd">    &gt;&gt;&gt; traces, types = dgl.sampling.random_walk(</span>
+<span class="sd">    ...     g2, [0, 0], metapath=[&#39;follow&#39;, &#39;view&#39;, &#39;viewed-by&#39;] * 2,</span>
+<span class="sd">    ...     restart_prob=torch.FloatTensor([0, 0.5, 0, 0, 0.5, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; traces, types</span>
+<span class="sd">    (tensor([[ 0,  1, -1, -1, -1, -1, -1],</span>
+<span class="sd">             [ 0,  1,  1,  3,  0,  0,  0]]), tensor([0, 0, 1, 0, 0, 1, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; concat_vids, concat_types, lengths, offsets = dgl.sampling.pack_traces(traces, types)</span>
+<span class="sd">    &gt;&gt;&gt; concat_vids</span>
+<span class="sd">    tensor([0, 1, 0, 1, 1, 3, 0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; concat_types</span>
+<span class="sd">    tensor([0, 0, 0, 0, 1, 0, 0, 1, 0])</span>
+<span class="sd">    &gt;&gt;&gt; lengths</span>
+<span class="sd">    tensor([2, 7])</span>
+<span class="sd">    &gt;&gt;&gt; offsets</span>
+<span class="sd">    tensor([0, 2]))</span>
+
+<span class="sd">    The first tensor ``concat_vids`` is the concatenation of all paths, i.e. flattened array</span>
+<span class="sd">    of ``traces``, excluding all padding values (-1).</span>
+
+<span class="sd">    The second tensor ``concat_types`` stands for the node type IDs of all corresponding nodes</span>
+<span class="sd">    in the first tensor.</span>
+
+<span class="sd">    The third and fourth tensor indicates the length and the offset of each path.  With these</span>
+<span class="sd">    tensors it is easy to obtain the i-th random walk path with:</span>
+
+<span class="sd">    &gt;&gt;&gt; vids = concat_vids.split(lengths.tolist())</span>
+<span class="sd">    &gt;&gt;&gt; vtypes = concat_vtypes.split(lengths.tolist())</span>
+<span class="sd">    &gt;&gt;&gt; vids[1], vtypes[1]</span>
+<span class="sd">    (tensor([0, 1, 1, 3, 0, 0, 0]), tensor([0, 0, 1, 0, 0, 1, 0]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span> <span class="ow">and</span> <span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span> <span class="o">==</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+    <span class="p">),</span> <span class="s2">&quot;traces must be a CPU tensor&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="ow">and</span> <span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">==</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+    <span class="p">),</span> <span class="s2">&quot;types must be a CPU tensor&quot;</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">types</span><span class="p">)</span>
+
+    <span class="n">concat_vids</span><span class="p">,</span> <span class="n">concat_types</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">offsets</span> <span class="o">=</span> <span class="n">_CAPI_DGLSamplingPackTraces</span><span class="p">(</span>
+        <span class="n">traces</span><span class="p">,</span> <span class="n">types</span>
+    <span class="p">)</span>
+
+    <span class="n">concat_vids</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">concat_vids</span><span class="p">)</span>
+    <span class="n">concat_types</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">concat_types</span><span class="p">)</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span>
+    <span class="n">offsets</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">offsets</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">concat_vids</span><span class="p">,</span> <span class="n">concat_types</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">offsets</span></div>
+
+
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.sampling.randomwalks&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

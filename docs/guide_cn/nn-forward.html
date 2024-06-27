@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.2 编写DGL NN模块的forward函数 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.3 异构图上的GraphConv模块" href="nn-heterograph.html" />
+    <link rel="prev" title="3.1 DGL NN模块的构造函数" href="nn-construction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">用户指南【包含过时信息】</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">第1章：图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">第2章：消息传递范式</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nn.html">第3章：构建图神经网络（GNN）模块</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nn-construction.html">3.1 DGL NN模块的构造函数</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.2 编写DGL NN模块的forward函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nn-heterograph.html">3.3 异构图上的GraphConv模块</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">第4章：图数据处理管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">第5章：训练图神经网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">第6章：在大图上的随机（批次）训练</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">第7章：分布式训练</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">用户指南【包含过时信息】</a></li>
+          <li class="breadcrumb-item"><a href="nn.html">第3章：构建图神经网络（GNN）模块</a></li>
+      <li class="breadcrumb-item active">3.2 编写DGL NN模块的forward函数</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_cn/nn-forward.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dgl-nnforward">
+<span id="guide-cn-nn-forward"></span><h1>3.2 编写DGL NN模块的forward函数<a class="headerlink" href="#dgl-nnforward" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/nn-forward.html#guide-nn-forward"><span class="std std-ref">(English Version)</span></a></p>
+<p>在NN模块中， <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 函数执行了实际的消息传递和计算。与通常以张量为参数的PyTorch NN模块相比，
+DGL NN模块额外增加了1个参数 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code></a>。<code class="docutils literal notranslate"><span class="pre">forward()</span></code> 函数的内容一般可以分为3项操作：</p>
+<ul class="simple">
+<li><p>检测输入图对象是否符合规范。</p></li>
+<li><p>消息传递和聚合。</p></li>
+<li><p>聚合后，更新特征作为输出。</p></li>
+</ul>
+<p>下文展示了SAGEConv示例中的 <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 函数。</p>
+<section id="id1">
+<h2>输入图对象的规范检测<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+        <span class="c1"># 指定图类型，然后根据图类型扩展输入特征</span>
+        <span class="n">feat_src</span><span class="p">,</span> <span class="n">feat_dst</span> <span class="o">=</span> <span class="n">expand_as_pair</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">forward()</span></code> 函数需要处理输入的许多极端情况，这些情况可能导致计算和消息传递中的值无效。
+比如在 <a class="reference internal" href="../generated/dgl.nn.pytorch.conv.GraphConv.html#dgl.nn.pytorch.conv.GraphConv" title="dgl.nn.pytorch.conv.GraphConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConv</span></code></a> 等conv模块中，DGL会检查输入图中是否有入度为0的节点。
+当1个节点入度为0时， <code class="docutils literal notranslate"><span class="pre">mailbox</span></code> 将为空，并且聚合函数的输出值全为0，
+这可能会导致模型性能不佳。但是，在 <a class="reference internal" href="../generated/dgl.nn.pytorch.conv.SAGEConv.html#dgl.nn.pytorch.conv.SAGEConv" title="dgl.nn.pytorch.conv.SAGEConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">SAGEConv</span></code></a> 模块中，被聚合的特征将会与节点的初始特征拼接起来，
+<code class="docutils literal notranslate"><span class="pre">forward()</span></code> 函数的输出不会全为0。在这种情况下，无需进行此类检验。</p>
+<p>DGL NN模块可在不同类型的图输入中重复使用，包括：同构图、异构图（<a class="reference internal" href="graph-heterogeneous.html#guide-cn-graph-heterogeneous"><span class="std std-ref">1.5 异构图</span></a>）和子图块（<a class="reference internal" href="minibatch.html#guide-cn-minibatch"><span class="std std-ref">第6章：在大图上的随机（批次）训练</span></a>）。</p>
+<p>SAGEConv的数学公式如下：</p>
+<div class="math notranslate nohighlight">
+\[h_{\mathcal{N}(dst)}^{(l+1)}  = \mathrm{aggregate}
+        \left(\{h_{src}^{l}, \forall src \in \mathcal{N}(dst) \}\right)\]</div>
+<div class="math notranslate nohighlight">
+\[h_{dst}^{(l+1)} = \sigma \left(W \cdot \mathrm{concat}
+       (h_{dst}^{l}, h_{\mathcal{N}(dst)}^{l+1}) + b \right)\]</div>
+<div class="math notranslate nohighlight">
+\[h_{dst}^{(l+1)} = \mathrm{norm}(h_{dst}^{l+1})\]</div>
+<p>源节点特征 <code class="docutils literal notranslate"><span class="pre">feat_src</span></code> 和目标节点特征 <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> 需要根据图类型被指定。
+用于指定图类型并将 <code class="docutils literal notranslate"><span class="pre">feat</span></code> 扩展为 <code class="docutils literal notranslate"><span class="pre">feat_src</span></code> 和 <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> 的函数是 <code class="xref py py-meth docutils literal notranslate"><span class="pre">expand_as_pair()</span></code>。
+该函数的细节如下所示。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">expand_as_pair</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="c1"># 二分图的情况</span>
+        <span class="k">return</span> <span class="n">input_</span>
+    <span class="k">elif</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="c1"># 子图块的情况</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">input_dst</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">narrow_row</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_dst</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">narrow_row</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">input_</span><span class="p">,</span> <span class="n">input_dst</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># 同构图的情况</span>
+        <span class="k">return</span> <span class="n">input_</span><span class="p">,</span> <span class="n">input_</span>
+</pre></div>
+</div>
+<p>对于同构图上的全图训练，源节点和目标节点相同，它们都是图中的所有节点。</p>
+<p>在异构图的情况下，图可以分为几个二分图，每种关系对应一个。关系表示为 <code class="docutils literal notranslate"><span class="pre">(src_type,</span> <span class="pre">edge_type,</span> <span class="pre">dst_dtype)</span></code>。
+当输入特征 <code class="docutils literal notranslate"><span class="pre">feat</span></code> 是1个元组时，图将会被视为二分图。元组中的第1个元素为源节点特征，第2个元素为目标节点特征。</p>
+<p>在小批次训练中，计算应用于给定的一堆目标节点所采样的子图。子图在DGL中称为区块(<code class="docutils literal notranslate"><span class="pre">block</span></code>)。
+在区块创建的阶段，<code class="docutils literal notranslate"><span class="pre">dst</span> <span class="pre">nodes</span></code> 位于节点列表的最前面。通过索引 <code class="docutils literal notranslate"><span class="pre">[0:g.number_of_dst_nodes()]</span></code> 可以找到 <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code>。</p>
+<p>确定 <code class="docutils literal notranslate"><span class="pre">feat_src</span></code> 和 <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> 之后，以上3种图类型的计算方法是相同的。</p>
+</section>
+<section id="id2">
+<h2>消息传递和聚合<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.function</span> <span class="k">as</span> <span class="nn">fn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">dgl.utils</span> <span class="kn">import</span> <span class="n">check_eq_shape</span>
+
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_src</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span>
+<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
+    <span class="n">check_eq_shape</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_src</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_dst</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="c1"># 除以入度</span>
+    <span class="n">degs</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">feat_dst</span><span class="p">)</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">degs</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;pool&#39;</span><span class="p">:</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc_pool</span><span class="p">(</span><span class="n">feat_src</span><span class="p">))</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Aggregator type </span><span class="si">{}</span><span class="s1"> not recognized.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span><span class="p">))</span>
+
+<span class="c1"># GraphSAGE中gcn聚合不需要fc_self</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_neigh</span><span class="p">(</span><span class="n">h_neigh</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_self</span><span class="p">(</span><span class="n">h_self</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_neigh</span><span class="p">(</span><span class="n">h_neigh</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>上面的代码执行了消息传递和聚合的计算。这部分代码会因模块而异。请注意，代码中的所有消息传递均使用  <a class="reference internal" href="../generated/dgl.DGLGraph.update_all.html#dgl.DGLGraph.update_all" title="dgl.DGLGraph.update_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_all()</span></code></a> API和
+DGL内置的消息/聚合函数来实现，以充分利用 <a class="reference internal" href="message-efficient.html#guide-cn-message-passing-efficient"><span class="std std-ref">2.2 编写高效的消息传递代码</span></a> 里所介绍的性能优化。</p>
+</section>
+<section id="id3">
+<h2>聚合后，更新特征作为输出<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 激活函数</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="c1"># 归一化</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">rst</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">forward()</span></code> 函数的最后一部分是在完成消息聚合后更新节点的特征。
+常见的更新操作是根据构造函数中设置的选项来应用激活函数和进行归一化。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="nn-construction.html" class="btn btn-neutral float-left" title="3.1 DGL NN模块的构造函数" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="nn-heterograph.html" class="btn btn-neutral float-right" title="3.3 异构图上的GraphConv模块" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

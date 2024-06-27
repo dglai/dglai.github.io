@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Improve Scalability on Multi-Core CPUs &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CPU Best Practices" href="cpu_best_practises.html" />
+    <link rel="prev" title="Training on CPUs" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Training on CPUs</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Improve Scalability on Multi-Core CPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpu_best_practises.html">CPU Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Training on CPUs</a></li>
+      <li class="breadcrumb-item active">Improve Scalability on Multi-Core CPUs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorials/cpu/argo_tutorial.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Improve-Scalability-on-Multi-Core-CPUs">
+<h1>Improve Scalability on Multi-Core CPUs<a class="headerlink" href="#Improve-Scalability-on-Multi-Core-CPUs" title="Link to this heading"></a></h1>
+<p>Graph Neural Network (GNN) training suffers from low scalability on multi-core CPUs. Specificially, the performance often caps at 16 cores, and no improvement is observed when applying more than 16 cores [#f1]<em>. ARGO is a runtime system that offers scalable performance.
+With ARGO enabled, we are able to scale over 64 cores, allowing ARGO to speedup GNN training (in terms of epoch time) by up to 4.30x and 3.32x on a Xeon 8380H and a Xeon 6430L, respectively [#f2]</em>. This chapter focus on how to setup ARGO to unleash the potential of multi-core CPUs to speedup GNN training.</p>
+<section id="Installation">
+<h2>Installation<a class="headerlink" href="#Installation" title="Link to this heading"></a></h2>
+<p>ARGO utilizes the scikit-optimize library for auto-tuning. Please install scikit-optimize to run ARGO: .. code-block:: shell conda install -c conda-forge “scikit-optimize&gt;=0.9.0” or .. code-block:: shell pip install scikit-optimize&gt;=0.9</p>
+</section>
+<section id="Enabling-ARGO-on-your-own-GNN-program">
+<h2>Enabling ARGO on your own GNN program<a class="headerlink" href="#Enabling-ARGO-on-your-own-GNN-program" title="Link to this heading"></a></h2>
+<p>In this section, we provide a step-by-step tutorial on how to enable ARGO on a DGL program. We use the <em>ogb_example.py</em> [#f3]_ as an example.</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>We also provide the complete example file <em>ogb_example_ARGO.py</em> [#f4]_ which followed the steps below to enable ARGO on <em>ogb_example.py</em>.</p>
+</p></div>
+<section id="Step-1">
+<h3>Step 1<a class="headerlink" href="#Step-1" title="Link to this heading"></a></h3>
+<p>First, include all necessary packages on top of the file. Please place your file and <em>argo.py</em> [#f5]_ in the same directory.</p>
+</section>
+<section id="Step-2">
+<h3>Step 2<a class="headerlink" href="#Step-2" title="Link to this heading"></a></h3>
+<p>Setup PyTorch Distributed Data Parallel (DDP)</p>
+<p>2.1. Add the initialization function on top of the training program, and wrap the <code class="docutils literal notranslate"><span class="pre">model</span></code> with the DDP wrapper .. code-block:: python def train(…): dist.init_process_group(‘gloo’, rank=rank, world_size=world_size) # newly added model = SAGE(…) # original code model = DistributedDataParallel(model) # newly added …</p>
+<p>2.2. In the main program, add the following before launching the training function .. code-block:: python … os.environ[‘MASTER_ADDR’] = ‘127.0.0.1’ os.environ[‘MASTER_PORT’] = ‘29501’ mp.set_start_method(‘fork’, force=True) train(args, device, data) # original code for launching the training function</p>
+</section>
+<section id="Step-3">
+<h3>Step 3<a class="headerlink" href="#Step-3" title="Link to this heading"></a></h3>
+<p>Enable ARGO by initializing the runtime system, and wrapping the training function .. code-block:: python runtime = ARGO(n_search = 15, epoch = args.num_epochs, batch_size = args.batch_size) # initialization runtime.run(train, args=(args, device, data)) # wrap the training function</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>ARGO takes three input parameters: number of searches <em>n_search</em>, number of epochs, and the mini-batch size. Increasing <em>n_search</em> potentially leads to a better configuration with less epoch time; however, searching itself also causes extra overhead. We recommend setting <em>n_search</em> from 15 to 45 for an optimal overall performance.</p>
+</p></div>
+</section>
+<section id="Step-4">
+<h3>Step 4<a class="headerlink" href="#Step-4" title="Link to this heading"></a></h3>
+<p>Modify the input of the training function, by directly adding ARGO parameters after the original inputs.</p>
+<p>This is the original function: .. code-block:: python def train(args, device, data):</p>
+<p>Add the following variables: <em>rank, world_size, comp_core, load_core, counter, b_size, ep</em> .. code-block:: python def train(args, device, data, rank, world_size, comp_core, load_core, counter, b_size, ep):</p>
+</section>
+<section id="Step-5">
+<h3>Step 5<a class="headerlink" href="#Step-5" title="Link to this heading"></a></h3>
+<p>Modify the <em>dataloader</em> function in the training function .. code-block:: python dataloader = dgl.dataloading.DataLoader( g, train_nid, sampler, batch_size=b_size, # modified shuffle=True, drop_last=False, num_workers=len(load_core), # modified use_ddp = True) # newly added</p>
+</section>
+<section id="Step-6">
+<h3>Step 6<a class="headerlink" href="#Step-6" title="Link to this heading"></a></h3>
+<p>Enable core-binding by adding <em>enable_cpu_affinity()</em> before the training for-loop, and also change the number of epochs into the variable <em>ep</em>: .. code-block:: python with dataloader.enable_cpu_affinity(loader_cores=load_core, compute_cores=comp_core): for epoch in range(ep): # change num_epochs to ep</p>
+</section>
+<section id="Step-7">
+<h3>Step 7<a class="headerlink" href="#Step-7" title="Link to this heading"></a></h3>
+<p>Last step! Load the model before training and save it afterward.</p>
+<p>Original Program: .. code-block:: python with dataloader.enable_cpu_affinity(loader_cores=load_core, compute_cores=comp_core): for epoch in range(ep): … # training operations</p>
+<p>Modified: .. code-block:: python PATH = “model.pt” if counter[0] != 0: checkpoint = th.load(PATH) model.load_state_dict(checkpoint[‘model_state_dict’]) optimizer.load_state_dict(checkpoint[‘optimizer_state_dict’]) epoch = checkpoint[‘epoch’] loss = checkpoint[‘loss’]</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>with dataloader.enable_cpu_affinity(loader_cores=load_core, compute_cores=comp_core):
+    for epoch in range(ep):
+    ... # training operations
+
+dist.barrier()
+if rank == 0:
+    th.save({&#39;epoch&#39;: counter[0],
+                &#39;model_state_dict&#39;: model.state_dict(),
+                &#39;optimizer_state_dict&#39;: optimizer.state_dict(),
+                &#39;loss&#39;: loss,
+                }, PATH)
+</pre></div>
+</div>
+</section>
+<section id="Step-8">
+<h3>Step 8<a class="headerlink" href="#Step-8" title="Link to this heading"></a></h3>
+<p>Done! You can now run your GNN program with ARGO enabled. .. code-block:: shell python .py</p>
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/argo_scale.png">https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/argo_scale.png</a> .. [#f2] <a class="reference external" href="https://arxiv.org/abs/2402.03671">https://arxiv.org/abs/2402.03671</a> .. [#f3] <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/ogb_example.py">https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/ogb_example.py</a> .. [#f4] <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/ogb_example_ARGO.py">https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/ogb_example_ARGO.py</a> .. [#f5] <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/argo.py">https://github.com/dmlc/dgl/blob/master/examples/pytorch/argo/argo.py</a></p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Training on CPUs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cpu_best_practises.html" class="btn btn-neutral float-right" title="CPU Best Practices" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

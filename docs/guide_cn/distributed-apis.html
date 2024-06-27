@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.2 分布式计算的API &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.3 运行分布式训练/推断所需的工具" href="distributed-tools.html" />
+    <link rel="prev" title="7.1 分布式训练所需的图数据预处理" href="distributed-preprocessing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">用户指南【包含过时信息】</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">第1章：图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">第2章：消息传递范式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">第3章：构建图神经网络（GNN）模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">第4章：图数据处理管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">第5章：训练图神经网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">第6章：在大图上的随机（批次）训练</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="distributed.html">第7章：分布式训练</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="distributed-preprocessing.html">7.1 分布式训练所需的图数据预处理</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">7.2 分布式计算的API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-tools.html">7.3 运行分布式训练/推断所需的工具</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">用户指南【包含过时信息】</a></li>
+          <li class="breadcrumb-item"><a href="distributed.html">第7章：分布式训练</a></li>
+      <li class="breadcrumb-item active">7.2 分布式计算的API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_cn/distributed-apis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api">
+<span id="guide-cn-distributed-apis"></span><h1>7.2 分布式计算的API<a class="headerlink" href="#api" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/distributed-apis.html#guide-distributed-apis"><span class="std std-ref">(English Version)</span></a></p>
+<p>本节介绍了在训练脚本中使用的分布式计算API。DGL提供了三种分布式数据结构和多种API，用于初始化、分布式采样和数据分割。
+对于分布式训练/推断，DGL提供了三种分布式数据结构：用于分布式图的 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a>、
+用于分布式张量的 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 和用于分布式可学习嵌入的
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a>。</p>
+<section id="dgl">
+<h2>DGL分布式模块的初始化<a class="headerlink" href="#dgl" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize()</span></code></a> 可以用于初始化分布式模块。当训练脚本在训练器模式下运行时，
+这个API会与DGL服务器建立连接并创建采样器进程。当脚本在服务器模式下运行时，这个API将运行服务器代码，
+直到训练任务结束。必须在DGL的任何其他分布式API之前，调用此API。在使用PyTorch时，必须在
+<code class="docutils literal notranslate"><span class="pre">torch.distributed.init_process_group</span></code> 之前调用 <a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize()</span></code></a>。
+通常，初始化API应按以下顺序调用：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;ip_config.txt&#39;</span><span class="p">)</span>
+<span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">init_process_group</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;gloo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: 如果训练脚本里包含需要在服务器(细节内容可以在下面的DistTensor和DistEmbedding章节里查看)上调用的用户自定义函数(UDF)，
+这些UDF必须在 <a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize()</span></code></a> 之前被声明。</p>
+</section>
+<section id="id1">
+<h2>分布式图<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 是一个Python类，用于访问计算机集群中的图结构和节点/边特征。每台计算机负责一个且只负责一个分区。
+它加载分区数据(包括分区中的图结构、节点数据和边数据)，并使集群中的所有训练器均可访问它们。
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 提供了一小部分 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a> 的API以方便数据访问。</p>
+<p><strong>Note</strong>: <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 当前仅支持一种节点类型和一种边类型的图。</p>
+<section id="id2">
+<h3>分布式模式与独立模式<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 可以在两种模式下运行：分布式模式和独立模式。
+当用户在Python命令行或Jupyter Notebook中执行训练脚本时，它将以独立模式运行。也就是说，它在单个进程中运行所有计算，
+并且不与任何其他进程通信。因此，独立模式要求输入图仅具有一个分区。此模式主要用于开发和测试
+(例如，在Jupyter Notebook中开发和运行代码)。当用户使用启动脚本执行训练脚本时(请参见启动脚本部分)，
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 将以分布式模式运行。启动脚本在后台启动服务器(包括访问节点/边特征和图采样)，
+并将分区数据自动加载到每台计算机中。<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 与集群中的服务器连接并通过网络访问它们。</p>
+</section>
+<section id="distgraph">
+<h3>创建DistGraph<a class="headerlink" href="#distgraph" title="Link to this heading"></a></h3>
+<p>在分布式模式下，<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 的创建需要(定义)在图划分期间的图名称。
+图名称标识了集群中所需加载的图。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>在独立模式下运行时，DistGraph将图数据加载到本地计算机中。因此，用户需要提供分区配置文件，其中包含有关输入图的所有信息。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="n">part_config</span><span class="o">=</span><span class="s1">&#39;data/graph_name.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: 在当前实现中，DGL仅允许创建单个DistGraph对象。销毁DistGraph并创建一个新DistGraph的行为没有被定义。</p>
+</section>
+<section id="id3">
+<h3>访问图结构<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 提供了几个API来访问图结构。当前，它们主要被用来提供图信息，例如节点和边的数量。
+主要应用场景是运行采样API以支持小批量训练(请参阅下文里分布式图采样部分)。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>访问节点/边数据<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>与 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a> 一样， <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 也提供了
+<code class="docutils literal notranslate"><span class="pre">ndata</span></code> 和 <code class="docutils literal notranslate"><span class="pre">edata</span></code> 来访问节点和边中的数据。它们的区别在于
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 中的 <code class="docutils literal notranslate"><span class="pre">ndata</span></code> / <code class="docutils literal notranslate"><span class="pre">edata</span></code> 返回的是 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a>，
+而不是底层框架里的张量。用户还可以将新的 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 分配给
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 作为节点数据或边数据。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">]</span>
+<span class="o">&lt;</span><span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">dist_graph</span><span class="o">.</span><span class="n">DistTensor</span> <span class="n">at</span> <span class="mh">0x7fec820937b8</span><span class="o">&gt;</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2>分布式张量<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>如前所述，在分布式模式下，DGL会划分节点和边特征，并将它们存储在计算机集群中。
+DGL为分布式张量提供了类似于单机普通张量的接口，以访问群集中的分区节点和边特征。
+在分布式设置中，DGL仅支持密集节点和边特征，暂不支持稀疏节点和边特征。</p>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 管理在多个计算机中被划分和存储的密集张量。
+目前，分布式张量必须与图的节点或边相关联。换句话说，DistTensor中的行数必须与图中的节点数或边数相同。
+以下代码创建一个分布式张量。 除了张量的形状和数据类型之外，用户还可以提供唯一的张量名称。
+如果用户要引用一个固定的分布式张量(即使 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 对象消失，该名称仍存在于群集中)，
+则(使用这样的)名称就很有用。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tensor</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistTensor</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="mi">10</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 的创建是一个同步操作。所有训练器都必须调用创建，
+并且只有当所有训练器都调用它时，此创建过程才能成功。</p>
+<p>用户可以将 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 作为节点数据或边数据之一添加到
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 对象。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tensor</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: 节点数据名称和张量名称不必相同。前者在 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 中标识节点数据(在训练器进程中)，
+而后者则标识DGL服务器中的分布式张量。</p>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 提供了一些功能。它具有与常规张量相同的API，用于访问其元数据，
+例如形状和数据类型。<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 支持索引读取和写入，
+但不支持一些计算运算符，例如求和以及求均值。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">][[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">][[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: 当前，当一台机器运行多个服务器时，DGL不提供对来自多个训练器的并发写入的保护。
+这可能会导致数据损坏。</p>
+</section>
+<section id="id6">
+<h2>分布式嵌入<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>DGL提供 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a> 以支持需要节点嵌入的直推(transductive)模型。
+分布式嵌入的创建与分布式张量的创建非常相似。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initializer</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">arr</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">arr</span>
+<span class="n">emb</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistEmbedding</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">init_func</span><span class="o">=</span><span class="n">initializer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>在内部，分布式嵌入建立在分布式张量之上，因此，其行为与分布式张量非常相似。
+例如，创建嵌入时，DGL会将它们分片并存储在集群中的所有计算机上。(分布式嵌入)可以通过名称唯一标识。</p>
+<p><strong>Note</strong>: 服务器进程负责调用初始化函数。因此，必须在初始化( <a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-class docutils literal notranslate"><span class="pre">initialize</span></code></a> )之前声明分布式嵌入。</p>
+<p>因为嵌入是模型的一部分，所以用户必须将其附加到优化器上以进行小批量训练。当前，
+DGL提供了一个稀疏的Adagrad优化器 <code class="xref py py-class docutils literal notranslate"><span class="pre">SparseAdagrad</span></code> (DGL以后将为稀疏嵌入添加更多的优化器)。
+用户需要从模型中收集所有分布式嵌入，并将它们传递给稀疏优化器。如果模型同时具有节点嵌入和规则的密集模型参数，
+并且用户希望对嵌入执行稀疏更新，则需要创建两个优化器，一个用于节点嵌入，另一个用于密集模型参数，如以下代码所示：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sparse_optimizer</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">SparseAdagrad</span><span class="p">([</span><span class="n">emb</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr1</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr2</span><span class="p">)</span>
+<span class="n">feats</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">nids</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">feats</span><span class="p">)</span>
+<span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="n">sparse_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a> 不是PyTorch的nn模块，因此用户无法从nn模块的参数访问它。</p>
+</section>
+<section id="id7">
+<h2>分布式采样<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>DGL提供了两个级别的API，用于对节点和边进行采样以生成小批次训练数据(请参阅小批次训练的章节)。
+底层API要求用户编写代码以明确定义如何对节点层进行采样(例如，使用 <a class="reference internal" href="../generated/dgl.sampling.sample_neighbors.html#dgl.sampling.sample_neighbors" title="dgl.sampling.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.sampling.sample_neighbors()</span></code></a> )。
+高层采样API为节点分类和链接预测任务实现了一些流行的采样算法（例如
+<code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code>
+和
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EdgeDataLoader</span></code> )。</p>
+<p>分布式采样模块遵循相同的设计，也提供两个级别的采样API。对于底层的采样API，它为
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 上的分布式邻居采样提供了
+<a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">sample_neighbors()</span></code></a>。另外，DGL提供了用于分布式采样的分布式数据加载器(
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistDataLoader" title="dgl.distributed.DistDataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistDataLoader</span></code></a>)。除了用户在创建数据加载器时无法指定工作进程的数量，
+分布式数据加载器具有与PyTorch DataLoader相同的接口。其中的工作进程(worker)在 <a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.initialize()</span></code></a> 中创建。</p>
+<p><strong>Note</strong>: 在 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 上运行 <a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.sample_neighbors()</span></code></a> 时，
+采样器无法在具有多个工作进程的PyTorch DataLoader中运行。主要原因是PyTorch DataLoader在每个训练周期都会创建新的采样工作进程，
+从而导致多次创建和删除 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 对象。</p>
+<p>使用底层API时，采样代码类似于单进程采样。唯一的区别是用户需要使用
+<a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.sample_neighbors()</span></code></a>
+和
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistDataLoader" title="dgl.distributed.DistDataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistDataLoader</span></code></a>。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sample_blocks</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
+    <span class="n">seeds</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seeds</span><span class="p">))</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">fanout</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]:</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">fanout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+        <span class="n">seeds</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+        <span class="n">blocks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">blocks</span>
+    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistDataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">train_nid</span><span class="p">,</span>
+                                                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                                                <span class="n">collate_fn</span><span class="o">=</span><span class="n">sample_blocks</span><span class="p">,</span>
+                                                <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code>
+和
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EdgeDataLoader</span></code> 有分布式的版本
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DistNodeDataLoader</span></code>
+和
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DistEdgeDataLoader</span></code> 。使用
+时分布式采样代码与单进程采样几乎完全相同。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">MultiLayerNeighborSampler</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">])</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">DistNodeDataLoader</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">train_nid</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span>
+                                             <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>分割数据集<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>用户需要分割训练集，以便每个训练器都可以使用自己的训练集子集。同样，用户还需要以相同的方式分割验证和测试集。</p>
+<p>对于分布式训练和评估，推荐的方法是使用布尔数组表示训练、验证和测试集。对于节点分类任务，
+这些布尔数组的长度是图中节点的数量，并且它们的每个元素都表示训练/验证/测试集中是否存在对应节点。
+链接预测任务也应使用类似的布尔数组。</p>
+<p>DGL提供了 <a class="reference internal" href="../generated/dgl.distributed.node_split.html#dgl.distributed.node_split" title="dgl.distributed.node_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">node_split()</span></code></a> 和 <a class="reference internal" href="../generated/dgl.distributed.edge_split.html#dgl.distributed.edge_split" title="dgl.distributed.edge_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">edge_split()</span></code></a>
+函数来在运行时拆分训练、验证和测试集，以进行分布式训练。这两个函数将布尔数组作为输入，对其进行拆分，并向本地训练器返回一部分。
+默认情况下，它们确保所有部分都具有相同数量的节点和边。这对于同步SGD非常重要，
+因为同步SGD会假定每个训练器具有相同数量的小批次。</p>
+<p>下面的示例演示了训练集拆分，并向本地进程返回节点的子集。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_nids</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">node_split</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="distributed-preprocessing.html" class="btn btn-neutral float-left" title="7.1 分布式训练所需的图数据预处理" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed-tools.html" class="btn btn-neutral float-right" title="7.3 运行分布式训练/推断所需的工具" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmark the performance of KNN algorithms &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Benchmark the performance of KNN algorithms</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/python/knn_benchmark.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="benchmark-the-performance-of-knn-algorithms">
+<span id="knn-benchmark"></span><h1>Benchmark the performance of KNN algorithms<a class="headerlink" href="#benchmark-the-performance-of-knn-algorithms" title="Link to this heading"></a></h1>
+<p>In this doc, we benchmark the performance on multiple K-Nearest Neighbor algorithms implemented by <a class="reference internal" href="../../generated/dgl.knn_graph.html#dgl.knn_graph" title="dgl.knn_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.knn_graph()</span></code></a>.</p>
+<p>Given a dataset of <code class="docutils literal notranslate"><span class="pre">N</span></code> samples with <code class="docutils literal notranslate"><span class="pre">D</span></code> dimensions, the common use case of KNN algorithms in graph learning is to build a KNN graph by finding the <code class="docutils literal notranslate"><span class="pre">K</span></code> nearest neighbors for each of the <code class="docutils literal notranslate"><span class="pre">N</span></code> samples among the dataset.</p>
+<p>Empirically, the three parameters, <code class="docutils literal notranslate"><span class="pre">N</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span></code>, and <code class="docutils literal notranslate"><span class="pre">K</span></code>, all have impact on the computation cost. To benchmark the algorithms, we pick a few represensitive datasets to cover most common scenarios:</p>
+<ul class="simple">
+<li><p>A synthetic dataset with mixed gaussian samples: <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">1000</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">3</span></code>.</p></li>
+<li><p>A point cloud sample from ModelNet: <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">10000</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">3</span></code>.</p></li>
+<li><dl class="simple">
+<dt>Subsets of MNIST</dt><dd><ul>
+<li><p>A small subset: <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">1000</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">784</span></code></p></li>
+<li><p>A medium subset: <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">10000</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">784</span></code></p></li>
+<li><p>A large subset: <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">50000</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">784</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Some notes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bruteforce-sharemem</span></code> is an optimized implementation of <code class="docutils literal notranslate"><span class="pre">bruteforce</span></code> on GPU.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kd-tree</span></code> is currently only implemented on CPU.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bruteforce-blas</span></code> conducts matrix multiplication, thus is memory inefficient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nn-descent</span></code> is an approximate algorithm, and we also report the recall rate of its result.</p></li>
+</ul>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading"></a></h2>
+<p>In this section, we show the runtime and recall rate (where applicable) for the algorithms under various scenarios.</p>
+<p>The experiments are run on an Amazon EC2 P3.2xlarge instance. This instance has 8 vCPUs with 61GB RAM, and one Tesla V100 GPU with 16GB RAM. In terms of the environment, we obtain the numbers with DGL==0.7.0(<a class="reference external" href="https://github.com/dmlc/dgl/commit/64d0f3f3554911ec06d015f1c9659180796adf9a">64d0f3f</a>), PyTorch==1.8.1, CUDA==11.1 on Ubuntu 18.04.5 LTS.</p>
+<ul class="simple">
+<li><p><strong>Mixed Gaussian:</strong></p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"><p>Model</p></th>
+<th class="head" colspan="2"><p>CPU</p></th>
+<th class="head" colspan="2"><p>GPU</p></th>
+</tr>
+<tr class="row-even"><th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+<th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>bruteforce-blas</p></td>
+<td><p>0.010</p></td>
+<td><p>0.011</p></td>
+<td><p>0.002</p></td>
+<td><p>0.003</p></td>
+</tr>
+<tr class="row-even"><td><p>kd-tree</p></td>
+<td><p>0.004</p></td>
+<td><p>0.006</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+</tr>
+<tr class="row-odd"><td><p>bruteforce</p></td>
+<td><p>0.004</p></td>
+<td><p>0.006</p></td>
+<td><p>0.126</p></td>
+<td><p>0.009</p></td>
+</tr>
+<tr class="row-even"><td><p>bruteforce-sharemem</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+<td><p>0.002</p></td>
+<td><p>0.003</p></td>
+</tr>
+<tr class="row-odd"><td><p>nn-descent</p></td>
+<td><p>0.014 (R: 0.985)</p></td>
+<td><p>0.148 (R: 1.000)</p></td>
+<td><p>0.016 (R: 0.973)</p></td>
+<td><p>0.077 (R: 1.000)</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Point Cloud</strong></p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"><p>Model</p></th>
+<th class="head" colspan="2"><p>CPU</p></th>
+<th class="head" colspan="2"><p>GPU</p></th>
+</tr>
+<tr class="row-even"><th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+<th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>bruteforce-blas</p></td>
+<td><p>0.359</p></td>
+<td><p>0.432</p></td>
+<td><p>0.010</p></td>
+<td><p>0.010</p></td>
+</tr>
+<tr class="row-even"><td><p>kd-tree</p></td>
+<td><p>0.007</p></td>
+<td><p>0.026</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+</tr>
+<tr class="row-odd"><td><p>bruteforce</p></td>
+<td><p>0.074</p></td>
+<td><p>0.167</p></td>
+<td><p>0.008</p></td>
+<td><p>0.039</p></td>
+</tr>
+<tr class="row-even"><td><p>bruteforce-sharemem</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+<td><p>0.004</p></td>
+<td><p>0.017</p></td>
+</tr>
+<tr class="row-odd"><td><p>nn-descent</p></td>
+<td><p>0.161 (R: 0.977)</p></td>
+<td><p>1.345 (R: 0.999)</p></td>
+<td><p>0.086 (R: 0.966)</p></td>
+<td><p>0.445 (R: 0.999)</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Small MNIST</strong></p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"><p>Model</p></th>
+<th class="head" colspan="2"><p>CPU</p></th>
+<th class="head" colspan="2"><p>GPU</p></th>
+</tr>
+<tr class="row-even"><th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+<th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>bruteforce-blas</p></td>
+<td><p>0.014</p></td>
+<td><p>0.015</p></td>
+<td><p>0.002</p></td>
+<td><p>0.002</p></td>
+</tr>
+<tr class="row-even"><td><p>kd-tree</p></td>
+<td><p>0.179</p></td>
+<td><p>0.182</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+</tr>
+<tr class="row-odd"><td><p>bruteforce</p></td>
+<td><p>0.173</p></td>
+<td><p>0.228</p></td>
+<td><p>0.123</p></td>
+<td><p>0.170</p></td>
+</tr>
+<tr class="row-even"><td><p>bruteforce-sharemem</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+<td><p>0.045</p></td>
+<td><p>0.054</p></td>
+</tr>
+<tr class="row-odd"><td><p>nn-descent</p></td>
+<td><p>0.060 (R: 0.878)</p></td>
+<td><p>1.077 (R: 0.999)</p></td>
+<td><p>0.030 (R: 0.952)</p></td>
+<td><p>0.457 (R: 0.999)</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Medium MNIST</strong></p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"><p>Model</p></th>
+<th class="head" colspan="2"><p>CPU</p></th>
+<th class="head" colspan="2"><p>GPU</p></th>
+</tr>
+<tr class="row-even"><th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+<th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>bruteforce-blas</p></td>
+<td><p>0.897</p></td>
+<td><p>0.970</p></td>
+<td><p>0.019</p></td>
+<td><p>0.023</p></td>
+</tr>
+<tr class="row-even"><td><p>kd-tree</p></td>
+<td><p>18.902</p></td>
+<td><p>18.928</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+</tr>
+<tr class="row-odd"><td><p>bruteforce</p></td>
+<td><p>14.495</p></td>
+<td><p>17.652</p></td>
+<td><p>2.058</p></td>
+<td><p>2.588</p></td>
+</tr>
+<tr class="row-even"><td><p>bruteforce-sharemem</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+<td><p>2.257</p></td>
+<td><p>2.524</p></td>
+</tr>
+<tr class="row-odd"><td><p>nn-descent</p></td>
+<td><p>0.804 (R: 0.755)</p></td>
+<td><p>14.108 (R: 0.999)</p></td>
+<td><p>0.158 (R: 0.900)</p></td>
+<td><p>1.794 (R: 0.999)</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Large MNIST</strong></p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"><p>Model</p></th>
+<th class="head" colspan="2"><p>CPU</p></th>
+<th class="head" colspan="2"><p>GPU</p></th>
+</tr>
+<tr class="row-even"><th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+<th class="head"><p>K = 8</p></th>
+<th class="head"><p>K = 64</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>bruteforce-blas</p></td>
+<td><p>21.829</p></td>
+<td><p>22.135</p></td>
+<td><p>Out of Memory</p></td>
+<td><p>Out of Memory</p></td>
+</tr>
+<tr class="row-even"><td><p>kd-tree</p></td>
+<td><p>542.688</p></td>
+<td><p>573.379</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+</tr>
+<tr class="row-odd"><td><p>bruteforce</p></td>
+<td><p>373.823</p></td>
+<td><p>432.963</p></td>
+<td><p>10.317</p></td>
+<td><p>12.639</p></td>
+</tr>
+<tr class="row-even"><td><p>bruteforce-sharemem</p></td>
+<td><p>n/a</p></td>
+<td><p>n/a</p></td>
+<td><p>53.133</p></td>
+<td><p>58.419</p></td>
+</tr>
+<tr class="row-odd"><td><p>nn-descent</p></td>
+<td><p>4.995 (R: 0.658)</p></td>
+<td><p>75.487 (R: 0.999)</p></td>
+<td><p>1.478 (R: 0.860)</p></td>
+<td><p>15.698 (R: 0.999)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>As long as you have enough memory, <code class="docutils literal notranslate"><span class="pre">bruteforce-blas</span></code> is the default algorithm to go with.</p></li>
+<li><p>Specifically, when <code class="docutils literal notranslate"><span class="pre">D</span></code> is small and the data is on CPU, <code class="docutils literal notranslate"><span class="pre">kd-tree</span></code> is the best algorithm.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

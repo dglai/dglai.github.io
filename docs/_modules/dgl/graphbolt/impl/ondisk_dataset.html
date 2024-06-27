@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.graphbolt.impl.ondisk_dataset &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.graphbolt.impl.ondisk_dataset</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.graphbolt.impl.ondisk_dataset</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;GraphBolt OnDiskDataset.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">bisect</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="kn">from</span> <span class="nn">...base</span> <span class="kn">import</span> <span class="n">dgl_warning</span>
+<span class="kn">from</span> <span class="nn">...data.utils</span> <span class="kn">import</span> <span class="n">download</span><span class="p">,</span> <span class="n">extract_archive</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">etype_str_to_tuple</span><span class="p">,</span> <span class="n">ORIGINAL_EDGE_ID</span>
+<span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">Task</span>
+<span class="kn">from</span> <span class="nn">..internal</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">calculate_dir_hash</span><span class="p">,</span>
+    <span class="n">check_dataset_change</span><span class="p">,</span>
+    <span class="n">copy_or_convert_data</span><span class="p">,</span>
+    <span class="n">get_attributes</span><span class="p">,</span>
+    <span class="n">read_data</span><span class="p">,</span>
+    <span class="n">read_edges</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..itemset</span> <span class="kn">import</span> <span class="n">HeteroItemSet</span><span class="p">,</span> <span class="n">ItemSet</span>
+<span class="kn">from</span> <span class="nn">..sampling_graph</span> <span class="kn">import</span> <span class="n">SamplingGraph</span>
+<span class="kn">from</span> <span class="nn">.fused_csc_sampling_graph</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">fused_csc_sampling_graph</span><span class="p">,</span>
+    <span class="n">FusedCSCSamplingGraph</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.ondisk_metadata</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OnDiskGraphTopology</span><span class="p">,</span>
+    <span class="n">OnDiskMetaData</span><span class="p">,</span>
+    <span class="n">OnDiskTaskData</span><span class="p">,</span>
+    <span class="n">OnDiskTVTSet</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.torch_based_feature_store</span> <span class="kn">import</span> <span class="n">TorchBasedFeatureStore</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;OnDiskDataset&quot;</span><span class="p">,</span> <span class="s2">&quot;preprocess_ondisk_dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;BuiltinDataset&quot;</span><span class="p">]</span>
+
+<span class="n">NAMES_INDICATING_NODE_IDS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;seeds&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_graph_data_to_fused_csc_sampling_graph</span><span class="p">(</span>
+    <span class="n">dataset_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">graph_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">include_original_edge_id</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">auto_cast_to_optimal_dtype</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the raw graph data into FusedCSCSamplingGraph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset_dir : str</span>
+<span class="sd">        The path to the dataset directory.</span>
+<span class="sd">    graph_data : Dict</span>
+<span class="sd">        The raw data read from yaml file.</span>
+<span class="sd">    include_original_edge_id : bool</span>
+<span class="sd">        Whether to include the original edge id in the FusedCSCSamplingGraph.</span>
+<span class="sd">    auto_cast_to_optimal_dtype: bool, optional</span>
+<span class="sd">        Casts the dtypes of tensors in the dataset into smallest possible dtypes</span>
+<span class="sd">        for reduced storage requirements and potentially increased performance.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sampling_graph : FusedCSCSamplingGraph</span>
+<span class="sd">        The FusedCSCSamplingGraph constructed from the raw data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">...sparse</span> <span class="kn">import</span> <span class="n">spmatrix</span>
+
+    <span class="n">is_homogeneous</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="ow">and</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="ow">and</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_homogeneous</span><span class="p">:</span>
+        <span class="c1"># Homogeneous graph.</span>
+        <span class="n">edge_fmt</span> <span class="o">=</span> <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;format&quot;</span><span class="p">]</span>
+        <span class="n">edge_path</span> <span class="o">=</span> <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+        <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">read_edges</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">edge_fmt</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">)</span>
+        <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;num&quot;</span><span class="p">]</span>
+        <span class="n">num_edges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">coo_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">]))</span>
+        <span class="n">sparse_matrix</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="n">coo_tensor</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">))</span>
+        <span class="k">del</span> <span class="n">coo_tensor</span>
+        <span class="n">indptr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">edge_ids</span> <span class="o">=</span> <span class="n">sparse_matrix</span><span class="o">.</span><span class="n">csc</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">sparse_matrix</span>
+
+        <span class="k">if</span> <span class="n">auto_cast_to_optimal_dtype</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">num_nodes</span> <span class="o">&lt;=</span> <span class="n">torch</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">num_edges</span> <span class="o">&lt;=</span> <span class="n">torch</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                <span class="n">indptr</span> <span class="o">=</span> <span class="n">indptr</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+                <span class="n">edge_ids</span> <span class="o">=</span> <span class="n">edge_ids</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+        <span class="n">node_type_offset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">type_per_edge</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">node_type_to_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">edge_type_to_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">node_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">edge_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">include_original_edge_id</span><span class="p">:</span>
+            <span class="n">edge_attributes</span><span class="p">[</span><span class="n">ORIGINAL_EDGE_ID</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_ids</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Heterogeneous graph.</span>
+        <span class="c1"># Sort graph_data by ntype/etype lexicographically to ensure ordering.</span>
+        <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+        <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+        <span class="c1"># Construct node_type_offset and node_type_to_id.</span>
+        <span class="n">node_type_offset</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">node_type_to_id</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ntype_id</span><span class="p">,</span> <span class="n">node_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]):</span>
+            <span class="n">node_type_to_id</span><span class="p">[</span><span class="n">node_info</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ntype_id</span>
+            <span class="n">node_type_offset</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_type_offset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">node_info</span><span class="p">[</span><span class="s2">&quot;num&quot;</span><span class="p">])</span>
+        <span class="n">total_num_nodes</span> <span class="o">=</span> <span class="n">node_type_offset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Construct edge_type_offset, edge_type_to_id and coo_tensor.</span>
+        <span class="n">edge_type_offset</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">edge_type_to_id</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">coo_src_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">coo_dst_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">coo_etype_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">etype_id</span><span class="p">,</span> <span class="n">edge_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">]):</span>
+            <span class="n">edge_type_to_id</span><span class="p">[</span><span class="n">edge_info</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">etype_id</span>
+            <span class="n">edge_fmt</span> <span class="o">=</span> <span class="n">edge_info</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span>
+            <span class="n">edge_path</span> <span class="o">=</span> <span class="n">edge_info</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+            <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">read_edges</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">edge_fmt</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">)</span>
+            <span class="n">edge_type_offset</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_type_offset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
+            <span class="n">src_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dst_type</span> <span class="o">=</span> <span class="n">etype_str_to_tuple</span><span class="p">(</span><span class="n">edge_info</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+            <span class="n">src</span> <span class="o">+=</span> <span class="n">node_type_offset</span><span class="p">[</span><span class="n">node_type_to_id</span><span class="p">[</span><span class="n">src_type</span><span class="p">]]</span>
+            <span class="n">dst</span> <span class="o">+=</span> <span class="n">node_type_offset</span><span class="p">[</span><span class="n">node_type_to_id</span><span class="p">[</span><span class="n">dst_type</span><span class="p">]]</span>
+            <span class="n">coo_src_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
+            <span class="n">coo_dst_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
+            <span class="n">coo_etype_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">),),</span> <span class="n">etype_id</span><span class="p">))</span>
+        <span class="n">total_num_edges</span> <span class="o">=</span> <span class="n">edge_type_offset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">coo_src</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">coo_src_list</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">coo_src_list</span>
+        <span class="n">coo_dst</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">coo_dst_list</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">coo_dst_list</span>
+        <span class="k">if</span> <span class="n">auto_cast_to_optimal_dtype</span><span class="p">:</span>
+            <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">]</span>
+            <span class="n">dtype_maxes</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">]</span>
+            <span class="n">dtype_id</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">dtype_maxes</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_type_to_id</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">etype_dtype</span> <span class="o">=</span> <span class="n">dtypes</span><span class="p">[</span><span class="n">dtype_id</span><span class="p">]</span>
+            <span class="n">coo_etype_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">etype_dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="n">coo_etype_list</span>
+            <span class="p">]</span>
+        <span class="n">coo_etype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">coo_etype_list</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">coo_etype_list</span>
+
+        <span class="n">sparse_matrix</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">coo_src</span><span class="p">,</span> <span class="n">coo_dst</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_num_nodes</span><span class="p">,</span> <span class="n">total_num_nodes</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">del</span> <span class="n">coo_src</span><span class="p">,</span> <span class="n">coo_dst</span>
+        <span class="n">indptr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">edge_ids</span> <span class="o">=</span> <span class="n">sparse_matrix</span><span class="o">.</span><span class="n">csc</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">sparse_matrix</span>
+
+        <span class="k">if</span> <span class="n">auto_cast_to_optimal_dtype</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">total_num_nodes</span> <span class="o">&lt;=</span> <span class="n">torch</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">total_num_edges</span> <span class="o">&lt;=</span> <span class="n">torch</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                <span class="n">indptr</span> <span class="o">=</span> <span class="n">indptr</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+                <span class="n">edge_ids</span> <span class="o">=</span> <span class="n">edge_ids</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+        <span class="n">node_type_offset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">node_type_offset</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">type_per_edge</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="n">coo_etype</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">edge_ids</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">coo_etype</span>
+        <span class="n">node_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">edge_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">include_original_edge_id</span><span class="p">:</span>
+            <span class="c1"># If uint8 or int16 was chosen above for etypes, we cast to int.</span>
+            <span class="n">temp_etypes</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">type_per_edge</span><span class="o">.</span><span class="n">int</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">type_per_edge</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">4</span>
+                <span class="k">else</span> <span class="n">type_per_edge</span>
+            <span class="p">)</span>
+            <span class="n">edge_ids</span> <span class="o">-=</span> <span class="n">torch</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">edge_type_offset</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">edge_ids</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+                <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">temp_etypes</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">del</span> <span class="n">temp_etypes</span>
+            <span class="n">edge_attributes</span><span class="p">[</span><span class="n">ORIGINAL_EDGE_ID</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_ids</span>
+
+    <span class="c1"># Load the sampling related node/edge features and add them to</span>
+    <span class="c1"># the sampling-graph.</span>
+    <span class="k">if</span> <span class="n">graph_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;feature_data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_homogeneous</span><span class="p">:</span>
+            <span class="c1"># Homogeneous graph.</span>
+            <span class="k">for</span> <span class="n">graph_feature</span> <span class="ow">in</span> <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;feature_data&quot;</span><span class="p">]:</span>
+                <span class="n">in_memory</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="kc">True</span>
+                    <span class="k">if</span> <span class="s2">&quot;in_memory&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph_feature</span>
+                    <span class="k">else</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;in_memory&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span>
+                    <span class="n">node_data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                        <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                        <span class="n">in_memory</span><span class="o">=</span><span class="n">in_memory</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">assert</span> <span class="n">node_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">num_nodes</span>
+                    <span class="n">node_attributes</span><span class="p">[</span><span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node_data</span>
+                <span class="k">elif</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;edge&quot;</span><span class="p">:</span>
+                    <span class="n">edge_data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                        <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                        <span class="n">in_memory</span><span class="o">=</span><span class="n">in_memory</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">assert</span> <span class="n">edge_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">num_edges</span>
+                    <span class="n">edge_attributes</span><span class="p">[</span><span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">edge_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Heterogeneous graph.</span>
+            <span class="n">node_feature_collector</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">edge_feature_collector</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">graph_feature</span> <span class="ow">in</span> <span class="n">graph_data</span><span class="p">[</span><span class="s2">&quot;feature_data&quot;</span><span class="p">]:</span>
+                <span class="n">in_memory</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="kc">True</span>
+                    <span class="k">if</span> <span class="s2">&quot;in_memory&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph_feature</span>
+                    <span class="k">else</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;in_memory&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span>
+                    <span class="n">node_data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                        <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                        <span class="n">in_memory</span><span class="o">=</span><span class="n">in_memory</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_feature_collector</span><span class="p">:</span>
+                        <span class="n">node_feature_collector</span><span class="p">[</span><span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">node_feature_collector</span><span class="p">[</span><span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]][</span>
+                        <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">node_data</span>
+                <span class="k">elif</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;edge&quot;</span><span class="p">:</span>
+                    <span class="n">edge_data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                        <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                        <span class="n">in_memory</span><span class="o">=</span><span class="n">in_memory</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_feature_collector</span><span class="p">:</span>
+                        <span class="n">edge_feature_collector</span><span class="p">[</span><span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">edge_feature_collector</span><span class="p">[</span><span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]][</span>
+                        <span class="n">graph_feature</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">edge_data</span>
+
+            <span class="c1"># For heterogenous, a node/edge feature must cover all node/edge types.</span>
+            <span class="n">all_node_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_type_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">feat_name</span><span class="p">,</span> <span class="n">feat_data</span> <span class="ow">in</span> <span class="n">node_feature_collector</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">existing_node_type</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">feat_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">assert</span> <span class="n">all_node_types</span> <span class="o">==</span> <span class="n">existing_node_type</span><span class="p">,</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Node feature </span><span class="si">{</span><span class="n">feat_name</span><span class="si">}</span><span class="s2"> does not cover all node types. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Existing types: </span><span class="si">{</span><span class="n">existing_node_type</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expected types: </span><span class="si">{</span><span class="n">all_node_types</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">all_edge_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">feat_name</span><span class="p">,</span> <span class="n">feat_data</span> <span class="ow">in</span> <span class="n">edge_feature_collector</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">existing_edge_type</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">feat_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">assert</span> <span class="n">all_edge_types</span> <span class="o">==</span> <span class="n">existing_edge_type</span><span class="p">,</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Edge feature </span><span class="si">{</span><span class="n">feat_name</span><span class="si">}</span><span class="s2"> does not cover all edge types. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Existing types: </span><span class="si">{</span><span class="n">existing_edge_type</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expected types: </span><span class="si">{</span><span class="n">all_edge_types</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">feat_name</span><span class="p">,</span> <span class="n">feat_data</span> <span class="ow">in</span> <span class="n">node_feature_collector</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">_feat</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">feat_data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                <span class="n">feat_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="p">([</span><span class="n">total_num_nodes</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">_feat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">_feat</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">feat_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">feat_tensor</span><span class="p">[</span>
+                        <span class="n">node_type_offset</span><span class="p">[</span>
+                            <span class="n">node_type_to_id</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+                        <span class="p">]</span> <span class="p">:</span> <span class="n">node_type_offset</span><span class="p">[</span><span class="n">node_type_to_id</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">feat</span>
+                <span class="n">node_attributes</span><span class="p">[</span><span class="n">feat_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_tensor</span>
+            <span class="k">del</span> <span class="n">node_feature_collector</span>
+            <span class="k">for</span> <span class="n">feat_name</span><span class="p">,</span> <span class="n">feat_data</span> <span class="ow">in</span> <span class="n">edge_feature_collector</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">_feat</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">feat_data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                <span class="n">feat_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="p">([</span><span class="n">total_num_edges</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">_feat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">_feat</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">feat_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">feat_tensor</span><span class="p">[</span>
+                        <span class="n">edge_type_offset</span><span class="p">[</span>
+                            <span class="n">edge_type_to_id</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span>
+                        <span class="p">]</span> <span class="p">:</span> <span class="n">edge_type_offset</span><span class="p">[</span><span class="n">edge_type_to_id</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">feat</span>
+                <span class="n">edge_attributes</span><span class="p">[</span><span class="n">feat_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_tensor</span>
+            <span class="k">del</span> <span class="n">edge_feature_collector</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">node_attributes</span><span class="p">):</span>
+        <span class="n">node_attributes</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">edge_attributes</span><span class="p">):</span>
+        <span class="n">edge_attributes</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Construct the FusedCSCSamplingGraph.</span>
+    <span class="k">return</span> <span class="n">fused_csc_sampling_graph</span><span class="p">(</span>
+        <span class="n">csc_indptr</span><span class="o">=</span><span class="n">indptr</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+        <span class="n">node_type_offset</span><span class="o">=</span><span class="n">node_type_offset</span><span class="p">,</span>
+        <span class="n">type_per_edge</span><span class="o">=</span><span class="n">type_per_edge</span><span class="p">,</span>
+        <span class="n">node_type_to_id</span><span class="o">=</span><span class="n">node_type_to_id</span><span class="p">,</span>
+        <span class="n">edge_type_to_id</span><span class="o">=</span><span class="n">edge_type_to_id</span><span class="p">,</span>
+        <span class="n">node_attributes</span><span class="o">=</span><span class="n">node_attributes</span><span class="p">,</span>
+        <span class="n">edge_attributes</span><span class="o">=</span><span class="n">edge_attributes</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">preprocess_ondisk_dataset</span><span class="p">(</span>
+    <span class="n">dataset_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">include_original_edge_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">force_preprocess</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">auto_cast_to_optimal_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Preprocess the on-disk dataset. Parse the input config file,</span>
+<span class="sd">    load the data, and save the data in the format that GraphBolt supports.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset_dir : str</span>
+<span class="sd">        The path to the dataset directory.</span>
+<span class="sd">    include_original_edge_id : bool, optional</span>
+<span class="sd">        Whether to include the original edge id in the FusedCSCSamplingGraph.</span>
+<span class="sd">    force_preprocess: bool, optional</span>
+<span class="sd">        Whether to force reload the ondisk dataset.</span>
+<span class="sd">    auto_cast_to_optimal_dtype: bool, optional</span>
+<span class="sd">        Casts the dtypes of tensors in the dataset into smallest possible dtypes</span>
+<span class="sd">        for reduced storage requirements and potentially increased performance.</span>
+<span class="sd">        Default is True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    output_config_path : str</span>
+<span class="sd">        The path to the output config file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the dataset path is valid.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid dataset path: </span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check if the dataset_dir is a directory.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The dataset must be a directory. But got </span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># 0. Check if the dataset is already preprocessed.</span>
+    <span class="n">processed_dir_prefix</span> <span class="o">=</span> <span class="s2">&quot;preprocessed&quot;</span>
+    <span class="n">preprocess_metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">processed_dir_prefix</span><span class="p">,</span> <span class="s2">&quot;metadata.yaml&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">preprocess_metadata_path</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">force_preprocess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">preprocess_metadata_path</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">preprocess_config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">preprocess_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;include_original_edge_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="o">==</span> <span class="n">include_original_edge_id</span>
+            <span class="p">):</span>
+                <span class="n">force_preprocess</span> <span class="o">=</span> <span class="n">check_dataset_change</span><span class="p">(</span>
+                    <span class="n">dataset_dir</span><span class="p">,</span> <span class="n">processed_dir_prefix</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">force_preprocess</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">force_preprocess</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">processed_dir_prefix</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;The on-disk dataset is re-preprocessing, so the existing &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;preprocessed dataset has been removed.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The dataset is already preprocessed.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">preprocess_metadata_path</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start to preprocess the on-disk dataset.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check if the metadata.yaml exists.</span>
+    <span class="n">metadata_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="s2">&quot;metadata.yaml&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">metadata_file_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;metadata.yaml does not exist.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Read the input config.</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metadata_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">input_config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># 1. Make `processed_dir_abs` directory if it does not exist.</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">processed_dir_prefix</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">output_config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">input_config</span><span class="p">)</span>
+
+    <span class="c1"># 2. Load the data and create a FusedCSCSamplingGraph.</span>
+    <span class="k">if</span> <span class="s2">&quot;graph&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_config</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid config: does not contain graph field.&quot;</span><span class="p">)</span>
+
+    <span class="n">sampling_graph</span> <span class="o">=</span> <span class="n">_graph_data_to_fused_csc_sampling_graph</span><span class="p">(</span>
+        <span class="n">dataset_dir</span><span class="p">,</span>
+        <span class="n">input_config</span><span class="p">[</span><span class="s2">&quot;graph&quot;</span><span class="p">],</span>
+        <span class="n">include_original_edge_id</span><span class="p">,</span>
+        <span class="n">auto_cast_to_optimal_dtype</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 3. Record value of include_original_edge_id.</span>
+    <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;include_original_edge_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">include_original_edge_id</span>
+
+    <span class="c1"># 4. Save the FusedCSCSamplingGraph and modify the output_config.</span>
+    <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;graph_topology&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;graph_topology&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;FusedCSCSamplingGraph&quot;</span>
+    <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;graph_topology&quot;</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">processed_dir_prefix</span><span class="p">,</span> <span class="s2">&quot;fused_csc_sampling_graph.pt&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">node_ids_within_int32</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">sampling_graph</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">int32</span>
+        <span class="ow">and</span> <span class="n">auto_cast_to_optimal_dtype</span>
+    <span class="p">)</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">sampling_graph</span><span class="p">,</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">dataset_dir</span><span class="p">,</span>
+            <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;graph_topology&quot;</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">del</span> <span class="n">sampling_graph</span>
+    <span class="k">del</span> <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;graph&quot;</span><span class="p">]</span>
+
+    <span class="c1"># 5. Load the node/edge features and do necessary conversion.</span>
+    <span class="k">if</span> <span class="n">input_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;feature_data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">has_edge_feature_data</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">out_feature</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">input_config</span><span class="p">[</span><span class="s2">&quot;feature_data&quot;</span><span class="p">],</span> <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;feature_data&quot;</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="c1"># Always save the feature in numpy format.</span>
+            <span class="n">out_feature</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;numpy&quot;</span>
+            <span class="n">out_feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">processed_dir_prefix</span><span class="p">,</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;pt&quot;</span><span class="p">,</span> <span class="s2">&quot;npy&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">in_memory</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="kc">True</span> <span class="k">if</span> <span class="s2">&quot;in_memory&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">feature</span> <span class="k">else</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;in_memory&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">has_edge_feature_data</span> <span class="ow">and</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;edge&quot;</span><span class="p">:</span>
+                <span class="n">has_edge_feature_data</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">copy_or_convert_data</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">out_feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">out_feature</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                <span class="n">in_memory</span><span class="o">=</span><span class="n">in_memory</span><span class="p">,</span>
+                <span class="n">is_feature</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">has_edge_feature_data</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_original_edge_id</span><span class="p">:</span>
+            <span class="n">dgl_warning</span><span class="p">(</span><span class="s2">&quot;Edge feature is stored, but edge IDs are not saved.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 6. Save tasks and train/val/test split according to the output_config.</span>
+    <span class="k">if</span> <span class="n">input_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tasks&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">input_task</span><span class="p">,</span> <span class="n">output_task</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">input_config</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">],</span> <span class="n">output_config</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">for</span> <span class="n">set_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train_set&quot;</span><span class="p">,</span> <span class="s2">&quot;validation_set&quot;</span><span class="p">,</span> <span class="s2">&quot;test_set&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">set_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_task</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">for</span> <span class="n">input_set_per_type</span><span class="p">,</span> <span class="n">output_set_per_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">input_task</span><span class="p">[</span><span class="n">set_name</span><span class="p">],</span> <span class="n">output_task</span><span class="p">[</span><span class="n">set_name</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="k">for</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                        <span class="n">input_set_per_type</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span> <span class="n">output_set_per_type</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+                    <span class="p">):</span>
+                        <span class="c1"># Always save the feature in numpy format.</span>
+                        <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;numpy&quot;</span>
+                        <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="n">processed_dir_prefix</span><span class="p">,</span>
+                            <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;pt&quot;</span><span class="p">,</span> <span class="s2">&quot;npy&quot;</span><span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">input_data</span> <span class="k">else</span> <span class="kc">None</span>
+                        <span class="p">)</span>
+                        <span class="n">copy_or_convert_data</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                            <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                            <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
+                            <span class="n">within_int32</span><span class="o">=</span><span class="n">node_ids_within_int32</span>
+                            <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">NAMES_INDICATING_NODE_IDS</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+    <span class="c1"># 7. Save the output_config.</span>
+    <span class="n">output_config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">preprocess_metadata_path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_config_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">output_config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finish preprocessing the on-disk dataset.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 8. Calculate and save the hash value of the dataset directory.</span>
+    <span class="n">hash_value_file</span> <span class="o">=</span> <span class="s2">&quot;dataset_hash_value.txt&quot;</span>
+    <span class="n">hash_value_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">dataset_dir</span><span class="p">,</span> <span class="n">processed_dir_prefix</span><span class="p">,</span> <span class="n">hash_value_file</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">hash_value_file_path</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">hash_value_file_path</span><span class="p">)</span>
+    <span class="n">dir_hash</span> <span class="o">=</span> <span class="n">calculate_dir_hash</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">hash_value_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dir_hash</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+
+    <span class="c1"># 9. Return the absolute path of the preprocessing yaml file.</span>
+    <span class="k">return</span> <span class="n">output_config_path</span>
+
+
+<span class="k">class</span> <span class="nc">OnDiskTask</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An on-disk task.</span>
+
+<span class="sd">    An on-disk task is for ``OnDiskDataset``. It contains the metadata and the</span>
+<span class="sd">    train/val/test sets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">train_set</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">],</span>
+        <span class="n">validation_set</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">],</span>
+        <span class="n">test_set</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a task.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        metadata : Dict</span>
+<span class="sd">            Metadata.</span>
+<span class="sd">        train_set : Union[ItemSet, HeteroItemSet]</span>
+<span class="sd">            Training set.</span>
+<span class="sd">        validation_set : Union[ItemSet, HeteroItemSet]</span>
+<span class="sd">            Validation set.</span>
+<span class="sd">        test_set : Union[ItemSet, HeteroItemSet]</span>
+<span class="sd">            Test set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_set</span> <span class="o">=</span> <span class="n">train_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validation_set</span> <span class="o">=</span> <span class="n">validation_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_set</span> <span class="o">=</span> <span class="n">test_set</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the task metadata.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">train_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the training set.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_set</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">validation_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the validation set.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validation_set</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">test_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the test set.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_set</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{Classname}</span><span class="s2">(</span><span class="si">{attributes}</span><span class="s2">)&quot;</span>
+
+        <span class="n">attributes_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">attributes</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attribute</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;_&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+            <span class="n">attributes_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">attributes_str</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span>
+            <span class="n">attributes_str</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;OnDiskTask(&quot;</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">ret</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">Classname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes_str</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="OnDiskDataset">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.OnDiskDataset.html#dgl.graphbolt.OnDiskDataset">[docs]</a>
+<span class="k">class</span> <span class="nc">OnDiskDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An on-disk dataset which reads graph topology, feature data and</span>
+<span class="sd">    Train/Validation/Test set from disk.</span>
+
+<span class="sd">    Due to limited resources, the data which are too large to fit into RAM will</span>
+<span class="sd">    remain on disk while others reside in RAM once ``OnDiskDataset`` is</span>
+<span class="sd">    initialized. This behavior could be controled by user via ``in_memory``</span>
+<span class="sd">    field in YAML file. All paths in YAML file are relative paths to the</span>
+<span class="sd">    dataset directory.</span>
+
+<span class="sd">    A full example of YAML file is as follows:</span>
+
+<span class="sd">    .. code-block:: yaml</span>
+
+<span class="sd">        dataset_name: graphbolt_test</span>
+<span class="sd">        graph:</span>
+<span class="sd">          nodes:</span>
+<span class="sd">            - type: paper # could be omitted for homogeneous graph.</span>
+<span class="sd">              num: 1000</span>
+<span class="sd">            - type: author</span>
+<span class="sd">              num: 1000</span>
+<span class="sd">          edges:</span>
+<span class="sd">            - type: author:writes:paper # could be omitted for homogeneous graph.</span>
+<span class="sd">              format: csv # Can be csv only.</span>
+<span class="sd">              path: edge_data/author-writes-paper.csv</span>
+<span class="sd">            - type: paper:cites:paper</span>
+<span class="sd">              format: csv</span>
+<span class="sd">              path: edge_data/paper-cites-paper.csv</span>
+<span class="sd">        feature_data:</span>
+<span class="sd">          - domain: node</span>
+<span class="sd">            type: paper # could be omitted for homogeneous graph.</span>
+<span class="sd">            name: feat</span>
+<span class="sd">            format: numpy</span>
+<span class="sd">            in_memory: false # If not specified, default to true.</span>
+<span class="sd">            path: node_data/paper-feat.npy</span>
+<span class="sd">          - domain: edge</span>
+<span class="sd">            type: &quot;author:writes:paper&quot;</span>
+<span class="sd">            name: feat</span>
+<span class="sd">            format: numpy</span>
+<span class="sd">            in_memory: false</span>
+<span class="sd">            path: edge_data/author-writes-paper-feat.npy</span>
+<span class="sd">        tasks:</span>
+<span class="sd">          - name: &quot;edge_classification&quot;</span>
+<span class="sd">            num_classes: 10</span>
+<span class="sd">            train_set:</span>
+<span class="sd">              - type: paper # could be omitted for homogeneous graph.</span>
+<span class="sd">                data: # multiple data sources could be specified.</span>
+<span class="sd">                  - name: seeds</span>
+<span class="sd">                    format: numpy # Can be numpy or torch.</span>
+<span class="sd">                    in_memory: true # If not specified, default to true.</span>
+<span class="sd">                    path: set/paper-train-seeds.npy</span>
+<span class="sd">                  - name: labels</span>
+<span class="sd">                    format: numpy</span>
+<span class="sd">                    path: set/paper-train-labels.npy</span>
+<span class="sd">            validation_set:</span>
+<span class="sd">              - type: paper</span>
+<span class="sd">                data:</span>
+<span class="sd">                  - name: seeds</span>
+<span class="sd">                    format: numpy</span>
+<span class="sd">                    path: set/paper-validation-seeds.npy</span>
+<span class="sd">                  - name: labels</span>
+<span class="sd">                    format: numpy</span>
+<span class="sd">                    path: set/paper-validation-labels.npy</span>
+<span class="sd">            test_set:</span>
+<span class="sd">              - type: paper</span>
+<span class="sd">                data:</span>
+<span class="sd">                  - name: seeds</span>
+<span class="sd">                    format: numpy</span>
+<span class="sd">                    path: set/paper-test-seeds.npy</span>
+<span class="sd">                  - name: labels</span>
+<span class="sd">                    format: numpy</span>
+<span class="sd">                    path: set/paper-test-labels.npy</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        The YAML file path.</span>
+<span class="sd">    include_original_edge_id: bool, optional</span>
+<span class="sd">        Whether to include the original edge id in the FusedCSCSamplingGraph.</span>
+<span class="sd">    force_preprocess: bool, optional</span>
+<span class="sd">        Whether to force reload the ondisk dataset.</span>
+<span class="sd">    auto_cast_to_optimal_dtype: bool, optional</span>
+<span class="sd">        Casts the dtypes of tensors in the dataset into smallest possible dtypes</span>
+<span class="sd">        for reduced storage requirements and potentially increased performance.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">include_original_edge_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">force_preprocess</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">auto_cast_to_optimal_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Always call the preprocess function first. If already preprocessed,</span>
+        <span class="c1"># the function will return the original path directly.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_dir</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="n">yaml_path</span> <span class="o">=</span> <span class="n">preprocess_ondisk_dataset</span><span class="p">(</span>
+            <span class="n">path</span><span class="p">,</span>
+            <span class="n">include_original_edge_id</span><span class="p">,</span>
+            <span class="n">force_preprocess</span><span class="p">,</span>
+            <span class="n">auto_cast_to_optimal_dtype</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_convert_yaml_path_to_absolute_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the path in YAML file to absolute path.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;graph_topology&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">[</span><span class="s2">&quot;graph_topology&quot;</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">[</span><span class="s2">&quot;graph_topology&quot;</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;feature_data&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">[</span><span class="s2">&quot;feature_data&quot;</span><span class="p">]:</span>
+                <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_dir</span><span class="p">,</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;tasks&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">set_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train_set&quot;</span><span class="p">,</span> <span class="s2">&quot;validation_set&quot;</span><span class="p">,</span> <span class="s2">&quot;test_set&quot;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">set_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">task</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">for</span> <span class="n">set_per_type</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="n">set_name</span><span class="p">]:</span>
+                        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">set_per_type</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]:</span>
+                            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_dir</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+                            <span class="p">)</span>
+
+<div class="viewcode-block" id="OnDiskDataset.load">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.OnDiskDataset.html#dgl.graphbolt.OnDiskDataset.load">[docs]</a>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tasks: List[str] = None</span>
+<span class="sd">            The name of the tasks to be loaded. For single task, the type of</span>
+<span class="sd">            tasks can be both string and List[str]. For multiple tasks, only</span>
+<span class="sd">            List[str] is acceptable.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        1. Loading via single task name &quot;node_classification&quot;.</span>
+
+<span class="sd">        &gt;&gt;&gt; dataset = gb.OnDiskDataset(base_dir).load(</span>
+<span class="sd">        ...     tasks=&quot;node_classification&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; len(dataset.tasks)</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; dataset.tasks[0].metadata[&quot;name&quot;]</span>
+<span class="sd">        &quot;node_classification&quot;</span>
+
+<span class="sd">        2. Loading via single task name [&quot;node_classification&quot;].</span>
+
+<span class="sd">        &gt;&gt;&gt; dataset = gb.OnDiskDataset(base_dir).load(</span>
+<span class="sd">        ...     tasks=[&quot;node_classification&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; len(dataset.tasks)</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; dataset.tasks[0].metadata[&quot;name&quot;]</span>
+<span class="sd">        &quot;node_classification&quot;</span>
+
+<span class="sd">        3. Loading via multiple task names [&quot;node_classification&quot;,</span>
+<span class="sd">        &quot;link_prediction&quot;].</span>
+
+<span class="sd">        &gt;&gt;&gt; dataset = gb.OnDiskDataset(base_dir).load(</span>
+<span class="sd">        ...     tasks=[&quot;node_classification&quot;,&quot;link_prediction&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; len(dataset.tasks)</span>
+<span class="sd">        2</span>
+<span class="sd">        &gt;&gt;&gt; dataset.tasks[0].metadata[&quot;name&quot;]</span>
+<span class="sd">        &quot;node_classification&quot;</span>
+<span class="sd">        &gt;&gt;&gt; dataset.tasks[1].metadata[&quot;name&quot;]</span>
+<span class="sd">        &quot;link_prediction&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_convert_yaml_path_to_absolute_path</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span> <span class="o">=</span> <span class="n">OnDiskMetaData</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">dataset_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">graph_topology</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature</span> <span class="o">=</span> <span class="n">TorchBasedFeatureStore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">feature_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_tasks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">tasks</span><span class="p">,</span> <span class="n">tasks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_nodes_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_all_nodes_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">yaml_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the YAML data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the tasks.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_loaded</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplingGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the graph.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_loaded</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TorchBasedFeatureStore</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the feature.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_loaded</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dataset_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dataset name.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_loaded</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">all_nodes_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the itemset containing all nodes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_loaded</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_nodes_set</span>
+
+    <span class="k">def</span> <span class="nf">_init_tasks</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OnDiskTaskData</span><span class="p">],</span> <span class="n">selected_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">OnDiskTask</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the tasks.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected_tasks</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">selected_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">selected_tasks</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">selected_tasks</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected_tasks</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The type of selected_task should be list, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">selected_tasks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">tasks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="n">task_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">task_name</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">extra_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selected_tasks</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">task_name</span> <span class="ow">in</span> <span class="n">selected_tasks</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">OnDiskTask</span><span class="p">(</span>
+                        <span class="n">task</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_init_tvt_set</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">train_set</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_init_tvt_set</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">validation_set</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_init_tvt_set</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">test_set</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">selected_tasks</span><span class="p">:</span>
+                    <span class="n">task_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">task_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">selected_tasks</span><span class="p">:</span>
+            <span class="n">not_found_tasks</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">selected_tasks</span><span class="p">)</span> <span class="o">-</span> <span class="n">task_names</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">not_found_tasks</span><span class="p">):</span>
+                <span class="n">dgl_warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Below tasks are not found in YAML: </span><span class="si">{</span><span class="n">not_found_tasks</span><span class="si">}</span><span class="s2">. Skipped.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_check_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Please ensure that you have called the OnDiskDataset.load() method&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot; to properly load the data.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_graph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">graph_topology</span><span class="p">:</span> <span class="n">OnDiskGraphTopology</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the graph topology.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">graph_topology</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">graph_topology</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;FusedCSCSamplingGraph&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">graph_topology</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Graph topology type </span><span class="si">{</span><span class="n">graph_topology</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2"> is not supported.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_tvt_set</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tvt_set</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OnDiskTVTSet</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the TVT set.&quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">tvt_set</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tvt_set</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="k">if</span> <span class="n">tvt_set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">tvt_set</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="p">),</span> <span class="s2">&quot;Only one TVT set is allowed if type is not specified.&quot;</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">ItemSet</span><span class="p">(</span>
+                <span class="nb">tuple</span><span class="p">(</span>
+                    <span class="n">read_data</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">in_memory</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">tvt_set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+                <span class="p">),</span>
+                <span class="n">names</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">tvt_set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">itemsets</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">tvt</span> <span class="ow">in</span> <span class="n">tvt_set</span><span class="p">:</span>
+                <span class="n">itemsets</span><span class="p">[</span><span class="n">tvt</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">ItemSet</span><span class="p">(</span>
+                    <span class="nb">tuple</span><span class="p">(</span>
+                        <span class="n">read_data</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">in_memory</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">tvt</span><span class="o">.</span><span class="n">data</span>
+                    <span class="p">),</span>
+                    <span class="n">names</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">tvt</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">HeteroItemSet</span><span class="p">(</span><span class="n">itemsets</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_init_all_nodes_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemSet</span><span class="p">,</span> <span class="n">HeteroItemSet</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dgl_warning</span><span class="p">(</span>
+                <span class="s2">&quot;`all_nodes_set` is returned as None, since graph is None.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ItemSet</span><span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
+                <span class="n">names</span><span class="o">=</span><span class="s2">&quot;seeds&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">node_type</span><span class="p">:</span> <span class="n">ItemSet</span><span class="p">(</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">num_node</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
+                    <span class="n">names</span><span class="o">=</span><span class="s2">&quot;seeds&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">num_node</span> <span class="ow">in</span> <span class="n">num_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">HeteroItemSet</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BuiltinDataset">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.BuiltinDataset.html#dgl.graphbolt.BuiltinDataset">[docs]</a>
+<span class="k">class</span> <span class="nc">BuiltinDataset</span><span class="p">(</span><span class="n">OnDiskDataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A utility class to download built-in dataset from AWS S3 and load it as</span>
+<span class="sd">    :class:`OnDiskDataset`.</span>
+
+<span class="sd">    Available built-in datasets include:</span>
+
+<span class="sd">    **cora**</span>
+<span class="sd">        The cora dataset is a homogeneous citation network dataset, which is</span>
+<span class="sd">        designed for the node classification task.</span>
+
+<span class="sd">    **ogbn-mag**</span>
+<span class="sd">        The ogbn-mag dataset is a heterogeneous network composed of a subset of</span>
+<span class="sd">        the Microsoft Academic Graph (MAG). See more details in</span>
+<span class="sd">        `ogbn-mag &lt;https://ogb.stanford.edu/docs/nodeprop/#ogbn-mag&gt;`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Reverse edges are added to the original graph and duplicated</span>
+<span class="sd">            edges are removed.</span>
+
+<span class="sd">    **ogbl-citation2**</span>
+<span class="sd">        The ogbl-citation2 dataset is a directed graph, representing the</span>
+<span class="sd">        citation network between a subset of papers extracted from MAG. See</span>
+<span class="sd">        more details in `ogbl-citation2</span>
+<span class="sd">        &lt;https://ogb.stanford.edu/docs/linkprop/#ogbl-citation2&gt;`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Reverse edges are added to the original graph and duplicated</span>
+<span class="sd">            edges are removed.</span>
+
+<span class="sd">    **ogbn-arxiv**</span>
+<span class="sd">        The ogbn-arxiv dataset is a directed graph, representing the citation</span>
+<span class="sd">        network between all Computer Science (CS) arXiv papers indexed by MAG.</span>
+<span class="sd">        See more details in `ogbn-arxiv</span>
+<span class="sd">        &lt;https://ogb.stanford.edu/docs/nodeprop/#ogbn-arxiv&gt;`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Reverse edges are added to the original graph and duplicated</span>
+<span class="sd">            edges are removed.</span>
+
+<span class="sd">    **ogbn-papers100M**</span>
+<span class="sd">        The ogbn-papers100M dataset is a directed graph, representing the citation</span>
+<span class="sd">        network between all Computer Science (CS) arXiv papers indexed by MAG.</span>
+<span class="sd">        See more details in `ogbn-papers100M</span>
+<span class="sd">        &lt;https://ogb.stanford.edu/docs/nodeprop/#ogbn-papers100M&gt;`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Reverse edges are added to the original graph and duplicated</span>
+<span class="sd">            edges are removed.</span>
+
+<span class="sd">    **ogbn-products**</span>
+<span class="sd">        The ogbn-products dataset is an undirected and unweighted graph,</span>
+<span class="sd">        representing an Amazon product co-purchasing network. See more details</span>
+<span class="sd">        in `ogbn-products</span>
+<span class="sd">        &lt;https://ogb.stanford.edu/docs/nodeprop/#ogbn-products&gt;`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Reverse edges are added to the original graph.</span>
+<span class="sd">            Node features are stored as float32.</span>
+
+<span class="sd">    **ogb-lsc-mag240m**</span>
+<span class="sd">        The ogb-lsc-mag240m dataset is a heterogeneous academic graph extracted</span>
+<span class="sd">        from the Microsoft Academic Graph (MAG). See more details in</span>
+<span class="sd">        `ogb-lsc-mag240m &lt;https://ogb.stanford.edu/docs/lsc/mag240m/&gt;`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Reverse edges are added to the original graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the builtin dataset.</span>
+<span class="sd">    root : str, optional</span>
+<span class="sd">        The root directory of the dataset. Default ot ``datasets``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># For dataset that is smaller than 30GB, we use the base url.</span>
+    <span class="c1"># Otherwise, we use the accelerated url.</span>
+    <span class="n">_base_url</span> <span class="o">=</span> <span class="s2">&quot;https://data.dgl.ai/dataset/graphbolt/&quot;</span>
+    <span class="n">_accelerated_url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;https://dgl-data.s3-accelerate.amazonaws.com/dataset/graphbolt/&quot;</span>
+    <span class="p">)</span>
+    <span class="n">_datasets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;cora&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cora-seeds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-mag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-mag-seeds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbl-citation2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbl-citation2-seeds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-products&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-products-seeds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-arxiv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-arxiv-seeds&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">_large_datasets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;ogb-lsc-mag240m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogb-lsc-mag240m-seeds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-papers100M&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ogbn-papers100M-seeds&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">_all_datasets</span> <span class="o">=</span> <span class="n">_datasets</span> <span class="o">+</span> <span class="n">_large_datasets</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;datasets&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OnDiskDataset</span><span class="p">:</span>
+        <span class="c1"># For user using DGL 2.2 or later version, we prefer them to use</span>
+        <span class="c1"># datasets with `seeds` suffix. This hack should be removed, when the</span>
+        <span class="c1"># datasets with `seeds` suffix have covered previous ones.</span>
+        <span class="k">if</span> <span class="s2">&quot;seeds&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">+=</span> <span class="s2">&quot;-seeds&quot;</span>
+        <span class="n">dataset_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_datasets</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Dataset </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not available. Available datasets are &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_datasets</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_accelerated_url</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_large_datasets</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span>
+            <span class="p">)</span>
+            <span class="n">url</span> <span class="o">+=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.zip&quot;</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">zip_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.zip&quot;</span><span class="p">)</span>
+            <span class="n">download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">zip_file_path</span><span class="p">)</span>
+            <span class="n">extract_archive</span><span class="p">(</span><span class="n">zip_file_path</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">zip_file_path</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">force_preprocess</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

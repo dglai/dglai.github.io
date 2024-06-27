@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGExplainer &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="HeteroPGExplainer" href="dgl.nn.pytorch.explain.HeteroPGExplainer.html" />
+    <link rel="prev" title="HeteroSubgraphX" href="dgl.nn.pytorch.explain.HeteroSubgraphX.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#conv-layers">Conv Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#cugraph-conv-layers">CuGraph Conv Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#dense-conv-layers">Dense Conv Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#global-pooling-layers">Global Pooling Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#score-modules-for-link-prediction-and-knowledge-graph-completion">Score Modules for Link Prediction and Knowledge Graph Completion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#heterogeneous-learning-modules">Heterogeneous Learning Modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api/python/nn-pytorch.html#utility-modules">Utility Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.utils.Sequential.html">Sequential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.utils.WeightBasis.html">WeightBasis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.factory.KNNGraph.html">KNNGraph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.factory.SegmentedKNNGraph.html">SegmentedKNNGraph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.factory.RadiusGraph.html">RadiusGraph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.utils.JumpingKnowledge.html">JumpingKnowledge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.sparse_emb.NodeEmbedding.html">NodeEmbedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.explain.GNNExplainer.html">GNNExplainer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.explain.HeteroGNNExplainer.html">HeteroGNNExplainer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.explain.SubgraphX.html">SubgraphX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.explain.HeteroSubgraphX.html">HeteroSubgraphX</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">PGExplainer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.nn.pytorch.explain.PGExplainer"><code class="docutils literal notranslate"><span class="pre">PGExplainer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.explain.HeteroPGExplainer.html">HeteroPGExplainer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dgl.nn.pytorch.utils.LabelPropagation.html">LabelPropagation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#network-embedding-modules">Network Embedding Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/python/nn-pytorch.html#utility-modules-for-graph-transformer">Utility Modules for Graph Transformer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+      <li class="breadcrumb-item active">PGExplainer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/dgl.nn.pytorch.explain.PGExplainer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pgexplainer">
+<h1>PGExplainer<a class="headerlink" href="#pgexplainer" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.nn.pytorch.explain.PGExplainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.nn.pytorch.explain.</span></span><span class="sig-name descname"><span class="pre">PGExplainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coff_budget</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coff_connect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dgl/nn/pytorch/explain/pgexplainer.html#PGExplainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.nn.pytorch.explain.PGExplainer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>PGExplainer from <cite>Parameterized Explainer for Graph Neural Network
+&lt;https://arxiv.org/pdf/2011.04573&gt;</cite></p>
+<p>PGExplainer adopts a deep neural network (explanation network) to
+parameterize the generation process of explanations, which enables it to
+explain multiple instances collectively. PGExplainer models the underlying
+structure as edge distributions, from which the explanatory graph is
+sampled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – <p>The GNN model to explain that tackles multiclass graph classification</p>
+<ul>
+<li><p>Its forward function must have the form
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">forward(self,</span> <span class="pre">graph,</span> <span class="pre">nfeat,</span> <span class="pre">embed,</span> <span class="pre">edge_weight)</span></code>.</p></li>
+<li><p>The output of its forward function is the logits if embed=False else
+the intermediate node embeddings.</p></li>
+</ul>
+</p></li>
+<li><p><strong>num_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Node embedding size used by <code class="xref py py-attr docutils literal notranslate"><span class="pre">model</span></code>.</p></li>
+<li><p><strong>num_hops</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The number of hops for GNN information aggregation, which must match the
+number of message passing layers employed by the GNN to be explained.</p></li>
+<li><p><strong>explain_graph</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to initialize the model for graph-level or node-level predictions.</p></li>
+<li><p><strong>coff_budget</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Size regularization to constrain the explanation size. Default: 0.01.</p></li>
+<li><p><strong>coff_connect</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Entropy regularization to constrain the connectivity of explanation. Default: 5e-4.</p></li>
+<li><p><strong>sample_bias</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Some members of a population are systematically more likely to be selected
+in a sample than others. Default: 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.nn.pytorch.explain.PGExplainer.explain_graph">
+<span class="sig-name descname"><span class="pre">explain_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dgl/nn/pytorch/explain/pgexplainer.html#PGExplainer.explain_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.nn.pytorch.explain.PGExplainer.explain_graph" title="Link to this definition"></a></dt>
+<dd><p>Learn and return an edge mask that plays a crucial role to
+explain the prediction made by the GNN for a graph. Also, return
+the prediction made with the edges chosen based on the edge mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><em>DGLGraph</em></a>) – A homogeneous graph.</p></li>
+<li><p><strong>feat</strong> (<em>Tensor</em>) – The input feature of shape <span class="math notranslate nohighlight">\((N, D)\)</span>. <span class="math notranslate nohighlight">\(N\)</span> is the
+number of nodes, and <span class="math notranslate nohighlight">\(D\)</span> is the feature size.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The temperature parameter fed to the sampling procedure.</p></li>
+<li><p><strong>training</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Training the explanation network.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Additional arguments passed to the GNN model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Tensor</em> – Classification probabilities given the masked graph. It is a tensor
+of shape <span class="math notranslate nohighlight">\((B, L)\)</span>, where <span class="math notranslate nohighlight">\(L\)</span> is the different types of
+label in the dataset, and <span class="math notranslate nohighlight">\(B\)</span> is the batch size.</p></li>
+<li><p><em>Tensor</em> – Edge weights which is a tensor of shape <span class="math notranslate nohighlight">\((E)\)</span>, where <span class="math notranslate nohighlight">\(E\)</span>
+is the number of edges in the graph. A higher weight suggests a
+larger contribution of the edge.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">GINDataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dgl.dataloading</span> <span class="kn">import</span> <span class="n">GraphDataLoader</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dgl.nn</span> <span class="kn">import</span> <span class="n">GraphConv</span><span class="p">,</span> <span class="n">PGExplainer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define the model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">conv</span> <span class="o">=</span> <span class="n">GraphConv</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">out_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">embed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edge_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">edge_weight</span><span class="o">=</span><span class="n">edge_weight</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">embed</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="n">h</span>
+<span class="gp">...</span>
+<span class="gp">... </span>        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+<span class="gp">... </span>            <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+<span class="gp">... </span>            <span class="n">hg</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">mean_nodes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">hg</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">GINDataset</span><span class="p">(</span><span class="s1">&#39;MUTAG&#39;</span><span class="p">,</span> <span class="n">self_loop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">GraphDataLoader</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Train the model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feat_size</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;attr&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">feat_size</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">gclasses</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">bg</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="n">bg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;attr&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize the explainer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">explainer</span> <span class="o">=</span> <span class="n">PGExplainer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">gclasses</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Train the explainer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define explainer temperature parameter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">init_tmp</span><span class="p">,</span> <span class="n">final_tmp</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer_exp</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">explainer</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">tmp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">init_tmp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">final_tmp</span> <span class="o">/</span> <span class="n">init_tmp</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">/</span> <span class="mi">20</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">bg</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+<span class="gp">... </span>         <span class="n">loss</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="n">bg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;attr&#39;</span><span class="p">],</span> <span class="n">tmp</span><span class="p">)</span>
+<span class="gp">... </span>         <span class="n">optimizer_exp</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="gp">... </span>         <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">... </span>         <span class="n">optimizer_exp</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Explain the prediction for graph 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph_feat</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;attr&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">probs</span><span class="p">,</span> <span class="n">edge_weight</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">graph_feat</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.nn.pytorch.explain.PGExplainer.explain_node">
+<span class="sig-name descname"><span class="pre">explain_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dgl/nn/pytorch/explain/pgexplainer.html#PGExplainer.explain_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.nn.pytorch.explain.PGExplainer.explain_node" title="Link to this definition"></a></dt>
+<dd><p>Learn and return an edge mask that plays a crucial role to
+explain the prediction made by the GNN for provided set of node IDs.
+Also, return the prediction made with the graph and edge mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>tensor</em>) – The nodes from the graph, which cannot have any duplicate value.</p></li>
+<li><p><strong>graph</strong> (<a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><em>DGLGraph</em></a>) – A homogeneous graph.</p></li>
+<li><p><strong>feat</strong> (<em>Tensor</em>) – The input feature of shape <span class="math notranslate nohighlight">\((N, D)\)</span>. <span class="math notranslate nohighlight">\(N\)</span> is the
+number of nodes, and <span class="math notranslate nohighlight">\(D\)</span> is the feature size.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The temperature parameter fed to the sampling procedure.</p></li>
+<li><p><strong>training</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Training the explanation network.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Additional arguments passed to the GNN model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Tensor</em> – Classification probabilities given the masked graph. It is a tensor
+of shape <span class="math notranslate nohighlight">\((N, L)\)</span>, where <span class="math notranslate nohighlight">\(L\)</span> is the different types
+of node labels in the dataset, and <span class="math notranslate nohighlight">\(N\)</span> is the number of nodes
+in the graph.</p></li>
+<li><p><em>Tensor</em> – Edge weights which is a tensor of shape <span class="math notranslate nohighlight">\((E)\)</span>, where <span class="math notranslate nohighlight">\(E\)</span>
+is the number of edges in the graph. A higher weight suggests a
+larger contribution of the edge.</p></li>
+<li><p><em>DGLGraph</em> – The batched set of subgraphs induced on the k-hop in-neighborhood
+of the input center nodes.</p></li>
+<li><p><em>Tensor</em> – The new IDs of the subgraph center nodes.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define the model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">out_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">embed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edge_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">edge_weight</span><span class="o">=</span><span class="n">edge_weight</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">embed</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="n">h</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CoraGraphDataset</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">features</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Train the model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">criterion</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize the explainer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">explainer</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">PGExplainer</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">num_hops</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">explain_graph</span><span class="o">=</span><span class="kc">False</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Train the explainer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define explainer temperature parameter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">init_tmp</span><span class="p">,</span> <span class="n">final_tmp</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer_exp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">explainer</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">tmp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">init_tmp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">final_tmp</span> <span class="o">/</span> <span class="n">init_tmp</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">/</span> <span class="n">epochs</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">train_step_node</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">optimizer_exp</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">optimizer_exp</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Explain the prediction for graph 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">probs</span><span class="p">,</span> <span class="n">edge_weight</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">inverse_indices</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_node</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">features</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.nn.pytorch.explain.PGExplainer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#dgl.nn.pytorch.explain.PGExplainer.forward" title="Link to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.nn.pytorch.explain.PGExplainer.train_step">
+<span class="sig-name descname"><span class="pre">train_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dgl/nn/pytorch/explain/pgexplainer.html#PGExplainer.train_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.nn.pytorch.explain.PGExplainer.train_step" title="Link to this definition"></a></dt>
+<dd><p>Compute the loss of the explanation network for graph classification</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><em>DGLGraph</em></a>) – Input batched homogeneous graph.</p></li>
+<li><p><strong>feat</strong> (<em>Tensor</em>) – The input feature of shape <span class="math notranslate nohighlight">\((N, D)\)</span>. <span class="math notranslate nohighlight">\(N\)</span> is the
+number of nodes, and <span class="math notranslate nohighlight">\(D\)</span> is the feature size.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The temperature parameter fed to the sampling procedure.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Additional arguments passed to the GNN model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A scalar tensor representing the loss.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.nn.pytorch.explain.PGExplainer.train_step_node">
+<span class="sig-name descname"><span class="pre">train_step_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dgl/nn/pytorch/explain/pgexplainer.html#PGExplainer.train_step_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.nn.pytorch.explain.PGExplainer.train_step_node" title="Link to this definition"></a></dt>
+<dd><p>Compute the loss of the explanation network for node classification</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>tensor</em>) – The nodes from the graph used to train the explanation network,
+which cannot have any duplicate value.</p></li>
+<li><p><strong>graph</strong> (<a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><em>DGLGraph</em></a>) – Input homogeneous graph.</p></li>
+<li><p><strong>feat</strong> (<em>Tensor</em>) – The input feature of shape <span class="math notranslate nohighlight">\((N, D)\)</span>. <span class="math notranslate nohighlight">\(N\)</span> is the
+number of nodes, and <span class="math notranslate nohighlight">\(D\)</span> is the feature size.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The temperature parameter fed to the sampling procedure.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Additional arguments passed to the GNN model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A scalar tensor representing the loss.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dgl.nn.pytorch.explain.HeteroSubgraphX.html" class="btn btn-neutral float-left" title="HeteroSubgraphX" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dgl.nn.pytorch.explain.HeteroPGExplainer.html" class="btn btn-neutral float-right" title="HeteroPGExplainer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

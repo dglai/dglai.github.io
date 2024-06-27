@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.sparse.matmul &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.sparse.matmul</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.sparse.matmul</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Matmul ops for SparseMatrix&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=invalid-name</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">.sparse_matrix</span> <span class="kn">import</span> <span class="n">SparseMatrix</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;spmm&quot;</span><span class="p">,</span> <span class="s2">&quot;bspmm&quot;</span><span class="p">,</span> <span class="s2">&quot;spspmm&quot;</span><span class="p">,</span> <span class="s2">&quot;matmul&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="spmm">
+<a class="viewcode-back" href="../../../generated/dgl.sparse.spmm.html#dgl.sparse.spmm">[docs]</a>
+<span class="k">def</span> <span class="nf">spmm</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">SparseMatrix</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiplies a sparse matrix by a dense matrix, equivalent to ``A @ X``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : SparseMatrix</span>
+<span class="sd">        Sparse matrix of shape ``(L, M)`` with scalar values</span>
+<span class="sd">    X : torch.Tensor</span>
+<span class="sd">        Dense matrix of shape ``(M, N)`` or ``(M)``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        The dense matrix of shape ``(L, N)`` or ``(L)``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; indices = torch.tensor([[0, 1, 1], [1, 0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; val = torch.randn(indices.shape[1])</span>
+<span class="sd">    &gt;&gt;&gt; A = dglsp.spmatrix(indices, val)</span>
+<span class="sd">    &gt;&gt;&gt; X = torch.randn(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; result = dglsp.spmm(A, X)</span>
+<span class="sd">    &gt;&gt;&gt; type(result)</span>
+<span class="sd">    &lt;class &#39;torch.Tensor&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; result.shape</span>
+<span class="sd">    torch.Size([2, 3])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">A</span><span class="p">,</span> <span class="n">SparseMatrix</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expect arg1 to be a SparseMatrix object, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expect arg2 to be a torch.Tensor, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">dgl_sparse</span><span class="o">.</span><span class="n">spmm</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">c_sparse_matrix</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="bspmm">
+<a class="viewcode-back" href="../../../generated/dgl.sparse.bspmm.html#dgl.sparse.bspmm">[docs]</a>
+<span class="k">def</span> <span class="nf">bspmm</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">SparseMatrix</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiplies a sparse matrix by a dense matrix by batches, equivalent to</span>
+<span class="sd">    ``A @ X``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : SparseMatrix</span>
+<span class="sd">        Sparse matrix of shape ``(L, M)`` with vector values of length ``K``</span>
+<span class="sd">    X : torch.Tensor</span>
+<span class="sd">        Dense matrix of shape ``(M, N, K)``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        Dense matrix of shape ``(L, N, K)``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; indices = torch.tensor([[0, 1, 1], [1, 0, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; val = torch.randn(len(row), 2)</span>
+<span class="sd">    &gt;&gt;&gt; A = dglsp.spmatrix(indices, val, shape=(3, 3))</span>
+<span class="sd">    &gt;&gt;&gt; X = torch.randn(3, 3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; result = dglsp.bspmm(A, X)</span>
+<span class="sd">    &gt;&gt;&gt; type(result)</span>
+<span class="sd">    &lt;class &#39;torch.Tensor&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; result.shape</span>
+<span class="sd">    torch.Size([3, 3, 2])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">A</span><span class="p">,</span> <span class="n">SparseMatrix</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expect arg1 to be a SparseMatrix object, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expect arg2 to be a torch.Tensor, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">return</span> <span class="n">spmm</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="spspmm">
+<a class="viewcode-back" href="../../../generated/dgl.sparse.spspmm.html#dgl.sparse.spspmm">[docs]</a>
+<span class="k">def</span> <span class="nf">spspmm</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">SparseMatrix</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">SparseMatrix</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SparseMatrix</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiplies a sparse matrix by a sparse matrix, equivalent to ``A @ B``.</span>
+
+<span class="sd">    The non-zero values of the two sparse matrices must be 1D.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : SparseMatrix</span>
+<span class="sd">        Sparse matrix of shape ``(L, M)``</span>
+<span class="sd">    B : SparseMatrix</span>
+<span class="sd">        Sparse matrix of shape ``(M, N)``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    SparseMatrix</span>
+<span class="sd">        Sparse matrix of shape ``(L, N)``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; indices1 = torch.tensor([[0, 1, 1], [1, 0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; val1 = torch.ones(len(row1))</span>
+<span class="sd">    &gt;&gt;&gt; A = dglsp.spmatrix(indices1, val1)</span>
+<span class="sd">    &gt;&gt;&gt; indices2 = torch.tensor([[0, 1, 1], [0, 2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; val2 = torch.ones(len(row2))</span>
+<span class="sd">    &gt;&gt;&gt; B = dglsp.spmatrix(indices2, val2)</span>
+<span class="sd">    &gt;&gt;&gt; dglsp.spspmm(A, B)</span>
+<span class="sd">    SparseMatrix(indices=tensor([[0, 0, 1, 1, 1],</span>
+<span class="sd">                                 [1, 2, 0, 1, 2]]),</span>
+<span class="sd">                 values=tensor([1., 1., 1., 1., 1.]),</span>
+<span class="sd">                 shape=(2, 3), nnz=5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">A</span><span class="p">,</span> <span class="n">SparseMatrix</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expect A1 to be a SparseMatrix object, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">SparseMatrix</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expect A2 to be a SparseMatrix object, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+    <span class="k">return</span> <span class="n">SparseMatrix</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">dgl_sparse</span><span class="o">.</span><span class="n">spspmm</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">c_sparse_matrix</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">c_sparse_matrix</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="matmul">
+<a class="viewcode-back" href="../../../generated/dgl.sparse.matmul.html#dgl.sparse.matmul">[docs]</a>
+<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">SparseMatrix</span><span class="p">],</span> <span class="n">B</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">SparseMatrix</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">SparseMatrix</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiplies two dense/sparse matrices, equivalent to ``A @ B``.</span>
+
+<span class="sd">    This function does not support the case where :attr:`A` is a \</span>
+<span class="sd">    ``torch.Tensor`` and :attr:`B` is a ``SparseMatrix``.</span>
+
+<span class="sd">    * If both matrices are torch.Tensor, it calls \</span>
+<span class="sd">        :func:`torch.matmul()`. The result is a dense matrix.</span>
+
+<span class="sd">    * If both matrices are sparse, it calls :func:`dgl.sparse.spspmm`. The \</span>
+<span class="sd">        result is a sparse matrix.</span>
+
+<span class="sd">    * If :attr:`A` is sparse while :attr:`B` is dense, it calls \</span>
+<span class="sd">        :func:`dgl.sparse.spmm`. The result is a dense matrix.</span>
+
+<span class="sd">    * The operator supports batched sparse-dense matrix multiplication. In \</span>
+<span class="sd">        this case, the sparse matrix :attr:`A` should have shape ``(L, M)``, \</span>
+<span class="sd">        where the non-zero values have a batch dimension ``K``. The dense \</span>
+<span class="sd">        matrix :attr:`B` should have shape ``(M, N, K)``. The output \</span>
+<span class="sd">        is a dense matrix of shape ``(L, N, K)``.</span>
+
+<span class="sd">    * Sparse-sparse matrix multiplication does not support batched computation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : torch.Tensor or SparseMatrix</span>
+<span class="sd">        The first matrix.</span>
+<span class="sd">    B : torch.Tensor or SparseMatrix</span>
+<span class="sd">        The second matrix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor or SparseMatrix</span>
+<span class="sd">        The result matrix</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Multiplies a diagonal matrix with a dense matrix.</span>
+
+<span class="sd">    &gt;&gt;&gt; val = torch.randn(3)</span>
+<span class="sd">    &gt;&gt;&gt; A = dglsp.diag(val)</span>
+<span class="sd">    &gt;&gt;&gt; B = torch.randn(3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; result = dglsp.matmul(A, B)</span>
+<span class="sd">    &gt;&gt;&gt; type(result)</span>
+<span class="sd">    &lt;class &#39;torch.Tensor&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; result.shape</span>
+<span class="sd">    torch.Size([3, 2])</span>
+
+<span class="sd">    Multiplies a sparse matrix with a dense matrix.</span>
+
+<span class="sd">    &gt;&gt;&gt; indices = torch.tensor([[0, 1, 1], [1, 0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; val = torch.randn(indices.shape[1])</span>
+<span class="sd">    &gt;&gt;&gt; A = dglsp.spmatrix(indices, val)</span>
+<span class="sd">    &gt;&gt;&gt; X = torch.randn(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; result = dglsp.matmul(A, X)</span>
+<span class="sd">    &gt;&gt;&gt; type(result)</span>
+<span class="sd">    &lt;class &#39;torch.Tensor&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; result.shape</span>
+<span class="sd">    torch.Size([2, 3])</span>
+
+<span class="sd">    Multiplies a sparse matrix with a sparse matrix.</span>
+
+<span class="sd">    &gt;&gt;&gt; indices1 = torch.tensor([[0, 1, 1], [1, 0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; val1 = torch.ones(indices1.shape[1])</span>
+<span class="sd">    &gt;&gt;&gt; A = dglsp.spmatrix(indices1, val1)</span>
+<span class="sd">    &gt;&gt;&gt; indices2 = torch.tensor([[0, 1, 1], [0, 2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; val2 = torch.ones(indices2.shape[1])</span>
+<span class="sd">    &gt;&gt;&gt; B = dglsp.spmatrix(indices2, val2)</span>
+<span class="sd">    &gt;&gt;&gt; result = dglsp.matmul(A, B)</span>
+<span class="sd">    &gt;&gt;&gt; type(result)</span>
+<span class="sd">    &lt;class &#39;dgl.sparse.sparse_matrix.SparseMatrix&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; result.shape</span>
+<span class="sd">    (2, 3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">SparseMatrix</span><span class="p">)</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expect arg1 to be a torch.Tensor or SparseMatrix, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">SparseMatrix</span><span class="p">)),</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Expect arg2 to be a torch Tensor or SparseMatrix&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;object, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">),</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Expect arg2 to be a torch Tensor if arg 1 is torch Tensor, &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">spmm</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spspmm</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span></div>
+
+
+
+<span class="n">SparseMatrix</span><span class="o">.</span><span class="fm">__matmul__</span> <span class="o">=</span> <span class="n">matmul</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
