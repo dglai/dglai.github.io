@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.3 链接预测 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5.4 整图分类" href="training-graph.html" />
+    <link rel="prev" title="5.2 边分类/回归" href="training-edge.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">用户指南【包含过时信息】</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">第1章：图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">第2章：消息传递范式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">第3章：构建图神经网络（GNN）模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">第4章：图数据处理管道</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="training.html">第5章：训练图神经网络</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="training-node.html">5.1 节点分类/回归</a></li>
+<li class="toctree-l3"><a class="reference internal" href="training-edge.html">5.2 边分类/回归</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">5.3 链接预测</a></li>
+<li class="toctree-l3"><a class="reference internal" href="training-graph.html">5.4 整图分类</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">第6章：在大图上的随机（批次）训练</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">第7章：分布式训练</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">用户指南【包含过时信息】</a></li>
+          <li class="breadcrumb-item"><a href="training.html">第5章：训练图神经网络</a></li>
+      <li class="breadcrumb-item active">5.3 链接预测</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_cn/training-link.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-cn-training-link-prediction">
+<span id="id1"></span><h1>5.3 链接预测<a class="headerlink" href="#guide-cn-training-link-prediction" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/training-link.html#guide-training-link-prediction"><span class="std std-ref">(English Version)</span></a></p>
+<p>在某些场景中，用户可能希望预测给定节点之间是否存在边，这样的任务称作 <strong>链接预测</strong> 任务。</p>
+<section id="id2">
+<h2>概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>基于GNN的链接预测模型的基本思想是通过使用所需预测的节点对
+<span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span> 的节点表示 <span class="math notranslate nohighlight">\(\boldsymbol{h}_u^{(L)}\)</span> 和
+<span class="math notranslate nohighlight">\(\boldsymbol{h}_v^{(L)}\)</span>，计算它们之间存在链接可能性的得分 <span class="math notranslate nohighlight">\(y_{u,v}\)</span>。
+其中  <span class="math notranslate nohighlight">\(\boldsymbol{h}_u^{(L)}\)</span> 和  <span class="math notranslate nohighlight">\(\boldsymbol{h}_v^{(L)}\)</span> 由多层GNN计算得出。</p>
+<div class="math notranslate nohighlight">
+\[y_{u,v} = \phi(\boldsymbol{h}_u^{(L)}, \boldsymbol{h}_v^{(L)})\]</div>
+<p>本节把节点 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(v\)</span> 之间存在连接可能性的 <em>得分</em> 记作 <span class="math notranslate nohighlight">\(y_{u,v}\)</span>。</p>
+<p>训练一个链接预测模型涉及到比对两个相连接节点之间的得分与任意一对节点之间的得分的差异。
+例如，给定一条连接 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(v\)</span> 的边，一个好的模型希望 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(v\)</span> 之间的得分要高于
+<span class="math notranslate nohighlight">\(u\)</span> 和从一个任意的噪声分布 <span class="math notranslate nohighlight">\(v′∼Pn(v)\)</span> 中所采样的节点 <span class="math notranslate nohighlight">\(v′\)</span> 之间的得分。
+这样的方法称作 <em>负采样</em>。</p>
+<p>许多损失函数都可以实现上述目标，包括但不限于。</p>
+<ul class="simple">
+<li><p>交叉熵损失:
+<span class="math notranslate nohighlight">\(\mathcal{L} = - \log \sigma (y_{u,v}) - \sum_{v_i \sim P_n(v), i=1,\dots,k}\log \left[ 1 - \sigma (y_{u,v_i})\right]\)</span></p></li>
+<li><p>贝叶斯个性化排序损失:
+<span class="math notranslate nohighlight">\(\mathcal{L} = \sum_{v_i \sim P_n(v), i=1,\dots,k} - \log \sigma (y_{u,v} - y_{u,v_i})\)</span></p></li>
+<li><p>间隔损失:
+<span class="math notranslate nohighlight">\(\mathcal{L} = \sum_{v_i \sim P_n(v), i=1,\dots,k} \max(0, M - y_{u, v} + y_{u, v_i})\)</span>,
+其中 <span class="math notranslate nohighlight">\(M\)</span> 是常数项超参数。</p></li>
+</ul>
+<p>如果用户熟悉 <a class="reference external" href="https://arxiv.org/ftp/arxiv/papers/1205/1205.2618.pdf">implicit feedback</a> 和
+<a class="reference external" href="http://proceedings.mlr.press/v9/gutmann10a/gutmann10a.pdf">noise-contrastive estimation</a> ，
+可能会发现这些工作的想法都很类似。</p>
+<p>计算 <span class="math notranslate nohighlight">\(u\)</span> 和 <span class="math notranslate nohighlight">\(v\)</span> 之间分数的神经网络模型与 <a class="reference internal" href="training-edge.html#guide-cn-training-edge-classification"><span class="std std-ref">5.2 边分类/回归</span></a>
+中所述的边回归模型相同。</p>
+<p>下面是使用点积计算边得分的例子。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DotProductPredictor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="c1"># h是从5.1节的GNN模型中计算出的节点表示</span>
+        <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">u_dot_v</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>模型的训练<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>因为上述的得分预测模型在图上进行计算，用户需要将负采样的样本表示为另外一个图，
+其中包含所有负采样的节点对作为边。</p>
+<p>下面的例子展示了将负采样的样本表示为一个图。每一条边 <span class="math notranslate nohighlight">\((u,v)\)</span> 都有 <span class="math notranslate nohighlight">\(k\)</span>
+个对应的负采样样本 <span class="math notranslate nohighlight">\((u,v_i)\)</span>，其中 <span class="math notranslate nohighlight">\(v_i\)</span> 是从均匀分布中采样的。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">construct_negative_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+
+    <span class="n">neg_src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">neg_dst</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><span class="n">neg_src</span><span class="p">,</span> <span class="n">neg_dst</span><span class="p">),</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>预测边得分的模型和边分类/回归模型中的预测边得分模型相同。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sage</span> <span class="o">=</span> <span class="n">SAGE</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred</span> <span class="o">=</span> <span class="n">DotProductPredictor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">neg_g</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sage</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">neg_g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>训练的循环部分里会重复构建负采样图并计算损失函数值。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">):</span>
+    <span class="c1"># 间隔损失</span>
+    <span class="n">n_edges</span> <span class="o">=</span> <span class="n">pos_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pos_score</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">neg_score</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">n_edges</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="n">node_features</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
+<span class="n">n_features</span> <span class="o">=</span> <span class="n">node_features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">negative_graph</span> <span class="o">=</span> <span class="n">construct_negative_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">negative_graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>训练后，节点表示可以通过以下代码获取。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sage</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(实际应用中)，有着许多使用节点嵌入的方法，例如，训练下游任务的分类器，或为相关实体推荐进行最近邻搜索或最大内积搜索。</p>
+</section>
+<section id="id4">
+<h2>异构图上的链接预测模型的训练<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>异构图上的链接预测和同构图上的链接预测没有太大区别。下文是在一种边类型上进行预测，
+用户可以很容易地将其拓展为对多种边类型上进行预测。</p>
+<p>例如，为某一种边类型，用户可以重复使用
+<a class="reference internal" href="training-edge.html#guide-cn-training-edge-classification-heterogeneous-graph"><span class="std std-ref">异构图上的边预测模型的训练</span></a>
+里的 <code class="docutils literal notranslate"><span class="pre">HeteroDotProductPredictor</span></code> 来计算节点间存在连接可能性的得分。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">HeteroDotProductPredictor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+        <span class="c1"># h是从5.1节中对异构图的每种类型的边所计算的节点表示</span>
+        <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">u_dot_v</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">),</span> <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>要执行负采样，用户可以对要进行链接预测的边类型构造一个负采样图。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">construct_negative_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+    <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+    <span class="n">neg_src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">neg_dst</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">vtype</span><span class="p">),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="n">dgl</span><span class="o">.</span><span class="n">heterograph</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">etype</span><span class="p">:</span> <span class="p">(</span><span class="n">neg_src</span><span class="p">,</span> <span class="n">neg_dst</span><span class="p">)},</span>
+        <span class="n">num_nodes_dict</span><span class="o">=</span><span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>该模型与异构图上边分类的模型有些不同，因为用户需要指定在哪种边类型上进行链接预测。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sage</span> <span class="o">=</span> <span class="n">RGCN</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred</span> <span class="o">=</span> <span class="n">HeteroDotProductPredictor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">neg_g</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sage</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">etype</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred</span><span class="p">(</span><span class="n">neg_g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">etype</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>训练的循环部分和同构图时一致。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">):</span>
+    <span class="c1"># 间隔损失</span>
+    <span class="n">n_edges</span> <span class="o">=</span> <span class="n">pos_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pos_score</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">neg_score</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">n_edges</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+<span class="n">user_feats</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span>
+<span class="n">item_feats</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span>
+<span class="n">node_features</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_feats</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item_feats</span><span class="p">}</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">negative_graph</span> <span class="o">=</span> <span class="n">construct_negative_graph</span><span class="p">(</span><span class="n">hetero_graph</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">))</span>
+    <span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">hetero_graph</span><span class="p">,</span> <span class="n">negative_graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">))</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="training-edge.html" class="btn btn-neutral float-left" title="5.2 边分类/回归" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="training-graph.html" class="btn btn-neutral float-right" title="5.4 整图分类" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

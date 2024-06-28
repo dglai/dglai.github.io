@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Transformer in a Nutshell &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Training on CPUs" href="../../tutorials/cpu/index.html" />
+    <link rel="prev" title="Hypergraph Neural Networks" href="hgnn.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials: dgl.sparse</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gcn.html">Building a Graph Convolutional Network Using Sparse Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graph_diffusion.html">Graph Diffusion in Graph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hgnn.html">Hypergraph Neural Networks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Graph Transformer in a Nutshell</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials: dgl.sparse</a></li>
+      <li class="breadcrumb-item active">Graph Transformer in a Nutshell</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/notebooks/sparse/graph_transformer.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Graph-Transformer-in-a-Nutshell">
+<h1>Graph Transformer in a Nutshell<a class="headerlink" href="#Graph-Transformer-in-a-Nutshell" title="Link to this heading"></a></h1>
+<p>The <strong>Transformer</strong> <a class="reference external" href="https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html">(Vaswani et al. 2017)</a> has been proven an effective learning architecture in natural language processing and computer vision. Recently, researchers turns to explore the application of transformer in graph learning. They have achieved inital success on many practical tasks, e.g., graph property prediction. <a class="reference external" href="https://arxiv.org/abs/2012.09699">Dwivedi et al. (2020)</a> firstly
+generalize the transformer neural architecture to graph-structured data. Here, we present how to build such a graph transformer with DGL’s sparse matrix APIs.</p>
+<p><a class="reference external" href="https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/sparse/graph_transformer.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/notebooks/sparse/graph_transformer.ipynb"><img alt="GitHub" src="https://img.shields.io/badge/-View%20on%20GitHub-181717?logo=github&amp;logoColor=ffffff" /></a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install required packages.</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TORCH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DGLBACKEND&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+
+<span class="c1"># Uncomment below to install required packages. If the CUDA version is not 11.8,</span>
+<span class="c1"># check the https://www.dgl.ai/pages/start.html to find the supported CUDA</span>
+<span class="c1"># version and corresponding command to install DGL.</span>
+<span class="c1">#!pip install dgl -f https://data.dgl.ai/wheels/cu118/repo.html &gt; /dev/null</span>
+<span class="c1">#!pip install ogb &gt;/dev/null</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dgl</span>
+    <span class="n">installed</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">installed</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DGL installed!&quot;</span> <span class="k">if</span> <span class="n">installed</span> <span class="k">else</span> <span class="s2">&quot;Failed to install DGL!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Sparse-Multi-head-Attention">
+<h2>Sparse Multi-head Attention<a class="headerlink" href="#Sparse-Multi-head-Attention" title="Link to this heading"></a></h2>
+<p>Recall the all-pairs scaled-dot-product attention mechanism in vanillar Transformer:</p>
+<div class="math notranslate nohighlight">
+\[\text{Attn}=\text{softmax}(\dfrac{QK^T} {\sqrt{d}})V,\]</div>
+<p>The graph transformer (GT) model employs a Sparse Multi-head Attention block:</p>
+<div class="math notranslate nohighlight">
+\[\text{SparseAttn}(Q, K, V, A) = \text{softmax}(\frac{(QK^T) \circ A}{\sqrt{d}})V,\]</div>
+<p>where <span class="math notranslate nohighlight">\(Q, K, V ∈\mathbb{R}^{N\times d}\)</span> are query feature, key feature, and value feature, respectively. <span class="math notranslate nohighlight">\(A\in[0,1]^{N\times N}\)</span> is the adjacency matrix of the input graph. <span class="math notranslate nohighlight">\((QK^T)\circ A\)</span> means that the multiplication of query matrix and key matrix is followed by a Hadamard product (or element-wise multiplication) with the sparse adjacency matrix as illustrated in the figure below:</p>
+<p><img alt="a42a1e8b67764a4baae376edd0ecee94" class="no-scaled-link" src="https://drive.google.com/uc?id=1OgMAewLR3Z1vz5y4J8aPRSeaU3g8iQfX" style="width: 500px;" /></p>
+<p>Essentially, only the attention scores between connected nodes are computed according to the sparsity of <span class="math notranslate nohighlight">\(A\)</span>. This operation is also called <em>Sampled Dense Dense Matrix Multiplication (SDDMM)</em>.</p>
+<p>Enjoying the <a class="reference external" href="https://docs.dgl.ai/en/latest/generated/dgl.sparse.bsddmm.html">batched SDDMM API</a> in DGL, we can parallel the computation on multiple attention heads (different representation subspaces).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">import</span> <span class="nn">dgl.nn</span> <span class="k">as</span> <span class="nn">dglnn</span>
+<span class="kn">import</span> <span class="nn">dgl.sparse</span> <span class="k">as</span> <span class="nn">dglsp</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+
+<span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">AsGraphPredDataset</span>
+<span class="kn">from</span> <span class="nn">dgl.dataloading</span> <span class="kn">import</span> <span class="n">GraphDataLoader</span>
+<span class="kn">from</span> <span class="nn">ogb.graphproppred</span> <span class="kn">import</span> <span class="n">collate_dgl</span><span class="p">,</span> <span class="n">DglGraphPropPredDataset</span><span class="p">,</span> <span class="n">Evaluator</span>
+<span class="kn">from</span> <span class="nn">ogb.graphproppred.mol_encoder</span> <span class="kn">import</span> <span class="n">AtomEncoder</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+
+<span class="k">class</span> <span class="nc">SparseMHA</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sparse Multi-head Attention Module&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">num_heads</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span> <span class="o">=</span> <span class="n">num_heads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span> <span class="o">=</span> <span class="n">hidden_size</span> <span class="o">//</span> <span class="n">num_heads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="o">**-</span><span class="mf">0.5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="c1"># [N, dh, nh]</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_proj</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling</span>
+        <span class="c1"># [N, dh, nh]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_proj</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">)</span>
+        <span class="c1"># [N, dh, nh]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_proj</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">)</span>
+
+        <span class="c1">######################################################################</span>
+        <span class="c1"># (HIGHLIGHT) Compute the multi-head attention with Sparse Matrix API</span>
+        <span class="c1">######################################################################</span>
+        <span class="n">attn</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">bsddmm</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># (sparse) [N, N, nh]</span>
+        <span class="c1"># Sparse softmax by default applies on the last sparse dimension.</span>
+        <span class="n">attn</span> <span class="o">=</span> <span class="n">attn</span><span class="o">.</span><span class="n">softmax</span><span class="p">()</span>  <span class="c1"># (sparse) [N, N, nh]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">bspmm</span><span class="p">(</span><span class="n">attn</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>  <span class="c1"># [N, dh, nh]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_proj</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Graph-Transformer-Layer">
+<h2>Graph Transformer Layer<a class="headerlink" href="#Graph-Transformer-Layer" title="Link to this heading"></a></h2>
+<p>The GT layer is composed of Multi-head Attention, Batch Norm, and Feed-forward Network, connected by residual links as in vanilla transformer.</p>
+<p><img alt="fe7ed6e84ade4ea29e3427b9a473d17d" class="no-scaled-link" src="https://drive.google.com/uc?id=1cm-Ijw7bUQIOkoTKn5MQ3m4-66JqCsMz" style="width: 300px;" /></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GTLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graph Transformer Layer&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">num_heads</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MHA</span> <span class="o">=</span> <span class="n">SparseMHA</span><span class="p">(</span><span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_heads</span><span class="o">=</span><span class="n">num_heads</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batchnorm1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batchnorm2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FFN1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FFN2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="n">h1</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MHA</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchnorm1</span><span class="p">(</span><span class="n">h</span> <span class="o">+</span> <span class="n">h1</span><span class="p">)</span>
+
+        <span class="n">h2</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FFN2</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FFN1</span><span class="p">(</span><span class="n">h</span><span class="p">)))</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">h2</span> <span class="o">+</span> <span class="n">h</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchnorm2</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Graph-Transformer-Model">
+<h2>Graph Transformer Model<a class="headerlink" href="#Graph-Transformer-Model" title="Link to this heading"></a></h2>
+<p>The GT model is constructed by stacking GT layers. The input positional encoding of vanilla transformer is replaced with Laplacian positional encoding <a class="reference external" href="https://arxiv.org/abs/2003.00982">(Dwivedi et al. 2020)</a>. For the graph-level prediction task, an extra pooler is stacked on top of GT layers to aggregate node feature of the same graph.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GTModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">out_size</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+        <span class="n">pos_enc_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">num_layers</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">num_heads</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_encoder</span> <span class="o">=</span> <span class="n">AtomEncoder</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_linear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">pos_enc_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">GTLayer</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layers</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pooler</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">SumPooling</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">//</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="n">out_size</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">pos_enc</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_encoder</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_linear</span><span class="p">(</span><span class="n">pos_enc</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pooler</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Training">
+<h2>Training<a class="headerlink" href="#Training" title="Link to this heading"></a></h2>
+<p>We train the GT model on <a class="reference external" href="https://ogb.stanford.edu/docs/graphprop/#ogbg-mol">ogbg-molhiv</a> benchmark. The Laplacian positional encoding of each graph is pre-computed (with the API <a class="reference external" href="https://docs.dgl.ai/en/latest/generated/dgl.laplacian_pe.html">here</a>) as part of the input to the model.</p>
+<p><em>Note that we down-sample the dataset to make this demo runs faster. See the</em> <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/sparse/graph_transformer.py">example script</a> <em>for the performance on the full dataset.</em></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">batched_g</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+        <span class="n">batched_g</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batched_g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">y_hat</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batched_g</span><span class="p">,</span> <span class="n">batched_g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">],</span> <span class="n">batched_g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;PE&quot;</span><span class="p">])</span>
+        <span class="n">y_true</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">y_hat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+        <span class="n">y_pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_hat</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;y_true&quot;</span><span class="p">:</span> <span class="n">y_true</span><span class="p">,</span> <span class="s2">&quot;y_pred&quot;</span><span class="p">:</span> <span class="n">y_pred</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)[</span><span class="s2">&quot;rocauc&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+    <span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">GraphDataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">train_idx</span><span class="p">],</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_dgl</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">valid_dataloader</span> <span class="o">=</span> <span class="n">GraphDataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">val_idx</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_dgl</span>
+    <span class="p">)</span>
+    <span class="n">test_dataloader</span> <span class="o">=</span> <span class="n">GraphDataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">test_idx</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_dgl</span>
+    <span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+    <span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">StepLR</span><span class="p">(</span>
+        <span class="n">optimizer</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.5</span>
+    <span class="p">)</span>
+    <span class="n">loss_fcn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">batched_g</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
+            <span class="n">batched_g</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batched_g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span>
+                <span class="n">batched_g</span><span class="p">,</span> <span class="n">batched_g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">],</span> <span class="n">batched_g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;PE&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fcn</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">float</span><span class="p">())</span>
+            <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">)</span>
+        <span class="n">val_metric</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">valid_dataloader</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="n">test_metric</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_dataloader</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Epoch: </span><span class="si">{</span><span class="n">epoch</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">, Loss: </span><span class="si">{</span><span class="n">avg_loss</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Val: </span><span class="si">{</span><span class="n">val_metric</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, Test: </span><span class="si">{</span><span class="n">test_metric</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="c1"># Training device.</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="c1"># Uncomment the code below to train on GPU. Be sure to install DGL with CUDA support.</span>
+<span class="c1">#dev = torch.device(&quot;cuda:0&quot;)</span>
+
+<span class="c1"># Load dataset.</span>
+<span class="n">pos_enc_size</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">AsGraphPredDataset</span><span class="p">(</span>
+    <span class="n">DglGraphPropPredDataset</span><span class="p">(</span><span class="s2">&quot;ogbg-molhiv&quot;</span><span class="p">,</span> <span class="s2">&quot;./data/OGB&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">evaluator</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">(</span><span class="s2">&quot;ogbg-molhiv&quot;</span><span class="p">)</span>
+
+<span class="c1"># Down sample the dataset to make the tutorial run faster.</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">train_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">train_idx</span><span class="p">)</span>
+<span class="n">val_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">val_idx</span><span class="p">)</span>
+<span class="n">test_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">test_idx</span><span class="p">)</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">train_idx</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">train_idx</span><span class="p">[</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">train_size</span><span class="p">),</span> <span class="mi">2000</span><span class="p">))</span>
+<span class="p">]</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">val_idx</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">val_idx</span><span class="p">[</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">val_size</span><span class="p">),</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="p">]</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">test_idx</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">test_idx</span><span class="p">[</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">test_size</span><span class="p">),</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="p">]</span>
+
+<span class="c1"># Laplacian positional encoding.</span>
+<span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">dataset</span><span class="o">.</span><span class="n">train_idx</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">val_idx</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">test_idx</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Computing Laplacian PE&quot;</span><span class="p">):</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;PE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">laplacian_pe</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">pos_enc_size</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Create model.</span>
+<span class="n">out_size</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">num_tasks</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">GTModel</span><span class="p">(</span><span class="n">out_size</span><span class="o">=</span><span class="n">out_size</span><span class="p">,</span> <span class="n">pos_enc_size</span><span class="o">=</span><span class="n">pos_enc_size</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+
+<span class="c1"># Kick off training.</span>
+<span class="n">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Computing Laplacian PE:   1%|          | 25/4000 [00:00&lt;00:16, 244.77it/s]/usr/local/lib/python3.8/dist-packages/dgl/backend/pytorch/tensor.py:52: UserWarning: Casting complex values to real discards the imaginary part (Triggered internally at ../aten/src/ATen/native/Copy.cpp:250.)
+  return th.as_tensor(data, dtype=dtype)
+Computing Laplacian PE: 100%|██████████| 4000/4000 [00:13&lt;00:00, 296.04it/s]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Epoch: 000, Loss: 0.2486, Val: 0.3082, Test: 0.3068
+Epoch: 001, Loss: 0.1695, Val: 0.4684, Test: 0.4572
+Epoch: 002, Loss: 0.1428, Val: 0.5887, Test: 0.4721
+Epoch: 003, Loss: 0.1237, Val: 0.6375, Test: 0.5010
+Epoch: 004, Loss: 0.1127, Val: 0.6628, Test: 0.4854
+Epoch: 005, Loss: 0.1047, Val: 0.6811, Test: 0.4983
+Epoch: 006, Loss: 0.0949, Val: 0.6751, Test: 0.5409
+Epoch: 007, Loss: 0.0901, Val: 0.6340, Test: 0.5357
+Epoch: 008, Loss: 0.0811, Val: 0.6717, Test: 0.5543
+Epoch: 009, Loss: 0.0643, Val: 0.7861, Test: 0.5628
+Epoch: 010, Loss: 0.0489, Val: 0.7319, Test: 0.5341
+Epoch: 011, Loss: 0.0340, Val: 0.7884, Test: 0.5299
+Epoch: 012, Loss: 0.0285, Val: 0.5887, Test: 0.4293
+Epoch: 013, Loss: 0.0361, Val: 0.5514, Test: 0.3419
+Epoch: 014, Loss: 0.0451, Val: 0.6795, Test: 0.4964
+Epoch: 015, Loss: 0.0429, Val: 0.7405, Test: 0.5527
+Epoch: 016, Loss: 0.0331, Val: 0.7859, Test: 0.4994
+Epoch: 017, Loss: 0.0177, Val: 0.6544, Test: 0.4457
+Epoch: 018, Loss: 0.0201, Val: 0.8250, Test: 0.6073
+Epoch: 019, Loss: 0.0093, Val: 0.7356, Test: 0.5561
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hgnn.html" class="btn btn-neutral float-left" title="Hypergraph Neural Networks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../tutorials/cpu/index.html" class="btn btn-neutral float-right" title="Training on CPUs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

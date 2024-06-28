@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.graphbolt.impl.fused_csc_sampling_graph &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.graphbolt.impl.fused_csc_sampling_graph</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.graphbolt.impl.fused_csc_sampling_graph</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;CSC format sampling graph.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">textwrap</span>
+
+<span class="c1"># pylint: disable= invalid-name</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">dgl.utils</span> <span class="kn">import</span> <span class="n">recursive_apply</span>
+
+<span class="kn">from</span> <span class="nn">...base</span> <span class="kn">import</span> <span class="n">EID</span><span class="p">,</span> <span class="n">ETYPE</span><span class="p">,</span> <span class="n">NID</span><span class="p">,</span> <span class="n">NTYPE</span>
+<span class="kn">from</span> <span class="nn">...convert</span> <span class="kn">import</span> <span class="n">to_homogeneous</span>
+<span class="kn">from</span> <span class="nn">...heterograph</span> <span class="kn">import</span> <span class="n">DGLGraph</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">etype_str_to_tuple</span><span class="p">,</span> <span class="n">etype_tuple_to_str</span><span class="p">,</span> <span class="n">ORIGINAL_EDGE_ID</span>
+<span class="kn">from</span> <span class="nn">..sampling_graph</span> <span class="kn">import</span> <span class="n">SamplingGraph</span>
+<span class="kn">from</span> <span class="nn">.sampled_subgraph_impl</span> <span class="kn">import</span> <span class="n">CSCFormatBase</span><span class="p">,</span> <span class="n">SampledSubgraphImpl</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;FusedCSCSamplingGraph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fused_csc_sampling_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;load_from_shared_memory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_dglgraph&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph">[docs]</a>
+<span class="k">class</span> <span class="nc">FusedCSCSamplingGraph</span><span class="p">(</span><span class="n">SamplingGraph</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A sampling graph in CSC format.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">final_str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{classname}</span><span class="s2">(csc_indptr=</span><span class="si">{csc_indptr}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;indices=</span><span class="si">{indices}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="si">{metadata}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">classname_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">csc_indptr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csc_indptr</span><span class="p">)</span>
+        <span class="n">indices_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">meta_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;total_num_nodes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">total_num_nodes</span><span class="si">}</span><span class="s2">, num_edges=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="si">}</span><span class="s2">,&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">node_type_offset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span><span class="si">}</span><span class="s2">,&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_per_edge</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">type_per_edge=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type_per_edge</span><span class="si">}</span><span class="s2">,&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">node_type_to_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="si">}</span><span class="s2">,&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">edge_type_to_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="si">}</span><span class="s2">,&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">node_attributes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_attributes</span><span class="si">}</span><span class="s2">,&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">edge_attributes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span><span class="si">}</span><span class="s2">,&quot;</span>
+
+        <span class="n">final_str</span> <span class="o">=</span> <span class="n">final_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">classname</span><span class="o">=</span><span class="n">classname_str</span><span class="p">,</span>
+            <span class="n">csc_indptr</span><span class="o">=</span><span class="n">csc_indptr_str</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices_str</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">meta_str</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span>
+            <span class="n">final_str</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">classname_str</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">c_csc_graph</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">ScriptObject</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span> <span class="o">=</span> <span class="n">c_csc_graph</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># torch.Tensor.pin_memory() is not an inplace operation. To make it</span>
+        <span class="c1"># truly in-place, we need to use cudaHostRegister. Then, we need to use</span>
+        <span class="c1"># cudaHostUnregister to unpin the tensor in the destructor.</span>
+        <span class="c1"># https://github.com/pytorch/pytorch/issues/32167#issuecomment-753551842</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_is_inplace_pinned&quot;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_inplace_pinned</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inplace_unpinner</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_num_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of nodes in the graph.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of rows in the dense format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of edges in the graph.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of edges in the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of nodes in the graph.</span>
+<span class="sd">        - If the graph is homogenous, returns an integer.</span>
+<span class="sd">        - If the graph is heterogenous, returns a dictionary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[int, Dict[str, int]]</span>
+<span class="sd">            The number of nodes. Integer indicates the total nodes number of a</span>
+<span class="sd">            homogenous graph; dict indicates nodes number per node types of a</span>
+<span class="sd">            heterogenous graph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dgl.graphbolt as gb, torch</span>
+<span class="sd">        &gt;&gt;&gt; total_num_nodes = 5</span>
+<span class="sd">        &gt;&gt;&gt; total_num_edges = 12</span>
+<span class="sd">        &gt;&gt;&gt; ntypes = {&quot;N0&quot;: 0, &quot;N1&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; etypes = {&quot;N0:R0:N0&quot;: 0, &quot;N0:R1:N1&quot;: 1,</span>
+<span class="sd">        ...     &quot;N1:R2:N0&quot;: 2, &quot;N1:R3:N1&quot;: 3}</span>
+<span class="sd">        &gt;&gt;&gt; indptr = torch.LongTensor([0, 3, 5, 7, 9, 12])</span>
+<span class="sd">        &gt;&gt;&gt; indices = torch.LongTensor([0, 1, 4, 2, 3, 0, 1, 1, 2, 0, 3, 4])</span>
+<span class="sd">        &gt;&gt;&gt; node_type_offset = torch.LongTensor([0, 2, 5])</span>
+<span class="sd">        &gt;&gt;&gt; type_per_edge = torch.LongTensor(</span>
+<span class="sd">        ...     [0, 0, 2, 2, 2, 1, 1, 1, 3, 1, 3, 3])</span>
+<span class="sd">        &gt;&gt;&gt; graph = gb.fused_csc_sampling_graph(indptr, indices,</span>
+<span class="sd">        ...     node_type_offset=node_type_offset,</span>
+<span class="sd">        ...     type_per_edge=type_per_edge,</span>
+<span class="sd">        ...     node_type_to_id=ntypes,</span>
+<span class="sd">        ...     edge_type_to_id=etypes)</span>
+<span class="sd">        &gt;&gt;&gt; print(graph.num_nodes)</span>
+<span class="sd">        {&#39;N0&#39;: 2, &#39;N1&#39;: 3}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_list</span>
+
+        <span class="c1"># Homogenous.</span>
+        <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+
+        <span class="c1"># Heterogenous</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_nodes_per_type</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">_type</span><span class="p">:</span> <span class="n">offset</span><span class="p">[</span><span class="n">_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">[</span><span class="n">_idx</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">_type</span><span class="p">,</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">num_nodes_per_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of edges in the graph.</span>
+<span class="sd">        - If the graph is homogenous, returns an integer.</span>
+<span class="sd">        - If the graph is heterogenous, returns a dictionary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[int, Dict[str, int]]</span>
+<span class="sd">            The number of edges. Integer indicates the total edges number of a</span>
+<span class="sd">            homogenous graph; dict indicates edges number per edge types of a</span>
+<span class="sd">            heterogenous graph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dgl.graphbolt as gb, torch</span>
+<span class="sd">        &gt;&gt;&gt; total_num_nodes = 5</span>
+<span class="sd">        &gt;&gt;&gt; total_num_edges = 12</span>
+<span class="sd">        &gt;&gt;&gt; ntypes = {&quot;N0&quot;: 0, &quot;N1&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; etypes = {&quot;N0:R0:N0&quot;: 0, &quot;N0:R1:N1&quot;: 1,</span>
+<span class="sd">        ...     &quot;N1:R2:N0&quot;: 2, &quot;N1:R3:N1&quot;: 3}</span>
+<span class="sd">        &gt;&gt;&gt; indptr = torch.LongTensor([0, 3, 5, 7, 9, 12])</span>
+<span class="sd">        &gt;&gt;&gt; indices = torch.LongTensor([0, 1, 4, 2, 3, 0, 1, 1, 2, 0, 3, 4])</span>
+<span class="sd">        &gt;&gt;&gt; node_type_offset = torch.LongTensor([0, 2, 5])</span>
+<span class="sd">        &gt;&gt;&gt; type_per_edge = torch.LongTensor(</span>
+<span class="sd">        ...     [0, 0, 2, 2, 2, 1, 1, 1, 3, 1, 3, 3])</span>
+<span class="sd">        &gt;&gt;&gt; metadata = gb.GraphMetadata(ntypes, etypes)</span>
+<span class="sd">        &gt;&gt;&gt; graph = gb.fused_csc_sampling_graph(indptr, indices, node_type_offset,</span>
+<span class="sd">        ...     type_per_edge, None, metadata)</span>
+<span class="sd">        &gt;&gt;&gt; print(graph.num_edges)</span>
+<span class="sd">        {&#39;N0:R0:N0&#39;: 2, &#39;N0:R1:N1&#39;: 1, &#39;N1:R2:N0&#39;: 2, &#39;N1:R3:N1&#39;: 3}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">type_per_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_per_edge</span>
+
+        <span class="c1"># Homogenous.</span>
+        <span class="k">if</span> <span class="n">type_per_edge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+
+        <span class="c1"># Heterogenous</span>
+        <span class="n">bincount</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">type_per_edge</span><span class="p">)</span>
+        <span class="n">num_edges_per_type</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">etype_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">etype_id</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">bincount</span><span class="p">):</span>
+                <span class="n">num_edges_per_type</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">bincount</span><span class="p">[</span><span class="n">etype_id</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">num_edges_per_type</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">num_edges_per_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">csc_indptr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the indices pointer in the CSC graph.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.tensor</span>
+<span class="sd">            The indices pointer in the CSC graph. An integer tensor with</span>
+<span class="sd">            shape `(total_num_nodes+1,)`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">csc_indptr</span><span class="p">()</span>
+
+    <span class="nd">@csc_indptr</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">csc_indptr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csc_indptr</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the indices pointer in the CSC graph.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_csc_indptr</span><span class="p">(</span><span class="n">csc_indptr</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the indices in the CSC graph.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.tensor</span>
+<span class="sd">            The indices in the CSC graph. An integer tensor with shape</span>
+<span class="sd">            `(total_num_edges,)`.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -------</span>
+<span class="sd">        It is assumed that edges of each node are already sorted by edge type</span>
+<span class="sd">        ids.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">indices</span><span class="p">()</span>
+
+    <span class="nd">@indices</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the indices in the CSC graph.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_type_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the node type offset tensor if present. Do not modify the</span>
+<span class="sd">        returned tensor in place.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor or None</span>
+<span class="sd">            If present, returns a 1D integer tensor of shape</span>
+<span class="sd">            `(num_node_types + 1,)`. The tensor is in ascending order as nodes</span>
+<span class="sd">            of the same type have continuous IDs, and larger node IDs are</span>
+<span class="sd">            paired with larger node type IDs. The first value is 0 and last</span>
+<span class="sd">            value is the number of nodes. And nodes with IDs between</span>
+<span class="sd">            `node_type_offset_[i]~node_type_offset_[i+1]` are of type id &#39;i&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">node_type_offset</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_node_type_offset_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the node type offset list if present.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list or None</span>
+<span class="sd">            If present, returns a 1D integer list of shape</span>
+<span class="sd">            `(num_node_types + 1,)`. The list is in ascending order as nodes</span>
+<span class="sd">            of the same type have continuous IDs, and larger node IDs are</span>
+<span class="sd">            paired with larger node type IDs. The first value is 0 and last</span>
+<span class="sd">            value is the number of nodes. And nodes with IDs between</span>
+<span class="sd">            `node_type_offset_[i]~node_type_offset_[i+1]` are of type id &#39;i&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_node_type_offset_cached_list&quot;</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_cached_list</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_cached_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_cached_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_cached_list</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_cached_list</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_cached_list</span>
+
+    <span class="nd">@node_type_offset</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">node_type_offset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">node_type_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the node type offset tensor if present.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_node_type_offset</span><span class="p">(</span><span class="n">node_type_offset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_cached_list</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_indptr_node_type_offset_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the indptr node type offset list which presents the column id</span>
+<span class="sd">        space when it does not match the global id space. It is useful when we</span>
+<span class="sd">        slice a subgraph from another FusedCSCSamplingGraph.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list or None</span>
+<span class="sd">            If present, returns a 1D integer list of shape</span>
+<span class="sd">            `(num_node_types + 1,)`. The list is in ascending order as nodes</span>
+<span class="sd">            of the same type have continuous IDs, and larger node IDs are</span>
+<span class="sd">            paired with larger node type IDs. The first value is 0 and last</span>
+<span class="sd">            value is the number of nodes. And nodes with IDs between</span>
+<span class="sd">            `node_type_offset_[i]~node_type_offset_[i+1]` are of type id &#39;i&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_indptr_node_type_offset_list_</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_indptr_node_type_offset_list_&quot;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="nd">@_indptr_node_type_offset_list</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">_indptr_node_type_offset_list</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">indptr_node_type_offset_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the indptr node type offset list if present.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indptr_node_type_offset_list_</span> <span class="o">=</span> <span class="n">indptr_node_type_offset_list</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type_per_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the edge type tensor if present.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor or None</span>
+<span class="sd">            If present, returns a 1D integer tensor of shape (total_num_edges,)</span>
+<span class="sd">            containing the type of each edge in the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">type_per_edge</span><span class="p">()</span>
+
+    <span class="nd">@type_per_edge</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">type_per_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_per_edge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the edge type tensor if present.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_type_per_edge</span><span class="p">(</span><span class="n">type_per_edge</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_type_to_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the node type to id dictionary if present.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, int] or None</span>
+<span class="sd">            If present, returns a dictionary mapping node type to node type</span>
+<span class="sd">            id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="p">()</span>
+
+    <span class="nd">@node_type_to_id</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">node_type_to_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">node_type_to_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the node type to id dictionary if present.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_node_type_to_id</span><span class="p">(</span><span class="n">node_type_to_id</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_type_to_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the edge type to id dictionary if present.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, int] or None</span>
+<span class="sd">            If present, returns a dictionary mapping edge type to edge type</span>
+<span class="sd">            id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="p">()</span>
+
+    <span class="nd">@edge_type_to_id</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">edge_type_to_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">edge_type_to_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the edge type to id dictionary if present.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_edge_type_to_id</span><span class="p">(</span><span class="n">edge_type_to_id</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the node attributes dictionary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, torch.Tensor] or None</span>
+<span class="sd">            If present, returns a dictionary of node attributes. Each key</span>
+<span class="sd">            represents the attribute&#39;s name, while the corresponding value</span>
+<span class="sd">            holds the attribute&#39;s specific value. The length of each value</span>
+<span class="sd">            should match the total number of nodes.&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">node_attributes</span><span class="p">()</span>
+
+    <span class="nd">@node_attributes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">node_attributes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">node_attributes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the node attributes dictionary.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">node_attributes</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the edge attributes dictionary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, torch.Tensor] or None</span>
+<span class="sd">            If present, returns a dictionary of edge attributes. Each key</span>
+<span class="sd">            represents the attribute&#39;s name, while the corresponding value</span>
+<span class="sd">            holds the attribute&#39;s specific value. The length of each value</span>
+<span class="sd">            should match the total number of edges.&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">edge_attributes</span><span class="p">()</span>
+
+    <span class="nd">@edge_attributes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">edge_attributes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the edge attributes dictionary.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">edge_attributes</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.node_attribute">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.node_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">node_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the node attribute tensor by name.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name: str</span>
+<span class="sd">            The name of the node attribute.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor or None</span>
+<span class="sd">            If present, returns the node attribute tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">node_attribute</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.add_node_attribute">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.add_node_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_node_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds node attribute tensor by name.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name: str</span>
+<span class="sd">            The name of the node attribute.</span>
+<span class="sd">        tensor: torch.Tensor</span>
+<span class="sd">            The node attribute tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">add_node_attribute</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tensor</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.edge_attribute">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.edge_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">edge_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the edge attribute tensor by name.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name: str</span>
+<span class="sd">            The name of the edge attribute.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor or None</span>
+<span class="sd">            If present, returns the edge attribute tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">edge_attribute</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.add_edge_attribute">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.add_edge_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_edge_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds edge attribute tensor by name.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name: str</span>
+<span class="sd">            The name of the edge attribute.</span>
+<span class="sd">        tensor: torch.Tensor</span>
+<span class="sd">            The edge attribute tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">add_edge_attribute</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tensor</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.in_subgraph">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.in_subgraph">[docs]</a>
+    <span class="k">def</span> <span class="nf">in_subgraph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">nodes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SampledSubgraphImpl</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the subgraph induced on the inbound edges of the given nodes.</span>
+
+<span class="sd">        An in subgraph is equivalent to creating a new graph using the incoming</span>
+<span class="sd">        edges of the given nodes. Subgraph is compacted according to the order</span>
+<span class="sd">        of passed-in `nodes`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nodes: torch.Tensor or Dict[str, torch.Tensor]</span>
+<span class="sd">            IDs of the given seed nodes.</span>
+<span class="sd">              - If `nodes` is a tensor: It means the graph is homogeneous</span>
+<span class="sd">                graph, and ids inside are homogeneous ids.</span>
+<span class="sd">              - If `nodes` is a dictionary: The keys should be node type and</span>
+<span class="sd">                ids inside are heterogeneous ids.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SampledSubgraphImpl</span>
+<span class="sd">            The in subgraph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dgl.graphbolt as gb</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; total_num_nodes = 5</span>
+<span class="sd">        &gt;&gt;&gt; total_num_edges = 12</span>
+<span class="sd">        &gt;&gt;&gt; ntypes = {&quot;N0&quot;: 0, &quot;N1&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; etypes = {</span>
+<span class="sd">        ...     &quot;N0:R0:N0&quot;: 0, &quot;N0:R1:N1&quot;: 1, &quot;N1:R2:N0&quot;: 2, &quot;N1:R3:N1&quot;: 3}</span>
+<span class="sd">        &gt;&gt;&gt; indptr = torch.LongTensor([0, 3, 5, 7, 9, 12])</span>
+<span class="sd">        &gt;&gt;&gt; indices = torch.LongTensor([0, 1, 4, 2, 3, 0, 1, 1, 2, 0, 3, 4])</span>
+<span class="sd">        &gt;&gt;&gt; node_type_offset = torch.LongTensor([0, 2, 5])</span>
+<span class="sd">        &gt;&gt;&gt; type_per_edge = torch.LongTensor(</span>
+<span class="sd">        ...     [0, 0, 2, 2, 2, 1, 1, 1, 3, 1, 3, 3])</span>
+<span class="sd">        &gt;&gt;&gt; graph = gb.fused_csc_sampling_graph(indptr, indices,</span>
+<span class="sd">        ...     node_type_offset=node_type_offset,</span>
+<span class="sd">        ...     type_per_edge=type_per_edge,</span>
+<span class="sd">        ...     node_type_to_id=ntypes,</span>
+<span class="sd">        ...     edge_type_to_id=etypes)</span>
+<span class="sd">        &gt;&gt;&gt; nodes = {&quot;N0&quot;:torch.LongTensor([1]), &quot;N1&quot;:torch.LongTensor([1, 2])}</span>
+<span class="sd">        &gt;&gt;&gt; in_subgraph = graph.in_subgraph(nodes)</span>
+<span class="sd">        &gt;&gt;&gt; print(in_subgraph.sampled_csc)</span>
+<span class="sd">        {&#39;N0:R0:N0&#39;: CSCFormatBase(indptr=tensor([0, 0]),</span>
+<span class="sd">              indices=tensor([], dtype=torch.int64),</span>
+<span class="sd">        ), &#39;N0:R1:N1&#39;: CSCFormatBase(indptr=tensor([0, 1, 2]),</span>
+<span class="sd">                    indices=tensor([1, 0]),</span>
+<span class="sd">        ), &#39;N1:R2:N0&#39;: CSCFormatBase(indptr=tensor([0, 2]),</span>
+<span class="sd">                    indices=tensor([0, 1]),</span>
+<span class="sd">        ), &#39;N1:R3:N1&#39;: CSCFormatBase(indptr=tensor([0, 1, 3]),</span>
+<span class="sd">                    indices=tensor([0, 1, 2]),</span>
+<span class="sd">        )}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">nodes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_homogeneous_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="c1"># Ensure nodes is 1-D tensor.</span>
+        <span class="k">assert</span> <span class="n">nodes</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Nodes should be 1-D tensor.&quot;</span>
+
+        <span class="n">_in_subgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">in_subgraph</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_sampled_subgraph</span><span class="p">(</span><span class="n">_in_subgraph</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_convert_to_homogeneous_nodes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_windows</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="n">homogeneous_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">homogeneous_node_offsets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">homogeneous_timestamps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">homogeneous_time_windows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_list</span>
+        <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">ntype_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">homogeneous_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ids</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="n">ntype_id</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">timestamps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">homogeneous_timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timestamps</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">time_windows</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">homogeneous_time_windows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time_windows</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+            <span class="n">homogeneous_node_offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">homogeneous_node_offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">timestamps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">homogeneous_time_windows</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">homogeneous_time_windows</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">homogeneous_time_windows</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">homogeneous_nodes</span><span class="p">),</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">homogeneous_timestamps</span><span class="p">),</span>
+                <span class="n">homogeneous_time_windows</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">homogeneous_nodes</span><span class="p">),</span> <span class="n">homogeneous_node_offsets</span>
+
+    <span class="k">def</span> <span class="nf">_convert_to_sampled_subgraph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">C_sampled_subgraph</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">ScriptObject</span><span class="p">,</span>
+        <span class="n">seed_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SampledSubgraphImpl</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An internal function used to convert a fused homogeneous sampled</span>
+<span class="sd">        subgraph to general struct &#39;SampledSubgraphImpl&#39;.&quot;&quot;&quot;</span>
+        <span class="n">indptr</span> <span class="o">=</span> <span class="n">C_sampled_subgraph</span><span class="o">.</span><span class="n">indptr</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">C_sampled_subgraph</span><span class="o">.</span><span class="n">indices</span>
+        <span class="n">type_per_edge</span> <span class="o">=</span> <span class="n">C_sampled_subgraph</span><span class="o">.</span><span class="n">type_per_edge</span>
+        <span class="n">column</span> <span class="o">=</span> <span class="n">C_sampled_subgraph</span><span class="o">.</span><span class="n">original_column_node_ids</span>
+        <span class="n">original_edge_ids</span> <span class="o">=</span> <span class="n">C_sampled_subgraph</span><span class="o">.</span><span class="n">original_edge_ids</span>
+        <span class="n">etype_offsets</span> <span class="o">=</span> <span class="n">C_sampled_subgraph</span><span class="o">.</span><span class="n">etype_offsets</span>
+        <span class="k">if</span> <span class="n">etype_offsets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">etype_offsets</span> <span class="o">=</span> <span class="n">etype_offsets</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="n">has_original_eids</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">ORIGINAL_EDGE_ID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">has_original_eids</span><span class="p">:</span>
+            <span class="n">original_edge_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">graphbolt</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span><span class="p">[</span><span class="n">ORIGINAL_EDGE_ID</span><span class="p">],</span> <span class="n">original_edge_ids</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">type_per_edge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">etype_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># The sampled graph is already a homogeneous graph.</span>
+            <span class="n">sampled_csc</span> <span class="o">=</span> <span class="n">CSCFormatBase</span><span class="p">(</span><span class="n">indptr</span><span class="o">=</span><span class="n">indptr</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_offset_list</span>
+
+            <span class="n">original_hetero_edge_ids</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">sub_indices</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">sub_indptr</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">etype_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># UVA sampling requires us to move node_type_offset to GPU.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="c1"># 1. Find node types for each nodes in column.</span>
+                <span class="n">node_types</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                    <span class="o">-</span> <span class="mi">1</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">ntype_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="c1"># Get all nodes of a specific node type in column.</span>
+                    <span class="n">nids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">node_types</span> <span class="o">==</span> <span class="n">ntype_id</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">nids_original_indptr</span> <span class="o">=</span> <span class="n">indptr</span><span class="p">[</span><span class="n">nids</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">etype_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">src_ntype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dst_ntype</span> <span class="o">=</span> <span class="n">etype_str_to_tuple</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">dst_ntype</span> <span class="o">!=</span> <span class="n">ntype</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="c1"># Get all edge ids of a specific edge type.</span>
+                        <span class="n">eids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">type_per_edge</span> <span class="o">==</span> <span class="n">etype_id</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">src_ntype_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="p">[</span><span class="n">src_ntype</span><span class="p">]</span>
+                        <span class="n">sub_indices</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">indices</span><span class="p">[</span><span class="n">eids</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">[</span><span class="n">src_ntype_id</span><span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="n">cum_edges</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+                            <span class="n">eids</span><span class="p">,</span> <span class="n">nids_original_indptr</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span>
+                        <span class="p">)</span>
+                        <span class="n">sub_indptr</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                            <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">indptr</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">cum_edges</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">has_original_eids</span><span class="p">:</span>
+                            <span class="n">original_hetero_edge_ids</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_edge_ids</span><span class="p">[</span>
+                                <span class="n">eids</span>
+                            <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edge_offsets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">etype_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">src_ntype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dst_ntype</span> <span class="o">=</span> <span class="n">etype_str_to_tuple</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span>
+                    <span class="n">ntype_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="p">[</span><span class="n">dst_ntype</span><span class="p">]</span>
+                    <span class="n">edge_offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">edge_offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">seed_offsets</span><span class="p">[</span><span class="n">ntype_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="o">-</span> <span class="n">seed_offsets</span><span class="p">[</span><span class="n">ntype_id</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="mi">1</span>
+                    <span class="p">)</span>
+                <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">etype_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">src_ntype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dst_ntype</span> <span class="o">=</span> <span class="n">etype_str_to_tuple</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span>
+                    <span class="n">ntype_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="p">[</span><span class="n">dst_ntype</span><span class="p">]</span>
+                    <span class="n">sub_indptr</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">indptr</span><span class="p">[</span>
+                        <span class="n">edge_offsets</span><span class="p">[</span><span class="n">etype_id</span><span class="p">]</span> <span class="p">:</span> <span class="n">edge_offsets</span><span class="p">[</span><span class="n">etype_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="p">]</span>
+                    <span class="n">sub_indices</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span>
+                        <span class="n">etype_offsets</span><span class="p">[</span><span class="n">etype_id</span><span class="p">]</span> <span class="p">:</span> <span class="n">etype_offsets</span><span class="p">[</span><span class="n">etype_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="p">]</span>
+                    <span class="k">if</span> <span class="n">has_original_eids</span><span class="p">:</span>
+                        <span class="n">original_hetero_edge_ids</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_edge_ids</span><span class="p">[</span>
+                            <span class="n">etype_offsets</span><span class="p">[</span><span class="n">etype_id</span><span class="p">]</span> <span class="p">:</span> <span class="n">etype_offsets</span><span class="p">[</span>
+                                <span class="n">etype_id</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="p">]</span>
+                        <span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">has_original_eids</span><span class="p">:</span>
+                <span class="n">original_edge_ids</span> <span class="o">=</span> <span class="n">original_hetero_edge_ids</span>
+            <span class="n">sampled_csc</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">etype</span><span class="p">:</span> <span class="n">CSCFormatBase</span><span class="p">(</span>
+                    <span class="n">indptr</span><span class="o">=</span><span class="n">sub_indptr</span><span class="p">[</span><span class="n">etype</span><span class="p">],</span>
+                    <span class="n">indices</span><span class="o">=</span><span class="n">sub_indices</span><span class="p">[</span><span class="n">etype</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">SampledSubgraphImpl</span><span class="p">(</span>
+            <span class="n">sampled_csc</span><span class="o">=</span><span class="n">sampled_csc</span><span class="p">,</span>
+            <span class="n">original_edge_ids</span><span class="o">=</span><span class="n">original_edge_ids</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.sample_neighbors">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.sample_neighbors">[docs]</a>
+    <span class="k">def</span> <span class="nf">sample_neighbors</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">seeds</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">fanouts</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">probs_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SampledSubgraphImpl</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample neighboring edges of the given nodes and return the induced</span>
+<span class="sd">        subgraph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        seeds: torch.Tensor or Dict[str, torch.Tensor]</span>
+<span class="sd">            IDs of the given seed nodes.</span>
+<span class="sd">              - If `nodes` is a tensor: It means the graph is homogeneous</span>
+<span class="sd">                graph, and ids inside are homogeneous ids.</span>
+<span class="sd">              - If `nodes` is a dictionary: The keys should be node type and</span>
+<span class="sd">                ids inside are heterogeneous ids.</span>
+<span class="sd">        fanouts: torch.Tensor</span>
+<span class="sd">            The number of edges to be sampled for each node with or without</span>
+<span class="sd">            considering edge types.</span>
+<span class="sd">              - When the length is 1, it indicates that the fanout applies to</span>
+<span class="sd">                all neighbors of the node as a collective, regardless of the</span>
+<span class="sd">                edge type.</span>
+<span class="sd">              - Otherwise, the length should equal to the number of edge</span>
+<span class="sd">                types, and each fanout value corresponds to a specific edge</span>
+<span class="sd">                type of the nodes.</span>
+<span class="sd">            The value of each fanout should be &gt;= 0 or = -1.</span>
+<span class="sd">              - When the value is -1, all neighbors (with non-zero probability,</span>
+<span class="sd">                if weighted) will be sampled once regardless of replacement. It</span>
+<span class="sd">                is equivalent to selecting all neighbors with non-zero</span>
+<span class="sd">                probability when the fanout is &gt;= the number of neighbors (and</span>
+<span class="sd">                replace is set to false).</span>
+<span class="sd">              - When the value is a non-negative integer, it serves as a</span>
+<span class="sd">                minimum threshold for selecting neighbors.</span>
+<span class="sd">        replace: bool</span>
+<span class="sd">            Boolean indicating whether the sample is preformed with or</span>
+<span class="sd">            without replacement. If True, a value can be selected multiple</span>
+<span class="sd">            times. Otherwise, each value can be selected only once.</span>
+<span class="sd">        probs_name: str, optional</span>
+<span class="sd">            An optional string specifying the name of an edge attribute used.</span>
+<span class="sd">            This attribute tensor should contain (unnormalized) probabilities</span>
+<span class="sd">            corresponding to each neighboring edge of a node. It must be a 1D</span>
+<span class="sd">            floating-point or boolean tensor, with the number of elements</span>
+<span class="sd">            equalling the total number of edges.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SampledSubgraphImpl</span>
+<span class="sd">            The sampled subgraph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dgl.graphbolt as gb</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; ntypes = {&quot;n1&quot;: 0, &quot;n2&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; etypes = {&quot;n1:e1:n2&quot;: 0, &quot;n2:e2:n1&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; indptr = torch.LongTensor([0, 2, 4, 6, 7, 9])</span>
+<span class="sd">        &gt;&gt;&gt; indices = torch.LongTensor([2, 4, 2, 3, 0, 1, 1, 0, 1])</span>
+<span class="sd">        &gt;&gt;&gt; node_type_offset = torch.LongTensor([0, 2, 5])</span>
+<span class="sd">        &gt;&gt;&gt; type_per_edge = torch.LongTensor([1, 1, 1, 1, 0, 0, 0, 0, 0])</span>
+<span class="sd">        &gt;&gt;&gt; graph = gb.fused_csc_sampling_graph(indptr, indices,</span>
+<span class="sd">        ...     node_type_offset=node_type_offset,</span>
+<span class="sd">        ...     type_per_edge=type_per_edge,</span>
+<span class="sd">        ...     node_type_to_id=ntypes,</span>
+<span class="sd">        ...     edge_type_to_id=etypes)</span>
+<span class="sd">        &gt;&gt;&gt; nodes = {&#39;n1&#39;: torch.LongTensor([0]), &#39;n2&#39;: torch.LongTensor([0])}</span>
+<span class="sd">        &gt;&gt;&gt; fanouts = torch.tensor([1, 1])</span>
+<span class="sd">        &gt;&gt;&gt; subgraph = graph.sample_neighbors(nodes, fanouts)</span>
+<span class="sd">        &gt;&gt;&gt; print(subgraph.sampled_csc)</span>
+<span class="sd">        {&#39;n1:e1:n2&#39;: CSCFormatBase(indptr=tensor([0, 1]),</span>
+<span class="sd">                    indices=tensor([0]),</span>
+<span class="sd">        ), &#39;n2:e2:n1&#39;: CSCFormatBase(indptr=tensor([0, 1]),</span>
+<span class="sd">                    indices=tensor([2]),</span>
+<span class="sd">        )}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">return_eids</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">ORIGINAL_EDGE_ID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span>
+        <span class="p">)</span>
+
+        <span class="n">seed_offsets</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">seeds</span><span class="p">,</span> <span class="n">seed_offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_homogeneous_nodes</span><span class="p">(</span><span class="n">seeds</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">seeds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seed_offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indptr_node_type_offset_list</span>
+        <span class="n">probs_or_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span><span class="p">[</span><span class="n">probs_name</span><span class="p">]</span> <span class="k">if</span> <span class="n">probs_name</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">C_sampled_subgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_neighbors</span><span class="p">(</span>
+            <span class="n">seeds</span><span class="p">,</span>
+            <span class="n">seed_offsets</span><span class="p">,</span>
+            <span class="n">fanouts</span><span class="p">,</span>
+            <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
+            <span class="n">probs_or_mask</span><span class="o">=</span><span class="n">probs_or_mask</span><span class="p">,</span>
+            <span class="n">return_eids</span><span class="o">=</span><span class="n">return_eids</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_sampled_subgraph</span><span class="p">(</span>
+            <span class="n">C_sampled_subgraph</span><span class="p">,</span> <span class="n">seed_offsets</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_check_sampler_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">fanouts</span><span class="p">,</span> <span class="n">probs_or_mask</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">nodes</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Nodes should be 1-D tensor.&quot;</span>
+            <span class="k">assert</span> <span class="n">nodes</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Data type of nodes must be consistent with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;indices.dtype(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">), but got </span><span class="si">{</span><span class="n">nodes</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">fanouts</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Fanouts should be 1-D tensor.&quot;</span>
+        <span class="n">expected_fanout_len</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="p">:</span>
+            <span class="n">expected_fanout_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fanouts</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">expected_fanout_len</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+        <span class="p">],</span> <span class="s2">&quot;Fanouts should have the same number of elements as etypes or </span><span class="se">\</span>
+<span class="s2">            should have a length of 1.&quot;</span>
+        <span class="k">if</span> <span class="n">fanouts</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">type_per_edge</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span> <span class="s2">&quot;To perform sampling for each edge type (when the length of </span><span class="se">\</span>
+<span class="s2">                `fanouts` &gt; 1), the graph must include edge type information.&quot;</span>
+        <span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">fanouts</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">fanouts</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">),</span> <span class="s2">&quot;Fanouts should consist of values that are either -1 or </span><span class="se">\</span>
+<span class="s2">            greater than or equal to 0.&quot;</span>
+        <span class="k">if</span> <span class="n">probs_or_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">probs_or_mask</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Probs should be 1-D tensor.&quot;</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">probs_or_mask</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_num_edges</span>
+            <span class="p">),</span> <span class="s2">&quot;Probs should have the same number of elements as the number </span><span class="se">\</span>
+<span class="s2">                of edges.&quot;</span>
+            <span class="k">assert</span> <span class="n">probs_or_mask</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">,</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+            <span class="p">],</span> <span class="s2">&quot;Probs should have a floating-point or boolean data type.&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_sample_neighbors</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">seeds</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">seed_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span>
+        <span class="n">fanouts</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">probs_or_mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_eids</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">ScriptObject</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample neighboring edges of the given nodes and return the induced</span>
+<span class="sd">        subgraph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        seeds: torch.Tensor</span>
+<span class="sd">            IDs of the given seed nodes.</span>
+<span class="sd">        seeds_offsets: list, optional</span>
+<span class="sd">            The offsets of the given seeds,</span>
+<span class="sd">            seeds[seed_offsets[i]: seed_offsets[i + 1]] has node type i.</span>
+<span class="sd">        fanouts: torch.Tensor</span>
+<span class="sd">            The number of edges to be sampled for each node with or without</span>
+<span class="sd">            considering edge types.</span>
+<span class="sd">              - When the length is 1, it indicates that the fanout applies to</span>
+<span class="sd">                all neighbors of the node as a collective, regardless of the</span>
+<span class="sd">                edge type.</span>
+<span class="sd">              - Otherwise, the length should equal to the number of edge</span>
+<span class="sd">                types, and each fanout value corresponds to a specific edge</span>
+<span class="sd">                type of the nodes.</span>
+<span class="sd">            The value of each fanout should be &gt;= 0 or = -1.</span>
+<span class="sd">              - When the value is -1, all neighbors (with non-zero probability,</span>
+<span class="sd">                if weighted) will be sampled once regardless of replacement. It</span>
+<span class="sd">                is equivalent to selecting all neighbors with non-zero</span>
+<span class="sd">                probability when the fanout is &gt;= the number of neighbors (and</span>
+<span class="sd">                replace is set to false).</span>
+<span class="sd">              - When the value is a non-negative integer, it serves as a</span>
+<span class="sd">                minimum threshold for selecting neighbors.</span>
+<span class="sd">        replace: bool</span>
+<span class="sd">            Boolean indicating whether the sample is preformed with or</span>
+<span class="sd">            without replacement. If True, a value can be selected multiple</span>
+<span class="sd">            times. Otherwise, each value can be selected only once.</span>
+<span class="sd">        probs_or_mask: torch.Tensor, optional</span>
+<span class="sd">            An optional tensor of edge attribute for probability or masks. This</span>
+<span class="sd">            attribute tensor should contain (unnormalized) probabilities</span>
+<span class="sd">            corresponding to each neighboring edge of a node. It must be a 1D</span>
+<span class="sd">            floating-point or boolean tensor, with the number of elements</span>
+<span class="sd">            equalling the total number of edges.</span>
+<span class="sd">        return_eids: bool, optional</span>
+<span class="sd">            Boolean indicating whether to return the original edge IDs of the</span>
+<span class="sd">            sampled edges.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.classes.graphbolt.SampledSubgraph</span>
+<span class="sd">            The sampled C subgraph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ensure nodes is 1-D tensor.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_sampler_arguments</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">fanouts</span><span class="p">,</span> <span class="n">probs_or_mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span>
+            <span class="n">seeds</span><span class="p">,</span>
+            <span class="n">seed_offsets</span><span class="p">,</span>
+            <span class="n">fanouts</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">replace</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># is_labor</span>
+            <span class="n">return_eids</span><span class="p">,</span>
+            <span class="n">probs_or_mask</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>  <span class="c1"># random_seed, labor parameter</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># seed2_contribution, labor_parameter</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.sample_layer_neighbors">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.sample_layer_neighbors">[docs]</a>
+    <span class="k">def</span> <span class="nf">sample_layer_neighbors</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">seeds</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">fanouts</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">probs_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_seed</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">seed2_contribution</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SampledSubgraphImpl</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample neighboring edges of the given nodes and return the induced</span>
+<span class="sd">        subgraph via layer-neighbor sampling from the NeurIPS 2023 paper</span>
+<span class="sd">        `Layer-Neighbor Sampling -- Defusing Neighborhood Explosion in GNNs</span>
+<span class="sd">        &lt;https://proceedings.neurips.cc/paper_files/paper/2023/file/51f9036d5e7ae822da8f6d4adda1fb39-Paper-Conference.pdf&gt;`__</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        seeds: torch.Tensor or Dict[str, torch.Tensor]</span>
+<span class="sd">            IDs of the given seed nodes.</span>
+<span class="sd">              - If `nodes` is a tensor: It means the graph is homogeneous</span>
+<span class="sd">                graph, and ids inside are homogeneous ids.</span>
+<span class="sd">              - If `nodes` is a dictionary: The keys should be node type and</span>
+<span class="sd">                ids inside are heterogeneous ids.</span>
+<span class="sd">        fanouts: torch.Tensor</span>
+<span class="sd">            The number of edges to be sampled for each node with or without</span>
+<span class="sd">            considering edge types.</span>
+<span class="sd">              - When the length is 1, it indicates that the fanout applies to</span>
+<span class="sd">                all neighbors of the node as a collective, regardless of the</span>
+<span class="sd">                edge type.</span>
+<span class="sd">              - Otherwise, the length should equal to the number of edge</span>
+<span class="sd">                types, and each fanout value corresponds to a specific edge</span>
+<span class="sd">                type of the nodes.</span>
+<span class="sd">            The value of each fanout should be &gt;= 0 or = -1.</span>
+<span class="sd">              - When the value is -1, all neighbors (with non-zero probability,</span>
+<span class="sd">                if weighted) will be sampled once regardless of replacement. It</span>
+<span class="sd">                is equivalent to selecting all neighbors with non-zero</span>
+<span class="sd">                probability when the fanout is &gt;= the number of neighbors (and</span>
+<span class="sd">                replace is set to false).</span>
+<span class="sd">              - When the value is a non-negative integer, it serves as a</span>
+<span class="sd">                minimum threshold for selecting neighbors.</span>
+<span class="sd">        replace: bool</span>
+<span class="sd">            Boolean indicating whether the sample is preformed with or</span>
+<span class="sd">            without replacement. If True, a value can be selected multiple</span>
+<span class="sd">            times. Otherwise, each value can be selected only once.</span>
+<span class="sd">        probs_name: str, optional</span>
+<span class="sd">            An optional string specifying the name of an edge attribute. This</span>
+<span class="sd">            attribute tensor should contain (unnormalized) probabilities</span>
+<span class="sd">            corresponding to each neighboring edge of a node. It must be a 1D</span>
+<span class="sd">            floating-point or boolean tensor, with the number of elements</span>
+<span class="sd">            equalling the total number of edges.</span>
+<span class="sd">        random_seed: torch.Tensor, optional</span>
+<span class="sd">            An int64 tensor with one or two elements.</span>
+
+<span class="sd">            The passed random_seed makes it so that for any seed node ``s`` and</span>
+<span class="sd">            its neighbor ``t``, the rolled random variate ``r_t`` is the same</span>
+<span class="sd">            for any call to this function with the same random seed. When</span>
+<span class="sd">            sampling as part of the same batch, one would want identical seeds</span>
+<span class="sd">            so that LABOR can globally sample. One example is that for</span>
+<span class="sd">            heterogenous graphs, there is a single random seed passed for each</span>
+<span class="sd">            edge type. This will sample much fewer nodes compared to having</span>
+<span class="sd">            unique random seeds for each edge type. If one called this function</span>
+<span class="sd">            individually for each edge type for a heterogenous graph with</span>
+<span class="sd">            different random seeds, then it would run LABOR locally for each</span>
+<span class="sd">            edge type, resulting into a larger number of nodes being sampled.</span>
+
+<span class="sd">            If this function is called without a ``random_seed``, we get the</span>
+<span class="sd">            random seed by getting a random number from GraphBolt. Use this</span>
+<span class="sd">            argument with identical random_seed if multiple calls to this</span>
+<span class="sd">            function are used to sample as part of a single batch.</span>
+
+<span class="sd">            If given two numbers, then the ``seed2_contribution`` argument</span>
+<span class="sd">            determines the interpolation between the two random seeds.</span>
+<span class="sd">        seed2_contribution: float, optional</span>
+<span class="sd">            A float value between [0, 1) that determines the contribution of the</span>
+<span class="sd">            second random seed, ``random_seed[-1]``, to generate the random</span>
+<span class="sd">            variates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SampledSubgraphImpl</span>
+<span class="sd">            The sampled subgraph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dgl.graphbolt as gb</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; ntypes = {&quot;n1&quot;: 0, &quot;n2&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; etypes = {&quot;n1:e1:n2&quot;: 0, &quot;n2:e2:n1&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; indptr = torch.LongTensor([0, 2, 4, 6, 7, 9])</span>
+<span class="sd">        &gt;&gt;&gt; indices = torch.LongTensor([2, 4, 2, 3, 0, 1, 1, 0, 1])</span>
+<span class="sd">        &gt;&gt;&gt; node_type_offset = torch.LongTensor([0, 2, 5])</span>
+<span class="sd">        &gt;&gt;&gt; type_per_edge = torch.LongTensor([1, 1, 1, 1, 0, 0, 0, 0, 0])</span>
+<span class="sd">        &gt;&gt;&gt; graph = gb.fused_csc_sampling_graph(indptr, indices,</span>
+<span class="sd">        ...     node_type_offset=node_type_offset,</span>
+<span class="sd">        ...     type_per_edge=type_per_edge,</span>
+<span class="sd">        ...     node_type_to_id=ntypes,</span>
+<span class="sd">        ...     edge_type_to_id=etypes)</span>
+<span class="sd">        &gt;&gt;&gt; nodes = {&#39;n1&#39;: torch.LongTensor([0]), &#39;n2&#39;: torch.LongTensor([0])}</span>
+<span class="sd">        &gt;&gt;&gt; fanouts = torch.tensor([1, 1])</span>
+<span class="sd">        &gt;&gt;&gt; subgraph = graph.sample_layer_neighbors(nodes, fanouts)</span>
+<span class="sd">        &gt;&gt;&gt; print(subgraph.sampled_csc)</span>
+<span class="sd">        {&#39;n1:e1:n2&#39;: CSCFormatBase(indptr=tensor([0, 1]),</span>
+<span class="sd">                    indices=tensor([0]),</span>
+<span class="sd">        ), &#39;n2:e2:n1&#39;: CSCFormatBase(indptr=tensor([0, 1]),</span>
+<span class="sd">                    indices=tensor([2]),</span>
+<span class="sd">        )}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">random_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span>
+            <span class="p">),</span> <span class="s2">&quot;There should be a 1 or 2 random seeds.&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">seed2_contribution</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+                <span class="p">),</span> <span class="s2">&quot;seed2_contribution should be in [0, 1].&quot;</span>
+
+        <span class="n">has_original_eids</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">ORIGINAL_EDGE_ID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span>
+        <span class="p">)</span>
+
+        <span class="n">seed_offsets</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">seeds</span><span class="p">,</span> <span class="n">seed_offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_homogeneous_nodes</span><span class="p">(</span><span class="n">seeds</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">seeds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seed_offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indptr_node_type_offset_list</span>
+        <span class="n">probs_or_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span><span class="p">[</span><span class="n">probs_name</span><span class="p">]</span> <span class="k">if</span> <span class="n">probs_name</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_sampler_arguments</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">fanouts</span><span class="p">,</span> <span class="n">probs_or_mask</span><span class="p">)</span>
+        <span class="n">C_sampled_subgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span>
+            <span class="n">seeds</span><span class="p">,</span>
+            <span class="n">seed_offsets</span><span class="p">,</span>
+            <span class="n">fanouts</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">replace</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="n">has_original_eids</span><span class="p">,</span>
+            <span class="n">probs_or_mask</span><span class="p">,</span>
+            <span class="n">random_seed</span><span class="p">,</span>
+            <span class="n">seed2_contribution</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_sampled_subgraph</span><span class="p">(</span>
+            <span class="n">C_sampled_subgraph</span><span class="p">,</span> <span class="n">seed_offsets</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.temporal_sample_neighbors">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.temporal_sample_neighbors">[docs]</a>
+    <span class="k">def</span> <span class="nf">temporal_sample_neighbors</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">nodes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">input_nodes_timestamp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">fanouts</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">input_nodes_pre_time_window</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">probs_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">node_timestamp_attr_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">edge_timestamp_attr_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">ScriptObject</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Temporally Sample neighboring edges of the given nodes and return the induced</span>
+<span class="sd">        subgraph.</span>
+
+<span class="sd">        If `node_timestamp_attr_name` or `edge_timestamp_attr_name` is given,</span>
+<span class="sd">        the sampled neighbor or edge of an input node must have a timestamp</span>
+<span class="sd">        that is smaller than that of the input node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nodes: torch.Tensor</span>
+<span class="sd">            IDs of the given seed nodes.</span>
+<span class="sd">        input_nodes_timestamp: torch.Tensor</span>
+<span class="sd">            Timestamps of the given seed nodes.</span>
+<span class="sd">        fanouts: torch.Tensor</span>
+<span class="sd">            The number of edges to be sampled for each node with or without</span>
+<span class="sd">            considering edge types.</span>
+<span class="sd">              - When the length is 1, it indicates that the fanout applies to</span>
+<span class="sd">                all neighbors of the node as a collective, regardless of the</span>
+<span class="sd">                edge type.</span>
+<span class="sd">              - Otherwise, the length should equal to the number of edge</span>
+<span class="sd">                types, and each fanout value corresponds to a specific edge</span>
+<span class="sd">                type of the nodes.</span>
+<span class="sd">            The value of each fanout should be &gt;= 0 or = -1.</span>
+<span class="sd">              - When the value is -1, all neighbors (with non-zero probability,</span>
+<span class="sd">                if weighted) will be sampled once regardless of replacement. It</span>
+<span class="sd">                is equivalent to selecting all neighbors with non-zero</span>
+<span class="sd">                probability when the fanout is &gt;= the number of neighbors (and</span>
+<span class="sd">                replace is set to false).</span>
+<span class="sd">              - When the value is a non-negative integer, it serves as a</span>
+<span class="sd">                minimum threshold for selecting neighbors.</span>
+<span class="sd">        replace: bool</span>
+<span class="sd">            Boolean indicating whether the sample is preformed with or</span>
+<span class="sd">            without replacement. If True, a value can be selected multiple</span>
+<span class="sd">            times. Otherwise, each value can be selected only once.</span>
+<span class="sd">        input_nodes_pre_time_window: torch.Tensor</span>
+<span class="sd">            The time window of the nodes represents a period of time before</span>
+<span class="sd">            `input_nodes_timestamp`. If provided, only neighbors and related</span>
+<span class="sd">            edges whose timestamps fall within `[input_nodes_timestamp -</span>
+<span class="sd">            input_nodes_pre_time_window, input_nodes_timestamp]` will be</span>
+<span class="sd">            filtered.</span>
+<span class="sd">        probs_name: str, optional</span>
+<span class="sd">            An optional string specifying the name of an edge attribute. This</span>
+<span class="sd">            attribute tensor should contain (unnormalized) probabilities</span>
+<span class="sd">            corresponding to each neighboring edge of a node. It must be a 1D</span>
+<span class="sd">            floating-point or boolean tensor, with the number of elements</span>
+<span class="sd">            equalling the total number of edges.</span>
+<span class="sd">        node_timestamp_attr_name: str, optional</span>
+<span class="sd">            An optional string specifying the name of an node attribute.</span>
+<span class="sd">        edge_timestamp_attr_name: str, optional</span>
+<span class="sd">            An optional string specifying the name of an edge attribute.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SampledSubgraphImpl</span>
+<span class="sd">            The sampled subgraph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="p">(</span>
+                <span class="n">nodes</span><span class="p">,</span>
+                <span class="n">input_nodes_timestamp</span><span class="p">,</span>
+                <span class="n">input_nodes_pre_time_window</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_homogeneous_nodes</span><span class="p">(</span>
+                <span class="n">nodes</span><span class="p">,</span> <span class="n">input_nodes_timestamp</span><span class="p">,</span> <span class="n">input_nodes_pre_time_window</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Ensure nodes is 1-D tensor.</span>
+        <span class="n">probs_or_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span><span class="p">[</span><span class="n">probs_name</span><span class="p">]</span> <span class="k">if</span> <span class="n">probs_name</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_sampler_arguments</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">fanouts</span><span class="p">,</span> <span class="n">probs_or_mask</span><span class="p">)</span>
+        <span class="n">has_original_eids</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">ORIGINAL_EDGE_ID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span>
+        <span class="p">)</span>
+        <span class="n">C_sampled_subgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">temporal_sample_neighbors</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span>
+            <span class="n">input_nodes_timestamp</span><span class="p">,</span>
+            <span class="n">fanouts</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">replace</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">has_original_eids</span><span class="p">,</span>
+            <span class="n">input_nodes_pre_time_window</span><span class="p">,</span>
+            <span class="n">probs_or_mask</span><span class="p">,</span>
+            <span class="n">node_timestamp_attr_name</span><span class="p">,</span>
+            <span class="n">edge_timestamp_attr_name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_sampled_subgraph</span><span class="p">(</span><span class="n">C_sampled_subgraph</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.sample_negative_edges_uniform">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.sample_negative_edges_uniform">[docs]</a>
+    <span class="k">def</span> <span class="nf">sample_negative_edges_uniform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">node_pairs</span><span class="p">,</span> <span class="n">negative_ratio</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sample negative edges by randomly choosing negative source-destination</span>
+<span class="sd">        edges according to a uniform distribution. For each edge ``(u, v)``,</span>
+<span class="sd">        it is supposed to generate `negative_ratio` pairs of negative edges</span>
+<span class="sd">        ``(u, v&#39;)``, where ``v&#39;`` is chosen uniformly from all the nodes in</span>
+<span class="sd">        the graph. ``u`` is exactly same as the corresponding positive edges.</span>
+<span class="sd">        It returns positive edges concatenated with negative edges. In</span>
+<span class="sd">        negative edges, negative sources are constructed from the</span>
+<span class="sd">        corresponding positive edges.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        edge_type: str</span>
+<span class="sd">            The type of edges in the provided node_pairs. Any negative edges</span>
+<span class="sd">            sampled will also have the same type. If set to None, it will be</span>
+<span class="sd">            considered as a homogeneous graph.</span>
+<span class="sd">        node_pairs : torch.Tensor</span>
+<span class="sd">            A 2D tensors that represent the N pairs of positive edges in</span>
+<span class="sd">            source-destination format, with &#39;positive&#39; indicating that these</span>
+<span class="sd">            edges are present in the graph. It&#39;s important to note that within</span>
+<span class="sd">            the context of a heterogeneous graph, the ids in these tensors</span>
+<span class="sd">            signify heterogeneous ids.</span>
+<span class="sd">        negative_ratio: int</span>
+<span class="sd">            The ratio of the number of negative samples to positive samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            A 2D tensors represents the N pairs of positive and negative</span>
+<span class="sd">            source-destination node pairs. In the context of a heterogeneous</span>
+<span class="sd">            graph, both the input nodes and the selected nodes are represented</span>
+<span class="sd">            by heterogeneous IDs, and the formed edges are of the input type</span>
+<span class="sd">            `edge_type`. Note that negative refers to false negatives, which</span>
+<span class="sd">            means the edge could be present or not present in the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">edge_type</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dst_ntype</span> <span class="o">=</span> <span class="n">etype_str_to_tuple</span><span class="p">(</span><span class="n">edge_type</span><span class="p">)</span>
+            <span class="n">max_node_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">[</span><span class="n">dst_ntype</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_node_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_num_nodes</span>
+        <span class="n">pos_src</span> <span class="o">=</span> <span class="n">node_pairs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">num_negative</span> <span class="o">=</span> <span class="n">node_pairs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">negative_ratio</span>
+        <span class="n">negative_seeds</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">pos_src</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">negative_ratio</span><span class="p">),</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                        <span class="mi">0</span><span class="p">,</span>
+                        <span class="n">max_node_id</span><span class="p">,</span>
+                        <span class="p">(</span><span class="n">num_negative</span><span class="p">,),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">node_pairs</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">node_pairs</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_negative</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">T</span>
+        <span class="p">)</span>
+        <span class="n">seeds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">node_pairs</span><span class="p">,</span> <span class="n">negative_seeds</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">seeds</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.copy_to_shared_memory">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.copy_to_shared_memory">[docs]</a>
+    <span class="k">def</span> <span class="nf">copy_to_shared_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared_memory_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy the graph to shared memory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shared_memory_name : str</span>
+<span class="sd">            Name of the shared memory.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        FusedCSCSamplingGraph</span>
+<span class="sd">            The copied FusedCSCSamplingGraph object on shared memory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c_csc_graph</span><span class="o">.</span><span class="n">copy_to_shared_memory</span><span class="p">(</span><span class="n">shared_memory_name</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_apply_to_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply passed fn to all members of `FusedCSCSamplingGraph`.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csc_indptr</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csc_indptr</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type_per_edge</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type_per_edge</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_attributes</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_attributes</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span> <span class="o">=</span> <span class="n">recursive_apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.to">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.to">[docs]</a>
+    <span class="k">def</span> <span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy `FusedCSCSamplingGraph` to the specified device.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_to</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+
+        <span class="k">def</span> <span class="nf">_pin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;pin_memory&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+
+        <span class="c1"># Create a copy of self.</span>
+        <span class="n">self2</span> <span class="o">=</span> <span class="n">fused_csc_sampling_graph</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">csc_indptr</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_type_offset</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type_per_edge</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_type_to_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_to_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_attributes</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_attributes</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">self2</span><span class="o">.</span><span class="n">_apply_to_members</span><span class="p">(</span><span class="n">_pin</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;pinned&quot;</span> <span class="k">else</span> <span class="n">_to</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FusedCSCSamplingGraph.pin_memory_">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.FusedCSCSamplingGraph.html#dgl.graphbolt.FusedCSCSamplingGraph.pin_memory_">[docs]</a>
+    <span class="k">def</span> <span class="nf">pin_memory_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy `FusedCSCSamplingGraph` to the pinned memory in-place. Returns</span>
+<span class="sd">        the same object modified in-place.&quot;&quot;&quot;</span>
+        <span class="c1"># torch.Tensor.pin_memory() is not an inplace operation. To make it</span>
+        <span class="c1"># truly in-place, we need to use cudaHostRegister. Then, we need to use</span>
+        <span class="c1"># cudaHostUnregister to unpin the tensor in the destructor.</span>
+        <span class="c1"># https://github.com/pytorch/pytorch/issues/32167#issuecomment-753551842</span>
+        <span class="n">cudart</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">cudart</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_is_inplace_pinned&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_inplace_pinned</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_pin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;pin_memory_&quot;</span><span class="p">):</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">pin_memory_</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">is_pinned</span><span class="p">()</span>
+                <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span>
+            <span class="p">):</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">x</span><span class="o">.</span><span class="n">is_contiguous</span><span class="p">()</span>
+                <span class="p">),</span> <span class="s2">&quot;Tensor pinning is only supported for contiguous tensors.&quot;</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">cudart</span><span class="o">.</span><span class="n">cudaHostRegister</span><span class="p">(</span>
+                        <span class="n">x</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">element_size</span><span class="p">(),</span> <span class="mi">0</span>
+                    <span class="p">)</span>
+                    <span class="o">==</span> <span class="mi">0</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_is_inplace_pinned</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_inplace_unpinner</span> <span class="o">=</span> <span class="n">cudart</span><span class="o">.</span><span class="n">cudaHostUnregister</span>
+
+            <span class="k">return</span> <span class="n">x</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_to_members</span><span class="p">(</span><span class="n">_pin</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="fused_csc_sampling_graph">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.fused_csc_sampling_graph.html#dgl.graphbolt.fused_csc_sampling_graph">[docs]</a>
+<span class="k">def</span> <span class="nf">fused_csc_sampling_graph</span><span class="p">(</span>
+    <span class="n">csc_indptr</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">node_type_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">type_per_edge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_type_to_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_type_to_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_attributes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_attributes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a FusedCSCSamplingGraph object from a CSC representation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    csc_indptr : torch.Tensor</span>
+<span class="sd">        Pointer to the start of each row in the `indices`. An integer tensor</span>
+<span class="sd">        with shape `(total_num_nodes+1,)`.</span>
+<span class="sd">    indices : torch.Tensor</span>
+<span class="sd">        Column indices of the non-zero elements in the CSC graph. An integer</span>
+<span class="sd">        tensor with shape `(total_num_edges,)`.</span>
+<span class="sd">    node_type_offset : Optional[torch.tensor], optional</span>
+<span class="sd">        Offset of node types in the graph, by default None.</span>
+<span class="sd">    type_per_edge : Optional[torch.tensor], optional</span>
+<span class="sd">        Type ids of each edge in the graph, by default None.</span>
+<span class="sd">    node_type_to_id : Optional[Dict[str, int]], optional</span>
+<span class="sd">        Map node types to ids, by default None.</span>
+<span class="sd">    edge_type_to_id : Optional[Dict[str, int]], optional</span>
+<span class="sd">        Map edge types to ids, by default None.</span>
+<span class="sd">    node_attributes: Optional[Dict[str, torch.tensor]], optional</span>
+<span class="sd">        Node attributes of the graph, by default None.</span>
+<span class="sd">    edge_attributes: Optional[Dict[str, torch.tensor]], optional</span>
+<span class="sd">        Edge attributes of the graph, by default None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FusedCSCSamplingGraph</span>
+<span class="sd">        The created FusedCSCSamplingGraph object.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ntypes = {&#39;n1&#39;: 0, &#39;n2&#39;: 1, &#39;n3&#39;: 2}</span>
+<span class="sd">    &gt;&gt;&gt; etypes = {&#39;n1:e1:n2&#39;: 0, &#39;n1:e2:n3&#39;: 1}</span>
+<span class="sd">    &gt;&gt;&gt; csc_indptr = torch.tensor([0, 2, 5, 7, 8])</span>
+<span class="sd">    &gt;&gt;&gt; indices = torch.tensor([1, 3, 0, 1, 2, 0, 3, 2])</span>
+<span class="sd">    &gt;&gt;&gt; node_type_offset = torch.tensor([0, 1, 2, 4])</span>
+<span class="sd">    &gt;&gt;&gt; type_per_edge = torch.tensor([0, 1, 0, 1, 1, 0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; graph = graphbolt.fused_csc_sampling_graph(csc_indptr, indices,</span>
+<span class="sd">    ...         node_type_offset=node_type_offset,</span>
+<span class="sd">    ...         type_per_edge=type_per_edge,</span>
+<span class="sd">    ...         node_type_to_id=ntypes, edge_type_to_id=etypes,</span>
+<span class="sd">    ...         node_attributes=None, edge_attributes=None,)</span>
+<span class="sd">    &gt;&gt;&gt; print(graph)</span>
+<span class="sd">    FusedCSCSamplingGraph(csc_indptr=tensor([0, 2, 5, 7, 8]),</span>
+<span class="sd">                          indices=tensor([1, 3, 0, 1, 2, 0, 3, 2]),</span>
+<span class="sd">                          total_num_nodes=4, num_edges={&#39;n1:e1:n2&#39;: 5, &#39;n1:e2:n3&#39;: 3},</span>
+<span class="sd">                          node_type_offset=tensor([0, 1, 2, 4]),</span>
+<span class="sd">                          type_per_edge=tensor([0, 1, 0, 1, 1, 0, 0, 0]),</span>
+<span class="sd">                          node_type_to_id={&#39;n1&#39;: 0, &#39;n2&#39;: 1, &#39;n3&#39;: 2},</span>
+<span class="sd">                          edge_type_to_id={&#39;n1:e1:n2&#39;: 0, &#39;n1:e2:n3&#39;: 1},)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">node_type_to_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">edge_type_to_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">node_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_type_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">edge_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">node_type_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_type_to_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edge_type_to_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="c1"># Validate node_type_to_id.</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">node_types</span>
+        <span class="p">),</span> <span class="s2">&quot;Node type name should be string.&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">node_type_ids</span>
+        <span class="p">),</span> <span class="s2">&quot;Node type id should be int.&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_type_ids</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="n">node_type_ids</span><span class="p">)</span>
+        <span class="p">),</span> <span class="s2">&quot;Multiple node types shoud not be mapped to a same id.&quot;</span>
+        <span class="c1"># Validate edge_type_to_id.</span>
+        <span class="k">for</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="n">edge_types</span><span class="p">:</span>
+            <span class="n">src</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">etype_str_to_tuple</span><span class="p">(</span><span class="n">edge_type</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s2">&quot;Edge type name should be string.&quot;</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">src</span> <span class="ow">in</span> <span class="n">node_types</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unrecognized node type </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s2"> in edge type </span><span class="si">{</span><span class="n">edge_type</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">dst</span> <span class="ow">in</span> <span class="n">node_types</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unrecognized node type </span><span class="si">{</span><span class="n">dst</span><span class="si">}</span><span class="s2"> in edge type </span><span class="si">{</span><span class="n">edge_type</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">edge_type_ids</span>
+        <span class="p">),</span> <span class="s2">&quot;Edge type id should be int.&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_type_ids</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="n">edge_type_ids</span><span class="p">)</span>
+        <span class="p">),</span> <span class="s2">&quot;Multiple edge types shoud not be mapped to a same id.&quot;</span>
+
+        <span class="k">if</span> <span class="n">node_type_offset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_type_to_id</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">node_type_offset</span><span class="o">.</span><span class="n">size</span><span class="p">(</span>
+                <span class="mi">0</span>
+            <span class="p">),</span> <span class="s2">&quot;node_type_offset length should be |ntypes| + 1.&quot;</span>
+    <span class="k">return</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">graphbolt</span><span class="o">.</span><span class="n">fused_csc_sampling_graph</span><span class="p">(</span>
+            <span class="n">csc_indptr</span><span class="p">,</span>
+            <span class="n">indices</span><span class="p">,</span>
+            <span class="n">node_type_offset</span><span class="p">,</span>
+            <span class="n">type_per_edge</span><span class="p">,</span>
+            <span class="n">node_type_to_id</span><span class="p">,</span>
+            <span class="n">edge_type_to_id</span><span class="p">,</span>
+            <span class="n">node_attributes</span><span class="p">,</span>
+            <span class="n">edge_attributes</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_from_shared_memory">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.load_from_shared_memory.html#dgl.graphbolt.load_from_shared_memory">[docs]</a>
+<span class="k">def</span> <span class="nf">load_from_shared_memory</span><span class="p">(</span>
+    <span class="n">shared_memory_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a FusedCSCSamplingGraph object from shared memory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shared_memory_name : str</span>
+<span class="sd">        Name of the shared memory.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FusedCSCSamplingGraph</span>
+<span class="sd">        The loaded FusedCSCSamplingGraph object on shared memory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">graphbolt</span><span class="o">.</span><span class="n">load_from_shared_memory</span><span class="p">(</span><span class="n">shared_memory_name</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_dglgraph">
+<a class="viewcode-back" href="../../../../generated/dgl.graphbolt.from_dglgraph.html#dgl.graphbolt.from_dglgraph">[docs]</a>
+<span class="k">def</span> <span class="nf">from_dglgraph</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">:</span> <span class="n">DGLGraph</span><span class="p">,</span>
+    <span class="n">is_homogeneous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">include_original_edge_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a DGLGraph to FusedCSCSamplingGraph.&quot;&quot;&quot;</span>
+
+    <span class="n">homo_g</span><span class="p">,</span> <span class="n">ntype_count</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">to_homogeneous</span><span class="p">(</span>
+        <span class="n">g</span><span class="p">,</span> <span class="n">ndata</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">,</span> <span class="n">return_count</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_homogeneous</span><span class="p">:</span>
+        <span class="n">node_type_to_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">edge_type_to_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Initialize metadata.</span>
+        <span class="n">node_type_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">get_ntype_id</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+        <span class="n">edge_type_to_id</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">etype_tuple_to_str</span><span class="p">(</span><span class="n">etype</span><span class="p">):</span> <span class="n">g</span><span class="o">.</span><span class="n">get_etype_id</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span>
+        <span class="p">}</span>
+
+    <span class="c1"># Obtain CSC matrix.</span>
+    <span class="n">indptr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">edge_ids</span> <span class="o">=</span> <span class="n">homo_g</span><span class="o">.</span><span class="n">adj_tensors</span><span class="p">(</span><span class="s2">&quot;csc&quot;</span><span class="p">)</span>
+    <span class="n">ntype_count</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">node_type_offset</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">is_homogeneous</span>
+        <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">ntype_count</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Assign edge type according to the order of CSC matrix.</span>
+    <span class="n">type_per_edge</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">is_homogeneous</span>
+        <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="n">homo_g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">ETYPE</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">edge_ids</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">node_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">edge_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">feat_name</span><span class="p">,</span> <span class="n">feat_data</span> <span class="ow">in</span> <span class="n">homo_g</span><span class="o">.</span><span class="n">ndata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">feat_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">NID</span><span class="p">,</span> <span class="n">NTYPE</span><span class="p">):</span>
+            <span class="n">node_attributes</span><span class="p">[</span><span class="n">feat_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_data</span>
+    <span class="k">for</span> <span class="n">feat_name</span><span class="p">,</span> <span class="n">feat_data</span> <span class="ow">in</span> <span class="n">homo_g</span><span class="o">.</span><span class="n">edata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">feat_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">EID</span><span class="p">,</span> <span class="n">ETYPE</span><span class="p">):</span>
+            <span class="n">edge_attributes</span><span class="p">[</span><span class="n">feat_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_data</span>
+    <span class="k">if</span> <span class="n">include_original_edge_id</span><span class="p">:</span>
+        <span class="c1"># Assign edge attributes according to the original eids mapping.</span>
+        <span class="n">edge_attributes</span><span class="p">[</span><span class="n">ORIGINAL_EDGE_ID</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span>
+            <span class="n">homo_g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">EID</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">edge_ids</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FusedCSCSamplingGraph</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">graphbolt</span><span class="o">.</span><span class="n">fused_csc_sampling_graph</span><span class="p">(</span>
+            <span class="n">indptr</span><span class="p">,</span>
+            <span class="n">indices</span><span class="p">,</span>
+            <span class="n">node_type_offset</span><span class="p">,</span>
+            <span class="n">type_per_edge</span><span class="p">,</span>
+            <span class="n">node_type_to_id</span><span class="p">,</span>
+            <span class="n">edge_type_to_id</span><span class="p">,</span>
+            <span class="n">node_attributes</span><span class="p">,</span>
+            <span class="n">edge_attributes</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.nn.pytorch.explain.subgraphx &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.nn.pytorch.explain.subgraphx</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.nn.pytorch.explain.subgraphx</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Torch Module for SubgraphX&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">to_heterogeneous</span><span class="p">,</span> <span class="n">to_homogeneous</span>
+<span class="kn">from</span> <span class="nn">....base</span> <span class="kn">import</span> <span class="n">NID</span>
+<span class="kn">from</span> <span class="nn">....convert</span> <span class="kn">import</span> <span class="n">to_networkx</span>
+<span class="kn">from</span> <span class="nn">....subgraph</span> <span class="kn">import</span> <span class="n">node_subgraph</span>
+<span class="kn">from</span> <span class="nn">....transforms.functional</span> <span class="kn">import</span> <span class="n">remove_nodes</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SubgraphX&quot;</span><span class="p">,</span> <span class="s2">&quot;HeteroSubgraphX&quot;</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">MCTSNode</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Monte Carlo Tree Search Node</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nodes : Tensor</span>
+<span class="sd">        The node IDs of the graph that are associated with this tree node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_visit</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">immediate_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the string representation of the node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The string representation of the node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SubgraphX">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.explain.SubgraphX.html#dgl.nn.pytorch.explain.SubgraphX">[docs]</a>
+<span class="k">class</span> <span class="nc">SubgraphX</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;SubgraphX from `On Explainability of Graph Neural Networks via Subgraph</span>
+<span class="sd">    Explorations &lt;https://arxiv.org/abs/2102.05152&gt;`</span>
+
+<span class="sd">    It identifies the most important subgraph from the original graph that</span>
+<span class="sd">    plays a critical role in GNN-based graph classification.</span>
+
+<span class="sd">    It employs Monte Carlo tree search (MCTS) in efficiently exploring</span>
+<span class="sd">    different subgraphs for explanation and uses Shapley values as the measure</span>
+<span class="sd">    of subgraph importance.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : nn.Module</span>
+<span class="sd">        The GNN model to explain that tackles multiclass graph classification</span>
+
+<span class="sd">        * Its forward function must have the form</span>
+<span class="sd">          :attr:`forward(self, graph, nfeat)`.</span>
+<span class="sd">        * The output of its forward function is the logits.</span>
+<span class="sd">    num_hops : int</span>
+<span class="sd">        Number of message passing layers in the model</span>
+<span class="sd">    coef : float, optional</span>
+<span class="sd">        This hyperparameter controls the trade-off between exploration and</span>
+<span class="sd">        exploitation. A higher value encourages the algorithm to explore</span>
+<span class="sd">        relatively unvisited nodes. Default: 10.0</span>
+<span class="sd">    high2low : bool, optional</span>
+<span class="sd">        If True, it will use the &quot;High2low&quot; strategy for pruning actions,</span>
+<span class="sd">        expanding children nodes from high degree to low degree when extending</span>
+<span class="sd">        the children nodes in the search tree. Otherwise, it will use the</span>
+<span class="sd">        &quot;Low2high&quot; strategy. Default: True</span>
+<span class="sd">    num_child : int, optional</span>
+<span class="sd">        This is the number of children nodes to expand when extending the</span>
+<span class="sd">        children nodes in the search tree. Default: 12</span>
+<span class="sd">    num_rollouts : int, optional</span>
+<span class="sd">        This is the number of rollouts for MCTS. Default: 20</span>
+<span class="sd">    node_min : int, optional</span>
+<span class="sd">        This is the threshold to define a leaf node based on the number of</span>
+<span class="sd">        nodes in a subgraph. Default: 3</span>
+<span class="sd">    shapley_steps : int, optional</span>
+<span class="sd">        This is the number of steps for Monte Carlo sampling in estimating</span>
+<span class="sd">        Shapley values. Default: 100</span>
+<span class="sd">    log : bool, optional</span>
+<span class="sd">        If True, it will log the progress. Default: False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">num_hops</span><span class="p">,</span>
+        <span class="n">coef</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">high2low</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">num_child</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+        <span class="n">num_rollouts</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">node_min</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">shapley_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_hops</span> <span class="o">=</span> <span class="n">num_hops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef</span> <span class="o">=</span> <span class="n">coef</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high2low</span> <span class="o">=</span> <span class="n">high2low</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_child</span> <span class="o">=</span> <span class="n">num_child</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_rollouts</span> <span class="o">=</span> <span class="n">num_rollouts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span> <span class="o">=</span> <span class="n">node_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shapley_steps</span> <span class="o">=</span> <span class="n">shapley_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">shapley</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subgraph_nodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute Shapley value with Monte Carlo approximation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        subgraph_nodes : tensor</span>
+<span class="sd">            The tensor node ids of the subgraph that are associated with this</span>
+<span class="sd">            tree node</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Shapley value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+        <span class="n">subgraph_nodes</span> <span class="o">=</span> <span class="n">subgraph_nodes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1"># Obtain neighboring nodes of the subgraph g_i, P&#39;.</span>
+        <span class="n">local_region</span> <span class="o">=</span> <span class="n">subgraph_nodes</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_hops</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">in_neighbors</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">local_region</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">out_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">out_edges</span><span class="p">(</span><span class="n">local_region</span><span class="p">)</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">in_neighbors</span><span class="p">,</span> <span class="n">out_neighbors</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">local_region</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">local_region</span> <span class="o">+</span> <span class="n">neighbors</span><span class="p">))</span>
+
+        <span class="n">split_point</span> <span class="o">=</span> <span class="n">num_nodes</span>
+        <span class="n">coalition_space</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">local_region</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">subgraph_nodes</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="n">split_point</span>
+        <span class="p">]</span>
+
+        <span class="n">marginal_contributions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feat</span><span class="o">.</span><span class="n">device</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shapley_steps</span><span class="p">):</span>
+            <span class="n">permuted_space</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">coalition_space</span><span class="p">)</span>
+            <span class="n">split_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">permuted_space</span> <span class="o">==</span> <span class="n">split_point</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">selected_nodes</span> <span class="o">=</span> <span class="n">permuted_space</span><span class="p">[:</span><span class="n">split_idx</span><span class="p">]</span>
+
+            <span class="c1"># Mask for coalition set S_i</span>
+            <span class="n">exclude_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">)</span>
+            <span class="n">exclude_mask</span><span class="p">[</span><span class="n">local_region</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">exclude_mask</span><span class="p">[</span><span class="n">selected_nodes</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+            <span class="c1"># Mask for set S_i and g_i</span>
+            <span class="n">include_mask</span> <span class="o">=</span> <span class="n">exclude_mask</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="n">include_mask</span><span class="p">[</span><span class="n">subgraph_nodes</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+            <span class="n">exclude_feat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feat</span> <span class="o">*</span> <span class="n">exclude_mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">include_feat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feat</span> <span class="o">*</span> <span class="n">include_mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">exclude_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">exclude_feat</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">exclude_value</span> <span class="o">=</span> <span class="n">exclude_probs</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_class</span><span class="p">]</span>
+                <span class="n">include_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">include_feat</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">include_value</span> <span class="o">=</span> <span class="n">include_probs</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_class</span><span class="p">]</span>
+            <span class="n">marginal_contributions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">include_value</span> <span class="o">-</span> <span class="n">exclude_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">marginal_contributions</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_mcts_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcts_node</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the children of the MCTS node for the search.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mcts_node : MCTSNode</span>
+<span class="sd">            Node in MCTS</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            Children nodes after pruning</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span>
+
+        <span class="n">subg</span> <span class="o">=</span> <span class="n">node_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">node_degrees</span> <span class="o">=</span> <span class="n">subg</span><span class="o">.</span><span class="n">out_degrees</span><span class="p">()</span> <span class="o">+</span> <span class="n">subg</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">()</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">subg</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_child</span><span class="p">)</span>
+        <span class="n">chosen_nodes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span>
+            <span class="n">node_degrees</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">largest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">high2low</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">indices</span>
+
+        <span class="n">mcts_children_maps</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">chosen_nodes</span><span class="p">:</span>
+            <span class="n">new_subg</span> <span class="o">=</span> <span class="n">remove_nodes</span><span class="p">(</span><span class="n">subg</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">subg</span><span class="o">.</span><span class="n">idtype</span><span class="p">),</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Get the largest weakly connected component in the subgraph.</span>
+            <span class="n">nx_graph</span> <span class="o">=</span> <span class="n">to_networkx</span><span class="p">(</span><span class="n">new_subg</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+            <span class="n">largest_cc_nids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">max</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">weakly_connected_components</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="c1"># Map to the original node IDs.</span>
+            <span class="n">largest_cc_nids</span> <span class="o">=</span> <span class="n">new_subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">][</span><span class="n">largest_cc_nids</span><span class="p">]</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+            <span class="n">largest_cc_nids</span> <span class="o">=</span> <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">][</span><span class="n">largest_cc_nids</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">largest_cc_nids</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">:</span>
+                <span class="n">child_mcts_node</span> <span class="o">=</span> <span class="n">MCTSNode</span><span class="p">(</span><span class="n">largest_cc_nids</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">child_mcts_node</span><span class="p">)]</span> <span class="o">=</span> <span class="n">child_mcts_node</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">child_mcts_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">largest_cc_nids</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">child_mcts_node</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mcts_children_maps</span><span class="p">:</span>
+                <span class="n">mcts_children_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">child_mcts_node</span><span class="p">)]</span> <span class="o">=</span> <span class="n">child_mcts_node</span>
+
+        <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mcts_children_maps</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">child_mcts_node</span> <span class="ow">in</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child_mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">child_mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shapley</span><span class="p">(</span>
+                    <span class="n">child_mcts_node</span><span class="o">.</span><span class="n">nodes</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span>
+
+    <span class="k">def</span> <span class="nf">mcts_rollout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcts_node</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform a MCTS rollout.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mcts_node : MCTSNode</span>
+<span class="sd">            Starting node for MCTS</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Reward for visiting the node this time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mcts_node</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span>
+
+        <span class="n">children_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mcts_children</span><span class="p">(</span><span class="n">mcts_node</span><span class="p">)</span>
+        <span class="n">children_visit_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">child</span><span class="o">.</span><span class="n">num_visit</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children_nodes</span><span class="p">])</span>
+        <span class="n">children_visit_sum_sqrt</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">children_visit_sum</span><span class="p">)</span>
+        <span class="n">chosen_child</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">children_nodes</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">total_reward</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">num_visit</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef</span>
+            <span class="o">*</span> <span class="n">c</span><span class="o">.</span><span class="n">immediate_reward</span>
+            <span class="o">*</span> <span class="n">children_visit_sum_sqrt</span>
+            <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">num_visit</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_rollout</span><span class="p">(</span><span class="n">chosen_child</span><span class="p">)</span>
+        <span class="n">chosen_child</span><span class="o">.</span><span class="n">num_visit</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">chosen_child</span><span class="o">.</span><span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
+
+        <span class="k">return</span> <span class="n">reward</span>
+
+<div class="viewcode-block" id="SubgraphX.explain_graph">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.explain.SubgraphX.html#dgl.nn.pytorch.explain.SubgraphX.explain_graph">[docs]</a>
+    <span class="k">def</span> <span class="nf">explain_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">target_class</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the most important subgraph from the original graph for the</span>
+<span class="sd">        model to classify the graph into the target class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : DGLGraph</span>
+<span class="sd">            A homogeneous graph</span>
+<span class="sd">        feat : Tensor</span>
+<span class="sd">            The input node feature of shape :math:`(N, D)`, :math:`N` is the</span>
+<span class="sd">            number of nodes, and :math:`D` is the feature size</span>
+<span class="sd">        target_class : int</span>
+<span class="sd">            The target class to explain</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Additional arguments passed to the GNN model</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tensor</span>
+<span class="sd">            Nodes that represent the most important subgraph</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; import torch.nn as nn</span>
+<span class="sd">        &gt;&gt;&gt; import torch.nn.functional as F</span>
+<span class="sd">        &gt;&gt;&gt; from dgl.data import GINDataset</span>
+<span class="sd">        &gt;&gt;&gt; from dgl.dataloading import GraphDataLoader</span>
+<span class="sd">        &gt;&gt;&gt; from dgl.nn import GraphConv, AvgPooling, SubgraphX</span>
+
+<span class="sd">        &gt;&gt;&gt; # Define the model</span>
+<span class="sd">        &gt;&gt;&gt; class Model(nn.Module):</span>
+<span class="sd">        ...     def __init__(self, in_dim, n_classes, hidden_dim=128):</span>
+<span class="sd">        ...         super().__init__()</span>
+<span class="sd">        ...         self.conv1 = GraphConv(in_dim, hidden_dim)</span>
+<span class="sd">        ...         self.conv2 = GraphConv(hidden_dim, n_classes)</span>
+<span class="sd">        ...         self.pool = AvgPooling()</span>
+<span class="sd">        ...</span>
+<span class="sd">        ...     def forward(self, g, h):</span>
+<span class="sd">        ...         h = F.relu(self.conv1(g, h))</span>
+<span class="sd">        ...         h = self.conv2(g, h)</span>
+<span class="sd">        ...         return self.pool(g, h)</span>
+
+<span class="sd">        &gt;&gt;&gt; # Load dataset</span>
+<span class="sd">        &gt;&gt;&gt; data = GINDataset(&#39;MUTAG&#39;, self_loop=True)</span>
+<span class="sd">        &gt;&gt;&gt; dataloader = GraphDataLoader(data, batch_size=64, shuffle=True)</span>
+
+<span class="sd">        &gt;&gt;&gt; # Train the model</span>
+<span class="sd">        &gt;&gt;&gt; feat_size = data[0][0].ndata[&#39;attr&#39;].shape[1]</span>
+<span class="sd">        &gt;&gt;&gt; model = Model(feat_size, data.gclasses)</span>
+<span class="sd">        &gt;&gt;&gt; criterion = nn.CrossEntropyLoss()</span>
+<span class="sd">        &gt;&gt;&gt; optimizer = torch.optim.Adam(model.parameters(), lr=1e-2)</span>
+<span class="sd">        &gt;&gt;&gt; for bg, labels in dataloader:</span>
+<span class="sd">        ...     logits = model(bg, bg.ndata[&#39;attr&#39;])</span>
+<span class="sd">        ...     loss = criterion(logits, labels)</span>
+<span class="sd">        ...     optimizer.zero_grad()</span>
+<span class="sd">        ...     loss.backward()</span>
+<span class="sd">        ...     optimizer.step()</span>
+
+<span class="sd">        &gt;&gt;&gt; # Initialize the explainer</span>
+<span class="sd">        &gt;&gt;&gt; explainer = SubgraphX(model, num_hops=2)</span>
+
+<span class="sd">        &gt;&gt;&gt; # Explain the prediction for graph 0</span>
+<span class="sd">        &gt;&gt;&gt; graph, l = data[0]</span>
+<span class="sd">        &gt;&gt;&gt; graph_feat = graph.ndata.pop(&quot;attr&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; g_nodes_explain = explainer.explain_graph(graph, graph_feat,</span>
+<span class="sd">        ...                                           target_class=l)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;The number of nodes in the</span><span class="se">\</span>
+<span class="s2">            graph </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> should be bigger than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_min</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feat</span> <span class="o">=</span> <span class="n">feat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_class</span> <span class="o">=</span> <span class="n">target_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="c1"># book all nodes in MCTS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">root</span> <span class="o">=</span> <span class="n">MCTSNode</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)]</span> <span class="o">=</span> <span class="n">root</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_rollouts</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Rollout </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_rollouts</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
+<span class="s2">                    </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">)</span><span class="si">}</span><span class="s2"> subgraphs have been explored.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mcts_rollout</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+        <span class="n">best_leaf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_immediate_reward</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mcts_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mcts_node</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span> <span class="o">&gt;</span> <span class="n">best_immediate_reward</span><span class="p">:</span>
+                <span class="n">best_leaf</span> <span class="o">=</span> <span class="n">mcts_node</span>
+                <span class="n">best_immediate_reward</span> <span class="o">=</span> <span class="n">best_leaf</span><span class="o">.</span><span class="n">immediate_reward</span>
+
+        <span class="k">return</span> <span class="n">best_leaf</span><span class="o">.</span><span class="n">nodes</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HeteroSubgraphX">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.explain.HeteroSubgraphX.html#dgl.nn.pytorch.explain.HeteroSubgraphX">[docs]</a>
+<span class="k">class</span> <span class="nc">HeteroSubgraphX</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;SubgraphX from `On Explainability of Graph Neural Networks via Subgraph</span>
+<span class="sd">    Explorations &lt;https://arxiv.org/abs/2102.05152&gt;`__, adapted for heterogeneous graphs</span>
+
+<span class="sd">    It identifies the most important subgraph from the original graph that</span>
+<span class="sd">    plays a critical role in GNN-based graph classification.</span>
+
+<span class="sd">    It employs Monte Carlo tree search (MCTS) in efficiently exploring</span>
+<span class="sd">    different subgraphs for explanation and uses Shapley values as the measure</span>
+<span class="sd">    of subgraph importance.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : nn.Module</span>
+<span class="sd">        The GNN model to explain that tackles multiclass graph classification</span>
+
+<span class="sd">        * Its forward function must have the form</span>
+<span class="sd">          :attr:`forward(self, graph, nfeat)`.</span>
+<span class="sd">        * The output of its forward function is the logits.</span>
+<span class="sd">    num_hops : int</span>
+<span class="sd">        Number of message passing layers in the model</span>
+<span class="sd">    coef : float, optional</span>
+<span class="sd">        This hyperparameter controls the trade-off between exploration and</span>
+<span class="sd">        exploitation. A higher value encourages the algorithm to explore</span>
+<span class="sd">        relatively unvisited nodes. Default: 10.0</span>
+<span class="sd">    high2low : bool, optional</span>
+<span class="sd">        If True, it will use the &quot;High2low&quot; strategy for pruning actions,</span>
+<span class="sd">        expanding children nodes from high degree to low degree when extending</span>
+<span class="sd">        the children nodes in the search tree. Otherwise, it will use the</span>
+<span class="sd">        &quot;Low2high&quot; strategy. Default: True</span>
+<span class="sd">    num_child : int, optional</span>
+<span class="sd">        This is the number of children nodes to expand when extending the</span>
+<span class="sd">        children nodes in the search tree. Default: 12</span>
+<span class="sd">    num_rollouts : int, optional</span>
+<span class="sd">        This is the number of rollouts for MCTS. Default: 20</span>
+<span class="sd">    node_min : int, optional</span>
+<span class="sd">        This is the threshold to define a leaf node based on the number of</span>
+<span class="sd">        nodes in a subgraph. Default: 3</span>
+<span class="sd">    shapley_steps : int, optional</span>
+<span class="sd">        This is the number of steps for Monte Carlo sampling in estimating</span>
+<span class="sd">        Shapley values. Default: 100</span>
+<span class="sd">    log : bool, optional</span>
+<span class="sd">        If True, it will log the progress. Default: False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">num_hops</span><span class="p">,</span>
+        <span class="n">coef</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">high2low</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">num_child</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+        <span class="n">num_rollouts</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">node_min</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">shapley_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_hops</span> <span class="o">=</span> <span class="n">num_hops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef</span> <span class="o">=</span> <span class="n">coef</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high2low</span> <span class="o">=</span> <span class="n">high2low</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_child</span> <span class="o">=</span> <span class="n">num_child</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_rollouts</span> <span class="o">=</span> <span class="n">num_rollouts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span> <span class="o">=</span> <span class="n">node_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shapley_steps</span> <span class="o">=</span> <span class="n">shapley_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">shapley</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subgraph_nodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute Shapley value with Monte Carlo approximation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        subgraph_nodes : dict[str, Tensor]</span>
+<span class="sd">            subgraph_nodes[nty] gives the tensor node IDs of node type nty</span>
+<span class="sd">            in the subgraph, which are associated with this tree node</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Shapley value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Obtain neighboring nodes of the subgraph g_i, P&#39;.</span>
+        <span class="n">local_regions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ntype</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">subgraph_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_hops</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">c_etype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+                <span class="n">src_ntype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dst_ntype</span> <span class="o">=</span> <span class="n">c_etype</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">src_ntype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_regions</span>
+                    <span class="ow">or</span> <span class="n">dst_ntype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_regions</span>
+                <span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">in_neighbors</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span>
+                    <span class="n">local_regions</span><span class="p">[</span><span class="n">dst_ntype</span><span class="p">],</span> <span class="n">etype</span><span class="o">=</span><span class="n">c_etype</span>
+                <span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">out_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">out_edges</span><span class="p">(</span>
+                    <span class="n">local_regions</span><span class="p">[</span><span class="n">src_ntype</span><span class="p">],</span> <span class="n">etype</span><span class="o">=</span><span class="n">c_etype</span>
+                <span class="p">)</span>
+                <span class="n">local_regions</span><span class="p">[</span><span class="n">src_ntype</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">set</span><span class="p">(</span><span class="n">local_regions</span><span class="p">[</span><span class="n">src_ntype</span><span class="p">]</span> <span class="o">+</span> <span class="n">in_neighbors</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                <span class="p">)</span>
+                <span class="n">local_regions</span><span class="p">[</span><span class="n">dst_ntype</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">set</span><span class="p">(</span><span class="n">local_regions</span><span class="p">[</span><span class="n">dst_ntype</span><span class="p">]</span> <span class="o">+</span> <span class="n">out_neighbors</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                <span class="p">)</span>
+
+        <span class="n">split_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+        <span class="n">coalition_space</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ntype</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">set</span><span class="p">(</span><span class="n">local_regions</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">subgraph_nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="p">[</span><span class="n">split_point</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">subgraph_nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="n">marginal_contributions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shapley_steps</span><span class="p">):</span>
+            <span class="n">selected_node_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">coalition_space</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">permuted_space</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+                <span class="n">split_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">permuted_space</span> <span class="o">==</span> <span class="n">split_point</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">selected_node_map</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span> <span class="o">=</span> <span class="n">permuted_space</span><span class="p">[:</span><span class="n">split_idx</span><span class="p">]</span>
+
+            <span class="c1"># Mask for coalition set S_i</span>
+            <span class="n">exclude_mask</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">ntype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">region</span> <span class="ow">in</span> <span class="n">local_regions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">exclude_mask</span><span class="p">[</span><span class="n">ntype</span><span class="p">][</span><span class="n">region</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">selected_nodes</span> <span class="ow">in</span> <span class="n">selected_node_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">exclude_mask</span><span class="p">[</span><span class="n">ntype</span><span class="p">][</span><span class="n">selected_nodes</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+            <span class="c1"># Mask for set S_i and g_i</span>
+            <span class="n">include_mask</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">ntype</span><span class="p">:</span> <span class="n">exclude_mask</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">subgn</span> <span class="ow">in</span> <span class="n">subgraph_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">exclude_mask</span><span class="p">[</span><span class="n">ntype</span><span class="p">][</span><span class="n">subgn</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+            <span class="n">exclude_feat</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">ntype</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">feat</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+                <span class="o">*</span> <span class="n">exclude_mask</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feat</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span>
+            <span class="p">}</span>
+            <span class="n">include_feat</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">ntype</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">feat</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+                <span class="o">*</span> <span class="n">include_mask</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feat</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span>
+            <span class="p">}</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">exclude_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">exclude_feat</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">exclude_value</span> <span class="o">=</span> <span class="n">exclude_probs</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_class</span><span class="p">]</span>
+                <span class="n">include_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">include_feat</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">include_value</span> <span class="o">=</span> <span class="n">include_probs</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_class</span><span class="p">]</span>
+            <span class="n">marginal_contributions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">include_value</span> <span class="o">-</span> <span class="n">exclude_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">marginal_contributions</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_mcts_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcts_node</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the children of the MCTS node for the search.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mcts_node : MCTSNode</span>
+<span class="sd">            Node in MCTS</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            Children nodes after pruning</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span>
+
+        <span class="n">subg</span> <span class="o">=</span> <span class="n">node_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="c1"># Choose k nodes based on the highest degree in the subgraph</span>
+        <span class="n">node_degrees_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ntype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="n">subg</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">subg</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span><span class="o">.</span><span class="n">device</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">subg</span><span class="o">.</span><span class="n">ntypes</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">c_etype</span> <span class="ow">in</span> <span class="n">subg</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">src_ntype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dst_ntype</span> <span class="o">=</span> <span class="n">c_etype</span>
+            <span class="n">node_degrees_map</span><span class="p">[</span><span class="n">src_ntype</span><span class="p">]</span> <span class="o">+=</span> <span class="n">subg</span><span class="o">.</span><span class="n">out_degrees</span><span class="p">(</span><span class="n">etype</span><span class="o">=</span><span class="n">c_etype</span><span class="p">)</span>
+            <span class="n">node_degrees_map</span><span class="p">[</span><span class="n">dst_ntype</span><span class="p">]</span> <span class="o">+=</span> <span class="n">subg</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">(</span><span class="n">etype</span><span class="o">=</span><span class="n">c_etype</span><span class="p">)</span>
+
+        <span class="n">node_degrees_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">((</span><span class="n">ntype</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">degree</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">node_degrees</span> <span class="ow">in</span> <span class="n">node_degrees_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">degree</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node_degrees</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">node_degrees</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">node_degrees_list</span><span class="p">])</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">subg</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_child</span><span class="p">)</span>
+        <span class="n">chosen_node_indicies</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span>
+            <span class="n">node_degrees</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">largest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">high2low</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">indices</span>
+        <span class="n">chosen_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_degrees_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chosen_node_indicies</span><span class="p">]</span>
+
+        <span class="n">mcts_children_maps</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">chosen_nodes</span><span class="p">:</span>
+            <span class="n">new_subg</span> <span class="o">=</span> <span class="n">remove_nodes</span><span class="p">(</span><span class="n">subg</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">store_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">new_subg</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">new_subg_homo</span> <span class="o">=</span> <span class="n">to_homogeneous</span><span class="p">(</span><span class="n">new_subg</span><span class="p">)</span>
+                <span class="c1"># Get the largest weakly connected component in the subgraph.</span>
+                <span class="n">nx_graph</span> <span class="o">=</span> <span class="n">to_networkx</span><span class="p">(</span><span class="n">new_subg_homo</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+                <span class="n">largest_cc_nids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">max</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">weakly_connected_components</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">largest_cc_homo</span> <span class="o">=</span> <span class="n">node_subgraph</span><span class="p">(</span><span class="n">new_subg_homo</span><span class="p">,</span> <span class="n">largest_cc_nids</span><span class="p">)</span>
+                <span class="n">largest_cc_hetero</span> <span class="o">=</span> <span class="n">to_heterogeneous</span><span class="p">(</span>
+                    <span class="n">largest_cc_homo</span><span class="p">,</span> <span class="n">new_subg</span><span class="o">.</span><span class="n">ntypes</span><span class="p">,</span> <span class="n">new_subg</span><span class="o">.</span><span class="n">etypes</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Follow steps for backtracking to original graph node ids</span>
+                <span class="c1"># 1. retrieve instanced homograph from connected-component homograph</span>
+                <span class="c1"># 2. retrieve instanced heterograph from instanced homograph</span>
+                <span class="c1"># 3. retrieve hetero-subgraph from instanced heterograph</span>
+                <span class="c1"># 4. retrieve orignal graph ids from subgraph node ids</span>
+                <span class="n">cc_nodes</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">ntype</span><span class="p">:</span> <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">][</span><span class="n">ntype</span><span class="p">][</span>
+                        <span class="n">new_subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">][</span><span class="n">ntype</span><span class="p">][</span>
+                            <span class="n">new_subg_homo</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">][</span>
+                                <span class="n">largest_cc_homo</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">][</span><span class="n">indicies</span><span class="p">]</span>
+                            <span class="p">]</span>
+                        <span class="p">]</span>
+                    <span class="p">]</span>
+                    <span class="k">for</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">indicies</span> <span class="ow">in</span> <span class="n">largest_cc_hetero</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">available_ntypes</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">ntype</span>
+                    <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">new_subg</span><span class="o">.</span><span class="n">ntypes</span>
+                    <span class="k">if</span> <span class="n">new_subg</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">]</span>
+                <span class="n">chosen_ntype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">available_ntypes</span><span class="p">)</span>
+                <span class="c1"># backtrack from subgraph node ids to entire graph</span>
+                <span class="n">chosen_node</span> <span class="o">=</span> <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">][</span><span class="n">chosen_ntype</span><span class="p">][</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">new_subg</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">chosen_ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">NID</span><span class="p">])</span>
+                <span class="p">]</span>
+                <span class="n">cc_nodes</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">chosen_ntype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">chosen_node</span><span class="p">],</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">subg</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">}</span>
+
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">cc_nodes</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">:</span>
+                <span class="n">child_mcts_node</span> <span class="o">=</span> <span class="n">MCTSNode</span><span class="p">(</span><span class="n">cc_nodes</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">child_mcts_node</span><span class="p">)]</span> <span class="o">=</span> <span class="n">child_mcts_node</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">child_mcts_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">cc_nodes</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">child_mcts_node</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mcts_children_maps</span><span class="p">:</span>
+                <span class="n">mcts_children_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">child_mcts_node</span><span class="p">)]</span> <span class="o">=</span> <span class="n">child_mcts_node</span>
+
+        <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mcts_children_maps</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">child_mcts_node</span> <span class="ow">in</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child_mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">child_mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shapley</span><span class="p">(</span>
+                    <span class="n">child_mcts_node</span><span class="o">.</span><span class="n">nodes</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">children</span>
+
+    <span class="k">def</span> <span class="nf">mcts_rollout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcts_node</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform a MCTS rollout.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mcts_node : MCTSNode</span>
+<span class="sd">            Starting node for MCTS</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Reward for visiting the node this time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span>
+
+        <span class="n">children_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mcts_children</span><span class="p">(</span><span class="n">mcts_node</span><span class="p">)</span>
+        <span class="n">children_visit_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">child</span><span class="o">.</span><span class="n">num_visit</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children_nodes</span><span class="p">])</span>
+        <span class="n">children_visit_sum_sqrt</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">children_visit_sum</span><span class="p">)</span>
+        <span class="n">chosen_child</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">children_nodes</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">total_reward</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">num_visit</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef</span>
+            <span class="o">*</span> <span class="n">c</span><span class="o">.</span><span class="n">immediate_reward</span>
+            <span class="o">*</span> <span class="n">children_visit_sum_sqrt</span>
+            <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">num_visit</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_rollout</span><span class="p">(</span><span class="n">chosen_child</span><span class="p">)</span>
+        <span class="n">chosen_child</span><span class="o">.</span><span class="n">num_visit</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">chosen_child</span><span class="o">.</span><span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
+
+        <span class="k">return</span> <span class="n">reward</span>
+
+<div class="viewcode-block" id="HeteroSubgraphX.explain_graph">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.explain.HeteroSubgraphX.html#dgl.nn.pytorch.explain.HeteroSubgraphX.explain_graph">[docs]</a>
+    <span class="k">def</span> <span class="nf">explain_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">target_class</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the most important subgraph from the original graph for the</span>
+<span class="sd">        model to classify the graph into the target class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : DGLGraph</span>
+<span class="sd">            A heterogeneous graph</span>
+<span class="sd">        feat : dict[str, Tensor]</span>
+<span class="sd">            The dictionary that associates input node features (values) with</span>
+<span class="sd">            the respective node types (keys) present in the graph.</span>
+<span class="sd">            The input features are of shape :math:`(N_t, D_t)`. :math:`N_t` is the</span>
+<span class="sd">            number of nodes for node type :math:`t`, and :math:`D_t` is the feature size for</span>
+<span class="sd">            node type :math:`t`</span>
+<span class="sd">        target_class : int</span>
+<span class="sd">            The target class to explain</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Additional arguments passed to the GNN model</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, Tensor]</span>
+<span class="sd">            The dictionary associating tensor node ids (values) to</span>
+<span class="sd">            node types (keys) that represents the most important subgraph</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        &gt;&gt;&gt; import dgl</span>
+<span class="sd">        &gt;&gt;&gt; import dgl.function as fn</span>
+<span class="sd">        &gt;&gt;&gt; import torch as th</span>
+<span class="sd">        &gt;&gt;&gt; import torch.nn as nn</span>
+<span class="sd">        &gt;&gt;&gt; import torch.nn.functional as F</span>
+<span class="sd">        &gt;&gt;&gt; from dgl.nn import HeteroSubgraphX</span>
+
+<span class="sd">        &gt;&gt;&gt; class Model(nn.Module):</span>
+<span class="sd">        ...     def __init__(self, in_dim, num_classes, canonical_etypes):</span>
+<span class="sd">        ...         super(Model, self).__init__()</span>
+<span class="sd">        ...         self.etype_weights = nn.ModuleDict(</span>
+<span class="sd">        ...             {</span>
+<span class="sd">        ...                 &quot;_&quot;.join(c_etype): nn.Linear(in_dim, num_classes)</span>
+<span class="sd">        ...                 for c_etype in canonical_etypes</span>
+<span class="sd">        ...             }</span>
+<span class="sd">        ...         )</span>
+<span class="sd">        ...</span>
+<span class="sd">        ...     def forward(self, graph, feat):</span>
+<span class="sd">        ...         with graph.local_scope():</span>
+<span class="sd">        ...             c_etype_func_dict = {}</span>
+<span class="sd">        ...             for c_etype in graph.canonical_etypes:</span>
+<span class="sd">        ...                 src_type, etype, dst_type = c_etype</span>
+<span class="sd">        ...                 wh = self.etype_weights[&quot;_&quot;.join(c_etype)](feat[src_type])</span>
+<span class="sd">        ...                 graph.nodes[src_type].data[f&quot;h_{c_etype}&quot;] = wh</span>
+<span class="sd">        ...                 c_etype_func_dict[c_etype] = (</span>
+<span class="sd">        ...                     fn.copy_u(f&quot;h_{c_etype}&quot;, &quot;m&quot;),</span>
+<span class="sd">        ...                     fn.mean(&quot;m&quot;, &quot;h&quot;),</span>
+<span class="sd">        ...                 )</span>
+<span class="sd">        ...             graph.multi_update_all(c_etype_func_dict, &quot;sum&quot;)</span>
+<span class="sd">        ...             hg = 0</span>
+<span class="sd">        ...             for ntype in graph.ntypes:</span>
+<span class="sd">        ...                 if graph.num_nodes(ntype):</span>
+<span class="sd">        ...                     hg = hg + dgl.mean_nodes(graph, &quot;h&quot;, ntype=ntype)</span>
+<span class="sd">        ...             return hg</span>
+
+<span class="sd">        &gt;&gt;&gt; input_dim = 5</span>
+<span class="sd">        &gt;&gt;&gt; num_classes = 2</span>
+<span class="sd">        &gt;&gt;&gt; g = dgl.heterograph({(&quot;user&quot;, &quot;plays&quot;, &quot;game&quot;): ([0, 1, 1, 2], [0, 0, 1, 1])})</span>
+<span class="sd">        &gt;&gt;&gt; g.nodes[&quot;user&quot;].data[&quot;h&quot;] = th.randn(g.num_nodes(&quot;user&quot;), input_dim)</span>
+<span class="sd">        &gt;&gt;&gt; g.nodes[&quot;game&quot;].data[&quot;h&quot;] = th.randn(g.num_nodes(&quot;game&quot;), input_dim)</span>
+
+<span class="sd">        &gt;&gt;&gt; transform = dgl.transforms.AddReverse()</span>
+<span class="sd">        &gt;&gt;&gt; g = transform(g)</span>
+
+<span class="sd">        &gt;&gt;&gt; # define and train the model</span>
+<span class="sd">        &gt;&gt;&gt; model = Model(input_dim, num_classes, g.canonical_etypes)</span>
+<span class="sd">        &gt;&gt;&gt; feat = g.ndata[&quot;h&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; optimizer = th.optim.Adam(model.parameters())</span>
+<span class="sd">        &gt;&gt;&gt; for epoch in range(10):</span>
+<span class="sd">        ...     logits = model(g, feat)</span>
+<span class="sd">        ...     loss = F.cross_entropy(logits, th.tensor([1]))</span>
+<span class="sd">        ...     optimizer.zero_grad()</span>
+<span class="sd">        ...     loss.backward()</span>
+<span class="sd">        ...     optimizer.step()</span>
+
+<span class="sd">        &gt;&gt;&gt; # Explain for the graph</span>
+<span class="sd">        &gt;&gt;&gt; explainer = HeteroSubgraphX(model, num_hops=1)</span>
+<span class="sd">        &gt;&gt;&gt; explainer.explain_graph(g, feat, target_class=1)</span>
+<span class="sd">        {&#39;game&#39;: tensor([0, 1]), &#39;user&#39;: tensor([1, 2])}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;The number of nodes in the</span><span class="se">\</span>
+<span class="s2">            graph </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> should be bigger than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_min</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feat</span> <span class="o">=</span> <span class="n">feat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_class</span> <span class="o">=</span> <span class="n">target_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="c1"># book all nodes in MCTS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">root_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">MCTSNode</span><span class="p">(</span><span class="n">root_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)]</span> <span class="o">=</span> <span class="n">root</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_rollouts</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Rollout </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_rollouts</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
+<span class="s2">                    </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="p">)</span><span class="si">}</span><span class="s2"> subgraphs have been explored.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mcts_rollout</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+        <span class="n">best_leaf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_immediate_reward</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mcts_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts_node_maps</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mcts_node</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_min</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">mcts_node</span><span class="o">.</span><span class="n">immediate_reward</span> <span class="o">&gt;</span> <span class="n">best_immediate_reward</span><span class="p">:</span>
+                <span class="n">best_leaf</span> <span class="o">=</span> <span class="n">mcts_node</span>
+                <span class="n">best_immediate_reward</span> <span class="o">=</span> <span class="n">best_leaf</span><span class="o">.</span><span class="n">immediate_reward</span>
+
+        <span class="k">return</span> <span class="n">best_leaf</span><span class="o">.</span><span class="n">nodes</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

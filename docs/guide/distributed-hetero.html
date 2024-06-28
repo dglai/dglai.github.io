@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.5 Heterogeneous Graph Under The Hood &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 8: Mixed Precision Training" href="mixed_precision.html" />
+    <link rel="prev" title="7.4 Advanced Graph Partitioning" href="distributed-partition.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="distributed-preprocessing.html">7.1 Data Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-tools.html">7.2 Tools for launching distributed training/inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-apis.html">7.3 Programming APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-partition.html">7.4 Advanced Graph Partitioning</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">7.5 Heterogeneous Graph Under The Hood</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="distributed.html">Chapter 7: Distributed Training</a></li>
+      <li class="breadcrumb-item active">7.5 Heterogeneous Graph Under The Hood</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/distributed-hetero.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="heterogeneous-graph-under-the-hood">
+<span id="guide-distributed-hetero"></span><h1>7.5 Heterogeneous Graph Under The Hood<a class="headerlink" href="#heterogeneous-graph-under-the-hood" title="Link to this heading"></a></h1>
+<p>The chapter covers the implementation details of distributed heterogeneous
+graph. They are transparent to users in most scenarios but could be useful
+for advanced customization.</p>
+<p>In DGL, a node or edge in a heterogeneous graph has a unique ID in its own node
+type or edge type.  Therefore, DGL can identify a node or an edge
+with a tuple: <code class="docutils literal notranslate"><span class="pre">(node/edge</span> <span class="pre">type,</span> <span class="pre">type-wise</span> <span class="pre">ID)</span></code>. We call IDs of such form as
+<strong>heterogeneous IDs</strong>. To patition a heterogeneous graph for distributed training,
+DGL converts it to a homogeneous graph so that we can reuse the partitioning
+algorithms designed for homogeneous graphs. Each node/edge is thus uniquely mapped
+to an integer ID in a consecutive ID range (e.g., from 0 to the total number of
+nodes of all types). We call the IDs after conversion as <strong>homogeneous IDs</strong>.</p>
+<p>Below is an illustration of the ID conversion process.  Here, the graph has two
+types of nodes (<span class="math notranslate nohighlight">\(T0\)</span> and <span class="math notranslate nohighlight">\(T1\)</span> ), and four types of edges
+(<span class="math notranslate nohighlight">\(R0\)</span>, <span class="math notranslate nohighlight">\(R1\)</span>, <span class="math notranslate nohighlight">\(R2\)</span>, <span class="math notranslate nohighlight">\(R3\)</span> ).  There are a total of 400
+nodes in the graph and each type has 200 nodes. Nodes of <span class="math notranslate nohighlight">\(T0\)</span> have IDs in
+[0,200), while nodes of <span class="math notranslate nohighlight">\(T1\)</span> have IDs in [200, 400).  In this example, if
+we use a tuple to identify the nodes, nodes of <span class="math notranslate nohighlight">\(T0\)</span> are identified as
+(T0, type-wise ID), where type-wise ID falls in [0, 200); nodes of <span class="math notranslate nohighlight">\(T1\)</span>
+are identified as (T1, type-wise ID), where type-wise ID also falls in [0,
+200).</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/tutorial/hetero/heterograph_ids.png" />
+</figure>
+<section id="id-conversion-utilities">
+<h2>ID Conversion Utilities<a class="headerlink" href="#id-conversion-utilities" title="Link to this heading"></a></h2>
+<section id="during-preprocessing">
+<h3>During Preprocessing<a class="headerlink" href="#during-preprocessing" title="Link to this heading"></a></h3>
+<p>The steps of <a class="reference internal" href="distributed-preprocessing.html#guide-distributed-preprocessing"><span class="std std-ref">Parallel Processing Pipeline</span></a>
+all use heterogeneous IDs for their inputs and outputs. Nevertheless, some steps such as
+ParMETIS partitioning are easier to be implemented using homogeneous IDs, thus
+requiring a utility to perform ID conversion.
+The code below implements a simple <code class="docutils literal notranslate"><span class="pre">IDConverter</span></code> using the metadata information
+in the metadata JSON from the chunked graph data format. It starts from some
+node type <span class="math notranslate nohighlight">\(A\)</span> as node type 0, then assigns all its nodes with IDs
+in range <span class="math notranslate nohighlight">\([0, |V_A|-1)\)</span>. It then moves to the next node
+type B as node type 1 and assigns all its nodes with IDs in range
+<span class="math notranslate nohighlight">\([|V_A|, |V_A|+|V_B|-1)\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bisect</span> <span class="kn">import</span> <span class="n">bisect_left</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">class</span> <span class="nc">IDConverter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
+        <span class="c1"># meta is the JSON object loaded from metadata.json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_type</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;node_type&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_type</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;edge_type&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ntype2id_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">ntype</span> <span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_type</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">etype2id_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">etype</span> <span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">etype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_type</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;num_nodes_per_chunk&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;num_edges_per_chunk&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nid_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eid_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ntype2id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ntype</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From node type name to node type ID&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntype2id_map</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">etype2id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">etype</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From edge type name to edge type ID&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">etype2id_map</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">id2ntype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From node type ID to node type name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_type</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">id2etype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From edge type ID to edge type name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">nid_het2hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From heterogeneous node ID to homogeneous node ID&quot;&quot;&quot;</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntype2id</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">id</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">[</span><span class="n">tid</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid node ID of type </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s1">. Must be within range [0, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nid_offset</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">+</span> <span class="nb">id</span>
+
+    <span class="k">def</span> <span class="nf">nid_hom2het</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From heterogeneous node ID to homogeneous node ID&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">id</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nid_offset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid homogeneous node ID. Must be within range [0, self.nid_offset[-1])&#39;</span><span class="p">)</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nid_offset</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># Return a pair (node_type, type_wise_id)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2ntype</span><span class="p">(</span><span class="n">tid</span><span class="p">),</span> <span class="nb">id</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nid_offset</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">eid_het2hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From heterogeneous edge ID to homogeneous edge ID&quot;&quot;&quot;</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">etype2id</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">id</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">[</span><span class="n">tid</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid edge ID of type </span><span class="si">{</span><span class="n">etype</span><span class="si">}</span><span class="s1">. Must be within range [0, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eid_offset</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">+</span> <span class="nb">id</span>
+
+    <span class="k">def</span> <span class="nf">eid_hom2het</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;From heterogeneous edge ID to homogeneous edge ID&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">id</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eid_offset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid homogeneous edge ID. Must be within range [0, self.eid_offset[-1])&#39;</span><span class="p">)</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eid_offset</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># Return a pair (edge_type, type_wise_id)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2etype</span><span class="p">(</span><span class="n">tid</span><span class="p">),</span> <span class="nb">id</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eid_offset</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="after-partition-loading">
+<h3>After Partition Loading<a class="headerlink" href="#after-partition-loading" title="Link to this heading"></a></h3>
+<p>After the partitions are loaded into trainer or server processes, the loaded
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook" title="dgl.distributed.GraphPartitionBook"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphPartitionBook</span></code></a> provides utilities for conversion
+between homogeneous IDs and heterogeneous IDs.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_per_ntype" title="dgl.distributed.GraphPartitionBook.map_to_per_ntype"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_per_ntype()</span></code></a>: convert a homogeneous node ID to type-wise ID and node type ID.</p></li>
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_per_etype" title="dgl.distributed.GraphPartitionBook.map_to_per_etype"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_per_etype()</span></code></a>: convert a homogeneous edge ID to type-wise ID and edge type ID.</p></li>
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_homo_nid" title="dgl.distributed.GraphPartitionBook.map_to_homo_nid"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_homo_nid()</span></code></a>: convert type-wise ID and node type to a homogeneous node ID.</p></li>
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_homo_eid" title="dgl.distributed.GraphPartitionBook.map_to_homo_eid"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_homo_eid()</span></code></a>: convert type-wise ID and edge type to a homogeneous edge ID.</p></li>
+</ul>
+<p>Because all DGL’s low-level <a class="reference internal" href="../api/python/dgl.distributed.html#api-distributed-sampling-ops"><span class="std std-ref">distributed graph sampling operators</span></a> use homogeneous IDs, DGL internally converts
+the heterogeneous IDs specified by users to homogeneous IDs before invoking
+sampling operators.  Below shows an example of sampling a subgraph by
+<a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">sample_neighbors()</span></code></a> from nodes of type <code class="docutils literal notranslate"><span class="pre">&quot;paper&quot;</span></code>.  It
+first performs ID conversion, and after getting the sampled subgraph, converts
+the homogeneous node/edge IDs back to heterogeneous ones.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gpb</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_partition_book</span><span class="p">()</span>
+<span class="c1"># We need to map the type-wise node IDs to homogeneous IDs.</span>
+<span class="n">cur</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_homo_nid</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">)</span>
+<span class="c1"># For a heterogeneous input graph, the returned frontier is stored in</span>
+<span class="c1"># the homogeneous graph format.</span>
+<span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">cur</span><span class="p">,</span> <span class="n">fanout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">cur</span><span class="p">)</span>
+<span class="n">cur</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+
+<span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">frontier</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">]</span>
+<span class="c1"># Map the homogeneous edge Ids to their edge type.</span>
+<span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">ETYPE</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_per_etype</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">])</span>
+<span class="c1"># Map the homogeneous node Ids to their node types and per-type Ids.</span>
+<span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NTYPE</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_per_ntype</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+<span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NTYPE</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_per_ntype</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Note that getting node/edge types from type IDs is simple – just getting them
+from the <code class="docutils literal notranslate"><span class="pre">ntypes</span></code> attributes of a <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code>, i.e., <code class="docutils literal notranslate"><span class="pre">g.ntypes[node_type_id]</span></code>.</p>
+</section>
+</section>
+<section id="access-distributed-graph-data">
+<h2>Access distributed graph data<a class="headerlink" href="#access-distributed-graph-data" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> class supports similar interface as
+<a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a>.  Below shows an example of getting the feature data of
+nodes 0, 10, 20 of type <span class="math notranslate nohighlight">\(T0\)</span>. When accessing data in
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a>, a user needs to use type-wise IDs and
+corresponding node types or edge types.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="n">part_config</span><span class="o">=</span><span class="s1">&#39;data/graph_name.json&#39;</span><span class="p">)</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;T0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>A user can create distributed tensors and distributed embeddings for a
+particular node type or edge type. Distributed tensors and embeddings are split
+and stored in multiple machines. To create one, a user needs to specify how it
+is partitioned with <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.PartitionPolicy" title="dgl.distributed.PartitionPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartitionPolicy</span></code></a>.  By default, DGL
+chooses the right partition policy based on the size of the first dimension.
+However, if multiple node types or edge types have the same number of nodes or
+edges, DGL cannot determine the partition policy automatically. A user needs to
+explicitly specify the partition policy.  Below shows an example of creating a
+distributed tensor for node type <span class="math notranslate nohighlight">\(T0\)</span> by using the partition policy for <span class="math notranslate nohighlight">\(T0\)</span>
+and store it as node data of <span class="math notranslate nohighlight">\(T0\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;T0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistTensor</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="s1">&#39;T0&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="s1">&#39;feat1&#39;</span><span class="p">,</span>
+    <span class="n">part_policy</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">get_node_partition_policy</span><span class="p">(</span><span class="s1">&#39;T0&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The partition policies used for creating distributed tensors and embeddings are
+initialized when a heterogeneous graph is loaded into the graph server. A user
+cannot create a new partition policy at runtime. Therefore, a user can only
+create distributed tensors or embeddings for a node type or edge type.
+Accessing distributed tensors and embeddings also requires type-wise IDs.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="distributed-partition.html" class="btn btn-neutral float-left" title="7.4 Advanced Graph Partitioning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mixed_precision.html" class="btn btn-neutral float-right" title="Chapter 8: Mixed Precision Training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

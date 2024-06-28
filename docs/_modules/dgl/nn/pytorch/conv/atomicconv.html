@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.nn.pytorch.conv.atomicconv &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.nn.pytorch.conv.atomicconv</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.nn.pytorch.conv.atomicconv</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Torch Module for Atomic Convolution Layer&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable= no-member, arguments-differ, invalid-name</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+
+<span class="k">class</span> <span class="nc">RadialPooling</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Radial pooling from `Atomic Convolutional Networks for</span>
+<span class="sd">    Predicting Protein-Ligand Binding Affinity &lt;https://arxiv.org/abs/1703.10603&gt;`__</span>
+
+<span class="sd">    We denote the distance between atom :math:`i` and :math:`j` by :math:`r_{ij}`.</span>
+
+<span class="sd">    A radial pooling layer transforms distances with radial filters. For radial filter</span>
+<span class="sd">    indexed by :math:`k`, it projects edge distances with</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        h_{ij}^{k} = \exp(-\gamma_{k}|r_{ij}-r_{k}|^2)</span>
+
+<span class="sd">    If :math:`r_{ij} &lt; c_k`,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f_{ij}^{k} = 0.5 * \cos(\frac{\pi r_{ij}}{c_k} + 1),</span>
+
+<span class="sd">    else,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f_{ij}^{k} = 0.</span>
+
+<span class="sd">    Finally,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        e_{ij}^{k} = h_{ij}^{k} * f_{ij}^{k}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    interaction_cutoffs : float32 tensor of shape (K)</span>
+<span class="sd">        :math:`c_k` in the equations above. Roughly they can be considered as learnable cutoffs</span>
+<span class="sd">        and two atoms are considered as connected if the distance between them is smaller than</span>
+<span class="sd">        the cutoffs. K for the number of radial filters.</span>
+<span class="sd">    rbf_kernel_means : float32 tensor of shape (K)</span>
+<span class="sd">        :math:`r_k` in the equations above. K for the number of radial filters.</span>
+<span class="sd">    rbf_kernel_scaling : float32 tensor of shape (K)</span>
+<span class="sd">        :math:`\gamma_k` in the equations above. K for the number of radial filters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">interaction_cutoffs</span><span class="p">,</span> <span class="n">rbf_kernel_means</span><span class="p">,</span> <span class="n">rbf_kernel_scaling</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RadialPooling</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interaction_cutoffs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">interaction_cutoffs</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rbf_kernel_means</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">rbf_kernel_means</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rbf_kernel_scaling</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">rbf_kernel_scaling</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Description</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Apply the layer to transform edge distances.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        distances : Float32 tensor of shape (E, 1)</span>
+<span class="sd">            Distance between end nodes of edges. E for the number of edges.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Float32 tensor of shape (K, E, 1)</span>
+<span class="sd">            Transformed edge distances. K for the number of radial filters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scaled_euclidean_distance</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">rbf_kernel_scaling</span> <span class="o">*</span> <span class="p">(</span><span class="n">distances</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rbf_kernel_means</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span>  <span class="c1"># (K, E, 1)</span>
+        <span class="n">rbf_kernel_results</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">scaled_euclidean_distance</span><span class="p">)</span>  <span class="c1"># (K, E, 1)</span>
+
+        <span class="n">cos_values</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">th</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">distances</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">interaction_cutoffs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">)</span>  <span class="c1"># (K, E, 1)</span>
+        <span class="n">cutoff_values</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">distances</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interaction_cutoffs</span><span class="p">,</span>
+            <span class="n">cos_values</span><span class="p">,</span>
+            <span class="n">th</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">cos_values</span><span class="p">),</span>
+        <span class="p">)</span>  <span class="c1"># (K, E, 1)</span>
+
+        <span class="c1"># Note that there appears to be an inconsistency between the paper and</span>
+        <span class="c1"># DeepChem&#39;s implementation. In the paper, the scaled_euclidean_distance first</span>
+        <span class="c1"># gets multiplied by cutoff_values, followed by exponentiation. Here we follow</span>
+        <span class="c1"># the practice of DeepChem.</span>
+        <span class="k">return</span> <span class="n">rbf_kernel_results</span> <span class="o">*</span> <span class="n">cutoff_values</span>
+
+
+<span class="k">def</span> <span class="nf">msg_func</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Send messages along edges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    edges : EdgeBatch</span>
+<span class="sd">        A batch of edges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict mapping &#39;m&#39; to Float32 tensor of shape (E, K * T)</span>
+<span class="sd">        Messages computed. E for the number of edges, K for the number of</span>
+<span class="sd">        radial filters and T for the number of features to use</span>
+<span class="sd">        (types of atomic number in the paper).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">th</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ik-&gt;ijk&quot;</span><span class="p">,</span> <span class="n">edges</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">],</span> <span class="n">edges</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;he&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">reduce_func</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Collect messages and update node representations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nodes : NodeBatch</span>
+<span class="sd">        A batch of nodes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict mapping &#39;hv_new&#39; to Float32 tensor of shape (V, K * T)</span>
+<span class="sd">        Updated node representations. V for the number of nodes, K for the number of</span>
+<span class="sd">        radial filters and T for the number of features to use</span>
+<span class="sd">        (types of atomic number in the paper).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hv_new&quot;</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span>
+
+
+<div class="viewcode-block" id="AtomicConv">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.conv.AtomicConv.html#dgl.nn.pytorch.conv.AtomicConv">[docs]</a>
+<span class="k">class</span> <span class="nc">AtomicConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Atomic Convolution Layer from `Atomic Convolutional Networks for</span>
+<span class="sd">    Predicting Protein-Ligand Binding Affinity &lt;https://arxiv.org/abs/1703.10603&gt;`__</span>
+
+<span class="sd">    Denoting the type of atom :math:`i` by :math:`z_i` and the distance between atom</span>
+<span class="sd">    :math:`i` and :math:`j` by :math:`r_{ij}`.</span>
+
+<span class="sd">    **Distance Transformation**</span>
+
+<span class="sd">    An atomic convolution layer first transforms distances with radial filters and</span>
+<span class="sd">    then perform a pooling operation.</span>
+
+<span class="sd">    For radial filter indexed by :math:`k`, it projects edge distances with</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        h_{ij}^{k} = \exp(-\gamma_{k}|r_{ij}-r_{k}|^2)</span>
+
+<span class="sd">    If :math:`r_{ij} &lt; c_k`,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f_{ij}^{k} = 0.5 * \cos(\frac{\pi r_{ij}}{c_k} + 1),</span>
+
+<span class="sd">    else,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f_{ij}^{k} = 0.</span>
+
+<span class="sd">    Finally,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        e_{ij}^{k} = h_{ij}^{k} * f_{ij}^{k}</span>
+
+<span class="sd">    **Aggregation**</span>
+
+<span class="sd">    For each type :math:`t`, each atom collects distance information from all neighbor atoms</span>
+<span class="sd">    of type :math:`t`:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        p_{i, t}^{k} = \sum_{j\in N(i)} e_{ij}^{k} * 1(z_j == t)</span>
+
+<span class="sd">    Then concatenate the results for all RBF kernels and atom types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    interaction_cutoffs : float32 tensor of shape (K)</span>
+<span class="sd">        :math:`c_k` in the equations above. Roughly they can be considered as learnable cutoffs</span>
+<span class="sd">        and two atoms are considered as connected if the distance between them is smaller than</span>
+<span class="sd">        the cutoffs. K for the number of radial filters.</span>
+<span class="sd">    rbf_kernel_means : float32 tensor of shape (K)</span>
+<span class="sd">        :math:`r_k` in the equations above. K for the number of radial filters.</span>
+<span class="sd">    rbf_kernel_scaling : float32 tensor of shape (K)</span>
+<span class="sd">        :math:`\gamma_k` in the equations above. K for the number of radial filters.</span>
+<span class="sd">    features_to_use : None or float tensor of shape (T)</span>
+<span class="sd">        In the original paper, these are atomic numbers to consider, representing the types</span>
+<span class="sd">        of atoms. T for the number of types of atomic numbers. Default to None.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+
+<span class="sd">    * This convolution operation is designed for molecular graphs in Chemistry, but it might</span>
+<span class="sd">      be possible to extend it to more general graphs.</span>
+
+<span class="sd">    * There seems to be an inconsistency about the definition of :math:`e_{ij}^{k}` in the</span>
+<span class="sd">      paper and the author&#39;s implementation. We follow the author&#39;s implementation. In the</span>
+<span class="sd">      paper, :math:`e_{ij}^{k}` was defined as</span>
+<span class="sd">      :math:`\exp(-\gamma_{k}|r_{ij}-r_{k}|^2 * f_{ij}^{k})`.</span>
+
+<span class="sd">    * :math:`\gamma_{k}`, :math:`r_k` and :math:`c_k` are all learnable.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+<span class="sd">    &gt;&gt;&gt; from dgl.nn import AtomicConv</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0,1,2,3,2,5], [1,2,3,4,0,3]))</span>
+<span class="sd">    &gt;&gt;&gt; feat = th.ones(6, 1)</span>
+<span class="sd">    &gt;&gt;&gt; edist = th.ones(6, 1)</span>
+<span class="sd">    &gt;&gt;&gt; interaction_cutoffs = th.ones(3).float() * 2</span>
+<span class="sd">    &gt;&gt;&gt; rbf_kernel_means = th.ones(3).float()</span>
+<span class="sd">    &gt;&gt;&gt; rbf_kernel_scaling = th.ones(3).float()</span>
+<span class="sd">    &gt;&gt;&gt; conv = AtomicConv(interaction_cutoffs, rbf_kernel_means, rbf_kernel_scaling)</span>
+<span class="sd">    &gt;&gt;&gt; res = conv(g, feat, edist)</span>
+<span class="sd">    &gt;&gt;&gt; res</span>
+<span class="sd">    tensor([[0.5000, 0.5000, 0.5000],</span>
+<span class="sd">                [0.5000, 0.5000, 0.5000],</span>
+<span class="sd">                [0.5000, 0.5000, 0.5000],</span>
+<span class="sd">                [1.0000, 1.0000, 1.0000],</span>
+<span class="sd">                [0.5000, 0.5000, 0.5000],</span>
+<span class="sd">                [0.0000, 0.0000, 0.0000]], grad_fn=&lt;ViewBackward&gt;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">interaction_cutoffs</span><span class="p">,</span>
+        <span class="n">rbf_kernel_means</span><span class="p">,</span>
+        <span class="n">rbf_kernel_scaling</span><span class="p">,</span>
+        <span class="n">features_to_use</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AtomicConv</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">radial_pooling</span> <span class="o">=</span> <span class="n">RadialPooling</span><span class="p">(</span>
+            <span class="n">interaction_cutoffs</span><span class="o">=</span><span class="n">interaction_cutoffs</span><span class="p">,</span>
+            <span class="n">rbf_kernel_means</span><span class="o">=</span><span class="n">rbf_kernel_means</span><span class="p">,</span>
+            <span class="n">rbf_kernel_scaling</span><span class="o">=</span><span class="n">rbf_kernel_scaling</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">features_to_use</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_channels</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">features_to_use</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">features_to_use</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">features_to_use</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                <span class="n">features_to_use</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="AtomicConv.forward">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.conv.AtomicConv.html#dgl.nn.pytorch.conv.AtomicConv.forward">[docs]</a>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Description</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Apply the atomic convolution layer.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : DGLGraph</span>
+<span class="sd">            Topology based on which message passing is performed.</span>
+<span class="sd">        feat : Float32 tensor of shape :math:`(V, 1)`</span>
+<span class="sd">            Initial node features, which are atomic numbers in the paper.</span>
+<span class="sd">            :math:`V` for the number of nodes.</span>
+<span class="sd">        distances : Float32 tensor of shape :math:`(E, 1)`</span>
+<span class="sd">            Distance between end nodes of edges. E for the number of edges.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Float32 tensor of shape :math:`(V, K * T)`</span>
+<span class="sd">            Updated node representations. :math:`V` for the number of nodes, :math:`K` for the</span>
+<span class="sd">            number of radial filters, and :math:`T` for the number of types of atomic numbers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">radial_pooled_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radial_pooling</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                <span class="n">feat</span>
+            <span class="p">)</span>  <span class="c1"># (K, E, 1)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_to_use</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">feat</span> <span class="o">=</span> <span class="p">(</span><span class="n">feat</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_to_use</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>  <span class="c1"># (V, T)</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;he&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">radial_pooled_values</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
+                <span class="o">-</span><span class="mi">1</span>
+            <span class="p">)</span>  <span class="c1"># (E, K)</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">msg_func</span><span class="p">,</span> <span class="n">reduce_func</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;hv_new&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">)</span>  <span class="c1"># (V, K * T)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

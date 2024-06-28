@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.6 큰 그래프들에 대핸 정확한 오프라인 추론" href="minibatch-inference.html" />
+    <link rel="prev" title="6.4 이웃 샘플러 커스터마이징하기" href="minibatch-custom-sampler.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 이웃 샘플링을 사용한 노드 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 이웃 샘플링을 사용한 에지 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 이웃 샘플링을 사용한 링크 예측 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 이웃 샘플러 커스터마이징하기</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.6 큰 그래프들에 대핸 정확한 오프라인 추론</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-gpu-sampling.html">6.7 이웃 샘플링에 GPU 사용하기</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">7장: 분산 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+      <li class="breadcrumb-item active">6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/minibatch-nn.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gnn">
+<span id="guide-ko-minibatch-custom-gnn-module"></span><h1>6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기<a class="headerlink" href="#gnn" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/minibatch-nn.html#guide-minibatch-custom-gnn-module"><span class="std std-ref">(English Version)</span></a></p>
+<p>Homogeneous 그래프나 heterogeneous 그래프를 대상으로 전체 그래프를 업데이트하는 커스텀 GNN 모듈을 만드는 것에 익숙하다면, MFG에 대한 연산을 구현하는 코드도 비슷하다는 것을 알 수 있다. 차이점은 노드들이 입력 노드와 출력 노드로 나뉜다는 것 뿐이다.</p>
+<p>커스텀 graph convolution 모듈을 예로 들자. 이 코드는 단지 커스텀 GNN 모듈이 어떻게 동작하는지 보여주기 위함이지, 가장 효율적인 구현이 아님을 주의하자.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">]],</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>전체 그래프에 대한 커스텀 메시지 전달 NN 모듈이 있고, 이를 MFG에서 작동하도록 만들고 싶다면, 다음과 같이 forward 함수를 다시 작성하는 것만이 필요하다. 전체 그래프에 대한 구현은 주석 처리를 했으니, 새로운 코드들과 비교해 보자.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+
+    <span class="c1"># h is now a pair of feature tensors for input and output nodes, instead of</span>
+    <span class="c1"># a single feature tensor.</span>
+    <span class="c1"># def forward(self, g, h):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="c1"># with g.local_scope():</span>
+        <span class="k">with</span> <span class="n">block</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="c1"># g.ndata[&#39;h&#39;] = h</span>
+            <span class="n">h_src</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span><span class="p">[:</span><span class="n">block</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()]</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_src</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_dst</span>
+
+            <span class="c1"># g.update_all(fn.copy_u(&#39;h&#39;, &#39;m&#39;), fn.mean(&#39;m&#39;, &#39;h_neigh&#39;))</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">))</span>
+
+            <span class="c1"># return self.W(torch.cat([g.ndata[&#39;h&#39;], g.ndata[&#39;h_neigh&#39;]], 1))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">]],</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>일반적으로, 직접 구현한 NN 모듈이 MFG에서 동작하게 만들기 위해서는 다음과 같은 것을 해야한다.</p>
+<ul class="simple">
+<li><p>첫 몇 행들(row)을 잘라서 입력 피쳐들로부터 출력 노드의 피처를 얻는다. 행의 개수는 <a class="reference internal" href="../generated/dgl.DGLGraph.number_of_dst_nodes.html#dgl.DGLGraph.number_of_dst_nodes" title="dgl.DGLGraph.number_of_dst_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block.number_of_dst_nodes</span></code></a> 로 얻는다.</p></li>
+<li><p>원본 그래프가 한 하나의 노드 타입을 갖는 경우, <a class="reference internal" href="../generated/dgl.DGLGraph.ndata.html#dgl.DGLGraph.ndata" title="dgl.DGLGraph.ndata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">g.ndata</span></code></a> 를 입력 노드의 피쳐의 경우 <a class="reference internal" href="../generated/dgl.DGLGraph.srcdata.html#dgl.DGLGraph.srcdata" title="dgl.DGLGraph.srcdata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.srcdata</span></code></a> 로 또는 출력 노드의 피쳐의 경우 <a class="reference internal" href="../generated/dgl.DGLGraph.dstdata.html#dgl.DGLGraph.dstdata" title="dgl.DGLGraph.dstdata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.dstdata</span></code></a> 로 교체한다.</p></li>
+<li><p>원본 그래프가 여러 종류의 노드 타입을 갖는 경우, <a class="reference internal" href="../generated/dgl.DGLGraph.nodes.html#dgl.DGLGraph.nodes" title="dgl.DGLGraph.nodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">g.nodes</span></code></a> 를 입력 노드의 피쳐의 경우 <a class="reference internal" href="../generated/dgl.DGLGraph.srcnodes.html#dgl.DGLGraph.srcnodes" title="dgl.DGLGraph.srcnodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.srcnodes</span></code></a> 로 또는 출력 노드의 피처의 경우 <a class="reference internal" href="../generated/dgl.DGLGraph.dstnodes.html#dgl.DGLGraph.dstnodes" title="dgl.DGLGraph.dstnodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.dstnodes</span></code></a> 로 교체한다.</p></li>
+<li><p><a class="reference internal" href="../generated/dgl.DGLGraph.num_nodes.html#dgl.DGLGraph.num_nodes" title="dgl.DGLGraph.num_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">g.num_nodes</span></code></a> 를 입력 노드의 개수는 <a class="reference internal" href="../generated/dgl.DGLGraph.number_of_src_nodes.html#dgl.DGLGraph.number_of_src_nodes" title="dgl.DGLGraph.number_of_src_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block.number_of_src_nodes</span></code></a> 로 출력 노드의 개수는 <a class="reference internal" href="../generated/dgl.DGLGraph.number_of_dst_nodes.html#dgl.DGLGraph.number_of_dst_nodes" title="dgl.DGLGraph.number_of_dst_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block.number_of_dst_nodes</span></code></a> 로 각각 교체한다.</p></li>
+</ul>
+<section id="heterogeneous">
+<h2>Heterogeneous 그래프들<a class="headerlink" href="#heterogeneous" title="Link to this heading"></a></h2>
+<p>Heterogeneous 그래프의 경우도 커스텀 GNN 모듈을 만드는 것은 비슷하다. 예를 들어, 전체 그래프에 적용되는 다음 모듈을 예로 들어보자.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomHeteroGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">utype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">vtype</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">](</span><span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_src&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+                <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span>
+                    <span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h_src&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">),</span>
+                    <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">](</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">CustomHeteroGraphConv</span></code> 에서의 원칙은 <code class="docutils literal notranslate"><span class="pre">g.nodes</span></code> 를 대상 피쳐가 입력 노드의 것인지 출력 노드의 것인지에 따라서 <code class="docutils literal notranslate"><span class="pre">g.srcnodes</span></code> 또는 <code class="docutils literal notranslate"><span class="pre">g.dstnodes</span></code> 바꾸는 것이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomHeteroGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">utype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">vtype</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+                <span class="n">h_src</span><span class="p">,</span> <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">](</span><span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">srcnodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_src&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+                <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span>
+                    <span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h_src&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">),</span>
+                    <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">](</span><span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="homogeneous-bipartite-graph-mfg">
+<h2>Homogeneous 그래프, 이분 그래프(bipartite graph), 그리고 MFG를 위한 모듈 작성하기<a class="headerlink" href="#homogeneous-bipartite-graph-mfg" title="Link to this heading"></a></h2>
+<p>DGL의 모든 메시지 전달 모듈들은 homogeneous 그래프, 단방향 이분 그래프 (unidirectional bipartite graphs, 두개 노드 타입을 갖고, 하나의 에지 타입을 갖음), 그리고 하나의 에지 타입을 갖는 MFG에서 동작한다. 기본적으로 DGL 빌트인 뉴럴 네트워크 모듈의 입력 그래프와 피쳐는 아래 경우들 중에 하나를 만족해야 한다.</p>
+<ul class="simple">
+<li><p>입력 피쳐가 텐서들의 쌍인 경우, 입력 그래프는 단방향 이분(unidirectional bipartite) 그래프이어야 한다.</p></li>
+<li><p>입력 피쳐가 단일 텐서이고 입력 그래프가 MFG인 경우, DGL은 자동으로 출력 노드의 피쳐를 입력 노드 피처의 첫 몇개의 행으로 정의한다.</p></li>
+<li><p>입력 피쳐가 단일 텐서이고 입력 그래프가 MGF가 아닌 경우, 입력 그래프는 반드시 homogeneous여야 한다.</p></li>
+</ul>
+<p>다음 코드는 <code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.nn.pytorch.SAGEConv</span></code> 을 PyTorch로 단순하게 구현한 것이다. (MXNet이나 TensorFlow 버전도 제공함. (이 코드는 normalization이 제거되어 있고, mean aggregation만 사용한다.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.function</span> <span class="k">as</span> <span class="nn">fn</span>
+<span class="k">class</span> <span class="nc">SAGEConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">h_src</span><span class="p">,</span> <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="k">elif</span> <span class="n">g</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+            <span class="n">h_src</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span><span class="p">[:</span><span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">h_src</span> <span class="o">=</span> <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span>
+
+        <span class="n">g</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_src</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_dst</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">]],</span> <span class="mi">1</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="nn.html#guide-ko-nn"><span class="std std-ref">3장: GNN 모듈 만들기</span></a> 은 단방향 이분 그래프, homogeneous 그래프와 MFG에 적용되는 <code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.nn.pytorch.SAGEConv</span></code> 를 자세히 다루고 있다.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-custom-sampler.html" class="btn btn-neutral float-left" title="6.4 이웃 샘플러 커스터마이징하기" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-inference.html" class="btn btn-neutral float-right" title="6.6 큰 그래프들에 대핸 정확한 오프라인 추론" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

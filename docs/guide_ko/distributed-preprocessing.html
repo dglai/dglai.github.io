@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.1 분산 학습을 위한 전처리 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.2 분산 APIs" href="distributed-apis.html" />
+    <link rel="prev" title="7장: 분산 학습" href="distributed.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="distributed.html">7장: 분산 학습</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">7.1 분산 학습을 위한 전처리</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-apis.html">7.2 분산 APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-hetero.html">7.3 분산 heterogeneous 그래프 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-tools.html">7.4 분산 학습/추론을 런칭하기 위한 툴들</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="distributed.html">7장: 분산 학습</a></li>
+      <li class="breadcrumb-item active">7.1 분산 학습을 위한 전처리</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/distributed-preprocessing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-ko-distributed-preprocessing">
+<span id="id1"></span><h1>7.1 분산 학습을 위한 전처리<a class="headerlink" href="#guide-ko-distributed-preprocessing" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/distributed-preprocessing.html#guide-distributed-preprocessing"><span class="std std-ref">(English Version)</span></a></p>
+<p>DGL의 분산 학습을 사용하기 위해서는 그래프 데이터에 대한 전처리가 필요하다. 이 전처리는 두 단계로 구성된다: 1) 그래프를 서브 그래프들로 파티션하기, 2) 노드/에지들에 새로운 ID를 부여하기. 상대적으로 작은 그래프들의 경우, DGL이 제공하는 파티셔닝 API <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 를 사용해서 위 두 단계를 수행할 수 있다. 이 API는 한 컴퓨터에서 수행된다. 따라서, 그래프가 큰 경우, 이 API를 사용하고 싶다면 큰 컴퓨터를 사용해야 한다. 이 API과 더불어, 여기서는 큰 그래프를 컴퓨터들의 클러스터에서 파티션을 하는 솔루션을 소개한다. (7.1.1 절을 보라)</p>
+<p><a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 는 랜덤 파티션과 <a class="reference external" href="http://glaros.dtc.umn.edu/gkhome/views/metis">Metis</a> 기반의 파티셔닝을 모두 지원한다. Metis 파티셔닝의 장점은 최소의 에지 컷(edge cut)을 갖는 파티션들을 만들 수 있다는 것이다. 이는 분산 학습 및 추론에서 네트워크 통신을 줄여준다. DGL은 최신 버전의 Metis은 실제(real world)에서 거듭 제곱 법칙의 분포를 갖는 그래프에 최적화되어 있다. 파타셔닝 후, API는 학습시 쉽게 로딩될 수 있는 형태로 파티션된 결과를 만든다.</p>
+<p>기본 설정으로 파티션 API는 분산 학습/추론이 실행될 때 노드/에지를 구별하는 것을 돕기 위해서 입력 그래프의 노드와 에지에 새로운 ID를 부여한다. ID를 할당한 후, 파티션 API은 모든 노드 데이터와 에지 데이터를 섞는다. 파티션된 서브 그래프를 생선한 후, 각 서브 그래프는 <code class="docutils literal notranslate"><span class="pre">DGLGraph</span></code> 객체로 저장된다. 섞기전의 원본 노드/에지 ID들은 서브 그래프들의 노드/에지 데이터에 <cite>orig_id</cite> 필드에 저장된다. 서브 그래프의 노드 데이터 <cite>dgl.NID</cite> 와 에지 데이터 <cite>dgl.EID</cite> 는 노드/에지들이 reshuffle 후의 전체 그래프의 새로운 노드/에지 ID를 저장한다. 학습이 실행되는 동안, 사용자는 새로운 노드/에지 ID만을 사용한다.</p>
+<p>파티션된 결과는 출력 디렉토리의 여러 파일로 저장된다. 이는 한개의 JSON 파일을 포함하는데, 파일 이름은 xxx.json 형태이고, xxx는 파티션 API에 사용된 그래프 이름이다. JSON 파일은 모든 파티션 설정들을 갖는다. 먄약 파티션 API가 새로운 ID를 노드와 에지에 할당하지 않은 경우에는, 추가적으로 두 개의 Numpy 파일; <cite>node_map.npy</cite> 와 <cite>edge_map.npy</cite> 를 생성하는데, 이는 노드/에지 ID와 파티션 ID의 매핑을 저장한다. 만약 그래프에 수십억 개의 노드와 에지가 있다면, 두 파일의 Numpy array는 커질 것인다. 그 이유는 그래프의 각 노드 및 에지에 대해서 하나의 엔트리를 갖기 때문이다. 각 파티션에 대한 폴더는 DGL 포멧으로 파티션 데이터를 저장하는 세 개의 파일이 있다. <cite>graph.dgl</cite> 은 파티션의 그래프 구조와 노드 및 에지에 대한 메타 데이터를 저장하고 있고, <cite>node_feats.dgl</cite> 과 <cite>edge_feats.dlg</cite> 은 파티션에 속하는 노드와 에지의 모든 피쳐들을 저장하고 있다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>data_root_dir/
+    |-- xxx.json                  # partition configuration file in JSON
+    |-- node_map.npy              # partition id of each node stored in a numpy array (optional)
+    |-- edge_map.npy              # partition id of each edge stored in a numpy array (optional)
+    |-- part0/                    # data for partition 0
+        |-- node_feats.dgl        # node features stored in binary format
+        |-- edge_feats.dgl        # edge features stored in binary format
+        |-- graph.dgl             # graph structure of this partition stored in binary format
+    |-- part1/
+        |-- node_feats.dgl
+        |-- edge_feats.dgl
+        |-- graph.dgl
+</pre></div>
+</div>
+<section id="id2">
+<h2>로드 밸런싱<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>그래프를 파티셔닝할 때, Metis의 기본 설정은 각 파티션의 노드 수에 대해서 균형을 맞춘다. 그 결과 주어진 테스크에 따라서 최적이지 않은 구성(suboptimal configuration)이 될 수 있다. 예를 들어, semi-supervised 노드 분류의 경우, 트레이너는 로컬 파티션의 레이블이 있는 노들의 서브셋에 대해서 계산을 수행한다. 그래프의 노드들(레이블이 있는 것과 없는 모든 노드)에 균형을 맞추는 파티셔닝은 계산적인 로드(computational node)가 불균형하게 될 수 있다. 각 파티션에 균형잡힌 워크로드를 얻기 위해서 파티션 API는 각 노드 타입에 대한 노드 수를 고려해서 파티션들에 대한 균형을 만드는 것을 지원한다. 이는 <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 에서 <code class="docutils literal notranslate"><span class="pre">balance_ntypes</span></code> 를 설정하는 것으로 가능하다. 사용자들은 이 기능을 활용해서, 학습 셋, 검증 셋, 그리고 테스트 셋에 다른 노드 타입들이 포함된 것을 고려하게 할 수 있다.</p>
+<p>아래 코드는 학습 셋 내에서 그리고 학습 셋 외에 두 가지 노드 타입이 있다는 것을 고려한 코드 예제이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">partition_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;/tmp/test&#39;</span><span class="p">,</span> <span class="n">balance_ntypes</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>노드 타입 균형을 맞추는 것에 더해서, <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 는 <code class="docutils literal notranslate"><span class="pre">balance_edges</span></code> 설정을 통해서 다른 노드 타입들의 노드들의 in-degree들 사이의 균형을 잡는 것을 지원한다. 이는 다른 타입의 노드들에 부속되는 에지들의 개수에 대한 균형을 만든다.</p>
+<p><strong>Note</strong>: <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 에 전달되는 그래프 이름은 중요한 인자이다. 그 그래프 이름은 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.distributed.DistGraph</span></code></a> 이 분산 그래프를 지정하는데 사용된다. 그래프 이름은 알파벳 문자들과 밑줄 기호만으로 구성되어야 한다.</p>
+</section>
+<section id="id">
+<h2>ID 매핑<a class="headerlink" href="#id" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 는 파티셔닝을 하는 과정에서 노드 ID와 에지 ID를 섞고, 노드 데이터와 에지 데이터도 그에 따라서 섞어준다. 학습이 끝나면, 다운스트림 과제를 위해서 계산된 노드 임베딩들을 저장할 필요가 있다. 따라서, 저장된 노드 임베딩을 원본 ID에 따라서 다시 섞어야한다.</p>
+<p><cite>return_mapping=True</cite> 인 경우, <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 는 섞인 노드/에지 ID와 그것들의 원본 ID 사이의 매핑을 리턴한다. Homogeneous 그래프의 경우, 두 벡터를 리턴한다. 첫번째 벡터는 모든 섞인 노드 ID와 그것의 원본 ID 메핑을, 두번째 벡터는 모든 섞인 에지 ID와 그것의 원본 ID 매핑이다. Heterogeneous 그래프의 경우에는 벡터들의 dictionary 두 개가 리턴된다. 첫번째 dictionary는 각 노드 타입에 대한 매핑을, 두번째 dictionary는 각 에지 타입에 대한 매핑이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_map</span><span class="p">,</span> <span class="n">edge_map</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">partition_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;/tmp/test&#39;</span><span class="p">,</span>
+                                                     <span class="n">balance_ntypes</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">],</span>
+                                                     <span class="n">return_mapping</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Let&#39;s assume that node_emb is saved from the distributed training.</span>
+<span class="n">orig_node_emb</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">node_emb</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">node_emb</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<span class="n">orig_node_emb</span><span class="p">[</span><span class="n">node_map</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_emb</span>
+</pre></div>
+</div>
+<section id="id3">
+<h3>7.1.1 분산 파티셔닝<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>큰 그래프를 위해서 DGL은 <a class="reference external" href="http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview">ParMetis</a> 을 사용해서 컴퓨터들의 클러스터에서 그래프를 파티셔닝한다. 이 솔루션은 사용자가 ParMETIS에 맞도록 데이터를 준비하고, ParMETIS에 의해 만들어질 파티션들을 위한 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code></a> 를 만들기 위해서 DGL 스크립트 <cite>tools/convert_partition.py</cite> 를 사용해야 한다.</p>
+<p><strong>Note</strong>: <cite>convert_partition.py</cite> 는 <cite>pyarrow</cite> 패키지를 사용해서 csv 파일을 로드안다. <cite>pyarrow</cite> 설치하자.</p>
+</section>
+</section>
+<section id="parmetis">
+<h2>ParMETIS 설치<a class="headerlink" href="#parmetis" title="Link to this heading"></a></h2>
+<p>ParMETIS는 METIS와 GKLib을 필요로 한다. GKLib 컴파일과 설치는 <a class="reference external" href="https://github.com/KarypisLab/GKlib">here</a> 에 있는 설명을 참고하자. METIS 컴파일과 설치는 아래 설명을 따라 GIT에서 METIRS를 클론하고 int64 지원을 활성화해서 컴파일한다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/KarypisLab/METIS.git
+make config shared=1 cc=gcc prefix=~/local i64=1
+make install
+</pre></div>
+</div>
+<p>여기서부터는 PartMETIS를 직접 컴파일하고 설치하는 것이 필요하다. 아래 명령을 사용해서 ParMETIS의 DGL 브랜치를 클론한다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone --branch dgl https://github.com/KarypisLab/ParMETIS.git
+</pre></div>
+</div>
+<p>그리고, ParMETIS를 컴파일하고 설치한다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make config cc=mpicc prefix=~/local
+make install
+</pre></div>
+</div>
+<p>ParMETIS를 실행하기 전에, 두 환경 변수들, <a href="#id4"><span class="problematic" id="id5">`</span></a>PATH`와 <a href="#id6"><span class="problematic" id="id7">`</span></a>LD_LIBRARY_PATH`을 설정해야 한다:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>export PATH=$PATH:$HOME/local/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/local/lib/
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>ParMETIS를 위한 입력 포멧<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>ParMETIS의 입력 그래프는 다음 이름들을 사용해서 세 개의 파일들에 저장된다: <cite>xxx_nodes.txt</cite> , <cite>xxx_edges.txt</cite> 와 <cite>xxx_stats.txt</cite>. 여기서 <cite>xxx</cite> 는 그래프 이름이다.</p>
+<p><cite>xxx_nodes.txt</cite> 의 각 행은 다음 형식으로 노드에 대한 정보를 담고 있다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;node_type&gt; &lt;weight1&gt; ... &lt;orig_type_node_id&gt; &lt;attributes&gt;
+</pre></div>
+</div>
+<p>모든 필드들은 공백 문자로 구분된다.</p>
+<ul class="simple">
+<li><p><cite>&lt;node_type&gt;</cite> 은 정수 값이다. Homogeneous 그래프에서는 항상 0이고, heterogenous 그래프에서는 그 값이 각 노드의 타입을 의미한다.</p></li>
+<li><p><cite>&lt;weight1&gt;</cite>, <cite>&lt;weight2&gt;</cite>, 등은 정수 값들인데, ParMETIS가 그래프 파티션들의 균형을 맞출 때 노드 가중치로 사용하는 값들이다. 사용자가 노드 가중치를 명시하지 않는 경우, ParMETIS는 각 파티션의 노드 수에 대한 균형을 고려해서 파티션을 나눈다 (좋은 학습 속도를 얻기 위해서는 그래프 파티션들의 균헝을 맞추는 것이 중요하다). 하지만, 이 기본 전략은 많은 use case들에 충분하지 않을 수 있다. 예를 들어, heterogeneous 그래프의 경우, 우리는 모든 파티션들이 각 노드 타입별로 비슷한 개수의 노드들을 갖도록 그래프에 대한 파티션을 나누고 싶다. 아래 토이 예제는 노드 가중치를 사용해서 다른 테입들의 노드 개수의 균형을 맞추것을 어떻게 하는지 보여준다.</p></li>
+<li><p><cite>&lt;orig_type_node_id&gt;</cite> 은 노드 타입에서의 노드 ID를 표현하는 정수 값이다. DGL에서 각 타입의 노드들은 0부터 시작하는 ID가 부여된다. Homogeneous 그래프에서 이 필드는 노드 ID의 값도 동일하다.</p></li>
+<li><p><cite>&lt;attributes&gt;</cite> 는 선택적인 필드들이다. 이는 임의의 값을 저장하는데 사용될 수 있으며, ParMETIS는 이 필드들을 사용하지 않는다. 잠재적으로는 homogenous 그래프들의 경우 노드 피쳐들과 에지 피쳐들을 이 필드에 저장할 수 있다.</p></li>
+<li><p>행(row) ID는 그래프의 <em>homogeneous</em> ID를 의미한다 (모든 노드에 고유한 ID가 할당된다). 같은 타입의 모든 노드들에 ID는 연속된 값으로 부여된다. 즉, 같은 타입의 노드들은 <cite>xxx_notes.txt</cite> 파일에 함께 저장되어야 한다.</p></li>
+</ul>
+<p>다음은 두 노드 타입을 갖는 heterogenous 그래프의 노트 파일 예이다. 노드 타입 0은 세 개의 노드를 갖고 있고, 노드 타입 1은 네 개의 노드들을 갖는다. 두 노드 가중치를 사용해서 ParMETIS느 노드 타입 0에 속한 노드 개수와 노드 타입 1에 속한 노드 개수가 대략 같도록 파티션 나눈다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0 1 0 0
+0 1 0 1
+0 1 0 2
+1 0 1 0
+1 0 1 1
+1 0 1 2
+1 0 1 3
+</pre></div>
+</div>
+<p>비슷하게, <cite>xxx_edges.txt</cite> 의 각 행은 아래 형식으로 에지에 대한 정보를 저장한다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;src_id&gt; &lt;dst_id&gt; &lt;type_edge_id&gt; &lt;edge_type&gt; &lt;attributes&gt;
+</pre></div>
+</div>
+<p>모든 필드들은 공백 문자로 구분된다.</p>
+<ul class="simple">
+<li><p><cite>&lt;src_id&gt;</cite> 는 소스 노드의 <em>homogeneous</em> ID이다.</p></li>
+<li><p><cite>&lt;dst_id&gt;</cite> 는 목적지 노드의 <em>homogeneous</em> ID이다.</p></li>
+<li><p><cite>&lt;type_edge_id&gt;</cite> 는 에지 타입에 대한 에지 ID이다.</p></li>
+<li><p><cite>&lt;attributes&gt;</cite> 는 선택적인 필드들이다. 임의의 값을 저장하는데 사용할 수 있는데, ParMETIS는 이 필드를 사용하지 않는다.</p></li>
+</ul>
+<p><strong>Note</strong>: 에지 파일에 중복된 에지나 셀프-룹을 갖는 에지가 없어야 한다.</p>
+<p><cite>xxx_stats.txt</cite> 는 그래프에 대한 기본적인 통계들을 저장한다. 이 파일은 공백으로 구분되는 세 필드들로 구성된 단 한 줄만 갖는다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;num_nodes&gt; &lt;num_edges&gt; &lt;num_node_weights&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><cite>num_nodes</cite> 는 노드 타입을 상관하지 않고 전체 노드 수를 저장한다.</p></li>
+<li><p><cite>num_edges</cite> 는 에지 타입을 상관하지 않고 전체 에지 수를 저장한다.</p></li>
+<li><p><cite>num_node_weights</cite> 는 노드 파일의 노드 가중치 수를 저장한다.</p></li>
+</ul>
+</section>
+<section id="id9">
+<h2>ParMETIS 실행하기 및 결과 포멧들<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>ParMETIS는 <cite>pm_dglpart</cite> 명령이 실행된 머신에서 세 파일들에 저장된 그래프를 로드하고, 클러스터의 모든 머신에 데이터를 분산하고, ParMETIS를 실행해서 그래프의 파티션을 나누는 명령 <cite>pm_dglpart</cite> 을 포함하고 있다. 이 명령의 수행이 완료되면, 각 파타션에 대해서 세 개의 파일이 생성된다: <cite>p&lt;part_id&gt;-xxx_nodes.txt</cite>, <cite>p&lt;part_id&gt;-xxx_edges.txt</cite>, <cite>p&lt;part_id&gt;-xxx_stats.txt</cite></p>
+<p><strong>Note</strong>: ParMETIS는 파티셔닝을 수행하면서 노드들에 ID를 재할당한다. ID 재할당이 끝나면, 한 파티션의 노드들은 연속된 ID값을 갖는다; 더 나아가, 같은 타입의 노드들은 연속된 ID들을 부여 받는다.</p>
+<p><cite>p&lt;part_id&gt;-xxx_nodes.txt</cite> 는 파티션의 노드 데이터를 저장한다. 각 행은 한 노드에 대한 다음 정보들을 담고 있다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;node_id&gt; &lt;node_type&gt; &lt;weight1&gt; ... &lt;orig_type_node_id&gt; &lt;attributes&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><cite>&lt;node_id&gt;</cite> 는 ID 재할당 후의 <em>homogeneous</em> 노드 ID이다.</p></li>
+<li><p><cite>&lt;node_type&gt;</cite> 는 노드 타입이다.</p></li>
+<li><p><cite>&lt;weight1&gt;</cite> 는 ParMETIS가 사용하는 노드 가중치이다.</p></li>
+<li><p><cite>&lt;orig_type_node_id&gt;</cite> 는 입력 heterogeneous 그래프의 특정 노드 티입에 대한 원본 노드 ID이다.</p></li>
+<li><p><cite>&lt;attributes&gt;</cite> 는 선택적인 필드들로 입력 노드 파일에서 임의의 값을 갖는다.</p></li>
+</ul>
+<p><cite>p&lt;part_id&gt;-xxx_edges.txt</cite> 는 파티션의 에지 데이터를 저장한다. 각 행은 한 에지에 대한 다음 정보를 담고 있다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;src_id&gt; &lt;dst_id&gt; &lt;orig_src_id&gt; &lt;orig_dst_id&gt; &lt;orig_type_edge_id&gt; &lt;edge_type&gt; &lt;attributes&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><cite>&lt;src_id&gt;</cite> 는 ID 재할당 후의 소스 노드의 <em>homogeneous</em> ID이다.</p></li>
+<li><p><cite>&lt;dst_id&gt;</cite> 는 ID 재할당 후의 목적지 노드의 <em>homogeneous</em> ID이다.</p></li>
+<li><p><cite>&lt;orig_src_id&gt;</cite> 는 입력 그래프의 소스 노드에 대한 <em>homogeneous</em> ID이다.</p></li>
+<li><p><cite>&lt;orig_dst_id&gt;</cite> 는 입력 그래프의 목적지 노드에 대한 <em>homogeneous</em> ID이다.</p></li>
+<li><p><cite>&lt;orig_type_edge_id&gt;</cite> 는 입력 그래프의 특정 에지 타입에 대한 에지 ID이다.</p></li>
+<li><p><cite>&lt;edge_type&gt;</cite> 은 에지 타입이다.</p></li>
+<li><p><cite>&lt;attributes&gt;</cite> 는 선택적인 필드들로 입력 에지 파일에서 임의의 에지 속성 값을 갖는다.</p></li>
+</ul>
+<p><cite>pm_dglpart</cite> 이 실행된 때, 세 입력 파일들(<cite>xxx_nodes.txt</cite>, <cite>xxx_edges.txt</cite>, <cite>xxx_stats.txt</cite>)은 <cite>pm_dglpart</cite> 명령이 실행된 디렉토리와 같은 곳에 있어야 한다. 다음 명령은 네 개의 ParMETIS 프로세스를 실행해서, <cite>xxx</cite> 라는 이름의 그래프를 8개의 파티션으로 나눈다 (각 프로세스는 2개의 파티션을 담당한다).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mpirun -np 4 pm_dglpart xxx 2
+</pre></div>
+</div>
+</section>
+<section id="parmetis-dglgraph">
+<h2>ParMETIS 결과들을 DGLGraph로 변환하기<a class="headerlink" href="#parmetis-dglgraph" title="Link to this heading"></a></h2>
+<p>DGL은 <cite>convert_partition.py</cite> 라는 스크립트를 제공한다. 이는 <cite>tool</cite> 디렉토리에 있는데, 파티션 파일들에 있는 데이터를 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code></a> 객체로 변환하고 파일들에 저장하는 역할을 한다. <strong>Note</strong> <cite>convert_partition.py</cite> 는 단일 머신에서 실행된다. 향후, 우리는 이를 확장해서 여러 머신들에 걸쳐서 데이터를 병렬로 변환하도록 만들 것이다.  <strong>Note</strong>: csv 파일로 저장된 데이터를 로딩하기 위해서 <cite>pyarrow</cite> 패키지를 설치하자.</p>
+<p><cite>convert_partition.py</cite> 는 다음 인자들을 받는다:</p>
+<ul class="simple">
+<li><p><cite>–input-dir INPUT_DIR</cite> 는 ParMETIS가 생성한 파티션 파일들이 있는 디렉토리를 지정한다.</p></li>
+<li><p><cite>–graph-name GRAPH_NAME</cite> 는 그래프 이름을 지정한다.</p></li>
+<li><p><cite>–schema SCHEMA</cite> 는 입력 heterogeneous 그래프의 스키마를 명시하는 파일이다. 스키마 파일은 JSON 파일로서, 노드 타입들과 에지 타입들을 나열하고, 또한 각 노드 타입 및 에지 타입에 대한 homogeneous ID의 범위를 포함한다.</p></li>
+<li><p><cite>–num-parts NUM_PARTS</cite> 는 파티션의 개수를 명시한다.</p></li>
+<li><p><cite>–num-node-weights NUM_NODE_WEIGHTS</cite> 는 ParMETIS가 파티션들의 균형을 위해서 사용한 노드 가중치의 개수를 지정한다.</p></li>
+<li><p><cite>[–workspace WORKSPACE]</cite> 는 선택적인 인자로, 중간 결과들을 저장할 workspace 디렉토리를 지정한다.</p></li>
+<li><p><cite>[–node-attr-dtype NODE_ATTR_DTYPE]</cite> 는 선택적인 인자로, 노드 파일들의 나머지 필드인 <cite>&lt;attributes&gt;</cite> 에 저장된 노드 속성들의 데이터 타입을 명시한다.</p></li>
+<li><p><cite>[–edge-attr-dtype EDGE_ATTR_DTYPE]</cite> 는 선택적인 인자로, 에지 파일들의 나머지 필드인 <cite>&lt;attributes&gt;</cite> 에 저장된 에지 속성들의 데이터 타입을 명시한다.</p></li>
+<li><p><cite>–output OUTPUT</cite> 는 파티션 결과들이 저장될 출력 디렉토리를 지정한다.</p></li>
+</ul>
+<p><cite>convert_partition.py</cite> 의 결과 파일들은 다음과 같다:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>data_root_dir/
+    |-- xxx.json                  # partition configuration file in JSON
+    |-- part0/                    # data for partition 0
+        |-- node_feats.dgl        # node features stored in binary format (optional)
+        |-- edge_feats.dgl        # edge features stored in binary format (optional)
+        |-- graph.dgl             # graph structure of this partition stored in binary format
+    |-- part1/
+        |-- node_feats.dgl
+        |-- edge_feats.dgl
+        |-- graph.dgl
+</pre></div>
+</div>
+<p><strong>Note</strong>: 노드 속성 또는 에지 속성의 데이터 타입이 명시된다면, <cite>convert_partition.py</cite> 는 모든 타입의 모든 노드들 및 에지들이 꼭 이 속성들을 갖는다고 가정한다. 따라서, 다른 타입의 노드들이나 에지들이 서로 다른 개수의 속성을 갖는다면, 사용자는 이를 직접 만들어야 한다.</p>
+<p>다음은 <cite>convert_partition.py</cite> 를 위한 OGBN-MAG의 스키마 예제이다. 이는 두 필드를 갖는다: <cite>nid</cite> 와 <cite>eid</cite>. <cite>nid</cite> 안에는, 모든 노드 타입들이 나열되어 있고, 각 노드 타입에 대한 homogeneous ID 범위도 포함되어 있다; <cite>eid</cite> 안에는, 모든 에지 타입들이 나열되어 있고, 각 에지 타입에 대한 homogeneous ID 범위도 포함되어 있다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+&quot;nid&quot;: {
+    &quot;author&quot;: [
+        0,
+        1134649
+    ],
+    &quot;field_of_study&quot;: [
+        1134649,
+        1194614
+    ],
+    &quot;institution&quot;: [
+        1194614,
+        1203354
+    ],
+    &quot;paper&quot;: [
+        1203354,
+        1939743
+    ]
+},
+&quot;eid&quot;: {
+    &quot;affiliated_with&quot;: [
+        0,
+        1043998
+    ],
+    &quot;writes&quot;: [
+        1043998,
+        8189658
+    ],
+    &quot;rev-has_topic&quot;: [
+        8189658,
+        15694736
+    ],
+    &quot;rev-affiliated_with&quot;: [
+        15694736,
+        16738734
+    ],
+    &quot;cites&quot;: [
+        16738734,
+        22155005
+    ],
+    &quot;has_topic&quot;: [
+        22155005,
+        29660083
+    ],
+    &quot;rev-cites&quot;: [
+        29660083,
+        35076354
+    ],
+    &quot;rev-writes&quot;: [
+        35076354,
+        42222014
+    ]
+}
+}
+</pre></div>
+</div>
+<p>아래 코드는 스키마 파일을 만드는 예제이다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>nid_ranges = {}
+eid_ranges = {}
+for ntype in hg.ntypes:
+    ntype_id = hg.get_ntype_id(ntype)
+    nid = th.nonzero(g.ndata[dgl.NTYPE] == ntype_id, as_tuple=True)[0]
+    nid_ranges[ntype] = [int(nid[0]), int(nid[-1] + 1)]
+
+for etype in hg.etypes:
+    etype_id = hg.get_etype_id(etype)
+    eid = th.nonzero(g.edata[dgl.ETYPE] == etype_id, as_tuple=True)[0]
+    eid_ranges[etype] = [int(eid[0]), int(eid[-1] + 1)]
+with open(&#39;mag.json&#39;, &#39;w&#39;) as outfile:
+    json.dump({&#39;nid&#39;: nid_ranges, &#39;eid&#39;: eid_ranges}, outfile, indent=4)
+</pre></div>
+</div>
+</section>
+<section id="heterogeneous">
+<h2>Heterogeneous 그래프에 대한 노드/에지 피처들 생성하기<a class="headerlink" href="#heterogeneous" title="Link to this heading"></a></h2>
+<p><cite>convert_partition.py</cite> 이 만든 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code></a> 아웃풋은 heterogeneous 그래프 파티션들을 homogeneous 그래프로 저장한다. 노드 데이터는 <cite>orig_id</cite> 라는 필드를 갖는데, 이는 원본 heterogeneous 그래프의 특정 노드 타입의 노드 ID들을 저장하고, <cite>NTYPE</cite> 의 필드는 노드 타입을 저장한다. 추가로, 이는 <cite>inner_node</cite> 라는 노드 데이터를 저장하는데, 이는 그래프 파티션의 노드가 파티션이 할당되어 있는지 여부를 알려준다. 만약 어떤 노드가 파티션에 할당되었다면, <cite>inner_node</cite> 는 1을 갖고, 반대의 경우에는 0을 갖는다. <strong>Note</strong>: 그래프 파티션은 몇 개의 HALO 노드들을 포함하는데, 이는 다른 파티션에 할당된 것지만, 이 그래프 파티션의 몇 개의 에지와 연결되어 있는 것들이다. 이 정보를 사용해서, 우리는 별도로 각 노드 타입에 대한 노드 피쳐들을 구성할 수 있으며, 이들을 <cite>&lt;node_type&gt;/&lt;feature_name&gt;</cite> 를 키로 갖고 값은 노드 피쳐 벡터인 dictionary에 저장할 수 있다. 아래 코드는 노드 피쳐 dictionary를 구성하는 방법을 보여준다. 텐서들의 dictionary가 만들어지면, 이는 파일에 저장된다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>node_data = {}
+for ntype in hg.ntypes:
+    local_node_idx = th.logical_and(part.ndata[&#39;inner_node&#39;].bool(),
+                                    part.ndata[dgl.NTYPE] == hg.get_ntype_id(ntype))
+    local_nodes = part.ndata[&#39;orig_id&#39;][local_node_idx].numpy()
+    for name in hg.nodes[ntype].data:
+        node_data[ntype + &#39;/&#39; + name] = hg.nodes[ntype].data[name][local_nodes]
+dgl.data.utils.save_tensors(metadata[&#39;part-{}&#39;.format(part_id)][&#39;node_feats&#39;], node_data)
+</pre></div>
+</div>
+<p>에지 피쳐도 비슷한 방법으로 구성할 수 있다. 차이점은 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code></a> 의 모든 에지들이 파티션에 포함된다는 점이다. 그래서, 구성 방법은 더 간단하다.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>edge_data = {}
+for etype in hg.etypes:
+    local_edges = subg.edata[&#39;orig_id&#39;][subg.edata[dgl.ETYPE] == hg.get_etype_id(etype)]
+    for name in hg.edges[etype].data:
+        edge_data[etype + &#39;/&#39; + name] = hg.edges[etype].data[name][local_edges]
+dgl.data.utils.save_tensors(metadata[&#39;part-{}&#39;.format(part_id)][&#39;edge_feats&#39;], edge_data)
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="distributed.html" class="btn btn-neutral float-left" title="7장: 분산 학습" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed-apis.html" class="btn btn-neutral float-right" title="7.2 분산 APIs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

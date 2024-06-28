@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.6 큰 그래프들에 대핸 정확한 오프라인 추론 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.7 이웃 샘플링에 GPU 사용하기" href="minibatch-gpu-sampling.html" />
+    <link rel="prev" title="6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기" href="minibatch-nn.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 이웃 샘플링을 사용한 노드 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 이웃 샘플링을 사용한 에지 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 이웃 샘플링을 사용한 링크 예측 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 이웃 샘플러 커스터마이징하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.6 큰 그래프들에 대핸 정확한 오프라인 추론</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-gpu-sampling.html">6.7 이웃 샘플링에 GPU 사용하기</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">7장: 분산 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+      <li class="breadcrumb-item active">6.6 큰 그래프들에 대핸 정확한 오프라인 추론</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/minibatch-inference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-ko-minibatch-inference">
+<span id="id1"></span><h1>6.6 큰 그래프들에 대핸 정확한 오프라인 추론<a class="headerlink" href="#guide-ko-minibatch-inference" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/minibatch-inference.html#guide-minibatch-inference"><span class="std std-ref">(English Version)</span></a></p>
+<p>GPU를 사용해서 GNN을 학습하는데 메모리와 걸리는 시간을 줄이기 위해서 서브 샘플링과 이웃 샘플링이 모두 사용된다. 추론을 수행할 때 보통은 샘플링으로 발생할 수 있는 임의성을 제거하기 위해서 전체 이웃들에 대해서 aggretate하는 것이 더 좋다. 하지만, GPU 메모리 제약이나, CPU의 느린 속도 때문에 전체 그래프에 대한 forward propagagtion을 수행하는 것은 쉽지 않다. 이 절은 미니배치와 이웃 샘플링을 통해서 제한적인 GPU를 사용한 전체 그래프 forward propagation의 방법을 소개한다.</p>
+<p>추론 알고리즘은 학습 알고리즘과는 다른데, 추론 알고리즘은 첫번째 레이어부터 시작해서 각 레이이별로 모든 노드의 representation들을 계산해야하기 때문이다. 특히, 특정 레이어의 경우에 우리는 미니배치의 모든 노드들에 대해서 이 레이어의 출력 representation을 계산해야한다. 그 결과, 추론 알고리즘은 모든 레이어들 iterate하는 outer 룹과 노들들의 미니배치를 iterate하는 inner 룹을 갖는다. 반면, 학습 알고리즘은 노드들의 미니배치를 iterate하는 outer 룹과, 이웃 샘플링과 메시지 전달을 위한 레이어들을 iterate하는 inner 룹을 갖는다.</p>
+<p>아래 애니매이션은 이 연산이 어떻게 일어나는지를 보여주고 있다 (각 레이어에 대해서 첫 3개의 미니배치만 표현되고 있음을 주의하자)</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_6_0.gif" />
+</figure>
+<section id="id2">
+<h2>오프라인 추론 구현하기<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>6.1 <a class="reference internal" href="minibatch-node.html#guide-ko-minibatch-node-classification-model"><span class="std std-ref">모델을 미니-배치 학습에 맞게 만들기</span></a> 에서 다룬 2-레이어 GCN을 생각해 보자. 오프라인 추론을 구현하는 방법은 여전히 <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerFullNeighborSampler</span></code> 를 사용하지만, 한번에 하나의 레이어에 대한 샘플링을 수행한다. 하나의 레이어에 대한 계산은 메시지들어 어떻게 aggregate되고 합쳐지는지에 의존하기 때문에 오프라인 추론은 GNN 모듈의 메소드로 구현된다는 점을 주목하자.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StochasticTwoLayerGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_features</span> <span class="o">=</span> <span class="n">hidden_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_features</span> <span class="o">=</span> <span class="n">out_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_layers</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x_dst</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_dst</span><span class="p">)))</span>
+        <span class="n">x_dst</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_dst</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">def</span> <span class="nf">inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Offline inference with this module</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Compute representations layer by layer</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">]):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">hidden_features</span>
+                            <span class="k">if</span> <span class="n">l</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_layers</span> <span class="o">-</span> <span class="mi">1</span>
+                            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_features</span><span class="p">)</span>
+            <span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">MultiLayerFullNeighborSampler</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">NodeDataLoader</span><span class="p">(</span>
+                <span class="n">g</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()),</span> <span class="n">sampler</span><span class="p">,</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># Within a layer, iterate over nodes in batches</span>
+            <span class="k">for</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+                <span class="n">block</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c1"># Copy the features of necessary input nodes to GPU</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">input_nodes</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+                <span class="c1"># Compute output.  Note that this computation is the same</span>
+                <span class="c1"># but only for a single layer.</span>
+                <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span><span class="p">[:</span><span class="n">block</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()]</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">layer</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">h_dst</span><span class="p">)))</span>
+                <span class="c1"># Copy to output back to CPU.</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">output_nodes</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+</div>
+<p>모델 선택을 위해서 검증 데이터셋에 평가 metric을 계산하는 목적으로 정확한 오프라인 추론을 계산할 필요가 없다는 점을 주목하자. 모든 레이어에 대해서 모든 노드들의 representation을 계산하는 것이 필요한데, 이것은 레이블이 없는 데이터가 많은 semi-supervised 영역에서는 아주 많은 리소스를 필요로하기 때문이다. 이웃 샘플링은 모델 선택 및 평가 목적으로는 충분하다.</p>
+<p>오프라인 추론의 예들로 <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/graphsage/train_sampling.py">GraphSAGE</a> 및
+<a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/rgcn-hetero/entity_classify_mb.py">RGCN</a> 를 참고하자.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-nn.html" class="btn btn-neutral float-left" title="6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-gpu-sampling.html" class="btn btn-neutral float-right" title="6.7 이웃 샘플링에 GPU 사용하기" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

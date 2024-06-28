@@ -1,0 +1,129 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "\n\n# Relational Graph Convolutional Network\n\n**Author:** Lingfan Yu, Mufei Li, Zheng Zhang\n\n<div class=\"alert alert-danger\"><h4>Warning</h4><p>The tutorial aims at gaining insights into the paper, with code as a mean\n    of explanation. The implementation thus is NOT optimized for running\n    efficiency. For recommended implementation, please refer to the [official\n    examples](https://github.com/dmlc/dgl/tree/master/examples).</p></div>\n\nIn this tutorial, you learn how to implement a relational graph convolutional\nnetwork (R-GCN). This type of network is one effort to generalize GCN \nto handle different relationships between entities in a knowledge base. To \nlearn more about the research behind R-GCN, see [Modeling Relational Data with Graph Convolutional\nNetworks](https://arxiv.org/pdf/1703.06103.pdf) \n\nThe straightforward graph convolutional network (GCN) exploits\nstructural information of a dataset (that is, the graph connectivity) in order to\nimprove the extraction of node representations. Graph edges are left as\nuntyped.\n\nA knowledge graph is made up of a collection of triples in the form\nsubject, relation, object. Edges thus encode important information and\nhave their own embeddings to be learned. Furthermore, there may exist\nmultiple edges among any given pair.\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## A brief introduction to R-GCN\nIn *statistical relational learning* (SRL), there are two fundamental\ntasks:\n\n- **Entity classification** - Where you assign types and categorical\n  properties to entities.\n- **Link prediction** - Where you recover missing triples.\n\nIn both cases, missing information is expected to be recovered from the\nneighborhood structure of the graph. For example, the R-GCN\npaper cited earlier provides the following example. Knowing that Mikhail Baryshnikov was educated at the Vaganova Academy\nimplies both that Mikhail Baryshnikov should have the label person, and\nthat the triple (Mikhail Baryshnikov, lived in, Russia) must belong to the\nknowledge graph.\n\nR-GCN solves these two problems using a common graph convolutional network. It's\nextended with multi-edge encoding to compute embedding of the entities, but\nwith different downstream processing.\n\n- Entity classification is done by attaching a softmax classifier at the\n  final embedding of an entity (node). Training is through loss of standard\n  cross-entropy.\n- Link prediction is done by reconstructing an edge with an autoencoder\n  architecture, using a parameterized score function. Training uses negative\n  sampling.\n\nThis tutorial focuses on the first task, entity classification, to show how to generate entity\nrepresentation. [Complete\ncode](https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn)\nfor both tasks is found in the DGL Github repository.\n\n## Key ideas of R-GCN\nRecall that in GCN, the hidden representation for each node $i$ at\n$(l+1)^{th}$ layer is computed by:\n\n\\begin{align}h_i^{l+1} = \\sigma\\left(\\sum_{j\\in N_i}\\frac{1}{c_i} W^{(l)} h_j^{(l)}\\right)~~~~~~~~~~(1)\\\\\\end{align}\n\nwhere $c_i$ is a normalization constant.\n\nThe key difference between R-GCN and GCN is that in R-GCN, edges can\nrepresent different relations. In GCN, weight $W^{(l)}$ in equation\n$(1)$ is shared by all edges in layer $l$. In contrast, in\nR-GCN, different edge types use different weights and only edges of the\nsame relation type $r$ are associated with the same projection weight\n$W_r^{(l)}$.\n\nSo the hidden representation of entities in $(l+1)^{th}$ layer in\nR-GCN can be formulated as the following equation:\n\n\\begin{align}h_i^{l+1} = \\sigma\\left(W_0^{(l)}h_i^{(l)}+\\sum_{r\\in R}\\sum_{j\\in N_i^r}\\frac{1}{c_{i,r}}W_r^{(l)}h_j^{(l)}\\right)~~~~~~~~~~(2)\\\\\\end{align}\n\nwhere $N_i^r$ denotes the set of neighbor indices of node $i$\nunder relation $r\\in R$ and $c_{i,r}$ is a normalization\nconstant. In entity classification, the R-GCN paper uses\n$c_{i,r}=|N_i^r|$.\n\nThe problem of applying the above equation directly is the rapid growth of\nthe number of parameters, especially with highly multi-relational data. In\norder to reduce model parameter size and prevent overfitting, the original\npaper proposes to use basis decomposition.\n\n\\begin{align}W_r^{(l)}=\\sum\\limits_{b=1}^B a_{rb}^{(l)}V_b^{(l)}~~~~~~~~~~(3)\\\\\\end{align}\n\nTherefore, the weight $W_r^{(l)}$ is a linear combination of basis\ntransformation $V_b^{(l)}$ with coefficients $a_{rb}^{(l)}$.\nThe number of bases $B$ is much smaller than the number of relations\nin the knowledge base.\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>Another weight regularization, block-decomposition, is implemented in\n   the [link prediction](link-prediction_).</p></div>\n\n## Implement R-GCN in DGL\n\nAn R-GCN model is composed of several R-GCN layers. The first R-GCN layer\nalso serves as input layer and takes in features (for example, description texts)\nthat are associated with node entity and project to hidden space. In this tutorial,\nwe only use the entity ID as an entity feature.\n\n### R-GCN layers\n\nFor each node, an R-GCN layer performs the following steps:\n\n- Compute outgoing message using node representation and weight matrix\n  associated with the edge type (message function)\n- Aggregate incoming messages and generate new node representations (reduce\n  and apply function)\n\nThe following code is the definition of an R-GCN hidden layer.\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>Each relation type is associated with a different weight. Therefore,\n   the full weight matrix has three dimensions: relation, input_feature,\n   output_feature.</p></div>\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>This is showing how to implement an R-GCN from scratch.  DGL provides a more\n   efficient :class:`builtin R-GCN layer module <dgl.nn.pytorch.conv.RelGraphConv>`.</p></div>\n\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import os\n\nos.environ[\"DGLBACKEND\"] = \"pytorch\"\nfrom functools import partial\n\nimport dgl\nimport dgl.function as fn\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom dgl import DGLGraph\n\n\nclass RGCNLayer(nn.Module):\n    def __init__(\n        self,\n        in_feat,\n        out_feat,\n        num_rels,\n        num_bases=-1,\n        bias=None,\n        activation=None,\n        is_input_layer=False,\n    ):\n        super(RGCNLayer, self).__init__()\n        self.in_feat = in_feat\n        self.out_feat = out_feat\n        self.num_rels = num_rels\n        self.num_bases = num_bases\n        self.bias = bias\n        self.activation = activation\n        self.is_input_layer = is_input_layer\n\n        # sanity check\n        if self.num_bases <= 0 or self.num_bases > self.num_rels:\n            self.num_bases = self.num_rels\n        # weight bases in equation (3)\n        self.weight = nn.Parameter(\n            torch.Tensor(self.num_bases, self.in_feat, self.out_feat)\n        )\n        if self.num_bases < self.num_rels:\n            # linear combination coefficients in equation (3)\n            self.w_comp = nn.Parameter(\n                torch.Tensor(self.num_rels, self.num_bases)\n            )\n        # add bias\n        if self.bias:\n            self.bias = nn.Parameter(torch.Tensor(out_feat))\n        # init trainable parameters\n        nn.init.xavier_uniform_(\n            self.weight, gain=nn.init.calculate_gain(\"relu\")\n        )\n        if self.num_bases < self.num_rels:\n            nn.init.xavier_uniform_(\n                self.w_comp, gain=nn.init.calculate_gain(\"relu\")\n            )\n        if self.bias:\n            nn.init.xavier_uniform_(\n                self.bias, gain=nn.init.calculate_gain(\"relu\")\n            )\n\n    def forward(self, g):\n        if self.num_bases < self.num_rels:\n            # generate all weights from bases (equation (3))\n            weight = self.weight.view(\n                self.in_feat, self.num_bases, self.out_feat\n            )\n            weight = torch.matmul(self.w_comp, weight).view(\n                self.num_rels, self.in_feat, self.out_feat\n            )\n        else:\n            weight = self.weight\n        if self.is_input_layer:\n\n            def message_func(edges):\n                # for input layer, matrix multiply can be converted to be\n                # an embedding lookup using source node id\n                embed = weight.view(-1, self.out_feat)\n                index = edges.data[dgl.ETYPE] * self.in_feat + edges.src[\"id\"]\n                return {\"msg\": embed[index] * edges.data[\"norm\"]}\n\n        else:\n\n            def message_func(edges):\n                w = weight[edges.data[dgl.ETYPE]]\n                msg = torch.bmm(edges.src[\"h\"].unsqueeze(1), w).squeeze()\n                msg = msg * edges.data[\"norm\"]\n                return {\"msg\": msg}\n\n        def apply_func(nodes):\n            h = nodes.data[\"h\"]\n            if self.bias:\n                h = h + self.bias\n            if self.activation:\n                h = self.activation(h)\n            return {\"h\": h}\n\n        g.update_all(message_func, fn.sum(msg=\"msg\", out=\"h\"), apply_func)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Full R-GCN model defined\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "class Model(nn.Module):\n    def __init__(\n        self,\n        num_nodes,\n        h_dim,\n        out_dim,\n        num_rels,\n        num_bases=-1,\n        num_hidden_layers=1,\n    ):\n        super(Model, self).__init__()\n        self.num_nodes = num_nodes\n        self.h_dim = h_dim\n        self.out_dim = out_dim\n        self.num_rels = num_rels\n        self.num_bases = num_bases\n        self.num_hidden_layers = num_hidden_layers\n\n        # create rgcn layers\n        self.build_model()\n\n        # create initial features\n        self.features = self.create_features()\n\n    def build_model(self):\n        self.layers = nn.ModuleList()\n        # input to hidden\n        i2h = self.build_input_layer()\n        self.layers.append(i2h)\n        # hidden to hidden\n        for _ in range(self.num_hidden_layers):\n            h2h = self.build_hidden_layer()\n            self.layers.append(h2h)\n        # hidden to output\n        h2o = self.build_output_layer()\n        self.layers.append(h2o)\n\n    # initialize feature for each node\n    def create_features(self):\n        features = torch.arange(self.num_nodes)\n        return features\n\n    def build_input_layer(self):\n        return RGCNLayer(\n            self.num_nodes,\n            self.h_dim,\n            self.num_rels,\n            self.num_bases,\n            activation=F.relu,\n            is_input_layer=True,\n        )\n\n    def build_hidden_layer(self):\n        return RGCNLayer(\n            self.h_dim,\n            self.h_dim,\n            self.num_rels,\n            self.num_bases,\n            activation=F.relu,\n        )\n\n    def build_output_layer(self):\n        return RGCNLayer(\n            self.h_dim,\n            self.out_dim,\n            self.num_rels,\n            self.num_bases,\n            activation=partial(F.softmax, dim=1),\n        )\n\n    def forward(self, g):\n        if self.features is not None:\n            g.ndata[\"id\"] = self.features\n        for layer in self.layers:\n            layer(g)\n        return g.ndata.pop(\"h\")"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Handle dataset\nThis tutorial uses Institute for Applied Informatics and Formal Description Methods (AIFB) dataset from R-GCN paper.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "# load graph data\ndataset = dgl.data.rdf.AIFBDataset()\ng = dataset[0]\ncategory = dataset.predict_category\ntrain_mask = g.nodes[category].data.pop(\"train_mask\")\ntest_mask = g.nodes[category].data.pop(\"test_mask\")\ntrain_idx = torch.nonzero(train_mask, as_tuple=False).squeeze()\ntest_idx = torch.nonzero(test_mask, as_tuple=False).squeeze()\nlabels = g.nodes[category].data.pop(\"label\")\nnum_rels = len(g.canonical_etypes)\nnum_classes = dataset.num_classes\n# normalization factor\nfor cetype in g.canonical_etypes:\n    g.edges[cetype].data[\"norm\"] = dgl.norm_by_dst(g, cetype).unsqueeze(1)\ncategory_id = g.ntypes.index(category)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Create graph and model\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "# configurations\nn_hidden = 16  # number of hidden units\nn_bases = -1  # use number of relations as number of bases\nn_hidden_layers = 0  # use 1 input layer, 1 output layer, no hidden layer\nn_epochs = 25  # epochs to train\nlr = 0.01  # learning rate\nl2norm = 0  # L2 norm coefficient\n\n# create graph\ng = dgl.to_homogeneous(g, edata=[\"norm\"])\nnode_ids = torch.arange(g.num_nodes())\ntarget_idx = node_ids[g.ndata[dgl.NTYPE] == category_id]\n\n# create model\nmodel = Model(\n    g.num_nodes(),\n    n_hidden,\n    num_classes,\n    num_rels,\n    num_bases=n_bases,\n    num_hidden_layers=n_hidden_layers,\n)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Training loop\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "# optimizer\noptimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2norm)\n\nprint(\"start training...\")\nmodel.train()\nfor epoch in range(n_epochs):\n    optimizer.zero_grad()\n    logits = model.forward(g)\n    logits = logits[target_idx]\n    loss = F.cross_entropy(logits[train_idx], labels[train_idx])\n    loss.backward()\n\n    optimizer.step()\n\n    train_acc = torch.sum(logits[train_idx].argmax(dim=1) == labels[train_idx])\n    train_acc = train_acc.item() / len(train_idx)\n    val_loss = F.cross_entropy(logits[test_idx], labels[test_idx])\n    val_acc = torch.sum(logits[test_idx].argmax(dim=1) == labels[test_idx])\n    val_acc = val_acc.item() / len(test_idx)\n    print(\n        \"Epoch {:05d} | \".format(epoch)\n        + \"Train Accuracy: {:.4f} | Train Loss: {:.4f} | \".format(\n            train_acc, loss.item()\n        )\n        + \"Validation Accuracy: {:.4f} | Validation loss: {:.4f}\".format(\n            val_acc, val_loss.item()\n        )\n    )"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "\n## The second task, link prediction\nSo far, you have seen how to use DGL to implement entity classification with an\nR-GCN model. In the knowledge base setting, representation generated by\nR-GCN can be used to uncover potential relationships between nodes. In the\nR-GCN paper, the authors feed the entity representations generated by R-GCN\ninto the [DistMult](https://arxiv.org/pdf/1412.6575.pdf) prediction model\nto predict possible relationships.\n\nThe implementation is similar to that presented here, but with an extra DistMult layer\nstacked on top of the R-GCN layers. You can find the complete\nimplementation of link prediction with R-GCN in our [Github Python code\nexample](https://github.com/dmlc/dgl/blob/master/examples/pytorch/rgcn/link.py).\n\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.14"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

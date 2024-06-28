@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 7: Distributed Training &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.1 Data Preprocessing" href="distributed-preprocessing.html" />
+    <link rel="prev" title="6.9 Data Loading Parallelism" href="minibatch-parallelism.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 7: Distributed Training</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="distributed-preprocessing.html">7.1 Data Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-tools.html">7.2 Tools for launching distributed training/inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-apis.html">7.3 Programming APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-partition.html">7.4 Advanced Graph Partitioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-hetero.html">7.5 Heterogeneous Graph Under The Hood</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Chapter 7: Distributed Training</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/distributed.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="chapter-7-distributed-training">
+<span id="guide-distributed"></span><h1>Chapter 7: Distributed Training<a class="headerlink" href="#chapter-7-distributed-training" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide_cn/distributed.html#guide-cn-distributed"><span class="std std-ref">(中文版)</span></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Distributed training is only available for PyTorch backend.</p>
+</div>
+<p>DGL adopts a fully distributed approach that distributes both data and computation
+across a collection of computation resources. In the context of this section, we
+will assume a cluster setting (i.e., a group of machines). DGL partitions a graph
+into subgraphs and each machine in a cluster is responsible for one subgraph (partition).
+DGL runs an identical training script on all machines in the cluster to parallelize
+the computation and runs servers on the same machines to serve partitioned data to the trainers.</p>
+<p>For the training script, DGL provides distributed APIs that are similar to the ones for
+mini-batch training. This makes distributed training require only small code modifications
+from mini-batch training on a single machine. Below shows an example of training GraphSage
+in a distributed fashion. The notable code modifications are:
+1) initialization of DGL’s distributed module, 2) create a distributed graph object, and
+3) split the training set and calculate the nodes for the local process.
+The rest of the code, including sampler creation, model definition, training loops
+are the same as <a class="reference internal" href="minibatch.html#guide-minibatch"><span class="std std-ref">mini-batch training</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">from</span> <span class="nn">dgl.dataloading</span> <span class="kn">import</span> <span class="n">NeighborSampler</span>
+<span class="kn">from</span> <span class="nn">dgl.distributed</span> <span class="kn">import</span> <span class="n">DistGraph</span><span class="p">,</span> <span class="n">DistDataLoader</span><span class="p">,</span> <span class="n">node_split</span>
+<span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+
+<span class="c1"># initialize distributed contexts</span>
+<span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;ip_config.txt&#39;</span><span class="p">)</span>
+<span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">init_process_group</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;gloo&#39;</span><span class="p">)</span>
+<span class="c1"># load distributed graph</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="s1">&#39;part_config.json&#39;</span><span class="p">)</span>
+<span class="n">pb</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_partition_book</span><span class="p">()</span>
+<span class="c1"># get training workload, i.e., training node IDs</span>
+<span class="n">train_nid</span> <span class="o">=</span> <span class="n">node_split</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">],</span> <span class="n">pb</span><span class="p">,</span> <span class="n">force_even</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1"># Create sampler</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">NeighborSampler</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">25</span><span class="p">],</span>
+                          <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">,</span>
+                          <span class="n">device</span><span class="p">)</span>
+
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DistDataLoader</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">train_nid</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">collate_fn</span><span class="o">=</span><span class="n">sampler</span><span class="o">.</span><span class="n">sample_blocks</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Define model and optimizer</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SAGE</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">num_hidden</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">parallel</span><span class="o">.</span><span class="n">DistributedDataParallel</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">loss_fcn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+
+<span class="c1"># training loop</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">num_epochs</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">model</span><span class="o">.</span><span class="n">join</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+            <span class="n">batch_inputs</span><span class="p">,</span> <span class="n">batch_labels</span> <span class="o">=</span> <span class="n">load_subtensor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">],</span>
+                                                        <span class="n">blocks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+            <span class="n">batch_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">batch_inputs</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fcn</span><span class="p">(</span><span class="n">batch_pred</span><span class="p">,</span> <span class="n">batch_labels</span><span class="p">)</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>DGL implements a few distributed components to support distributed training. The figure below
+shows the components and their interactions.</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/distributed.png" />
+</figure>
+<p>Specifically, DGL’s distributed training has three types of interacting processes:
+<em>server</em>, <em>sampler</em> and <em>trainer</em>.</p>
+<ul class="simple">
+<li><p><strong>Servers</strong> store graph partitions which includes both structure data and node/edge
+features. They provide services such as sampling, getting or updating node/edge
+features. Note that each machine may run multiple server processes simultaneously
+to increase service throughput. One of them is <em>main server</em> in charge of data
+loading and sharing data via shared memory with <em>backup servers</em> that provide
+services.</p></li>
+<li><p><strong>Sampler processes</strong> interact with the servers and sample nodes and edges to
+generate mini-batches for training.</p></li>
+<li><p><strong>Trainers</strong> are in charge of training networks on mini-batches. They utilize
+APIs such as <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> to access partitioned graph data,
+<a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a> and <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> to access
+node/edge features/embeddings and <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistDataLoader" title="dgl.distributed.DistDataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistDataLoader</span></code></a> to interact
+with samplers to get mini-batches. Trainers communicate gradients among each other
+using PyTorch’s native <code class="docutils literal notranslate"><span class="pre">DistributedDataParallel</span></code> paradigm.</p></li>
+</ul>
+<p>Besides Python APIs, DGL also provides <a class="reference external" href="https://github.com/dmlc/dgl/tree/master/tools">tools</a>
+for provisioning graph data and processes to the entire cluster.</p>
+<p>Having the distributed components in mind, the rest of the section will cover
+the following distributed components:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="distributed-preprocessing.html#guide-distributed-preprocessing"><span class="std std-ref">7.1 Data Preprocessing</span></a></p></li>
+<li><p><a class="reference internal" href="distributed-tools.html#guide-distributed-tools"><span class="std std-ref">7.2 Tools for launching distributed training/inference</span></a></p></li>
+<li><p><a class="reference internal" href="distributed-apis.html#guide-distributed-apis"><span class="std std-ref">7.3 Programming APIs</span></a></p></li>
+</ul>
+<p>For more advanced users who are interested in more details:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="distributed-partition.html#guide-distributed-partition"><span class="std std-ref">7.4 Advanced Graph Partitioning</span></a></p></li>
+<li><p><a class="reference internal" href="distributed-hetero.html#guide-distributed-hetero"><span class="std std-ref">7.5 Heterogeneous Graph Under The Hood</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-parallelism.html" class="btn btn-neutral float-left" title="6.9 Data Loading Parallelism" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed-preprocessing.html" class="btn btn-neutral float-right" title="7.1 Data Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.1 节点分类/回归 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5.2 边分类/回归" href="training-edge.html" />
+    <link rel="prev" title="第5章：训练图神经网络" href="training.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">用户指南【包含过时信息】</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">第1章：图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">第2章：消息传递范式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">第3章：构建图神经网络（GNN）模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">第4章：图数据处理管道</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="training.html">第5章：训练图神经网络</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">5.1 节点分类/回归</a></li>
+<li class="toctree-l3"><a class="reference internal" href="training-edge.html">5.2 边分类/回归</a></li>
+<li class="toctree-l3"><a class="reference internal" href="training-link.html">5.3 链接预测</a></li>
+<li class="toctree-l3"><a class="reference internal" href="training-graph.html">5.4 整图分类</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">第6章：在大图上的随机（批次）训练</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">第7章：分布式训练</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">用户指南【包含过时信息】</a></li>
+          <li class="breadcrumb-item"><a href="training.html">第5章：训练图神经网络</a></li>
+      <li class="breadcrumb-item active">5.1 节点分类/回归</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_cn/training-node.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-cn-training-node-classification">
+<span id="id1"></span><h1>5.1 节点分类/回归<a class="headerlink" href="#guide-cn-training-node-classification" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/training-node.html#guide-training-node-classification"><span class="std std-ref">(English Version)</span></a></p>
+<p>对于图神经网络来说，最常见和被广泛使用的任务之一就是节点分类。
+图数据中的训练、验证和测试集中的每个节点都具有从一组预定义的类别中分配的一个类别，即正确的标注。
+节点回归任务也类似，训练、验证和测试集中的每个节点都被标注了一个正确的数字。</p>
+<section id="id2">
+<h2>概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>为了对节点进行分类，图神经网络执行了 <a class="reference internal" href="message.html#guide-cn-message-passing"><span class="std std-ref">第2章：消息传递范式</span></a>
+中介绍的消息传递机制，利用节点自身的特征和其邻节点及边的特征来计算节点的隐藏表示。
+消息传递可以重复多轮，以利用更大范围的邻居信息。</p>
+</section>
+<section id="id3">
+<h2>编写神经网络模型<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>DGL提供了一些内置的图卷积模块，可以完成一轮消息传递计算。
+本章中选择 <code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.nn.pytorch.SAGEConv</span></code> 作为演示的样例代码(针对MXNet和PyTorch后端也有对应的模块)，
+它是GraphSAGE模型中使用的图卷积模块。</p>
+<p>对于图上的深度学习模型，通常需要一个多层的图神经网络，并在这个网络中要进行多轮的信息传递。
+可以通过堆叠图卷积模块来实现这种网络架构，具体如下所示。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 构建一个2层的GNN模型</span>
+<span class="kn">import</span> <span class="nn">dgl.nn</span> <span class="k">as</span> <span class="nn">dglnn</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="k">class</span> <span class="nc">SAGE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">hid_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 实例化SAGEConve，in_feats是输入特征的维度，out_feats是输出特征的维度，aggregator_type是聚合函数的类型</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span>
+            <span class="n">in_feats</span><span class="o">=</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="o">=</span><span class="n">hid_feats</span><span class="p">,</span> <span class="n">aggregator_type</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">SAGEConv</span><span class="p">(</span>
+            <span class="n">in_feats</span><span class="o">=</span><span class="n">hid_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="o">=</span><span class="n">out_feats</span><span class="p">,</span> <span class="n">aggregator_type</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="c1"># 输入是节点的特征</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">h</span>
+</pre></div>
+</div>
+<p>请注意，这个模型不仅可以做节点分类，还可以为其他下游任务获取隐藏节点表示，如：
+<a class="reference internal" href="training-edge.html#guide-cn-training-edge-classification"><span class="std std-ref">5.2 边分类/回归</span></a>、
+<a class="reference internal" href="training-link.html#guide-cn-training-link-prediction"><span class="std std-ref">5.3 链接预测</span></a> 和
+<a class="reference internal" href="training-graph.html#guide-cn-training-graph-classification"><span class="std std-ref">5.4 整图分类</span></a>。</p>
+<p>关于DGL内置图卷积模块的完整列表，读者可以参考 <span class="xref std std-ref">apinn</span>。</p>
+<p>有关DGL神经网络模块如何工作，以及如何编写一个自定义的带有消息传递的GNN模块的更多细节，请参考 <a class="reference internal" href="nn.html#guide-cn-nn"><span class="std std-ref">第3章：构建图神经网络（GNN）模块</span></a> 中的例子。</p>
+</section>
+<section id="id4">
+<h2>模型的训练<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>全图(使用所有的节点和边的特征)上的训练只需要使用上面定义的模型进行前向传播计算，并通过在训练节点上比较预测和真实标签来计算损失，从而完成后向传播。</p>
+<p>本节使用DGL内置的数据集 <a class="reference internal" href="../generated/dgl.data.CiteseerGraphDataset.html#dgl.data.CiteseerGraphDataset" title="dgl.data.CiteseerGraphDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.data.CiteseerGraphDataset</span></code></a> 来展示模型的训练。
+节点特征和标签存储在其图上，训练、验证和测试的分割也以布尔掩码的形式存储在图上。这与在
+<a class="reference internal" href="data.html#guide-cn-data-pipeline"><span class="std std-ref">第4章：图数据处理管道</span></a> 中的做法类似。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_features</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
+<span class="n">node_labels</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+<span class="n">train_mask</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">]</span>
+<span class="n">valid_mask</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;val_mask&#39;</span><span class="p">]</span>
+<span class="n">test_mask</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;test_mask&#39;</span><span class="p">]</span>
+<span class="n">n_features</span> <span class="o">=</span> <span class="n">node_features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">n_labels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node_labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>下面是通过使用准确性来评估模型的一个例子。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">indices</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">correct</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>用户可以按如下方式实现模型的训练。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">SAGE</span><span class="p">(</span><span class="n">in_feats</span><span class="o">=</span><span class="n">n_features</span><span class="p">,</span> <span class="n">hid_feats</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">out_feats</span><span class="o">=</span><span class="n">n_labels</span><span class="p">)</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="c1"># 使用所有节点(全图)进行前向传播计算</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">)</span>
+    <span class="c1"># 计算损失值</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">logits</span><span class="p">[</span><span class="n">train_mask</span><span class="p">],</span> <span class="n">node_labels</span><span class="p">[</span><span class="n">train_mask</span><span class="p">])</span>
+    <span class="c1"># 计算验证集的准确度</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">,</span> <span class="n">node_labels</span><span class="p">,</span> <span class="n">valid_mask</span><span class="p">)</span>
+    <span class="c1"># 进行反向传播计算</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+    <span class="c1"># 如果需要的话，保存训练好的模型。本例中省略。</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/graphsage/train_full.py">DGL的GraphSAGE样例</a>
+提供了一个端到端的同构图节点分类的例子。用户可以在 <code class="docutils literal notranslate"><span class="pre">GraphSAGE</span></code> 类中看到模型实现的细节。
+这个模型具有可调节的层数、dropout概率，以及可定制的聚合函数和非线性函数。</p>
+</section>
+<section id="guide-cn-training-rgcn-node-classification">
+<span id="id5"></span><h2>异构图上的节点分类模型的训练<a class="headerlink" href="#guide-cn-training-rgcn-node-classification" title="Link to this heading"></a></h2>
+<p>如果图是异构的，用户可能希望沿着所有边类型从邻居那里收集消息。
+用户可以使用 <a class="reference internal" href="../generated/dgl.nn.pytorch.HeteroGraphConv.html#dgl.nn.pytorch.HeteroGraphConv" title="dgl.nn.pytorch.HeteroGraphConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.nn.pytorch.HeteroGraphConv</span></code></a>
+模块(针对MXNet和PyTorch后端也有对应的模块)在所有边类型上执行消息传递，
+并为每种边类型使用一种图卷积模块。</p>
+<p>下面的代码定义了一个异构图卷积模块。模块首先对每种边类型进行单独的图卷积计算，然后将每种边类型上的消息聚合结果再相加，
+并作为所有节点类型的最终结果。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a Heterograph Conv model</span>
+
+<span class="k">class</span> <span class="nc">RGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">hid_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 实例化HeteroGraphConv，in_feats是输入特征的维度，out_feats是输出特征的维度，aggregate是聚合函数的类型</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+            <span class="n">rel</span><span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">hid_feats</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span><span class="p">},</span> <span class="n">aggregate</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+            <span class="n">rel</span><span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hid_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span><span class="p">},</span> <span class="n">aggregate</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="c1"># 输入是节点的特征字典</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">h</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dgl.nn.HeteroGraphConv</span></code> 接收一个节点类型和节点特征张量的字典作为输入，并返回另一个节点类型和节点特征的字典。</p>
+<p>本章的 <a class="reference internal" href="training.html#guide-cn-training-heterogeneous-graph-example"><span class="std std-ref">异构图训练的样例数据</span></a>
+中已经有了 <code class="docutils literal notranslate"><span class="pre">user</span></code> 和 <code class="docutils literal notranslate"><span class="pre">item</span></code> 的特征，用户可用如下代码获取。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">RGCN</span><span class="p">(</span><span class="n">n_hetero_features</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">n_user_classes</span><span class="p">,</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+<span class="n">user_feats</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span>
+<span class="n">item_feats</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+<span class="n">train_mask</span> <span class="o">=</span> <span class="n">hetero_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>然后，用户可以简单地按如下形式进行前向传播计算：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_features</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_feats</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item_feats</span><span class="p">}</span>
+<span class="n">h_dict</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">hetero_graph</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_feats</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item_feats</span><span class="p">})</span>
+<span class="n">h_user</span> <span class="o">=</span> <span class="n">h_dict</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span>
+<span class="n">h_item</span> <span class="o">=</span> <span class="n">h_dict</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>异构图上模型的训练和同构图的模型训练是一样的，只是这里使用了一个包括节点表示的字典来计算预测值。
+例如，如果只预测 <code class="docutils literal notranslate"><span class="pre">user</span></code> 节点的类别，用户可以从返回的字典中提取 <code class="docutils literal notranslate"><span class="pre">user</span></code> 的节点嵌入。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="c1"># 使用所有节点的特征进行前向传播计算，并提取输出的user节点嵌入</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">hetero_graph</span><span class="p">,</span> <span class="n">node_features</span><span class="p">)[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span>
+    <span class="c1"># 计算损失值</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">logits</span><span class="p">[</span><span class="n">train_mask</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">train_mask</span><span class="p">])</span>
+    <span class="c1"># 计算验证集的准确度。在本例中省略。</span>
+    <span class="c1"># 进行反向传播计算</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+    <span class="c1"># 如果需要的话，保存训练好的模型。本例中省略。</span>
+</pre></div>
+</div>
+<p>DGL提供了一个用于节点分类的RGCN的端到端的例子
+<a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/rgcn-hetero/entity_classify.py">RGCN</a>
+。用户可以在 <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/rgcn-hetero/model.py">RGCN模型实现文件</a>
+中查看异构图卷积 <code class="docutils literal notranslate"><span class="pre">RelGraphConvLayer</span></code> 的具体定义。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="training.html" class="btn btn-neutral float-left" title="第5章：训练图神经网络" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="training-edge.html" class="btn btn-neutral float-right" title="5.2 边分类/回归" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

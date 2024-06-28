@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.sampling.neighbor &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.sampling.neighbor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.sampling.neighbor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Neighbor sampling APIs&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">F</span><span class="p">,</span> <span class="n">ndarray</span> <span class="k">as</span> <span class="n">nd</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">DGLError</span><span class="p">,</span> <span class="n">EID</span>
+<span class="kn">from</span> <span class="nn">..heterograph</span> <span class="kn">import</span> <span class="n">DGLBlock</span><span class="p">,</span> <span class="n">DGLGraph</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">EidExcluder</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;sample_etype_neighbors&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sample_neighbors&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sample_neighbors_fused&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sample_neighbors_biased&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;select_topk&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_prepare_edge_arrays</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts the argument into a list of NDArrays.</span>
+
+<span class="sd">    If the argument is already a list of array-like objects, directly do the</span>
+<span class="sd">    conversion.</span>
+
+<span class="sd">    If the argument is a string, converts g.edata[arg] into a list of NDArrays</span>
+<span class="sd">    ordered by the edge types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nd</span><span class="o">.</span><span class="n">NDArray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">arg</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># The list can have None as placeholders for empty arrays with</span>
+            <span class="c1"># undetermined data type.</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span>
+                    <span class="n">dtype</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                    <span class="n">ctx</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span>
+                    <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span> <span class="n">ctx</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="n">x</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="n">result</span>
+    <span class="k">elif</span> <span class="n">arg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">nd</span><span class="o">.</span><span class="n">cpu</span><span class="p">())]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arrays</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="n">arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">arg</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">nd</span><span class="o">.</span><span class="n">cpu</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">arrays</span>
+
+
+<span class="k">def</span> <span class="nf">sample_etype_neighbors</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="p">,</span>
+    <span class="n">etype_offset</span><span class="p">,</span>
+    <span class="n">fanout</span><span class="p">,</span>
+    <span class="n">edge_dir</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span>
+    <span class="n">prob</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">exclude_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">copy_ndata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">copy_edata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">etype_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">_dist_training</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample neighboring edges of the given nodes and return the induced subgraph.</span>
+
+<span class="sd">    For each node, a number of inbound (or outbound when ``edge_dir == &#39;out&#39;``) edges</span>
+<span class="sd">    will be randomly chosen.  The graph returned will then contain all the nodes in the</span>
+<span class="sd">    original graph, but only the sampled edges.</span>
+
+<span class="sd">    Node/edge features are not preserved. The original IDs of</span>
+<span class="sd">    the sampled edges are stored as the `dgl.EID` feature in the returned graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The graph.  Can only be in CPU. Should only have one node type and one edge type.</span>
+<span class="sd">    nodes : tensor or dict</span>
+<span class="sd">        Node IDs to sample neighbors from.</span>
+
+<span class="sd">        This argument can take a single ID tensor or a dictionary of node types and ID tensors.</span>
+<span class="sd">        If a single tensor is given, the graph must only have one type of nodes.</span>
+<span class="sd">    etype_offset : list[int]</span>
+<span class="sd">        The offset of each edge type ID.</span>
+<span class="sd">    fanout : Tensor</span>
+<span class="sd">        The number of edges to be sampled for each node per edge type.  Must be a</span>
+<span class="sd">        1D tensor with the number of elements same as the number of edge types.</span>
+
+<span class="sd">        If -1 is given, all of the neighbors with non-zero probability will be selected.</span>
+<span class="sd">    edge_dir : str, optional</span>
+<span class="sd">        Determines whether to sample inbound or outbound edges.</span>
+
+<span class="sd">        Can take either ``in`` for inbound edges or ``out`` for outbound edges.</span>
+<span class="sd">    prob : list[Tensor], optional</span>
+<span class="sd">        The (unnormalized) probabilities associated with each neighboring edge of</span>
+<span class="sd">        a node.</span>
+
+<span class="sd">        The features must be non-negative floats or boolean.  Otherwise, the</span>
+<span class="sd">        result will be undefined.</span>
+<span class="sd">    exclude_edges: tensor or dict</span>
+<span class="sd">        Edge IDs to exclude during sampling neighbors for the seed nodes.</span>
+
+<span class="sd">        This argument can take a single ID tensor or a dictionary of edge types and ID tensors.</span>
+<span class="sd">        If a single tensor is given, the graph must only have one type of nodes.</span>
+<span class="sd">    replace : bool, optional</span>
+<span class="sd">        If True, sample with replacement.</span>
+<span class="sd">    copy_ndata: bool, optional</span>
+<span class="sd">        If True, the node features of the new graph are copied from</span>
+<span class="sd">        the original graph. If False, the new graph will not have any</span>
+<span class="sd">        node features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    copy_edata: bool, optional</span>
+<span class="sd">        If True, the edge features of the new graph are copied from</span>
+<span class="sd">        the original graph.  If False, the new graph will not have any</span>
+<span class="sd">        edge features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    _dist_training : bool, optional</span>
+<span class="sd">        Internal argument.  Do not use.</span>
+
+<span class="sd">        (Default: False)</span>
+<span class="sd">    etype_sorted: bool, optional</span>
+<span class="sd">        A hint telling whether the etypes are already sorted.</span>
+
+<span class="sd">        (Default: False)</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        A sampled subgraph containing only the sampled neighboring edges, with the</span>
+<span class="sd">        same device as the input graph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If :attr:`copy_ndata` or :attr:`copy_edata` is True, same tensors are used as</span>
+<span class="sd">    the node or edge features of the original graph and the new graph.</span>
+<span class="sd">    As a result, users should avoid performing in-place operations</span>
+<span class="sd">    on the node features of the new graph to avoid feature corruption.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">exclude_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+            <span class="s2">&quot;exclude_edges is not supported for sample_etype_neighbors&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;The graph should be in cpu.&quot;</span><span class="p">)</span>
+    <span class="c1"># (BarclayII) because the homogenized graph no longer contains the *name* of edge</span>
+    <span class="c1"># types, the fanout argument can no longer be a dict of etypes and ints, as opposed</span>
+    <span class="c1"># to sample_neighbors.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">fanout</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;The fanout should be a tensor&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;The input graph should not have node types&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="c1"># treat etypes as int32, it is much cheaper than int64</span>
+    <span class="c1"># TODO(xiangsx): int8 can be a better choice.</span>
+    <span class="n">fanout</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">fanout</span><span class="p">)</span>
+
+    <span class="n">prob_array</span> <span class="o">=</span> <span class="n">_prepare_edge_arrays</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span>
+
+    <span class="n">subgidx</span> <span class="o">=</span> <span class="n">_CAPI_DGLSampleNeighborsEType</span><span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span>
+        <span class="n">nodes</span><span class="p">,</span>
+        <span class="n">etype_offset</span><span class="p">,</span>
+        <span class="n">fanout</span><span class="p">,</span>
+        <span class="n">edge_dir</span><span class="p">,</span>
+        <span class="n">prob_array</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">,</span>
+        <span class="n">etype_sorted</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">subgidx</span><span class="o">.</span><span class="n">induced_edges</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">subgidx</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+
+    <span class="c1"># handle features</span>
+    <span class="c1"># (TODO) (BarclayII) DGL distributed fails with bus error, freezes, or other</span>
+    <span class="c1"># incomprehensible errors with lazy feature copy.</span>
+    <span class="c1"># So in distributed training context, we fall back to old behavior where we</span>
+    <span class="c1"># only set the edge IDs.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_dist_training</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">copy_ndata</span><span class="p">:</span>
+            <span class="n">node_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_node_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">node_frames</span><span class="o">=</span><span class="n">node_frames</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">copy_edata</span><span class="p">:</span>
+            <span class="n">edge_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_edge_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">)</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">edge_frames</span><span class="o">=</span><span class="n">edge_frames</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">etype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">):</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">induced_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ret</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span>
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">sample_etype_neighbors</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">sample_etype_neighbors</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="sample_neighbors">
+<a class="viewcode-back" href="../../../generated/dgl.sampling.sample_neighbors.html#dgl.sampling.sample_neighbors">[docs]</a>
+<span class="k">def</span> <span class="nf">sample_neighbors</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="p">,</span>
+    <span class="n">fanout</span><span class="p">,</span>
+    <span class="n">edge_dir</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span>
+    <span class="n">prob</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">copy_ndata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">copy_edata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">_dist_training</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">exclude_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample neighboring edges of the given nodes and return the induced subgraph.</span>
+
+<span class="sd">    For each node, a number of inbound (or outbound when ``edge_dir == &#39;out&#39;``) edges</span>
+<span class="sd">    will be randomly chosen.  The graph returned will then contain all the nodes in the</span>
+<span class="sd">    original graph, but only the sampled edges.</span>
+
+<span class="sd">    Node/edge features are not preserved. The original IDs of</span>
+<span class="sd">    the sampled edges are stored as the `dgl.EID` feature in the returned graph.</span>
+
+<span class="sd">    GPU sampling is supported for this function. Refer to :ref:`guide-minibatch-gpu-sampling`</span>
+<span class="sd">    for more details.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The graph.  Can be either on CPU or GPU.</span>
+<span class="sd">    nodes : tensor or dict</span>
+<span class="sd">        Node IDs to sample neighbors from.</span>
+
+<span class="sd">        This argument can take a single ID tensor or a dictionary of node types and ID tensors.</span>
+<span class="sd">        If a single tensor is given, the graph must only have one type of nodes.</span>
+<span class="sd">    fanout : int or dict[etype, int]</span>
+<span class="sd">        The number of edges to be sampled for each node on each edge type.</span>
+
+<span class="sd">        This argument can take a single int or a dictionary of edge types and ints.</span>
+<span class="sd">        If a single int is given, DGL will sample this number of edges for each node for</span>
+<span class="sd">        every edge type.</span>
+
+<span class="sd">        If -1 is given for a single edge type, all the neighboring edges with that edge</span>
+<span class="sd">        type and non-zero probability will be selected.</span>
+<span class="sd">    edge_dir : str, optional</span>
+<span class="sd">        Determines whether to sample inbound or outbound edges.</span>
+
+<span class="sd">        Can take either ``in`` for inbound edges or ``out`` for outbound edges.</span>
+<span class="sd">    prob : str, optional</span>
+<span class="sd">        Feature name used as the (unnormalized) probabilities associated with each</span>
+<span class="sd">        neighboring edge of a node.  The feature must have only one element for each</span>
+<span class="sd">        edge.</span>
+
+<span class="sd">        The features must be non-negative floats or boolean.  Otherwise, the result</span>
+<span class="sd">        will be undefined.</span>
+<span class="sd">    exclude_edges: tensor or dict</span>
+<span class="sd">        Edge IDs to exclude during sampling neighbors for the seed nodes.</span>
+
+<span class="sd">        This argument can take a single ID tensor or a dictionary of edge types and ID tensors.</span>
+<span class="sd">        If a single tensor is given, the graph must only have one type of nodes.</span>
+<span class="sd">    replace : bool, optional</span>
+<span class="sd">        If True, sample with replacement.</span>
+<span class="sd">    copy_ndata: bool, optional</span>
+<span class="sd">        If True, the node features of the new graph are copied from</span>
+<span class="sd">        the original graph. If False, the new graph will not have any</span>
+<span class="sd">        node features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    copy_edata: bool, optional</span>
+<span class="sd">        If True, the edge features of the new graph are copied from</span>
+<span class="sd">        the original graph.  If False, the new graph will not have any</span>
+<span class="sd">        edge features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    _dist_training : bool, optional</span>
+<span class="sd">        Internal argument.  Do not use.</span>
+
+<span class="sd">        (Default: False)</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        A sampled subgraph containing only the sampled neighboring edges.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If :attr:`copy_ndata` or :attr:`copy_edata` is True, same tensors are used as</span>
+<span class="sd">    the node or edge features of the original graph and the new graph.</span>
+<span class="sd">    As a result, users should avoid performing in-place operations</span>
+<span class="sd">    on the node features of the new graph to avoid feature corruption.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Assume that you have the following graph</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 0, 1, 1, 2, 2], [1, 2, 0, 1, 2, 0]))</span>
+
+<span class="sd">    And the weights</span>
+
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;prob&#39;] = torch.FloatTensor([0., 1., 0., 1., 0., 1.])</span>
+
+<span class="sd">    To sample one inbound edge for node 0 and node 1:</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.sample_neighbors(g, [0, 1], 1)</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges(order=&#39;eid&#39;)</span>
+<span class="sd">    (tensor([1, 0]), tensor([0, 1]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]</span>
+<span class="sd">    tensor([2, 0])</span>
+
+<span class="sd">    To sample one inbound edge for node 0 and node 1 with probability in edge feature</span>
+<span class="sd">    ``prob``:</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.sample_neighbors(g, [0, 1], 1, prob=&#39;prob&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges(order=&#39;eid&#39;)</span>
+<span class="sd">    (tensor([2, 1]), tensor([0, 1]))</span>
+
+<span class="sd">    With ``fanout`` greater than the number of actual neighbors and without replacement,</span>
+<span class="sd">    DGL will take all neighbors instead:</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.sample_neighbors(g, [0, 1], 3)</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges(order=&#39;eid&#39;)</span>
+<span class="sd">    (tensor([1, 2, 0, 1]), tensor([0, 0, 1, 1]))</span>
+
+<span class="sd">    To exclude certain EID&#39;s during sampling for the seed nodes:</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 0, 1, 1, 2, 2], [1, 2, 0, 1, 2, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; g_edges = g.all_edges(form=&#39;all&#39;)``</span>
+<span class="sd">    (tensor([0, 0, 1, 1, 2, 2]), tensor([1, 2, 0, 1, 2, 0]), tensor([0, 1, 2, 3, 4, 5]))</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.sample_neighbors(g, [0, 1], 3, exclude_edges=[0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; sg.all_edges(form=&#39;all&#39;)</span>
+<span class="sd">    (tensor([2, 1]), tensor([0, 1]), tensor([0, 1]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.has_edges_between(g_edges[0][:3],g_edges[1][:3])</span>
+<span class="sd">    tensor([False, False, False])</span>
+<span class="sd">    &gt;&gt;&gt; g = dgl.heterograph({</span>
+<span class="sd">    ...   (&#39;drug&#39;, &#39;interacts&#39;, &#39;drug&#39;): ([0, 0, 1, 1, 3, 2], [1, 2, 0, 1, 2, 0]),</span>
+<span class="sd">    ...   (&#39;drug&#39;, &#39;interacts&#39;, &#39;gene&#39;): ([0, 0, 1, 1, 2, 2], [1, 2, 0, 1, 2, 0]),</span>
+<span class="sd">    ...   (&#39;drug&#39;, &#39;treats&#39;, &#39;disease&#39;): ([0, 0, 1, 1, 2, 2], [1, 2, 0, 1, 2, 0])})</span>
+<span class="sd">    &gt;&gt;&gt; g_edges = g.all_edges(form=&#39;all&#39;, etype=(&#39;drug&#39;, &#39;interacts&#39;, &#39;drug&#39;))</span>
+<span class="sd">    (tensor([0, 0, 1, 1, 3, 2]), tensor([1, 2, 0, 1, 2, 0]), tensor([0, 1, 2, 3, 4, 5]))</span>
+<span class="sd">    &gt;&gt;&gt; excluded_edges  = {(&#39;drug&#39;, &#39;interacts&#39;, &#39;drug&#39;): g_edges[2][:3]}</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.sample_neighbors(g, {&#39;drug&#39;:[0, 1]}, 3, exclude_edges=excluded_edges)</span>
+<span class="sd">    &gt;&gt;&gt; sg.all_edges(form=&#39;all&#39;, etype=(&#39;drug&#39;, &#39;interacts&#39;, &#39;drug&#39;))</span>
+<span class="sd">    (tensor([2, 1]), tensor([0, 1]), tensor([0, 1]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.has_edges_between(g_edges[0][:3],g_edges[1][:3],etype=(&#39;drug&#39;, &#39;interacts&#39;, &#39;drug&#39;))</span>
+<span class="sd">    tensor([False, False, False])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">device_type</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">is_pinned</span><span class="p">():</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">_sample_neighbors</span><span class="p">(</span>
+            <span class="n">g</span><span class="p">,</span>
+            <span class="n">nodes</span><span class="p">,</span>
+            <span class="n">fanout</span><span class="p">,</span>
+            <span class="n">edge_dir</span><span class="o">=</span><span class="n">edge_dir</span><span class="p">,</span>
+            <span class="n">prob</span><span class="o">=</span><span class="n">prob</span><span class="p">,</span>
+            <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
+            <span class="n">copy_ndata</span><span class="o">=</span><span class="n">copy_ndata</span><span class="p">,</span>
+            <span class="n">copy_edata</span><span class="o">=</span><span class="n">copy_edata</span><span class="p">,</span>
+            <span class="n">exclude_edges</span><span class="o">=</span><span class="n">exclude_edges</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">_sample_neighbors</span><span class="p">(</span>
+            <span class="n">g</span><span class="p">,</span>
+            <span class="n">nodes</span><span class="p">,</span>
+            <span class="n">fanout</span><span class="p">,</span>
+            <span class="n">edge_dir</span><span class="o">=</span><span class="n">edge_dir</span><span class="p">,</span>
+            <span class="n">prob</span><span class="o">=</span><span class="n">prob</span><span class="p">,</span>
+            <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
+            <span class="n">copy_ndata</span><span class="o">=</span><span class="n">copy_ndata</span><span class="p">,</span>
+            <span class="n">copy_edata</span><span class="o">=</span><span class="n">copy_edata</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">exclude_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">eid_excluder</span> <span class="o">=</span> <span class="n">EidExcluder</span><span class="p">(</span><span class="n">exclude_edges</span><span class="p">)</span>
+            <span class="n">frontier</span> <span class="o">=</span> <span class="n">eid_excluder</span><span class="p">(</span><span class="n">frontier</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">frontier</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">frontier</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">sample_neighbors_fused</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="p">,</span>
+    <span class="n">fanout</span><span class="p">,</span>
+    <span class="n">edge_dir</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span>
+    <span class="n">prob</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">copy_ndata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">copy_edata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">exclude_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample neighboring edges of the given nodes and return the induced subgraph.</span>
+
+<span class="sd">    For each node, a number of inbound (or outbound when ``edge_dir == &#39;out&#39;``) edges</span>
+<span class="sd">    will be randomly chosen.  The graph returned will then contain all the nodes in the</span>
+<span class="sd">    original graph, but only the sampled edges. Nodes will be renumbered starting from id 0,</span>
+<span class="sd">    which would be new node id of first seed node.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The graph.  Can be either on CPU or GPU.</span>
+<span class="sd">    nodes : tensor or dict</span>
+<span class="sd">        Node IDs to sample neighbors from.</span>
+
+<span class="sd">        This argument can take a single ID tensor or a dictionary of node types and ID tensors.</span>
+<span class="sd">        If a single tensor is given, the graph must only have one type of nodes.</span>
+<span class="sd">    fanout : int or dict[etype, int]</span>
+<span class="sd">        The number of edges to be sampled for each node on each edge type.</span>
+
+<span class="sd">        This argument can take a single int or a dictionary of edge types and ints.</span>
+<span class="sd">        If a single int is given, DGL will sample this number of edges for each node for</span>
+<span class="sd">        every edge type.</span>
+
+<span class="sd">        If -1 is given for a single edge type, all the neighboring edges with that edge</span>
+<span class="sd">        type and non-zero probability will be selected.</span>
+<span class="sd">    edge_dir : str, optional</span>
+<span class="sd">        Determines whether to sample inbound or outbound edges.</span>
+
+<span class="sd">        Can take either ``in`` for inbound edges or ``out`` for outbound edges.</span>
+<span class="sd">    prob : str, optional</span>
+<span class="sd">        Feature name used as the (unnormalized) probabilities associated with each</span>
+<span class="sd">        neighboring edge of a node.  The feature must have only one element for each</span>
+<span class="sd">        edge.</span>
+
+<span class="sd">        The features must be non-negative floats or boolean.  Otherwise, the result</span>
+<span class="sd">        will be undefined.</span>
+<span class="sd">    exclude_edges: tensor or dict</span>
+<span class="sd">        Edge IDs to exclude during sampling neighbors for the seed nodes.</span>
+
+<span class="sd">        This argument can take a single ID tensor or a dictionary of edge types and ID tensors.</span>
+<span class="sd">        If a single tensor is given, the graph must only have one type of nodes.</span>
+<span class="sd">    replace : bool, optional</span>
+<span class="sd">        If True, sample with replacement.</span>
+<span class="sd">    copy_ndata: bool, optional</span>
+<span class="sd">        If True, the node features of the new graph are copied from</span>
+<span class="sd">        the original graph. If False, the new graph will not have any</span>
+<span class="sd">        node features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    copy_edata: bool, optional</span>
+<span class="sd">        If True, the edge features of the new graph are copied from</span>
+<span class="sd">        the original graph.  If False, the new graph will not have any</span>
+<span class="sd">        edge features.</span>
+
+<span class="sd">        (Default: False)</span>
+
+<span class="sd">    mapping : dictionary, optional</span>
+<span class="sd">        Used by fused version of NeighborSampler. To avoid constant data allocation</span>
+<span class="sd">        provide empty dictionary ({}) that will be allocated once with proper data and reused</span>
+<span class="sd">        by each function call</span>
+
+<span class="sd">        (Default: None)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        A sampled subgraph containing only the sampled neighboring edges.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If :attr:`copy_ndata` or :attr:`copy_edata` is True, same tensors are used as</span>
+<span class="sd">    the node or edge features of the original graph and the new graph.</span>
+<span class="sd">    As a result, users should avoid performing in-place operations</span>
+<span class="sd">    on the node features of the new graph to avoid feature corruption.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">is_pinned</span><span class="p">():</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">_sample_neighbors</span><span class="p">(</span>
+            <span class="n">g</span><span class="p">,</span>
+            <span class="n">nodes</span><span class="p">,</span>
+            <span class="n">fanout</span><span class="p">,</span>
+            <span class="n">edge_dir</span><span class="o">=</span><span class="n">edge_dir</span><span class="p">,</span>
+            <span class="n">prob</span><span class="o">=</span><span class="n">prob</span><span class="p">,</span>
+            <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
+            <span class="n">copy_ndata</span><span class="o">=</span><span class="n">copy_ndata</span><span class="p">,</span>
+            <span class="n">copy_edata</span><span class="o">=</span><span class="n">copy_edata</span><span class="p">,</span>
+            <span class="n">exclude_edges</span><span class="o">=</span><span class="n">exclude_edges</span><span class="p">,</span>
+            <span class="n">fused</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">_sample_neighbors</span><span class="p">(</span>
+            <span class="n">g</span><span class="p">,</span>
+            <span class="n">nodes</span><span class="p">,</span>
+            <span class="n">fanout</span><span class="p">,</span>
+            <span class="n">edge_dir</span><span class="o">=</span><span class="n">edge_dir</span><span class="p">,</span>
+            <span class="n">prob</span><span class="o">=</span><span class="n">prob</span><span class="p">,</span>
+            <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
+            <span class="n">copy_ndata</span><span class="o">=</span><span class="n">copy_ndata</span><span class="p">,</span>
+            <span class="n">copy_edata</span><span class="o">=</span><span class="n">copy_edata</span><span class="p">,</span>
+            <span class="n">fused</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">exclude_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">eid_excluder</span> <span class="o">=</span> <span class="n">EidExcluder</span><span class="p">(</span><span class="n">exclude_edges</span><span class="p">)</span>
+            <span class="n">frontier</span> <span class="o">=</span> <span class="n">eid_excluder</span><span class="p">(</span><span class="n">frontier</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">frontier</span>
+
+
+<span class="k">def</span> <span class="nf">_sample_neighbors</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="p">,</span>
+    <span class="n">fanout</span><span class="p">,</span>
+    <span class="n">edge_dir</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span>
+    <span class="n">prob</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">copy_ndata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">copy_edata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">_dist_training</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">exclude_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fused</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;Must specify node type when the graph is not homogeneous.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">nodes</span><span class="p">}</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor_dict</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Got an empty dictionary in the nodes argument. &quot;</span>
+            <span class="s2">&quot;Please pass in a dictionary with empty tensors as values instead.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_dgl_context</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">nodes_all_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">nodes_all_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nodes_all_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fanout</span><span class="p">,</span> <span class="n">nd</span><span class="o">.</span><span class="n">NDArray</span><span class="p">):</span>
+        <span class="n">fanout_array</span> <span class="o">=</span> <span class="n">fanout</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fanout</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">fanout_array</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">fanout</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fanout</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                    <span class="s2">&quot;Fan-out must be specified for each edge type &quot;</span>
+                    <span class="s2">&quot;if a dict is provided.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">fanout_array</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fanout</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">fanout_array</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">get_etype_id</span><span class="p">(</span><span class="n">etype</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">fanout_array</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">fanout_array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+
+    <span class="n">prob_arrays</span> <span class="o">=</span> <span class="n">_prepare_edge_arrays</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span>
+
+    <span class="n">excluded_edges_all_t</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">exclude_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude_edges</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                    <span class="s2">&quot;Must specify etype when the graph is not homogeneous.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">exclude_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">exclude_edges</span><span class="p">}</span>
+        <span class="n">exclude_edges</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor_dict</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">exclude_edges</span><span class="p">,</span> <span class="s2">&quot;edges&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">exclude_edges</span><span class="p">:</span>
+                <span class="n">excluded_edges_all_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">exclude_edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">excluded_edges_all_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">fused</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_dist_training</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;distributed training not supported in fused sampling&quot;</span>
+            <span class="p">)</span>
+        <span class="n">cpu</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">device_type</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">cpu</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">cpu</span> <span class="o">=</span> <span class="n">cpu</span> <span class="ow">and</span> <span class="n">F</span><span class="o">.</span><span class="n">device_type</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cpu</span> <span class="o">=</span> <span class="n">cpu</span> <span class="ow">and</span> <span class="n">F</span><span class="o">.</span><span class="n">device_type</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cpu</span> <span class="ow">or</span> <span class="n">F</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">!=</span> <span class="s2">&quot;pytorch&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;Only PyTorch backend and cpu is supported in fused sampling&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">mapping_name</span> <span class="o">=</span> <span class="s2">&quot;__mapping&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">mapping_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">mapping_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">))</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span>
+            <span class="p">]</span>
+
+        <span class="n">subgidx</span><span class="p">,</span> <span class="n">induced_nodes</span><span class="p">,</span> <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">_CAPI_DGLSampleNeighborsFused</span><span class="p">(</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span>
+            <span class="n">nodes_all_types</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">[</span><span class="n">mapping_name</span><span class="p">]],</span>
+            <span class="n">fanout_array</span><span class="p">,</span>
+            <span class="n">edge_dir</span><span class="p">,</span>
+            <span class="n">prob_arrays</span><span class="p">,</span>
+            <span class="n">excluded_edges_all_t</span><span class="p">,</span>
+            <span class="n">replace</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">mapping_vector</span><span class="p">,</span> <span class="n">src_nodes</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">mapping_name</span><span class="p">],</span> <span class="n">induced_nodes</span>
+        <span class="p">):</span>
+            <span class="n">mapping_vector</span><span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">src_nodes</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">new_ntypes</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">DGLBlock</span><span class="p">(</span><span class="n">subgidx</span><span class="p">,</span> <span class="n">new_ntypes</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ret</span><span class="o">.</span><span class="n">is_unibipartite</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">subgidx</span> <span class="o">=</span> <span class="n">_CAPI_DGLSampleNeighbors</span><span class="p">(</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span>
+            <span class="n">nodes_all_types</span><span class="p">,</span>
+            <span class="n">fanout_array</span><span class="p">,</span>
+            <span class="n">edge_dir</span><span class="p">,</span>
+            <span class="n">prob_arrays</span><span class="p">,</span>
+            <span class="n">excluded_edges_all_t</span><span class="p">,</span>
+            <span class="n">replace</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">subgidx</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+        <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">subgidx</span><span class="o">.</span><span class="n">induced_edges</span>
+
+    <span class="c1"># handle features</span>
+    <span class="c1"># (TODO) (BarclayII) DGL distributed fails with bus error, freezes, or other</span>
+    <span class="c1"># incomprehensible errors with lazy feature copy.</span>
+    <span class="c1"># So in distributed training context, we fall back to old behavior where we</span>
+    <span class="c1"># only set the edge IDs.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_dist_training</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">copy_ndata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fused</span><span class="p">:</span>
+                <span class="n">src_node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">induced_nodes</span><span class="p">]</span>
+                <span class="n">dst_node_ids</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span>
+                        <span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="p">[]),</span> <span class="n">g</span><span class="o">.</span><span class="n">_idtype_str</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">tousertensor</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">to_backend_ctx</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">ctx</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span>
+                <span class="p">]</span>
+                <span class="n">node_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_node_subframes_for_block</span><span class="p">(</span>
+                    <span class="n">g</span><span class="p">,</span> <span class="n">src_node_ids</span><span class="p">,</span> <span class="n">dst_node_ids</span>
+                <span class="p">)</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">node_frames</span><span class="o">=</span><span class="n">node_frames</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_node_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">node_frames</span><span class="o">=</span><span class="n">node_frames</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">copy_edata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fused</span><span class="p">:</span>
+                <span class="n">edge_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">from_dgl_nd</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span> <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">induced_edges</span><span class="p">]</span>
+                <span class="n">edge_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_edge_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">edge_ids</span><span class="p">)</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">edge_frames</span><span class="o">=</span><span class="n">edge_frames</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edge_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_edge_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">)</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">edge_frames</span><span class="o">=</span><span class="n">edge_frames</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">etype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">):</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">induced_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">sample_neighbors</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">sample_neighbors</span><span class="p">)</span>
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">sample_neighbors_fused</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">sample_neighbors_fused</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="sample_neighbors_biased">
+<a class="viewcode-back" href="../../../generated/dgl.sampling.sample_neighbors_biased.html#dgl.sampling.sample_neighbors_biased">[docs]</a>
+<span class="k">def</span> <span class="nf">sample_neighbors_biased</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="p">,</span>
+    <span class="n">fanout</span><span class="p">,</span>
+    <span class="n">bias</span><span class="p">,</span>
+    <span class="n">edge_dir</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span>
+    <span class="n">tag_offset_name</span><span class="o">=</span><span class="s2">&quot;_TAG_OFFSET&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">copy_ndata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">copy_edata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sample neighboring edges of the given nodes and return the induced subgraph, where each</span>
+<span class="sd">    neighbor&#39;s probability to be picked is determined by its tag.</span>
+
+<span class="sd">    For each node, a number of inbound (or outbound when ``edge_dir == &#39;out&#39;``) edges</span>
+<span class="sd">    will be randomly chosen.  The graph returned will then contain all the nodes in the</span>
+<span class="sd">    original graph, but only the sampled edges.</span>
+
+<span class="sd">    This version of neighbor sampling can support the scenario where adjacent nodes with different</span>
+<span class="sd">    types have different sampling probability. Each node is assigned an integer (called a *tag*)</span>
+<span class="sd">    which represents its type. Tag is an analogue of node type under the framework of homogeneous</span>
+<span class="sd">    graphs. Nodes with the same tag share the same probability.</span>
+
+<span class="sd">    For example, assume a node has :math:`N+M` neighbors, and :math:`N` of them</span>
+<span class="sd">    have tag 0 while :math:`M` of them have tag 1. Assume a node of tag 0 has</span>
+<span class="sd">    an unnormalized probability :math:`p` to be picked while a node of tag 1</span>
+<span class="sd">    has :math:`q`. This function first chooses a tag according to the</span>
+<span class="sd">    unnormalized probability distribution</span>
+<span class="sd">    :math:`\frac{P(tag=0)}{P(tag=1)}=\frac{Np}{Mq}`, and then run a uniform</span>
+<span class="sd">    sampling to get a node of the chosen tag.</span>
+
+<span class="sd">    In order to make sampling more efficient, the input graph must have its</span>
+<span class="sd">    CSC matrix (or CSR matrix if ``edge_dir=&#39;out&#39;``) sorted according to the tag. The API</span>
+<span class="sd">    :func:`~dgl.sort_csc_by_tag` and</span>
+<span class="sd">    :func:`~dgl.sort_csr_by_tag` are designed for this purpose, which</span>
+<span class="sd">    will internally reorder the neighbors by tags so that neighbors of the same tags are</span>
+<span class="sd">    stored in a consecutive range. The two APIs will also store the offsets of these ranges</span>
+<span class="sd">    in a node feature with :attr:`tag_offset_name` as its name.</span>
+
+<span class="sd">    **Please make sure that the CSR (or CSC) matrix of the graph has been sorted before</span>
+<span class="sd">    calling this function.**  This function itself will not check whether the</span>
+<span class="sd">    input graph is sorted. Note that the input :attr:`tag_offset_name` should</span>
+<span class="sd">    be consistent with that in the sorting function.</span>
+
+<span class="sd">    Only homogeneous or bipartite graphs are supported. For bipartite graphs,</span>
+<span class="sd">    the tag offsets of the source nodes when ``edge_dir=&#39;in&#39;`` (or the destination</span>
+<span class="sd">    nodes when ``edge_dir=&#39;out&#39;``) will be used in sampling.</span>
+
+<span class="sd">    Node/edge features are not preserved. The original IDs of</span>
+<span class="sd">    the sampled edges are stored as the ``dgl.EID`` feature in the returned graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The graph. Must be homogeneous or bipartite (only one edge type). Must be on CPU.</span>
+<span class="sd">    nodes : tensor or list</span>
+<span class="sd">        Node IDs to sample neighbors from.</span>
+<span class="sd">    fanout : int</span>
+<span class="sd">        The number of edges to be sampled for each node on each edge type.</span>
+
+<span class="sd">        If -1 is given, all the neighboring edges with non-zero probability will be selected.</span>
+<span class="sd">    bias : tensor or list</span>
+<span class="sd">        The (unnormalized) probabilities associated with each tag. Its length should be equal</span>
+<span class="sd">        to the number of tags.</span>
+
+<span class="sd">        Entries of this array must be non-negative floats. Otherwise, the result will be</span>
+<span class="sd">        undefined.</span>
+<span class="sd">    edge_dir : str, optional</span>
+<span class="sd">        Determines whether to sample inbound or outbound edges.</span>
+
+<span class="sd">        Can take either ``in`` for inbound edges or ``out`` for outbound edges.</span>
+<span class="sd">    tag_offset_name : str, optional</span>
+<span class="sd">        The name of the node feature storing tag offsets.</span>
+
+<span class="sd">        (Default: &quot;_TAG_OFFSET&quot;)</span>
+<span class="sd">    replace : bool, optional</span>
+<span class="sd">        If True, sample with replacement.</span>
+<span class="sd">    copy_ndata: bool, optional</span>
+<span class="sd">        If True, the node features of the new graph are copied from</span>
+<span class="sd">        the original graph. If False, the new graph will not have any</span>
+<span class="sd">        node features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    copy_edata: bool, optional</span>
+<span class="sd">        If True, the edge features of the new graph are copied from</span>
+<span class="sd">        the original graph.  If False, the new graph will not have any</span>
+<span class="sd">        edge features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        A sampled subgraph containing only the sampled neighboring edges.  It is on CPU.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If :attr:`copy_ndata` or :attr:`copy_edata` is True, same tensors are used as</span>
+<span class="sd">    the node or edge features of the original graph and the new graph.</span>
+<span class="sd">    As a result, users should avoid performing in-place operations</span>
+<span class="sd">    on the node features of the new graph to avoid feature corruption.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    dgl.sort_csc_by_tag</span>
+<span class="sd">    dgl.sort_csr_by_tag</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Assume that you have the following graph</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 0, 1, 1, 2, 2], [1, 2, 0, 1, 2, 0]))</span>
+
+<span class="sd">    And the tags</span>
+
+<span class="sd">    &gt;&gt;&gt; tag = torch.IntTensor([0, 0, 1])</span>
+
+<span class="sd">    Sort the graph (necessary!)</span>
+
+<span class="sd">    &gt;&gt;&gt; g_sorted = dgl.transforms.sort_csr_by_tag(g, tag)</span>
+<span class="sd">    &gt;&gt;&gt; g_sorted.ndata[&#39;_TAG_OFFSET&#39;]</span>
+<span class="sd">    tensor([[0, 1, 2],</span>
+<span class="sd">            [0, 2, 2],</span>
+<span class="sd">            [0, 1, 2]])</span>
+
+<span class="sd">    Set the probability of each tag:</span>
+
+<span class="sd">    &gt;&gt;&gt; bias = torch.tensor([1.0, 0.001])</span>
+<span class="sd">    &gt;&gt;&gt; # node 2 is almost impossible to be sampled because it has tag 1.</span>
+
+<span class="sd">    To sample one out bound edge for node 0 and node 2:</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.sample_neighbors_biased(g_sorted, [0, 2], 1, bias, edge_dir=&#39;out&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges(order=&#39;eid&#39;)</span>
+<span class="sd">    (tensor([0, 2]), tensor([1, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; sg.edata[dgl.EID]</span>
+<span class="sd">    tensor([0, 5])</span>
+
+<span class="sd">    With ``fanout`` greater than the number of actual neighbors and without replacement,</span>
+<span class="sd">    DGL will take all neighbors instead:</span>
+
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.sample_neighbors_biased(g_sorted, [0, 2], 3, bias, edge_dir=&#39;out&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges(order=&#39;eid&#39;)</span>
+<span class="sd">    (tensor([0, 0, 2, 2]), tensor([1, 2, 0, 2]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bias</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">bias</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">bias</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="n">nodes_array</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">bias_array</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">bias</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">edge_dir</span> <span class="o">==</span> <span class="s2">&quot;in&quot;</span><span class="p">:</span>
+        <span class="n">tag_offset_array</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">tag_offset_name</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">edge_dir</span> <span class="o">==</span> <span class="s2">&quot;out&quot;</span><span class="p">:</span>
+        <span class="n">tag_offset_array</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">tag_offset_name</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span><span class="s2">&quot;edge_dir can only be &#39;in&#39; or &#39;out&#39;&quot;</span><span class="p">)</span>
+
+    <span class="n">subgidx</span> <span class="o">=</span> <span class="n">_CAPI_DGLSampleNeighborsBiased</span><span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span>
+        <span class="n">nodes_array</span><span class="p">,</span>
+        <span class="n">fanout</span><span class="p">,</span>
+        <span class="n">bias_array</span><span class="p">,</span>
+        <span class="n">tag_offset_array</span><span class="p">,</span>
+        <span class="n">edge_dir</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">subgidx</span><span class="o">.</span><span class="n">induced_edges</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">subgidx</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">copy_ndata</span><span class="p">:</span>
+        <span class="n">node_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_node_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">node_frames</span><span class="o">=</span><span class="n">node_frames</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">copy_edata</span><span class="p">:</span>
+        <span class="n">edge_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_edge_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">edge_frames</span><span class="o">=</span><span class="n">edge_frames</span><span class="p">)</span>
+
+    <span class="n">ret</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">induced_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ret</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">sample_neighbors_biased</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">sample_neighbors_biased</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="select_topk">
+<a class="viewcode-back" href="../../../generated/dgl.sampling.select_topk.html#dgl.sampling.select_topk">[docs]</a>
+<span class="k">def</span> <span class="nf">select_topk</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">k</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_dir</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span>
+    <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">copy_ndata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">copy_edata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">output_device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select the neighboring edges with k-largest (or k-smallest) weights of the given</span>
+<span class="sd">    nodes and return the induced subgraph.</span>
+
+<span class="sd">    For each node, a number of inbound (or outbound when ``edge_dir == &#39;out&#39;``) edges</span>
+<span class="sd">    with the largest (or smallest when ``ascending == True``) weights will be chosen.</span>
+<span class="sd">    The graph returned will then contain all the nodes in the original graph, but only</span>
+<span class="sd">    the sampled edges.</span>
+
+<span class="sd">    Node/edge features are not preserved. The original IDs of</span>
+<span class="sd">    the sampled edges are stored as the `dgl.EID` feature in the returned graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The graph.  Must be on CPU.</span>
+<span class="sd">    k : int or dict[etype, int]</span>
+<span class="sd">        The number of edges to be selected for each node on each edge type.</span>
+
+<span class="sd">        This argument can take a single int or a dictionary of edge types and ints.</span>
+<span class="sd">        If a single int is given, DGL will select this number of edges for each node for</span>
+<span class="sd">        every edge type.</span>
+
+<span class="sd">        If -1 is given for a single edge type, all the neighboring edges with that edge</span>
+<span class="sd">        type will be selected.</span>
+<span class="sd">    weight : str</span>
+<span class="sd">        Feature name of the weights associated with each edge.  The feature should have only</span>
+<span class="sd">        one element for each edge.  The feature can be either int32/64 or float32/64.</span>
+<span class="sd">    nodes : tensor or dict, optional</span>
+<span class="sd">        Node IDs to sample neighbors from.</span>
+
+<span class="sd">        This argument can take a single ID tensor or a dictionary of node types and ID tensors.</span>
+<span class="sd">        If a single tensor is given, the graph must only have one type of nodes.</span>
+
+<span class="sd">        If None, DGL will select the edges for all nodes.</span>
+<span class="sd">    edge_dir : str, optional</span>
+<span class="sd">        Determines whether to sample inbound or outbound edges.</span>
+
+<span class="sd">        Can take either ``in`` for inbound edges or ``out`` for outbound edges.</span>
+<span class="sd">    ascending : bool, optional</span>
+<span class="sd">        If True, DGL will return edges with k-smallest weights instead of</span>
+<span class="sd">        k-largest weights.</span>
+<span class="sd">    copy_ndata: bool, optional</span>
+<span class="sd">        If True, the node features of the new graph are copied from</span>
+<span class="sd">        the original graph. If False, the new graph will not have any</span>
+<span class="sd">        node features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    copy_edata: bool, optional</span>
+<span class="sd">        If True, the edge features of the new graph are copied from</span>
+<span class="sd">        the original graph.  If False, the new graph will not have any</span>
+<span class="sd">        edge features.</span>
+
+<span class="sd">        (Default: True)</span>
+<span class="sd">    output_device : Framework-specific device context object, optional</span>
+<span class="sd">        The output device.  Default is the same as the input graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        A sampled subgraph containing only the sampled neighboring edges.  It is on CPU.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If :attr:`copy_ndata` or :attr:`copy_edata` is True, same tensors are used as</span>
+<span class="sd">    the node or edge features of the original graph and the new graph.</span>
+<span class="sd">    As a result, users should avoid performing in-place operations</span>
+<span class="sd">    on the node features of the new graph to avoid feature corruption.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 0, 1, 1, 2, 2], [1, 2, 0, 1, 2, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;weight&#39;] = torch.FloatTensor([0, 1, 0, 1, 0, 1])</span>
+<span class="sd">    &gt;&gt;&gt; sg = dgl.sampling.select_topk(g, 1, &#39;weight&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; sg.edges(order=&#39;eid&#39;)</span>
+<span class="sd">    (tensor([2, 1, 0]), tensor([0, 1, 2]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Rectify nodes to a dictionary</span>
+    <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ntype</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">)),</span> <span class="n">g</span><span class="o">.</span><span class="n">idtype</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;Must specify node type when the graph is not homogeneous.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">nodes</span><span class="p">}</span>
+    <span class="k">assert</span> <span class="n">g</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="s2">&quot;Graph must be on CPU.&quot;</span>
+
+    <span class="c1"># Parse nodes into a list of NDArrays.</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_tensor_dict</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">context_of</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">nodes_all_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">nodes_all_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nodes_all_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ctx</span><span class="o">=</span><span class="n">nd</span><span class="o">.</span><span class="n">cpu</span><span class="p">()))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">k_array</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s2">&quot;K value must be specified for each edge type &quot;</span>
+                <span class="s2">&quot;if a dict is provided.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">k_array</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">k_array</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">get_etype_id</span><span class="p">(</span><span class="n">etype</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="n">k_array</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">k_array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+
+    <span class="n">weight_arrays</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">weight_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">weight</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="s1">&#39;Edge weights &quot;</span><span class="si">{}</span><span class="s1">&quot; do not exist for relation graph &quot;</span><span class="si">{}</span><span class="s1">&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">weight</span><span class="p">,</span> <span class="n">etype</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="n">subgidx</span> <span class="o">=</span> <span class="n">_CAPI_DGLSampleNeighborsTopk</span><span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span>
+        <span class="n">nodes_all_types</span><span class="p">,</span>
+        <span class="n">k_array</span><span class="p">,</span>
+        <span class="n">edge_dir</span><span class="p">,</span>
+        <span class="n">weight_arrays</span><span class="p">,</span>
+        <span class="nb">bool</span><span class="p">(</span><span class="n">ascending</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">induced_edges</span> <span class="o">=</span> <span class="n">subgidx</span><span class="o">.</span><span class="n">induced_edges</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">subgidx</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">etypes</span><span class="p">)</span>
+
+    <span class="c1"># handle features</span>
+    <span class="k">if</span> <span class="n">copy_ndata</span><span class="p">:</span>
+        <span class="n">node_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_node_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">node_frames</span><span class="o">=</span><span class="n">node_frames</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">copy_edata</span><span class="p">:</span>
+        <span class="n">edge_frames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">extract_edge_subframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">set_new_frames</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">edge_frames</span><span class="o">=</span><span class="n">edge_frames</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">output_device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ret</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_device</span><span class="p">)</span></div>
+
+
+
+<span class="n">DGLGraph</span><span class="o">.</span><span class="n">select_topk</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">alias_func</span><span class="p">(</span><span class="n">select_topk</span><span class="p">)</span>
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.sampling.neighbor&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

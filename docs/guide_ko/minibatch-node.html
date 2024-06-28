@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.1 이웃 샘플링을 사용한 노드 분류 GNN 모델 학습하기 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.2 이웃 샘플링을 사용한 에지 분류 GNN 모델 학습하기" href="minibatch-edge.html" />
+    <link rel="prev" title="6장: 큰 그래프에 대한 stochastic 학습" href="minibatch.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.1 이웃 샘플링을 사용한 노드 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 이웃 샘플링을 사용한 에지 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 이웃 샘플링을 사용한 링크 예측 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 이웃 샘플러 커스터마이징하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.6 큰 그래프들에 대핸 정확한 오프라인 추론</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-gpu-sampling.html">6.7 이웃 샘플링에 GPU 사용하기</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">7장: 분산 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+      <li class="breadcrumb-item active">6.1 이웃 샘플링을 사용한 노드 분류 GNN 모델 학습하기</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/minibatch-node.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gnn">
+<span id="guide-ko-minibatch-node-classification-sampler"></span><h1>6.1 이웃 샘플링을 사용한 노드 분류 GNN 모델 학습하기<a class="headerlink" href="#gnn" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/minibatch-node.html#guide-minibatch-node-classification-sampler"><span class="std std-ref">(English Version)</span></a></p>
+<p>Stochastic 학습이 되도록 모델을 만들기 위해서는, 다음과 같은 것이 필요하다.</p>
+<ul class="simple">
+<li><p>이웃 샘플러 정의하기</p></li>
+<li><p>미니 배치 학습이 되도록 모델을 변경하기</p></li>
+<li><p>학습 룹 고치기</p></li>
+</ul>
+<p>이제, 이 단계를 어떻게 구현하는 하나씩 살펴보자.</p>
+<section id="id1">
+<h2>이웃 샘플러 및 데이터 로더 정의하기<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>DGL는 계산하기를 원하는 노드들에 대해서 각 레이어에서 필요한 computation dependency들을 생성하는 몇 가지 이웃 샘플러 클래스들을 가지고 있다.</p>
+<p>가장 단순한 이웃 샘플러는 <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerFullNeighborSampler</span></code> 로, 노드가 그 노드의 모든 이웃들로부터 메시지를 수집하도록 해준다.</p>
+<p>DGL의 샘플러를 사용하기 위해서는 이를 미니배치에 있는 노드들의 집한은 iterate하는 <code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code> 와 합쳐야한다.</p>
+<p>다음 예제 코드는 배치들의 학습 노드 ID 배열 <code class="docutils literal notranslate"><span class="pre">train_nids</span></code> 를 iterate하고, 생성된 MFG(Message Flow Graph)들의 목록을 GPU로 옮기는 PyTorch DataLoader를 만든다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">import</span> <span class="nn">dgl.nn</span> <span class="k">as</span> <span class="nn">dglnn</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">MultiLayerFullNeighborSampler</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">NodeDataLoader</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">train_nids</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>DataLoader를 iterate 하면서 각 레이어에 대한 computation dependency들을 대표하도록 특별하게 생성된 그래프들의 리스트를 얻을 수 있다. DGL에서 이것들을 <em>message flow graph</em> (MFG) 라고 부른다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Iterator는 매번 세개의 아이템을 생성한다. <code class="docutils literal notranslate"><span class="pre">input_nodes</span></code> 는 <code class="docutils literal notranslate"><span class="pre">output_nodes</span></code> 의 representation을 계산하는데 필요한 노드들을 담고 있다. <code class="docutils literal notranslate"><span class="pre">block</span></code> 은 그것의 노드가 출력으로 계산되어야 할 각 GNN 레이어에 대해 어떤 노드 representation들이 입력으로 필요한지, 입력 노드들의 representation들이 출력 노드로 어떻게 전파되어야 하는지를 설명한다.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Message flow graph의 개념은 <span class="xref std std-doc">Stochastic Training Tutorial</span> 을 참고하자.</p>
+<p>지원되는 빌드인 샘플러들의 전체 목록은 <a class="reference internal" href="../api/python/dgl.dataloading.html#api-dataloading-neighbor-sampling"><span class="std std-ref">neighborhood sampler API reference</span></a> 에서 찾아볼 수 있다.</p>
+<p><a class="reference internal" href="minibatch-custom-sampler.html#guide-ko-minibatch-customizing-neighborhood-sampler"><span class="std std-ref">6.4 이웃 샘플러 커스터마이징하기</span></a> 에는 여러분만의 이웃 샘플러 만드는 방법과 MFG 개념에 대한 보다 상세한 설명을 담고 있다.</p>
+</div>
+</section>
+<section id="guide-ko-minibatch-node-classification-model">
+<span id="id2"></span><h2>모델을 미니-배치 학습에 맞게 만들기<a class="headerlink" href="#guide-ko-minibatch-node-classification-model" title="Link to this heading"></a></h2>
+<p>만약 DGL에서 제공하는 메시지 전달 모듈만을 사용하고 있다면, 모델을 미니-배치 학습에 맞도록 수정할 것은 적다. 멀티-레이어 GCN을 예로 들어보자. 그래프 전체에 대한 모델 구현은 아래와 같다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TwoLayerGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>이 때, 변경해야할 것은 <code class="docutils literal notranslate"><span class="pre">g</span></code> 를 앞에서 생성된 <code class="docutils literal notranslate"><span class="pre">block</span></code> 로 교체하는 것이 전부이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StochasticTwoLayerGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>위 DGL <code class="docutils literal notranslate"><span class="pre">GraphConv</span></code> 모듈들은 데이터 로더가 생성한 <code class="docutils literal notranslate"><span class="pre">block</span></code> 의 원소를 argument로 받는다.</p>
+<p><span class="xref std std-ref">The API reference of each NN module</span> 는 모듈이 MFG를 argument로 받을 수 있는지 없는지를 알려주고 있다.</p>
+<p>만약 여러분 자신의 메시지 전달 모듈을 사용하고 싶다면, <a class="reference internal" href="minibatch-nn.html#guide-ko-minibatch-custom-gnn-module"><span class="std std-ref">6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기</span></a> 를 참고하자.</p>
+</section>
+<section id="id3">
+<h2>학습 룹<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>단순하게 학습 룹은 커스터마이징된 배치 iterator를 사용해서 데이터셋을 iterating하는 것으로 구성된다. MFG들의 리스트를 반환하는 매 iteration마다, 다음과 같은 일을 한다.</p>
+<ol class="arabic">
+<li><p>입력 노드들의 노드 피처들을 GPU로 로딩한다. 노드 피쳐들은 메모리나 외부 저장소에 저장되어 있을 수 있다. 그래프 전체 학습에서 모든 노드들의 피처를 로드하는 것과는 다르게, 입력 노드들의 피처만 로드하면 된다는 점을 유의하자.</p>
+<p>만약 피쳐들이 <code class="docutils literal notranslate"><span class="pre">g.ndata</span></code> 에 저장되어 있다면, 그 피쳐들은 <code class="docutils literal notranslate"><span class="pre">blocks[0].srcdata</span></code> 에 저장된 피쳐들, 즉 첫번째 MFG의 소스 노드들의 피처들을 접근해서 로드될 수 있다. 여기서 노드들은 최종 representation을 계산하는데 필요한 모든 노드들을 의미한다.</p>
+</li>
+</ol>
+<p>2. MFG들의 리스트 및 입력 노드 피쳐들을 멀티-레이어 GNN에 입력해서 결과를
+얻는다.</p>
+<ol class="arabic" start="3">
+<li><p>출력 노드에 해당하는 노드 레이블을 GPU에 로드한다. 비슷하게, 노드 레이블은 메모리나 외부 저장소에 저장되어 있을 수 있다. 역시, 그래프 전체 학습에서 모든 노드들의 레이블을 로드하는 것과는 다르게, 출력 노드들의 레이블만 로드한다는 점을 알아두자.</p>
+<p>피처가 <code class="docutils literal notranslate"><span class="pre">g.ndata</span></code> 에 저장되어 있다면, 레이블은 <code class="docutils literal notranslate"><span class="pre">blocks[-1].dstdata</span></code> 의 피쳐들 즉, 마지막 MFG의 목적지 노드들의 피쳐들을 접근해서 로드될 수 있다. 이것들은 최종 representation을 계산할 노드들과 같다.</p>
+</li>
+<li><p>loss를 계산한 후, backpropagate를 수행한다.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">StochasticTwoLayerGCN</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">]</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
+    <span class="n">output_labels</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+    <span class="n">output_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">output_labels</span><span class="p">,</span> <span class="n">output_predictions</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>DGL에서는 end-to-end stochastic 학습 예제인 <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/graphsage/node_classification.py">GraphSAGE
+implementation</a> 를 제공한다.</p>
+</section>
+<section id="heterogeneous">
+<h2>Heterogeneous 그래프의 경우<a class="headerlink" href="#heterogeneous" title="Link to this heading"></a></h2>
+<p>Heterogeneous 그래프에 대한 노드 분류 그래프 뉴럴 네트워크를 학습하는 것은 간단하다.</p>
+<p><a class="reference internal" href="training-node.html#guide-ko-training-rgcn-node-classification"><span class="std std-ref">how to train a 2-layer RGCN on full graph</span></a> 를 예로 들어보자. 미니-배치 학습을 하는 RGCN 구현 코드는 이 예제와 매우 비슷하다. (간단하게 하기 위해서 self-loop, non-linearity와 기본적인 decomposition은 제거했다.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StochasticTwoLayerRGCN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feat</span><span class="p">,</span> <span class="n">hidden_feat</span><span class="p">,</span> <span class="n">out_feat</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+                <span class="n">rel</span> <span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">in_feat</span><span class="p">,</span> <span class="n">hidden_feat</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span>
+            <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">HeteroGraphConv</span><span class="p">({</span>
+                <span class="n">rel</span> <span class="p">:</span> <span class="n">dglnn</span><span class="o">.</span><span class="n">GraphConv</span><span class="p">(</span><span class="n">hidden_feat</span><span class="p">,</span> <span class="n">out_feat</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">rel_names</span>
+            <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>또한, DGL이 제공하는 일부 샘플러들은 heterogeneous 그래프를 지원한다. 예를 들어, 제공되는 <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerFullNeighborSampler</span></code> 클래스 및 <code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code> 클래스를 stochastic 학습에도 여전히 사용할 수 있다. 전체 이웃 샘플링에서 다른 점은 학습 셋에 노드 타입들과 노드 ID들의 사전을 명시해야한다는 것 뿐이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">MultiLayerFullNeighborSampler</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">NodeDataLoader</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">train_nid_dict</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>학습 룹은 homogeneous 그래프에 대한 학습 룹이랑 거의 유사하다. 다른 점은 <code class="docutils literal notranslate"><span class="pre">compute_loss</span></code> 의 구현에서 노드 타입들와 예측 결과라는 두개의 dictionary들을 인자로 받는다는 것이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">StochasticTwoLayerRGCN</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">etypes</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">]</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span>     <span class="c1"># returns a dict</span>
+    <span class="n">output_labels</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dstdata</span>     <span class="c1"># returns a dict</span>
+    <span class="n">output_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">output_labels</span><span class="p">,</span> <span class="n">output_predictions</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>End-to-end stochastic 학습 예제는 <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/rgcn-hetero/entity_classify_mb.py">RGCN
+implementation</a> 를 참고하자.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch.html" class="btn btn-neutral float-left" title="6장: 큰 그래프에 대한 stochastic 학습" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-edge.html" class="btn btn-neutral float-right" title="6.2 이웃 샘플링을 사용한 에지 분류 GNN 모델 학습하기" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

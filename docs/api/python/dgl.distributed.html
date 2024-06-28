@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.distributed &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dgl.distributed.initialize" href="../../generated/dgl.distributed.initialize.html" />
+    <link rel="prev" title="dgl.DGLGraph.local_scope" href="../../generated/dgl.DGLGraph.local_scope.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">dgl.distributed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#initialization">Initialization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dgl.distributed.initialize.html">dgl.distributed.initialize</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#distributed-graph">Distributed Graph</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dgl.distributed.DistGraph"><code class="docutils literal notranslate"><span class="pre">DistGraph</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.barrier"><code class="docutils literal notranslate"><span class="pre">DistGraph.barrier()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.device"><code class="docutils literal notranslate"><span class="pre">DistGraph.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.edata"><code class="docutils literal notranslate"><span class="pre">DistGraph.edata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.edge_attr_schemes"><code class="docutils literal notranslate"><span class="pre">DistGraph.edge_attr_schemes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.edges"><code class="docutils literal notranslate"><span class="pre">DistGraph.edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.etypes"><code class="docutils literal notranslate"><span class="pre">DistGraph.etypes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.find_edges"><code class="docutils literal notranslate"><span class="pre">DistGraph.find_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.get_edge_partition_policy"><code class="docutils literal notranslate"><span class="pre">DistGraph.get_edge_partition_policy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.get_etype_id"><code class="docutils literal notranslate"><span class="pre">DistGraph.get_etype_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.get_node_partition_policy"><code class="docutils literal notranslate"><span class="pre">DistGraph.get_node_partition_policy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.get_ntype_id"><code class="docutils literal notranslate"><span class="pre">DistGraph.get_ntype_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.get_partition_book"><code class="docutils literal notranslate"><span class="pre">DistGraph.get_partition_book()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.idtype"><code class="docutils literal notranslate"><span class="pre">DistGraph.idtype</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.in_degrees"><code class="docutils literal notranslate"><span class="pre">DistGraph.in_degrees()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.local_partition"><code class="docutils literal notranslate"><span class="pre">DistGraph.local_partition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.ndata"><code class="docutils literal notranslate"><span class="pre">DistGraph.ndata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.node_attr_schemes"><code class="docutils literal notranslate"><span class="pre">DistGraph.node_attr_schemes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.nodes"><code class="docutils literal notranslate"><span class="pre">DistGraph.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.ntypes"><code class="docutils literal notranslate"><span class="pre">DistGraph.ntypes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.num_edges"><code class="docutils literal notranslate"><span class="pre">DistGraph.num_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.num_nodes"><code class="docutils literal notranslate"><span class="pre">DistGraph.num_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.number_of_edges"><code class="docutils literal notranslate"><span class="pre">DistGraph.number_of_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.number_of_nodes"><code class="docutils literal notranslate"><span class="pre">DistGraph.number_of_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.out_degrees"><code class="docutils literal notranslate"><span class="pre">DistGraph.out_degrees()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistGraph.rank"><code class="docutils literal notranslate"><span class="pre">DistGraph.rank()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#distributed-tensor">Distributed Tensor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dgl.distributed.DistTensor"><code class="docutils literal notranslate"><span class="pre">DistTensor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistTensor.dtype"><code class="docutils literal notranslate"><span class="pre">DistTensor.dtype</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistTensor.name"><code class="docutils literal notranslate"><span class="pre">DistTensor.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistTensor.part_policy"><code class="docutils literal notranslate"><span class="pre">DistTensor.part_policy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistTensor.shape"><code class="docutils literal notranslate"><span class="pre">DistTensor.shape</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#distributed-node-embedding">Distributed Node Embedding</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dgl.distributed.DistEmbedding"><code class="docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#distributed-embedding-optimizer">Distributed embedding optimizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dgl.distributed.optim.SparseAdagrad"><code class="docutils literal notranslate"><span class="pre">SparseAdagrad</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.optim.SparseAdagrad.load"><code class="docutils literal notranslate"><span class="pre">SparseAdagrad.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.optim.SparseAdagrad.save"><code class="docutils literal notranslate"><span class="pre">SparseAdagrad.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.optim.SparseAdagrad.step"><code class="docutils literal notranslate"><span class="pre">SparseAdagrad.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dgl.distributed.optim.SparseAdam"><code class="docutils literal notranslate"><span class="pre">SparseAdam</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.optim.SparseAdam.load"><code class="docutils literal notranslate"><span class="pre">SparseAdam.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.optim.SparseAdam.save"><code class="docutils literal notranslate"><span class="pre">SparseAdam.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.optim.SparseAdam.step"><code class="docutils literal notranslate"><span class="pre">SparseAdam.step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#distributed-workload-split">Distributed workload split</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dgl.distributed.node_split.html">dgl.distributed.node_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dgl.distributed.edge_split.html">dgl.distributed.edge_split</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#distributed-sampling">Distributed Sampling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#distributed-dataloader">Distributed DataLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.DistDataLoader"><code class="docutils literal notranslate"><span class="pre">DistDataLoader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#distributed-graph-sampling-operators">Distributed Graph Sampling Operators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.sample_neighbors.html">dgl.distributed.sample_neighbors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.sample_etype_neighbors.html">dgl.distributed.sample_etype_neighbors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.find_edges.html">dgl.distributed.find_edges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.in_subgraph.html">dgl.distributed.in_subgraph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#partition">Partition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#graph-partition-book">Graph partition book</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.GraphPartitionBook"><code class="docutils literal notranslate"><span class="pre">GraphPartitionBook</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dgl.distributed.PartitionPolicy"><code class="docutils literal notranslate"><span class="pre">PartitionPolicy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#split-and-load-partitions">Split and Load Partitions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.load_partition.html">dgl.distributed.load_partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.load_partition_feats.html">dgl.distributed.load_partition_feats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.load_partition_book.html">dgl.distributed.load_partition_book</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.partition_graph.html">dgl.distributed.partition_graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generated/dgl.distributed.dgl_partition_to_graphbolt.html">dgl.distributed.dgl_partition_to_graphbolt</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dgl.distributed</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/python/dgl.distributed.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dgl-distributed">
+<span id="api-distributed"></span><h1>dgl.distributed<a class="headerlink" href="#dgl-distributed" title="Link to this heading"></a></h1>
+<p>DGL distributed module contains classes and functions to support
+distributed Graph Neural Network training and inference on a cluster of
+machines.</p>
+<p>This includes a few submodules:</p>
+<ul class="simple">
+<li><p>distributed data structures including distributed graph, distributed tensor
+and distributed embeddings.</p></li>
+<li><p>distributed sampling.</p></li>
+<li><p>distributed workload split at runtime.</p></li>
+<li><p>graph partition.</p></li>
+</ul>
+<section id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(ip_config[, max_queue_size, ...])</p></td>
+<td><p>Initialize DGL's distributed module</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="distributed-graph">
+<h2>Distributed Graph<a class="headerlink" href="#distributed-graph" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.</span></span><span class="sig-name descname"><span class="pre">DistGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph" title="Link to this definition"></a></dt>
+<dd><p>The class for accessing a distributed graph.</p>
+<p>This class provides a subset of DGLGraph APIs for accessing partitioned graph data in
+distributed GNN training and inference. Thus, its main use case is to work with
+distributed sampling APIs to generate mini-batches and perform forward and
+backward computation on the mini-batches.</p>
+<p>The class can run in two modes: the standalone mode and the distributed mode.</p>
+<ul class="simple">
+<li><p>When a user runs the training script normally, <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> will be in the standalone mode.
+In this mode, the input data must be constructed by
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">partition_graph()</span></code> with only one partition. This mode is
+used for testing and debugging purpose. In this mode, users have to provide <code class="docutils literal notranslate"><span class="pre">part_config</span></code>
+so that <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> can load the input graph.</p></li>
+<li><p>When a user runs the training script with the distributed launch script, <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> will
+be set into the distributed mode. This is used for actual distributed training. All data of
+partitions are loaded by the <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> servers, which are created by DGL’s launch script.
+<code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> connects with the servers to access the partitioned graph data.</p></li>
+</ul>
+<p>Currently, the <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> servers and clients run on the same set of machines
+in the distributed mode. <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> uses shared-memory to access the partition data
+in the local machine. This gives the best performance for distributed training</p>
+<p>Users may want to run <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> servers and clients on separate sets of machines.
+In this case, a user may want to disable shared memory by passing
+<code class="docutils literal notranslate"><span class="pre">disable_shared_mem=False</span></code> when creating <code class="docutils literal notranslate"><span class="pre">DistGraphServer</span></code>. When shared memory is disabled,
+a user has to pass a partition book.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The name of the graph. This name has to be the same as the one used for
+partitioning a graph in <code class="xref py py-meth docutils literal notranslate"><span class="pre">dgl.distributed.partition.partition_graph()</span></code>.</p></li>
+<li><p><strong>gpb</strong> (<a class="reference internal" href="#dgl.distributed.GraphPartitionBook" title="dgl.distributed.GraphPartitionBook"><em>GraphPartitionBook</em></a><em>, </em><em>optional</em>) – The partition book object. Normally, users do not need to provide the partition book.
+This argument is necessary only when users want to run server process and trainer
+processes on different machines.</p></li>
+<li><p><strong>part_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The path of partition configuration file generated by
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">dgl.distributed.partition.partition_graph()</span></code>. It’s used in the standalone mode.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The example shows the creation of <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> in the standalone mode.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">partition_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_hops</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">part_method</span><span class="o">=</span><span class="s1">&#39;metis&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                <span class="n">out_path</span><span class="o">=</span><span class="s1">&#39;output/&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="n">part_config</span><span class="o">=</span><span class="s1">&#39;output/graph_name.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The example shows the creation of <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code> in the distributed mode.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph-name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The code below shows the mini-batch training using <code class="docutils literal notranslate"><span class="pre">DistGraph</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">seeds</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seeds</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistDataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="gp">... </span>                                            <span class="n">collate_fn</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">feat</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">][</span><span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]]</span>
+<span class="gp">... </span>    <span class="n">labels</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">][</span><span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]]</span>
+<span class="gp">... </span>    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">feat</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>DGL’s distributed training by default runs server processes and trainer processes on the same
+set of machines. If users need to run them on different sets of machines, it requires
+manually setting up servers and trainers. The setup is not fully tested yet.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.barrier">
+<span class="sig-name descname"><span class="pre">barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.barrier" title="Link to this definition"></a></dt>
+<dd><p>Barrier for all client nodes.</p>
+<p>This API blocks the current process untill all the clients invoke this API.
+Please use this API with caution.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.device">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.device" title="Link to this definition"></a></dt>
+<dd><p>Get the device context of this graph.</p>
+<p class="rubric">Examples</p>
+<p>The following example uses PyTorch backend.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">heterograph</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;plays&#39;</span><span class="p">,</span> <span class="s1">&#39;game&#39;</span><span class="p">):</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="go">device(type=&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="go">device(type=&#39;cuda&#39;, index=0)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Device context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.edata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edata</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.edata" title="Link to this definition"></a></dt>
+<dd><p>Return the data view of all the edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The data view in the distributed graph storage.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>EdgeDataView</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.edge_attr_schemes">
+<span class="sig-name descname"><span class="pre">edge_attr_schemes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.edge_attr_schemes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.edge_attr_schemes" title="Link to this definition"></a></dt>
+<dd><p>Return the edge feature schemes.</p>
+<p>Each feature scheme is a named tuple that stores the shape and data type
+of the edge feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The schemes of edge feature columns.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a> of str to schemes</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The following uses PyTorch backend.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">edge_attr_schemes</span><span class="p">()</span>
+<span class="go">{&#39;h&#39;: Scheme(shape=(4,), dtype=torch.float32)}</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.DistGraph.node_attr_schemes" title="dgl.distributed.DistGraph.node_attr_schemes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">node_attr_schemes</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.edges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.edges" title="Link to this definition"></a></dt>
+<dd><p>Return an edge view</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.etypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">etypes</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.etypes" title="Link to this definition"></a></dt>
+<dd><p>Return the list of edge types of this graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">DistGraph</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">etypes</span>
+<span class="go">[&#39;_E&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.find_edges">
+<span class="sig-name descname"><span class="pre">find_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.find_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.find_edges" title="Link to this definition"></a></dt>
+<dd><p>Given an edge ID array, return the source
+and destination node ID array <code class="docutils literal notranslate"><span class="pre">s</span></code> and <code class="docutils literal notranslate"><span class="pre">d</span></code>.  <code class="docutils literal notranslate"><span class="pre">s[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">d[i]</span></code>
+are source and destination node ID for edge <code class="docutils literal notranslate"><span class="pre">eid[i]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edges</strong> (<em>Int Tensor</em>) – <dl class="simple">
+<dt>Each element is an ID. The tensor must have the same device type</dt><dd><p>and ID data type as the graph’s.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>)</em><em>, </em><em>optional</em>) – <p>The type names of the edges. The allowed type name formats are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">(str,</span> <span class="pre">str,</span> <span class="pre">str)</span></code> for source node type, edge type and destination node type.</p></li>
+<li><p>or one <code class="docutils literal notranslate"><span class="pre">str</span></code> edge type name if the name can uniquely identify a
+triplet format in the graph.</p></li>
+</ul>
+<p>Can be omitted if the graph has only one type of edges.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>tensor</em> – The source node ID array.</p></li>
+<li><p><em>tensor</em> – The destination node ID array.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.get_edge_partition_policy">
+<span class="sig-name descname"><span class="pre">get_edge_partition_policy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">etype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.get_edge_partition_policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.get_edge_partition_policy" title="Link to this definition"></a></dt>
+<dd><p>Get the partition policy for an edge type.</p>
+<p>When creating a new distributed tensor, we need to provide a partition policy
+that indicates how to distribute data of the distributed tensor in a cluster
+of machines. When we load a distributed graph in the cluster, we have pre-defined
+partition policies for each node type and each edge type. By providing
+the edge type, we can reference to the pre-defined partition policy for the edge type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>)</em>) – The edge type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The partition policy for the edge type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dgl.distributed.PartitionPolicy" title="dgl.distributed.PartitionPolicy">PartitionPolicy</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.get_etype_id">
+<span class="sig-name descname"><span class="pre">get_etype_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">etype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.get_etype_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.get_etype_id" title="Link to this definition"></a></dt>
+<dd><p>Return the id of the given edge type.</p>
+<p>etype can also be None. If so, there should be only one edge type in the
+graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Edge type</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.get_node_partition_policy">
+<span class="sig-name descname"><span class="pre">get_node_partition_policy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.get_node_partition_policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.get_node_partition_policy" title="Link to this definition"></a></dt>
+<dd><p>Get the partition policy for a node type.</p>
+<p>When creating a new distributed tensor, we need to provide a partition policy
+that indicates how to distribute data of the distributed tensor in a cluster
+of machines. When we load a distributed graph in the cluster, we have pre-defined
+partition policies for each node type and each edge type. By providing
+the node type, we can reference to the pre-defined partition policy for the node type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ntype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The node type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The partition policy for the node type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dgl.distributed.PartitionPolicy" title="dgl.distributed.PartitionPolicy">PartitionPolicy</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.get_ntype_id">
+<span class="sig-name descname"><span class="pre">get_ntype_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.get_ntype_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.get_ntype_id" title="Link to this definition"></a></dt>
+<dd><p>Return the ID of the given node type.</p>
+<p>ntype can also be None. If so, there should be only one node type in the
+graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ntype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Node type</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.get_partition_book">
+<span class="sig-name descname"><span class="pre">get_partition_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.get_partition_book"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.get_partition_book" title="Link to this definition"></a></dt>
+<dd><p>Get the partition information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Object that stores all graph partition information.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dgl.distributed.GraphPartitionBook" title="dgl.distributed.GraphPartitionBook">GraphPartitionBook</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.idtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">idtype</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.idtype" title="Link to this definition"></a></dt>
+<dd><p>The dtype of graph index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>th.int32/th.int64 or tf.int32/tf.int64 etc.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>backend dtype object</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">long</span></code>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.in_degrees">
+<span class="sig-name descname"><span class="pre">in_degrees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'__ALL__'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.in_degrees"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.in_degrees" title="Link to this definition"></a></dt>
+<dd><p>Return the in-degree(s) of the given nodes.</p>
+<p>It computes the in-degree(s).
+It does not support heterogeneous graphs yet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> (<em>node IDs</em>) – <p>The node IDs. The allowed formats are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: A single node.</p></li>
+<li><p>Int Tensor: Each element is a node ID. The tensor must have the same device type
+and ID data type as the graph’s.</p></li>
+<li><p>iterable[int]: Each element is a node ID.</p></li>
+</ul>
+<p>If not given, return the in-degrees of all the nodes.</p>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The in-degree(s) of the node(s) in a Tensor. The i-th element is the in-degree
+of the i-th input node. If <code class="xref py py-attr docutils literal notranslate"><span class="pre">v</span></code> is an <code class="docutils literal notranslate"><span class="pre">int</span></code>, return an <code class="docutils literal notranslate"><span class="pre">int</span></code> too.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a> or Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The following example uses PyTorch backend.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+</pre></div>
+</div>
+<p>Query for all nodes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">()</span>
+<span class="go">tensor([0, 2, 1, 1])</span>
+</pre></div>
+</div>
+<p>Query for nodes 1 and 2.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">tensor([2, 1])</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.DistGraph.out_degrees" title="dgl.distributed.DistGraph.out_degrees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_degrees</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.local_partition">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">local_partition</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.local_partition" title="Link to this definition"></a></dt>
+<dd><p>Return the local partition on the client</p>
+<p>DistGraph provides a global view of the distributed graph. Internally,
+it may contains a partition of the graph if it is co-located with
+the server. When servers and clients run on separate sets of machines,
+this returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The local partition</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph">DGLGraph</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.ndata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ndata</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.ndata" title="Link to this definition"></a></dt>
+<dd><p>Return the data view of all the nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The data view in the distributed graph storage.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>NodeDataView</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.node_attr_schemes">
+<span class="sig-name descname"><span class="pre">node_attr_schemes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.node_attr_schemes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.node_attr_schemes" title="Link to this definition"></a></dt>
+<dd><p>Return the node feature schemes.</p>
+<p>Each feature scheme is a named tuple that stores the shape and data type
+of the node feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The schemes of node feature columns.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a> of str to schemes</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The following uses PyTorch backend.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">node_attr_schemes</span><span class="p">()</span>
+<span class="go">{&#39;h&#39;: Scheme(shape=(4,), dtype=torch.float32)}</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.DistGraph.edge_attr_schemes" title="dgl.distributed.DistGraph.edge_attr_schemes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge_attr_schemes</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.nodes" title="Link to this definition"></a></dt>
+<dd><p>Return a node view</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.ntypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ntypes</span></span><a class="headerlink" href="#dgl.distributed.DistGraph.ntypes" title="Link to this definition"></a></dt>
+<dd><p>Return the list of node types of this graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">DistGraph</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">ntypes</span>
+<span class="go">[&#39;_U&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.num_edges">
+<span class="sig-name descname"><span class="pre">num_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">etype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.num_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.num_edges" title="Link to this definition"></a></dt>
+<dd><p>Return the total number of edges in the distributed graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>)</em><em>, </em><em>optional</em>) – <p>The type name of the edges. The allowed type name formats are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">(str,</span> <span class="pre">str,</span> <span class="pre">str)</span></code> for source node type, edge type and destination node type.</p></li>
+<li><p>or one <code class="docutils literal notranslate"><span class="pre">str</span></code> edge type name if the name can uniquely identify a
+triplet format in the graph.</p></li>
+</ul>
+<p>If not provided, return the total number of edges regardless of the types
+in the graph.</p>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of edges</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;ogb-product&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+<span class="go">123718280</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.num_nodes">
+<span class="sig-name descname"><span class="pre">num_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.num_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.num_nodes" title="Link to this definition"></a></dt>
+<dd><p>Return the total number of nodes in the distributed graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ntype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The node type name. If given, it returns the number of nodes of the
+type. If not given (default), it returns the total number of nodes of all types.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of nodes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;ogb-product&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+<span class="go">2449029</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.number_of_edges">
+<span class="sig-name descname"><span class="pre">number_of_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">etype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.number_of_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.number_of_edges" title="Link to this definition"></a></dt>
+<dd><p>Alias of <a class="reference internal" href="#dgl.distributed.DistGraph.num_edges" title="dgl.distributed.DistGraph.num_edges"><code class="xref py py-func docutils literal notranslate"><span class="pre">num_edges()</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.number_of_nodes">
+<span class="sig-name descname"><span class="pre">number_of_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ntype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.number_of_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.number_of_nodes" title="Link to this definition"></a></dt>
+<dd><p>Alias of <a class="reference internal" href="#dgl.distributed.DistGraph.num_nodes" title="dgl.distributed.DistGraph.num_nodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">num_nodes()</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.out_degrees">
+<span class="sig-name descname"><span class="pre">out_degrees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'__ALL__'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.out_degrees"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.out_degrees" title="Link to this definition"></a></dt>
+<dd><p>Return the out-degree(s) of the given nodes.</p>
+<p>It computes the out-degree(s).
+It does not support heterogeneous graphs yet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>u</strong> (<em>node IDs</em>) – <p>The node IDs. The allowed formats are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: A single node.</p></li>
+<li><p>Int Tensor: Each element is a node ID. The tensor must have the same device type
+and ID data type as the graph’s.</p></li>
+<li><p>iterable[int]: Each element is a node ID.</p></li>
+</ul>
+<p>If not given, return the in-degrees of all the nodes.</p>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The out-degree(s) of the node(s) in a Tensor. The i-th element is the out-degree
+of the i-th input node. If <code class="xref py py-attr docutils literal notranslate"><span class="pre">v</span></code> is an <code class="docutils literal notranslate"><span class="pre">int</span></code>, return an <code class="docutils literal notranslate"><span class="pre">int</span></code> too.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a> or Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The following example uses PyTorch backend.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+</pre></div>
+</div>
+<p>Query for all nodes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">out_degrees</span><span class="p">()</span>
+<span class="go">tensor([2, 2, 0, 0])</span>
+</pre></div>
+</div>
+<p>Query for nodes 1 and 2.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">out_degrees</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">tensor([2, 0])</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.DistGraph.in_degrees" title="dgl.distributed.DistGraph.in_degrees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_degrees</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.DistGraph.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_graph.html#DistGraph.rank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistGraph.rank" title="Link to this definition"></a></dt>
+<dd><p>The rank of the current DistGraph.</p>
+<p>This returns a unique number to identify the DistGraph object among all of
+the client processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The rank of the current DistGraph.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="distributed-tensor">
+<h2>Distributed Tensor<a class="headerlink" href="#distributed-tensor" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.DistTensor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.</span></span><span class="sig-name descname"><span class="pre">DistTensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_tensor.html#DistTensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistTensor" title="Link to this definition"></a></dt>
+<dd><p>Distributed tensor.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> references to a distributed tensor sharded and stored in a cluster of machines.
+It has the same interface as Pytorch Tensor to access its metadata (e.g., shape and data type).
+To access data in a distributed tensor, it supports slicing rows and writing data to rows.
+It does not support any operators of a deep learning framework, such as addition and
+multiplication.</p>
+<p>Currently, distributed tensors are designed to store node data and edge data of a distributed
+graph. Therefore, their first dimensions have to be the number of nodes or edges in the graph.
+The tensors are sharded in the first dimension based on the partition policy of nodes
+or edges. When a distributed tensor is created, the partition policy is automatically
+determined based on the first dimension if the partition policy is not provided. If the first
+dimension matches the number of nodes of a node type, <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> will use the partition
+policy for this particular node type; if the first dimension matches the number of edges of
+an edge type, <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> will use the partition policy for this particular edge type.
+If DGL cannot determine the partition policy automatically (e.g., multiple node types or
+edge types have the same number of nodes or edges), users have to explicity provide
+the partition policy.</p>
+<p>A distributed tensor can be ether named or anonymous.
+When a distributed tensor has a name, the tensor can be persistent if <code class="docutils literal notranslate"><span class="pre">persistent=True</span></code>.
+Normally, DGL destroys the distributed tensor in the system when the <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> object
+goes away. However, a persistent tensor lives in the system even if
+the <code class="docutils literal notranslate"><span class="pre">DistTenor</span></code> object disappears in the trainer process. The persistent tensor has
+the same life span as the DGL servers. DGL does not allow an anonymous tensor to be persistent.</p>
+<p>When a <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> object is created, it may reference to an existing distributed tensor or
+create a new one. A distributed tensor is identified by the name passed to the constructor.
+If the name exists, <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> will reference the existing one.
+In this case, the shape and the data type must match the existing tensor.
+If the name doesn’t exist, a new tensor will be created in the kvstore.</p>
+<p>When a distributed tensor is created, its values are initialized to zero. Users
+can define an initialization function to control how the values are initialized.
+The init function has two input arguments: shape and data type and returns a tensor.
+Below shows an example of an init function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">init_func</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The shape of the tensor. The first dimension has to be the number of nodes or
+the number of edges of a distributed graph.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em>) – The dtype of the tensor. The data type has to be the one in the deep learning framework.</p></li>
+<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the embeddings. The name can uniquely identify embeddings in a system
+so that another <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> object can referent to the distributed tensor.</p></li>
+<li><p><strong>init_func</strong> (<em>callable</em><em>, </em><em>optional</em>) – The function to initialize data in the tensor. If the init function is not provided,
+the values of the embeddings are initialized to zero.</p></li>
+<li><p><strong>part_policy</strong> (<a class="reference internal" href="#dgl.distributed.PartitionPolicy" title="dgl.distributed.PartitionPolicy"><em>PartitionPolicy</em></a><em>, </em><em>optional</em>) – The partition policy of the rows of the tensor to different machines in the cluster.
+Currently, it only supports node partition policy or edge partition policy.
+The system determines the right partition policy automatically.</p></li>
+<li><p><strong>persistent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether the created tensor lives after the <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> object is destroyed.</p></li>
+<li><p><strong>is_gdata</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether the created tensor is a ndata/edata or not.</p></li>
+<li><p><strong>attach</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether to attach group ID into name to be globally unique.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">init</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">th</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistTensor</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="mi">2</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">init_func</span><span class="o">=</span><span class="n">init</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+<span class="go">tensor([[1, 1],</span>
+<span class="go">        [1, 1],</span>
+<span class="go">        [1, 1]], dtype=torch.int32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+<span class="go">tensor([[2, 2],</span>
+<span class="go">        [2, 2],</span>
+<span class="go">        [2, 2]], dtype=torch.int32)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The creation of <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> is a synchronized operation. When a trainer process tries to
+create a <code class="docutils literal notranslate"><span class="pre">DistTensor</span></code> object, the creation succeeds only when all trainer processes
+do the same.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistTensor.dtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#dgl.distributed.DistTensor.dtype" title="Link to this definition"></a></dt>
+<dd><p>Return the data type of the distributed tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The data type of the tensor.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dtype</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistTensor.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dgl.distributed.DistTensor.name" title="Link to this definition"></a></dt>
+<dd><p>Return the name of the distributed tensor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of the tensor.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistTensor.part_policy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">part_policy</span></span><a class="headerlink" href="#dgl.distributed.DistTensor.part_policy" title="Link to this definition"></a></dt>
+<dd><p>Return the partition policy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The partition policy of the distributed tensor.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dgl.distributed.PartitionPolicy" title="dgl.distributed.PartitionPolicy">PartitionPolicy</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.DistTensor.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#dgl.distributed.DistTensor.shape" title="Link to this definition"></a></dt>
+<dd><p>Return the shape of the distributed tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The shape of the distributed tensor.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="distributed-node-embedding">
+<h2>Distributed Node Embedding<a class="headerlink" href="#distributed-node-embedding" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.DistEmbedding">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.</span></span><span class="sig-name descname"><span class="pre">DistEmbedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_embeddings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/nn/pytorch/sparse_emb.html#DistEmbedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistEmbedding" title="Link to this definition"></a></dt>
+<dd><p>Distributed node embeddings.</p>
+<p>DGL provides a distributed embedding to support models that require learnable embeddings.
+DGL’s distributed embeddings are mainly used for learning node embeddings of graph models.
+Because distributed embeddings are part of a model, they are updated by mini-batches.
+The distributed embeddings have to be updated by DGL’s optimizers instead of
+the optimizers provided by the deep learning frameworks (e.g., Pytorch and MXNet).</p>
+<p>To support efficient training on a graph with many nodes, the embeddings support sparse
+updates. That is, only the embeddings involved in a mini-batch computation are updated.
+Please refer to <a class="reference external" href="https://docs.dgl.ai/api/python/dgl.distributed.html#distributed-embedding-optimizer">Distributed Optimizers</a> for available optimizers in DGL.</p>
+<p>Distributed embeddings are sharded and stored in a cluster of machines in the same way as
+<a class="reference internal" href="#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.distributed.DistTensor</span></code></a>, except that distributed embeddings are trainable.
+Because distributed embeddings are sharded
+in the same way as nodes and edges of a distributed graph, it is usually much more
+efficient to access than the sparse embeddings provided by the deep learning frameworks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_embeddings</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of embeddings. Currently, the number of embeddings has to be the same as
+the number of nodes or the number of edges.</p></li>
+<li><p><strong>embedding_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The dimension size of embeddings.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the embeddings. The name can uniquely identify embeddings in a system
+so that another DistEmbedding object can referent to the same embeddings.</p></li>
+<li><p><strong>init_func</strong> (<em>callable</em><em>, </em><em>optional</em>) – The function to create the initial data. If the init function is not provided,
+the values of the embeddings are initialized to zero.</p></li>
+<li><p><strong>part_policy</strong> (<a class="reference internal" href="#dgl.distributed.PartitionPolicy" title="dgl.distributed.PartitionPolicy"><em>PartitionPolicy</em></a><em>, </em><em>optional</em>) – The partition policy that assigns embeddings to different machines in the cluster.
+Currently, it only supports node partition policy or edge partition policy.
+The system determines the right partition policy automatically.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">initializer</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+<span class="go">        arr = th.zeros(shape, dtype=dtype)</span>
+<span class="go">        arr.uniform_(-1, 1)</span>
+<span class="go">        return arr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">emb</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistEmbedding</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">init_func</span><span class="o">=</span><span class="n">initializer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SparseAdagrad</span><span class="p">([</span><span class="n">emb</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">feats</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">nids</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">feats</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a <code class="docutils literal notranslate"><span class="pre">DistEmbedding</span></code>  object is used in the forward computation, users
+have to invoke
+<a class="reference internal" href="#dgl.distributed.optim.SparseAdagrad.step" title="dgl.distributed.optim.SparseAdagrad.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a> afterwards. Otherwise,
+there will be some memory leak.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="distributed-embedding-optimizer">
+<h2>Distributed embedding optimizer<a class="headerlink" href="#distributed-embedding-optimizer" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdagrad">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.optim.</span></span><span class="sig-name descname"><span class="pre">SparseAdagrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/optim/pytorch/sparse_optim.html#SparseAdagrad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.optim.SparseAdagrad" title="Link to this definition"></a></dt>
+<dd><p>Distributed Node embedding optimizer using the Adagrad algorithm.</p>
+<p>This optimizer implements a distributed sparse version of Adagrad algorithm for
+optimizing <a class="reference internal" href="#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.distributed.DistEmbedding</span></code></a>. Being sparse means it only updates
+the embeddings whose gradients have updates, which are usually a very
+small portion of the total embeddings.</p>
+<p>Adagrad maintains a <span class="math notranslate nohighlight">\(G_{t,i,j}\)</span> for every parameter in the embeddings, where
+<span class="math notranslate nohighlight">\(G_{t,i,j}=G_{t-1,i,j} + g_{t,i,j}^2\)</span> and <span class="math notranslate nohighlight">\(g_{t,i,j}\)</span> is the gradient of
+the dimension <span class="math notranslate nohighlight">\(j\)</span> of embedding <span class="math notranslate nohighlight">\(i\)</span> at step <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p>NOTE: The support of sparse Adagrad optimizer is experimental.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference internal" href="#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><em>dgl.distributed.DistEmbedding</em></a><em>]</em>) – The list of dgl.distributed.DistEmbedding.</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The learning rate.</p></li>
+<li><p><strong>eps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>Optional</em>) – The term added to the denominator to improve numerical stability
+Default: 1e-10</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdagrad.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dgl.distributed.optim.SparseAdagrad.load" title="Link to this definition"></a></dt>
+<dd><p>Load the local state of the optimizer from the file on per rank.</p>
+<p>NOTE: This needs to be called on all ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.12)"><em>os.PathLike</em></a><em>]</em>) – The path of the file to load from.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.optim.SparseAdagrad.save" title="dgl.distributed.optim.SparseAdagrad.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdagrad.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dgl.distributed.optim.SparseAdagrad.save" title="Link to this definition"></a></dt>
+<dd><p>Save the local state_dict to disk on per rank.</p>
+<p>Saved dict contains 2 parts:</p>
+<ul class="simple">
+<li><p>‘params’: hyper parameters of the optimizer.</p></li>
+<li><dl class="simple">
+<dt>‘emb_states’: partial optimizer states, each embedding contains 2 items:</dt><dd><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">`ids`</span></code>: global id of the nodes/edges stored in this rank.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">`states`</span></code>: state data corrseponding to <code class="docutils literal notranslate"><span class="pre">`ids`</span></code>.</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+</ul>
+<p>NOTE: This needs to be called on all ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.12)"><em>os.PathLike</em></a><em>]</em>) – The path of the file to save to.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.optim.SparseAdagrad.load" title="dgl.distributed.optim.SparseAdagrad.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdagrad.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgl.distributed.optim.SparseAdagrad.step" title="Link to this definition"></a></dt>
+<dd><p>The step function.</p>
+<p>The step function is invoked at the end of every batch to push the gradients
+of the embeddings involved in a mini-batch to DGL’s servers and update the embeddings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.optim.</span></span><span class="sig-name descname"><span class="pre">SparseAdam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.9,</span> <span class="pre">0.999)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/optim/pytorch/sparse_optim.html#SparseAdam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.optim.SparseAdam" title="Link to this definition"></a></dt>
+<dd><p>Distributed Node embedding optimizer using the Adam algorithm.</p>
+<p>This optimizer implements a distributed sparse version of Adam algorithm for
+optimizing <a class="reference internal" href="#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.distributed.DistEmbedding</span></code></a>. Being sparse means it only updates
+the embeddings whose gradients have updates, which are usually a very
+small portion of the total embeddings.</p>
+<p>Adam maintains a <span class="math notranslate nohighlight">\(Gm_{t,i,j}\)</span> and <cite>Gp_{t,i,j}</cite> for every parameter
+in the embeddings, where
+<span class="math notranslate nohighlight">\(Gm_{t,i,j}=beta1 * Gm_{t-1,i,j} + (1-beta1) * g_{t,i,j}\)</span>,
+<span class="math notranslate nohighlight">\(Gp_{t,i,j}=beta2 * Gp_{t-1,i,j} + (1-beta2) * g_{t,i,j}^2\)</span>,
+<span class="math notranslate nohighlight">\(g_{t,i,j} = lr * Gm_{t,i,j} / (1 - beta1^t) / \sqrt{Gp_{t,i,j} / (1 - beta2^t)}\)</span> and
+<span class="math notranslate nohighlight">\(g_{t,i,j}\)</span> is the gradient of the dimension <span class="math notranslate nohighlight">\(j\)</span> of embedding <span class="math notranslate nohighlight">\(i\)</span>
+at step <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p>NOTE: The support of sparse Adam optimizer is experimental.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference internal" href="#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><em>dgl.distributed.DistEmbedding</em></a><em>]</em>) – The list of dgl.distributed.DistEmbedding.</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The learning rate.</p></li>
+<li><p><strong>betas</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>]</em><em>, </em><em>Optional</em>) – Coefficients used for computing running averages of gradient and its square.
+Default: (0.9, 0.999)</p></li>
+<li><p><strong>eps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>Optional</em>) – The term added to the denominator to improve numerical stability
+Default: 1e-8</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdam.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dgl.distributed.optim.SparseAdam.load" title="Link to this definition"></a></dt>
+<dd><p>Load the local state of the optimizer from the file on per rank.</p>
+<p>NOTE: This needs to be called on all ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.12)"><em>os.PathLike</em></a><em>]</em>) – The path of the file to load from.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.optim.SparseAdam.save" title="dgl.distributed.optim.SparseAdam.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdam.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dgl.distributed.optim.SparseAdam.save" title="Link to this definition"></a></dt>
+<dd><p>Save the local state_dict to disk on per rank.</p>
+<p>Saved dict contains 2 parts:</p>
+<ul class="simple">
+<li><p>‘params’: hyper parameters of the optimizer.</p></li>
+<li><dl class="simple">
+<dt>‘emb_states’: partial optimizer states, each embedding contains 2 items:</dt><dd><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">`ids`</span></code>: global id of the nodes/edges stored in this rank.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">`states`</span></code>: state data corrseponding to <code class="docutils literal notranslate"><span class="pre">`ids`</span></code>.</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+</ul>
+<p>NOTE: This needs to be called on all ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.12)"><em>os.PathLike</em></a><em>]</em>) – The path of the file to save to.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dgl.distributed.optim.SparseAdam.load" title="dgl.distributed.optim.SparseAdam.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.optim.SparseAdam.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgl.distributed.optim.SparseAdam.step" title="Link to this definition"></a></dt>
+<dd><p>The step function.</p>
+<p>The step function is invoked at the end of every batch to push the gradients
+of the embeddings involved in a mini-batch to DGL’s servers and update the embeddings.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="distributed-workload-split">
+<h2>Distributed workload split<a class="headerlink" href="#distributed-workload-split" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../generated/dgl.distributed.node_split.html#dgl.distributed.node_split" title="dgl.distributed.node_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">node_split</span></code></a>(nodes[, partition_book, ntype, ...])</p></td>
+<td><p>Split nodes and return a subset for the local rank.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../generated/dgl.distributed.edge_split.html#dgl.distributed.edge_split" title="dgl.distributed.edge_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge_split</span></code></a>(edges[, partition_book, etype, ...])</p></td>
+<td><p>Split edges and return a subset for the local rank.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="distributed-sampling">
+<h2>Distributed Sampling<a class="headerlink" href="#distributed-sampling" title="Link to this heading"></a></h2>
+<section id="distributed-dataloader">
+<h3>Distributed DataLoader<a class="headerlink" href="#distributed-dataloader" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.DistDataLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.</span></span><span class="sig-name descname"><span class="pre">DistDataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collate_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_last</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/dist_dataloader.html#DistDataLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.DistDataLoader" title="Link to this definition"></a></dt>
+<dd><p>DGL customized multiprocessing dataloader.</p>
+<p>DistDataLoader provides a similar interface to Pytorch’s DataLoader to generate mini-batches
+with multiprocessing. It utilizes the worker processes created by
+<a class="reference internal" href="../../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.initialize()</span></code></a> to parallelize sampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>a tensor</em>) – Tensors of node IDs or edge IDs.</p></li>
+<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of samples per batch to load.</p></li>
+<li><p><strong>shuffle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to have the data reshuffled at every epoch (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
+<li><p><strong>collate_fn</strong> (<em>callable</em><em>, </em><em>optional</em>) – The function is typically used to sample neighbors of the nodes in a batch
+or the endpoint nodes of the edges in a batch.</p></li>
+<li><p><strong>drop_last</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to drop the last incomplete batch, if the dataset size is not
+divisible by the batch size. If <code class="docutils literal notranslate"><span class="pre">False</span></code> and the size of dataset is not divisible
+by the batch size, then the last batch will be smaller. (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+<li><p><strong>queue_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Size of multiprocessing queue</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph-name&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">seeds</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seeds</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistDataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="go">                                                collate_fn=sample, shuffle=True)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">feat</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">][</span><span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]]</span>
+<span class="gp">... </span>    <span class="n">labels</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">][</span><span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]]</span>
+<span class="gp">... </span>    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">feat</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When performing DGL’s distributed sampling with multiprocessing, users have to use this class
+instead of Pytorch’s DataLoader because DGL’s RPC requires that all processes establish
+connections with servers before invoking any DGL’s distributed API. Therefore, this dataloader
+uses the worker processes created in <a class="reference internal" href="../../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.initialize()</span></code></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This dataloader does not guarantee the iteration order. For example,
+if dataset = [1, 2, 3, 4], batch_size = 2 and shuffle = False, the order of [1, 2]
+and [3, 4] is not guaranteed.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="distributed-graph-sampling-operators">
+<span id="api-distributed-sampling-ops"></span><h3>Distributed Graph Sampling Operators<a class="headerlink" href="#distributed-graph-sampling-operators" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_neighbors</span></code></a>(g, nodes, fanout[, ...])</p></td>
+<td><p>Sample from the neighbors of the given nodes from a distributed graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../generated/dgl.distributed.sample_etype_neighbors.html#dgl.distributed.sample_etype_neighbors" title="dgl.distributed.sample_etype_neighbors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_etype_neighbors</span></code></a>(g, nodes, fanout[, ...])</p></td>
+<td><p>Sample from the neighbors of the given nodes from a distributed graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../generated/dgl.distributed.find_edges.html#dgl.distributed.find_edges" title="dgl.distributed.find_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_edges</span></code></a>(g, edge_ids)</p></td>
+<td><p>Given an edge ID array, return the source and destination node ID array <code class="docutils literal notranslate"><span class="pre">s</span></code> and <code class="docutils literal notranslate"><span class="pre">d</span></code> from a distributed graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../generated/dgl.distributed.in_subgraph.html#dgl.distributed.in_subgraph" title="dgl.distributed.in_subgraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_subgraph</span></code></a>(g, nodes)</p></td>
+<td><p>Return the subgraph induced on the inbound edges of the given nodes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="partition">
+<h2>Partition<a class="headerlink" href="#partition" title="Link to this heading"></a></h2>
+<section id="graph-partition-book">
+<h3>Graph partition book<a class="headerlink" href="#graph-partition-book" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.</span></span><span class="sig-name descname"><span class="pre">GraphPartitionBook</span></span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook" title="Link to this definition"></a></dt>
+<dd><p>The base class of the graph partition book.</p>
+<p>For distributed training, a graph is partitioned into multiple parts and is loaded
+in multiple machines. The partition book contains all necessary information to locate
+nodes and edges in the cluster.</p>
+<p>The partition book contains various partition information, including</p>
+<ul class="simple">
+<li><p>the number of partitions,</p></li>
+<li><p>the partition ID that a node or edge belongs to,</p></li>
+<li><p>the node IDs and the edge IDs that a partition has.</p></li>
+<li><p>the local IDs of nodes and edges in a partition.</p></li>
+</ul>
+<p>Currently, only one class that implement <code class="docutils literal notranslate"><span class="pre">GraphPartitionBook</span></code>
+:<code class="docutils literal notranslate"><span class="pre">RangePartitionBook</span></code>. It calculates the mapping between node/edge IDs
+and partition IDs based on some small metadata because nodes/edges have been
+relabeled to have IDs in the same partition fall in a contiguous ID range.</p>
+<p>A graph partition book is constructed automatically when a graph is partitioned.
+When a graph partition is loaded, a graph partition book is loaded as well.
+Please see <code class="xref py py-meth docutils literal notranslate"><span class="pre">partition_graph()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">load_partition()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">load_partition_book()</span></code> for more details.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.canonical_etypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">canonical_etypes</span></span><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.canonical_etypes" title="Link to this definition"></a></dt>
+<dd><p>Get the list of canonical edge types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of canonical etypes</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.eid2localeid">
+<span class="sig-name descname"><span class="pre">eid2localeid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.eid2localeid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.eid2localeid" title="Link to this definition"></a></dt>
+<dd><p>Get the local edge ids within the given partition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eids</strong> (<em>tensor</em>) – global edge IDs</p></li>
+<li><p><strong>partid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – partition ID</p></li>
+<li><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>)</em>) – The edge type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>local edge IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.eid2partid">
+<span class="sig-name descname"><span class="pre">eid2partid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.eid2partid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.eid2partid" title="Link to this definition"></a></dt>
+<dd><p>From global edge IDs to partition IDs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eids</strong> (<em>tensor</em>) – global edge IDs</p></li>
+<li><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>)</em>) – The edge type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>partition IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.map_to_homo_eid">
+<span class="sig-name descname"><span class="pre">map_to_homo_eid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.map_to_homo_eid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.map_to_homo_eid" title="Link to this definition"></a></dt>
+<dd><p>Map type-wise edge IDs and type IDs to homogeneous edge IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ids</strong> (<em>tensor</em>) – Type-wise edge Ids</p></li>
+<li><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>)</em>) – The edge type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Homogeneous edge IDs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.map_to_homo_nid">
+<span class="sig-name descname"><span class="pre">map_to_homo_nid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.map_to_homo_nid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.map_to_homo_nid" title="Link to this definition"></a></dt>
+<dd><p>Map type-wise node IDs and type IDs to homogeneous node IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ids</strong> (<em>tensor</em>) – Type-wise node Ids</p></li>
+<li><p><strong>ntype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – node type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Homogeneous node IDs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.map_to_per_etype">
+<span class="sig-name descname"><span class="pre">map_to_per_etype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.map_to_per_etype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.map_to_per_etype" title="Link to this definition"></a></dt>
+<dd><p>Map homogeneous edge IDs to type-wise IDs and edge types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ids</strong> (<em>tensor</em>) – Homogeneous edge IDs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>edge type IDs and type-wise edge IDs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(tensor, tensor)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.map_to_per_ntype">
+<span class="sig-name descname"><span class="pre">map_to_per_ntype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.map_to_per_ntype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.map_to_per_ntype" title="Link to this definition"></a></dt>
+<dd><p>Map homogeneous node IDs to type-wise IDs and node types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ids</strong> (<em>tensor</em>) – Homogeneous node IDs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>node type IDs and type-wise node IDs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(tensor, tensor)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.metadata" title="Link to this definition"></a></dt>
+<dd><p>Return the partition meta data.</p>
+<p>The meta data includes:</p>
+<ul class="simple">
+<li><p>The machine ID.</p></li>
+<li><p>Number of nodes and edges of each partition.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">get_partition_book</span><span class="p">()</span><span class="o">.</span><span class="n">metadata</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[{</span><span class="s1">&#39;machine_id&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;num_nodes&#39;</span> <span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;num_edges&#39;</span> <span class="p">:</span> <span class="mi">5000</span><span class="p">},</span>
+<span class="gp">... </span> <span class="p">{</span><span class="s1">&#39;machine_id&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;num_nodes&#39;</span> <span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="s1">&#39;num_edges&#39;</span> <span class="p">:</span> <span class="mi">4888</span><span class="p">},</span>
+<span class="gp">... </span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Meta data of each partition.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>, any]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.nid2localnid">
+<span class="sig-name descname"><span class="pre">nid2localnid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.nid2localnid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.nid2localnid" title="Link to this definition"></a></dt>
+<dd><p>Get local node IDs within the given partition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nids</strong> (<em>tensor</em>) – global node IDs</p></li>
+<li><p><strong>partid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – partition ID</p></li>
+<li><p><strong>ntype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The node type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>local node IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.nid2partid">
+<span class="sig-name descname"><span class="pre">nid2partid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.nid2partid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.nid2partid" title="Link to this definition"></a></dt>
+<dd><p>From global node IDs to partition IDs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nids</strong> (<em>tensor</em>) – global node IDs</p></li>
+<li><p><strong>ntype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The node type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>partition IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.num_partitions">
+<span class="sig-name descname"><span class="pre">num_partitions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.num_partitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.num_partitions" title="Link to this definition"></a></dt>
+<dd><p>Return the number of partitions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>number of partitions</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.partid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">partid</span></span><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.partid" title="Link to this definition"></a></dt>
+<dd><p>Get the current partition ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The partition ID of current machine</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.partid2eids">
+<span class="sig-name descname"><span class="pre">partid2eids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.partid2eids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.partid2eids" title="Link to this definition"></a></dt>
+<dd><p>From partition id to global edge IDs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – partition id</p></li>
+<li><p><strong>etype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>)</em>) – The edge type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>edge IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.partid2nids">
+<span class="sig-name descname"><span class="pre">partid2nids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.partid2nids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.partid2nids" title="Link to this definition"></a></dt>
+<dd><p>From partition id to global node IDs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – partition id</p></li>
+<li><p><strong>ntype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The node type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>node IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.GraphPartitionBook.shared_memory">
+<span class="sig-name descname"><span class="pre">shared_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#GraphPartitionBook.shared_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.GraphPartitionBook.shared_memory" title="Link to this definition"></a></dt>
+<dd><p>Move the partition book to shared memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The graph name. This name will be used to read the partition book from shared
+memory in another process.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dgl.distributed.</span></span><span class="sig-name descname"><span class="pre">PartitionPolicy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition_book</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#PartitionPolicy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.PartitionPolicy" title="Link to this definition"></a></dt>
+<dd><p>This defines a partition policy for a distributed tensor or distributed embedding.</p>
+<p>When DGL shards tensors and stores them in a cluster of machines, it requires
+partition policies that map rows of the tensors to machines in the cluster.</p>
+<p>Although an arbitrary partition policy can be defined, DGL currently supports
+two partition policies for mapping nodes and edges to machines. To define a partition
+policy from a graph partition book, users need to specify the policy name (‘node’ or ‘edge’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>policy_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Partition policy name, e.g., ‘edge~_N:_E:_N’ or ‘node~_N’.</p></li>
+<li><p><strong>partition_book</strong> (<a class="reference internal" href="#dgl.distributed.GraphPartitionBook" title="dgl.distributed.GraphPartitionBook"><em>GraphPartitionBook</em></a>) – A graph partition book</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy.get_part_size">
+<span class="sig-name descname"><span class="pre">get_part_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#PartitionPolicy.get_part_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.PartitionPolicy.get_part_size" title="Link to this definition"></a></dt>
+<dd><p>Get data size of current partition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data size</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy.get_size">
+<span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#PartitionPolicy.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.PartitionPolicy.get_size" title="Link to this definition"></a></dt>
+<dd><p>Get the full size of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>data size</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy.part_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">part_id</span></span><a class="headerlink" href="#dgl.distributed.PartitionPolicy.part_id" title="Link to this definition"></a></dt>
+<dd><p>Get partition ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The partition ID</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy.partition_book">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">partition_book</span></span><a class="headerlink" href="#dgl.distributed.PartitionPolicy.partition_book" title="Link to this definition"></a></dt>
+<dd><p>Get partition book</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The graph partition book</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dgl.distributed.GraphPartitionBook" title="dgl.distributed.GraphPartitionBook">GraphPartitionBook</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy.policy_str">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">policy_str</span></span><a class="headerlink" href="#dgl.distributed.PartitionPolicy.policy_str" title="Link to this definition"></a></dt>
+<dd><p>Get the policy name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of the partition policy.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy.to_local">
+<span class="sig-name descname"><span class="pre">to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_tensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#PartitionPolicy.to_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.PartitionPolicy.to_local" title="Link to this definition"></a></dt>
+<dd><p>Mapping global ID to local ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id_tensor</strong> (<em>tensor</em>) – Gloabl ID tensor</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>local ID tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dgl.distributed.PartitionPolicy.to_partid">
+<span class="sig-name descname"><span class="pre">to_partid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_tensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dgl/distributed/graph_partition_book.html#PartitionPolicy.to_partid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dgl.distributed.PartitionPolicy.to_partid" title="Link to this definition"></a></dt>
+<dd><p>Mapping global ID to partition ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id_tensor</strong> (<em>tensor</em>) – Global ID tensor</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>partition ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="split-and-load-partitions">
+<h3>Split and Load Partitions<a class="headerlink" href="#split-and-load-partitions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../generated/dgl.distributed.load_partition.html#dgl.distributed.load_partition" title="dgl.distributed.load_partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_partition</span></code></a>(part_config, part_id[, ...])</p></td>
+<td><p>Load data of a partition from the data path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../generated/dgl.distributed.load_partition_feats.html#dgl.distributed.load_partition_feats" title="dgl.distributed.load_partition_feats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_partition_feats</span></code></a>(part_config, part_id[, ...])</p></td>
+<td><p>Load node/edge feature data from a partition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../generated/dgl.distributed.load_partition_book.html#dgl.distributed.load_partition_book" title="dgl.distributed.load_partition_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_partition_book</span></code></a>(part_config, part_id)</p></td>
+<td><p>Load a graph partition book from the partition config file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition_graph</span></code></a>(g, graph_name, num_parts, ...)</p></td>
+<td><p>Partition a graph for distributed training and store the partitions on files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../generated/dgl.distributed.dgl_partition_to_graphbolt.html#dgl.distributed.dgl_partition_to_graphbolt" title="dgl.distributed.dgl_partition_to_graphbolt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dgl_partition_to_graphbolt</span></code></a>(part_config, *[, ...])</p></td>
+<td><p>Convert partitions of dgl to FusedCSCSamplingGraph of GraphBolt.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../generated/dgl.DGLGraph.local_scope.html" class="btn btn-neutral float-left" title="dgl.DGLGraph.local_scope" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../generated/dgl.distributed.initialize.html" class="btn btn-neutral float-right" title="dgl.distributed.initialize" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

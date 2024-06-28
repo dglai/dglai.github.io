@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hypergraph Neural Networks &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Graph Transformer in a Nutshell" href="graph_transformer.html" />
+    <link rel="prev" title="Graph Diffusion in Graph Neural Networks" href="graph_diffusion.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials: dgl.sparse</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gcn.html">Building a Graph Convolutional Network Using Sparse Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graph_diffusion.html">Graph Diffusion in Graph Neural Networks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Hypergraph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graph_transformer.html">Graph Transformer in a Nutshell</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials: dgl.sparse</a></li>
+      <li class="breadcrumb-item active">Hypergraph Neural Networks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/notebooks/sparse/hgnn.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Hypergraph-Neural-Networks">
+<h1>Hypergraph Neural Networks<a class="headerlink" href="#Hypergraph-Neural-Networks" title="Link to this heading"></a></h1>
+<p>This tutorial illustrates what is hypergraph and how to build a Hypergraph Neural Network using DGL’s sparse matrix APIs.</p>
+<p><a class="reference external" href="https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/sparse/hgnn.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/notebooks/sparse/hgnn.ipynb"><img alt="GitHub" src="https://img.shields.io/badge/-View%20on%20GitHub-181717?logo=github&amp;logoColor=ffffff" /></a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install required packages.</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TORCH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DGLBACKEND&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+
+<span class="c1"># Uncomment below to install required packages. If the CUDA version is not 11.8,</span>
+<span class="c1"># check the https://www.dgl.ai/pages/start.html to find the supported CUDA</span>
+<span class="c1"># version and corresponding command to install DGL.</span>
+<span class="c1">#!pip install dgl -f https://data.dgl.ai/wheels/cu118/repo.html &gt; /dev/null</span>
+<span class="c1">#!pip install torchmetrics &gt; /dev/null</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dgl</span>
+    <span class="n">installed</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">installed</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DGL installed!&quot;</span> <span class="k">if</span> <span class="n">installed</span> <span class="k">else</span> <span class="s2">&quot;Failed to install DGL!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Hypergraphs">
+<h2>Hypergraphs<a class="headerlink" href="#Hypergraphs" title="Link to this heading"></a></h2>
+<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Hypergraph">hypergraph</a> consists of <em>nodes</em> and <em>hyperedges</em>. Contrary to edges in graphs, a <em>hyperedge</em> can connect arbitrary number of nodes. For instance, the following figure shows a hypergraph with 11 nodes and 5 hyperedges drawn in different colors. <img alt="image1" src="https://data.dgl.ai/tutorial/img/hgnn/equiv.PNG" /></p>
+<p>Hypergraphs are particularly useful when the relationships between data points within the dataset is not binary. For instance, more than two products can be co-purchased together in an e-commerce system, so the relationship of co-purchase is <span class="math notranslate nohighlight">\(n\)</span>-ary rather than binary, and therefore it is better described as a hypergraph rather than a normal graph.</p>
+<p>A hypergraph is usually characterized by its <em>incidence matrix</em> <span class="math notranslate nohighlight">\(H\)</span>, whose rows represent nodes and columns represent hyperedges. An entry <span class="math notranslate nohighlight">\(H_{ij}\)</span> is 1 if hyperedge <span class="math notranslate nohighlight">\(j\)</span> includes node <span class="math notranslate nohighlight">\(i\)</span>, or 0 otherwise. For example, the hypergraph in the figure above can be characterized by a <span class="math notranslate nohighlight">\(11 \times 5\)</span> matrix as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H = \begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+1 &amp; 1 &amp; 0 &amp; 1 &amp; 1 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+1 &amp; 0 &amp; 1 &amp; 1 &amp; 1 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 1 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+\end{bmatrix}\end{split}\]</div>
+<p>One can construct the hypergraph incidence matrix by specifying two tensors <code class="docutils literal notranslate"><span class="pre">nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">hyperedges</span></code>, where the node ID <code class="docutils literal notranslate"><span class="pre">nodes[i]</span></code> belongs to the hyperedge ID <code class="docutils literal notranslate"><span class="pre">hyperedges[i]</span></code> for all <code class="docutils literal notranslate"><span class="pre">i</span></code>. In the case above, the incidence matrix can be constructed below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.sparse</span> <span class="k">as</span> <span class="nn">dglsp</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">H</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">to_dense</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tensor([[1., 0., 0., 0., 0.],
+        [1., 0., 0., 0., 0.],
+        [1., 1., 0., 1., 1.],
+        [0., 0., 1., 0., 0.],
+        [0., 1., 0., 0., 0.],
+        [1., 0., 1., 1., 1.],
+        [0., 0., 1., 0., 0.],
+        [0., 1., 0., 1., 0.],
+        [0., 1., 0., 1., 0.],
+        [0., 0., 1., 0., 1.],
+        [0., 0., 0., 0., 1.]])
+</pre></div></div>
+</div>
+<p>The degree of a node in a hypergraph is defined as the number of hyperedges including the node. Similarly, the degree of a hyperedge in a hypergraph is defined as the number of nodes included by the hyperedge. In the example above, the hyperedge degrees can be computed by the sum of row vectors (i.e. all 4), while the node degree can be computed by the sum of column vectors.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_degrees</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Node degrees&quot;</span><span class="p">,</span> <span class="n">node_degrees</span><span class="p">)</span>
+
+<span class="n">hyperedge_degrees</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hyperedge degrees&quot;</span><span class="p">,</span> <span class="n">hyperedge_degrees</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Node degrees tensor([1., 1., 4., 1., 1., 4., 1., 2., 2., 2., 1.])
+Hyperedge degrees tensor([4., 4., 4., 4., 4.])
+</pre></div></div>
+</div>
+</section>
+<section id="Hypergraph-Neural-Network-(HGNN)-Layer">
+<h2>Hypergraph Neural Network (HGNN) Layer<a class="headerlink" href="#Hypergraph-Neural-Network-(HGNN)-Layer" title="Link to this heading"></a></h2>
+<p>The <a class="reference external" href="https://arxiv.org/pdf/1809.09401.pdf">HGNN layer</a> is defined as:</p>
+<div class="math notranslate nohighlight">
+\[f(X^{(l)}, H; W^{(l)}) = \sigma(L X^{(l)} W^{(l)})\]</div>
+<p></p>
+<div class="math notranslate nohighlight">
+\[L = D_v^{-1/2} H B D_e^{-1} H^\top D_v^{-1/2}\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(H \in \mathbb{R}^{N \times M}\)</span> is the incidence matrix of hypergraph with <span class="math notranslate nohighlight">\(N\)</span> nodes and <span class="math notranslate nohighlight">\(M\)</span> hyperedges.</p></li>
+<li><p><span class="math notranslate nohighlight">\(D_v \in \mathbb{R}^{N \times N}\)</span> is a diagonal matrix representing node degrees, whose <span class="math notranslate nohighlight">\(i\)</span>-th diagonal element is <span class="math notranslate nohighlight">\(\sum_{j=1}^M H_{ij}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(D_e \in \mathbb{R}^{M \times M}\)</span> is a diagonal matrix representing hyperedge degrees, whose <span class="math notranslate nohighlight">\(j\)</span>-th diagonal element is <span class="math notranslate nohighlight">\(\sum_{i=1}^N H_{ij}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(B \in \mathbb{R}^{M \times M}\)</span> is a diagonal matrix representing the hyperedge weights, whose <span class="math notranslate nohighlight">\(j\)</span>-th diagonal element is the weight of <span class="math notranslate nohighlight">\(j\)</span>-th hyperedge. In our example, <span class="math notranslate nohighlight">\(B\)</span> is an identity matrix.</p></li>
+</ul>
+<p>The following code builds a two-layer HGNN.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.sparse</span> <span class="k">as</span> <span class="nn">dglsp</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">CoraGraphDataset</span>
+<span class="kn">from</span> <span class="nn">torchmetrics.functional</span> <span class="kn">import</span> <span class="n">accuracy</span>
+
+
+<span class="k">class</span> <span class="nc">HGNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">in_size</span><span class="p">,</span> <span class="n">out_size</span><span class="p">,</span> <span class="n">hidden_dims</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">W1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_size</span><span class="p">,</span> <span class="n">hidden_dims</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dims</span><span class="p">,</span> <span class="n">out_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1">###########################################################</span>
+        <span class="c1"># (HIGHLIGHT) Compute the Laplacian with Sparse Matrix API</span>
+        <span class="c1">###########################################################</span>
+        <span class="c1"># Compute node degree.</span>
+        <span class="n">d_V</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Compute edge degree.</span>
+        <span class="n">d_E</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Compute the inverse of the square root of the diagonal D_v.</span>
+        <span class="n">D_v_invsqrt</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">d_V</span><span class="o">**-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="c1"># Compute the inverse of the diagonal D_e.</span>
+        <span class="n">D_e_inv</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">d_E</span><span class="o">**-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># In our example, B is an identity matrix.</span>
+        <span class="n">n_edges</span> <span class="o">=</span> <span class="n">d_E</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">identity</span><span class="p">((</span><span class="n">n_edges</span><span class="p">,</span> <span class="n">n_edges</span><span class="p">))</span>
+        <span class="c1"># Compute Laplacian from the equation above.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">D_v_invsqrt</span> <span class="o">@</span> <span class="n">H</span> <span class="o">@</span> <span class="n">B</span> <span class="o">@</span> <span class="n">D_e_inv</span> <span class="o">@</span> <span class="n">H</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">D_v_invsqrt</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">W1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">W2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">X</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Loading-Data">
+<h2>Loading Data<a class="headerlink" href="#Loading-Data" title="Link to this heading"></a></h2>
+<p>We use Cora citation network in our example. But instead of using the original “cite” relationship between papers, we consider the “co-cite” relationship between papers. We build a hypergraph from the original citation network where for each paper we construct a hyperedge that includes all the other papers it cited, as well as the paper itself.</p>
+<p><img alt="image1" src="https://data.dgl.ai/tutorial/img/hgnn/equiv.PNG" /></p>
+<p>Note that a hypergraph constructed this way has an incidence matrix exactly identical to the adjacency matrix of the original graph (plus an identity matrix for self-loops). This is because each hyperedge has a one-to-one correspondence to each paper. So we can directly take the graph’s adjacency matrix and add an identity matrix to it, and we use it as the hypergraph’s incidence matrix.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_data</span><span class="p">():</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">CoraGraphDataset</span><span class="p">()</span>
+
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">H</span> <span class="o">+</span> <span class="n">dglsp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+    <span class="n">train_mask</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;train_mask&quot;</span><span class="p">]</span>
+    <span class="n">val_mask</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;val_mask&quot;</span><span class="p">]</span>
+    <span class="n">test_mask</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;test_mask&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">H</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">,</span> <span class="n">val_mask</span><span class="p">,</span> <span class="n">test_mask</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Training-and-Evaluation">
+<h2>Training and Evaluation<a class="headerlink" href="#Training-and-Evaluation" title="Link to this heading"></a></h2>
+<p>Now we can write the training and evaluation functions as follows.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">Y_hat</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">Y_hat</span><span class="p">[</span><span class="n">train_mask</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="n">train_mask</span><span class="p">])</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">val_mask</span><span class="p">,</span> <span class="n">test_mask</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">Y_hat</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">val_acc</span> <span class="o">=</span> <span class="n">accuracy</span><span class="p">(</span>
+        <span class="n">Y_hat</span><span class="p">[</span><span class="n">val_mask</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="n">val_mask</span><span class="p">],</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;multiclass&quot;</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span>
+    <span class="p">)</span>
+    <span class="n">test_acc</span> <span class="o">=</span> <span class="n">accuracy</span><span class="p">(</span>
+        <span class="n">Y_hat</span><span class="p">[</span><span class="n">test_mask</span><span class="p">],</span>
+        <span class="n">Y</span><span class="p">[</span><span class="n">test_mask</span><span class="p">],</span>
+        <span class="n">task</span><span class="o">=</span><span class="s2">&quot;multiclass&quot;</span><span class="p">,</span>
+        <span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">test_acc</span>
+
+
+<span class="n">H</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">,</span> <span class="n">val_mask</span><span class="p">,</span> <span class="n">test_mask</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">HGNN</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">num_classes</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">trange</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span> <span class="k">as</span> <span class="n">tq</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">tq</span><span class="p">:</span>
+        <span class="n">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">)</span>
+        <span class="n">val_acc</span><span class="p">,</span> <span class="n">test_acc</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">val_mask</span><span class="p">,</span> <span class="n">test_mask</span><span class="p">,</span> <span class="n">num_classes</span>
+        <span class="p">)</span>
+        <span class="n">tq</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;Val acc&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val_acc</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Test acc&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test_acc</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">refresh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test acc: </span><span class="si">{</span><span class="n">test_acc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Downloading /root/.dgl/cora_v2.zip from https://data.dgl.ai/dataset/cora_v2.zip...
+Extracting file to /root/.dgl/cora_v2
+Finished data loading and preprocessing.
+  NumNodes: 2708
+  NumEdges: 10556
+  NumFeats: 1433
+  NumClasses: 7
+  NumTrainingSamples: 140
+  NumValidationSamples: 500
+  NumTestSamples: 1000
+Done saving data into cached files.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|██████████| 500/500 [00:57&lt;00:00,  8.70it/s, Val acc=0.77800, Test acc=0.78100]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Test acc: 0.781
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
+</div>
+<p>For the complete example of HGNN, please refer to <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/sparse/hgnn.py">here</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="graph_diffusion.html" class="btn btn-neutral float-left" title="Graph Diffusion in Graph Neural Networks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graph_transformer.html" class="btn btn-neutral float-right" title="Graph Transformer in a Nutshell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

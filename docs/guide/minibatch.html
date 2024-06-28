@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 6: Stochastic Training on Large Graphs &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.1 Training GNN for Node Classification with Neighborhood Sampling" href="minibatch-node.html" />
+    <link rel="prev" title="5.5 Use of Edge Weights" href="training-eweight.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 6: Stochastic Training on Large Graphs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 Training GNN for Node Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 Training GNN for Edge Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 Training GNN for Link Prediction with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 Implementing Custom Graph Samplers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-sparse.html">6.5 Training GNN with DGL sparse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.6 Implementing Custom GNN Module for Mini-batch Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.7 Exact Offline Inference on Large Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-gpu-sampling.html">6.8 Using GPU for Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-parallelism.html">6.9 Data Loading Parallelism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Chapter 6: Stochastic Training on Large Graphs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/minibatch.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="chapter-6-stochastic-training-on-large-graphs">
+<span id="guide-minibatch"></span><h1>Chapter 6: Stochastic Training on Large Graphs<a class="headerlink" href="#chapter-6-stochastic-training-on-large-graphs" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide_cn/minibatch.html#guide-cn-minibatch"><span class="std std-ref">(中文版)</span></a></p>
+<p>If we have a massive graph with, say, millions or even billions of nodes
+or edges, usually full-graph training as described in
+<a class="reference internal" href="training.html#guide-training"><span class="std std-ref">Chapter 5: Training Graph Neural Networks</span></a>
+would not work. Consider an <span class="math notranslate nohighlight">\(L\)</span>-layer graph convolutional network
+with hidden state size <span class="math notranslate nohighlight">\(H\)</span> running on an <span class="math notranslate nohighlight">\(N\)</span>-node graph.
+Storing the intermediate hidden states requires <span class="math notranslate nohighlight">\(O(NLH)\)</span> memory,
+easily exceeding one GPU’s capacity with large <span class="math notranslate nohighlight">\(N\)</span>.</p>
+<p>This section provides a way to perform stochastic minibatch training,
+where we do not have to fit the feature of all the nodes into GPU.</p>
+<section id="overview-of-neighborhood-sampling-approaches">
+<h2>Overview of Neighborhood Sampling Approaches<a class="headerlink" href="#overview-of-neighborhood-sampling-approaches" title="Link to this heading"></a></h2>
+<p>Neighborhood sampling methods generally work as the following. For each
+gradient descent step, we select a minibatch of nodes whose final
+representations at the <span class="math notranslate nohighlight">\(L\)</span>-th layer are to be computed. We then
+take all or some of their neighbors at the <span class="math notranslate nohighlight">\(L-1\)</span> layer. This
+process continues until we reach the input. This iterative process
+builds the dependency graph starting from the output and working
+backwards to the input, as the figure below shows:</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_0_0.png" />
+</figure>
+<p>With this, one can save the workload and computation resources for
+training a GNN on a large graph.</p>
+<p>DGL provides a few neighborhood samplers and a pipeline for training a
+GNN with neighborhood sampling, as well as ways to customize your
+sampling strategies.</p>
+</section>
+<section id="roadmap">
+<h2>Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading"></a></h2>
+<p>The chapter starts with sections for training GNNs stochastically under
+different scenarios.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="minibatch-node.html#guide-minibatch-node-classification-sampler"><span class="std std-ref">6.1 Training GNN for Node Classification with Neighborhood Sampling</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-edge.html#guide-minibatch-edge-classification-sampler"><span class="std std-ref">6.2 Training GNN for Edge Classification with Neighborhood Sampling</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-link.html#guide-minibatch-link-classification-sampler"><span class="std std-ref">6.3 Training GNN for Link Prediction with Neighborhood Sampling</span></a></p></li>
+</ul>
+<p>The remaining sections cover more advanced topics, suitable for those who
+wish to develop new sampling algorithms, new GNN modules compatible with
+mini-batch training and understand how evaluation and inference can be
+conducted in mini-batches.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="minibatch-custom-sampler.html#guide-minibatch-customizing-neighborhood-sampler"><span class="std std-ref">6.4 Implementing Custom Graph Samplers</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-sparse.html#guide-minibatch-sparse"><span class="std std-ref">6.5 Training GNN with DGL sparse</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-nn.html#guide-minibatch-custom-gnn-module"><span class="std std-ref">6.6 Implementing Custom GNN Module for Mini-batch Training</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-inference.html#guide-minibatch-inference"><span class="std std-ref">6.7 Exact Offline Inference on Large Graphs</span></a></p></li>
+</ul>
+<p>The following are performance tips for implementing and using neighborhood
+sampling:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="minibatch-gpu-sampling.html#guide-minibatch-gpu-sampling"><span class="std std-ref">6.8 Using GPU for Neighborhood Sampling</span></a></p></li>
+<li><p><a class="reference internal" href="minibatch-parallelism.html#guide-minibatch-parallelism"><span class="std std-ref">6.9 Data Loading Parallelism</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="training-eweight.html" class="btn btn-neutral float-left" title="5.5 Use of Edge Weights" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-node.html" class="btn btn-neutral float-right" title="6.1 Training GNN for Node Classification with Neighborhood Sampling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

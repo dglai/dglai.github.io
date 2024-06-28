@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link Prediction using Graph Neural Networks &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Training a GNN for Graph Classification" href="5_graph_classification.html" />
+    <link rel="prev" title="Write your own GNN module" href="3_message_passing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">A Blitz Introduction to DGL</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_introduction.html">Node Classification with DGL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_dglgraph.html">How Does DGL Represent A Graph?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_message_passing.html">Write your own GNN module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Link Prediction using Graph Neural Networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Overview-of-Link-Prediction-with-GNN">Overview of Link Prediction with GNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Loading-graph-and-features">Loading graph and features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Prepare-training-and-testing-sets">Prepare training and testing sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Define-a-GraphSAGE-model">Define a GraphSAGE model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Positive-graph,-negative-graph,-and-apply_edges">Positive graph, negative graph, and <code class="docutils literal notranslate"><span class="pre">apply_edges</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Training-loop">Training loop</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="5_graph_classification.html">Training a GNN for Graph Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_load_data.html">Make Your Own Dataset</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">A Blitz Introduction to DGL</a></li>
+      <li class="breadcrumb-item active">Link Prediction using Graph Neural Networks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorials/blitz/4_link_predict.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Link-Prediction-using-Graph-Neural-Networks">
+<h1>Link Prediction using Graph Neural Networks<a class="headerlink" href="#Link-Prediction-using-Graph-Neural-Networks" title="Link to this heading"></a></h1>
+<p>In the :doc:<code class="docutils literal notranslate"><span class="pre">introduction</span> <span class="pre">&lt;1_introduction&gt;</span></code>, you have already learned the basic workflow of using GNNs for node classification, i.e. predicting the category of a node in a graph. This tutorial will teach you how to train a GNN for link prediction, i.e. predicting the existence of an edge between two arbitrary nodes in a graph.</p>
+<p>By the end of this tutorial you will be able to</p>
+<ul class="simple">
+<li><p>Build a GNN-based link prediction model.</p></li>
+<li><p>Train and evaluate the model on a small DGL-provided dataset.</p></li>
+</ul>
+<p>(Time estimate: 28 minutes)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;DGLBACKEND&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+
+<span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">import</span> <span class="nn">dgl.data</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+</pre></div>
+</div>
+</div>
+<section id="Overview-of-Link-Prediction-with-GNN">
+<h2>Overview of Link Prediction with GNN<a class="headerlink" href="#Overview-of-Link-Prediction-with-GNN" title="Link to this heading"></a></h2>
+<p>Many applications such as social recommendation, item recommendation, knowledge graph completion, etc., can be formulated as link prediction, which predicts whether an edge exists between two particular nodes. This tutorial shows an example of predicting whether a citation relationship, either citing or being cited, between two papers exists in a citation network.</p>
+<p>This tutorial formulates the link prediction problem as a binary classification problem as follows:</p>
+<ul class="simple">
+<li><p>Treat the edges in the graph as <em>positive examples</em>.</p></li>
+<li><p>Sample a number of non-existent edges (i.e. node pairs with no edges between them) as <em>negative</em> examples.</p></li>
+<li><p>Divide the positive examples and negative examples into a training set and a test set.</p></li>
+<li><p>Evaluate the model with any binary classification metric such as Area Under Curve (AUC).</p></li>
+</ul>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>The practice comes from <a class="reference external" href="https://papers.nips.cc/paper/2018/file/53f0d7c537d99b3824f0f99d62ea2428-Paper.pdf">SEAL</a>_, although the model here does not use their idea of node labeling.</p>
+</p></div>
+<p>In some domains such as large-scale recommender systems or information retrieval, you may favor metrics that emphasize good performance of top-K predictions. In these cases you may want to consider other metrics such as mean average precision, and use other negative sampling methods, which are beyond the scope of this tutorial.</p>
+</section>
+<section id="Loading-graph-and-features">
+<h2>Loading graph and features<a class="headerlink" href="#Loading-graph-and-features" title="Link to this heading"></a></h2>
+<p>Following the :doc:<code class="docutils literal notranslate"><span class="pre">introduction</span> <span class="pre">&lt;1_introduction&gt;</span></code>, this tutorial first loads the Cora dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CoraGraphDataset</span><span class="p">()</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  NumNodes: 2708
+  NumEdges: 10556
+  NumFeats: 1433
+  NumClasses: 7
+  NumTrainingSamples: 140
+  NumValidationSamples: 500
+  NumTestSamples: 1000
+Done loading data from cached files.
+</pre></div></div>
+</div>
+</section>
+<section id="Prepare-training-and-testing-sets">
+<h2>Prepare training and testing sets<a class="headerlink" href="#Prepare-training-and-testing-sets" title="Link to this heading"></a></h2>
+<p>This tutorial randomly picks 10% of the edges for positive examples in the test set, and leave the rest for the training set. It then samples the same number of edges for negative examples in both sets.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Split edge set for training and testing</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.permutation.html#numpy.random.permutation" title="numpy.random.permutation" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_size</span></a> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a>
+<span class="n">test_pos_u</span><span class="p">,</span> <span class="n">test_pos_v</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a><span class="p">[:</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">]],</span> <span class="n">v</span><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a><span class="p">[:</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">]]</span>
+<span class="n">train_pos_u</span><span class="p">,</span> <span class="n">train_pos_v</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">:]],</span> <span class="n">v</span><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">:]]</span>
+
+<span class="c1"># Find all negative edges and split them for training and testing</span>
+<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html#scipy.sparse.coo_matrix" title="scipy.sparse.coo_matrix" class="sphx-glr-backref-module-scipy-sparse sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">adj</span></a> <span class="o">=</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html#scipy.sparse.coo_matrix" title="scipy.sparse.coo_matrix" class="sphx-glr-backref-module-scipy-sparse sphx-glr-backref-type-py-class"><span class="n">sp</span><span class="o">.</span><span class="n">coo_matrix</span></a><span class="p">((</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ones.html#numpy.ones" title="numpy.ones" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">ones</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="p">)),</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">v</span><span class="o">.</span><span class="n">numpy</span><span class="p">())))</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.matrix.html#numpy.matrix" title="numpy.matrix" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">adj_neg</span></a> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.todense.html#scipy.sparse.coo_matrix.todense" title="scipy.sparse.coo_matrix.todense" class="sphx-glr-backref-module-scipy-sparse sphx-glr-backref-type-py-method"><span class="n">adj</span><span class="o">.</span><span class="n">todense</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.eye.html#numpy.eye" title="numpy.eye" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">eye</span></a><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_u</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_v</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.where.html#numpy.where" title="numpy.where" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.matrix.html#numpy.matrix" title="numpy.matrix" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">adj_neg</span></a> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_eids</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.choice.html#numpy.random.choice" title="numpy.random.choice" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_u</span></a><span class="p">),</span> <span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_neg_u</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_neg_v</span></a> <span class="o">=</span> <span class="p">(</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_u</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_eids</span></a><span class="p">[:</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">]],</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_v</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_eids</span></a><span class="p">[:</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">]],</span>
+<span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_neg_u</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_neg_v</span></a> <span class="o">=</span> <span class="p">(</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_u</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_eids</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">:]],</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_v</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">neg_eids</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">:]],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>When training, you will need to remove the edges in the test set from the original graph. You can do this via <code class="docutils literal notranslate"><span class="pre">dgl.remove_edges</span></code>.</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p><code class="docutils literal notranslate"><span class="pre">dgl.remove_edges</span></code> works by creating a subgraph from the original graph, resulting in a copy and therefore could be slow for large graphs. If so, you could save the training and test graph to disk, as you would do for preprocessing.</p>
+</p></div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">remove_edges</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eids</span></a><span class="p">[:</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_size</span></a><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Define-a-GraphSAGE-model">
+<h2>Define a GraphSAGE model<a class="headerlink" href="#Define-a-GraphSAGE-model" title="Link to this heading"></a></h2>
+<p>This tutorial builds a model consisting of two <a class="reference external" href="https://arxiv.org/abs/1706.02216">GraphSAGE</a>_ layers, each computes new node representations by averaging neighbor information. DGL provides <code class="docutils literal notranslate"><span class="pre">dgl.nn.SAGEConv</span></code> that conveniently creates a GraphSAGE layer.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dgl.nn</span> <span class="kn">import</span> <span class="n">SAGEConv</span>
+
+
+<span class="c1"># ----------- 2. create model -------------- #</span>
+<span class="c1"># build a two-layer GraphSAGE model</span>
+<span class="k">class</span> <span class="nc">GraphSAGE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">h_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphSAGE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">SAGEConv</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">h_feats</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">SAGEConv</span><span class="p">(</span><span class="n">h_feats</span><span class="p">,</span> <span class="n">h_feats</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_feat</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">in_feat</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">h</span>
+</pre></div>
+</div>
+</div>
+<p>The model then predicts the probability of existence of an edge by computing a score between the representations of both incident nodes with a function (e.g. an MLP or a dot product), which you will see in the next section.</p>
+<p><span class="math">\begin{align}\hat{y}_{u\sim v} = f(h_u, h_v)\end{align}</span></p>
+</section>
+<section id="Positive-graph,-negative-graph,-and-apply_edges">
+<h2>Positive graph, negative graph, and <code class="docutils literal notranslate"><span class="pre">apply_edges</span></code><a class="headerlink" href="#Positive-graph,-negative-graph,-and-apply_edges" title="Link to this heading"></a></h2>
+<p>In previous tutorials you have learned how to compute node representations with a GNN. However, link prediction requires you to compute representation of <em>pairs of nodes</em>.</p>
+<p>DGL recommends you to treat the pairs of nodes as another graph, since you can describe a pair of nodes with an edge. In link prediction, you will have a <em>positive graph</em> consisting of all the positive examples as edges, and a <em>negative graph</em> consisting of all the negative examples. The <em>positive graph</em> and the <em>negative graph</em> will contain the same set of nodes as the original graph. This makes it easier to pass node features among multiple graphs for computation. As you will see later, you
+can directly feed the node representations computed on the entire graph to the positive and the negative graphs for computing pair-wise scores.</p>
+<p>The following code constructs the positive graph and the negative graph for the training set and the test set respectively.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_pos_g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><span class="n">train_pos_u</span><span class="p">,</span> <span class="n">train_pos_v</span><span class="p">),</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+<span class="n">train_neg_g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_neg_u</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_neg_v</span></a><span class="p">),</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+
+<span class="n">test_pos_g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><span class="n">test_pos_u</span><span class="p">,</span> <span class="n">test_pos_v</span><span class="p">),</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+<span class="n">test_neg_g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_neg_u</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_neg_v</span></a><span class="p">),</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<p>The benefit of treating the pairs of nodes as a graph is that you can use the <code class="docutils literal notranslate"><span class="pre">DGLGraph.apply_edges</span></code> method, which conveniently computes new edge features based on the incident nodes’ features and the original edge features (if applicable).</p>
+<p>DGL provides a set of optimized builtin functions to compute new edge features based on the original node/edge features. For example, <code class="docutils literal notranslate"><span class="pre">dgl.function.u_dot_v</span></code> computes a dot product of the incident nodes’ representations for each edge.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.function</span> <span class="k">as</span> <span class="nn">fn</span>
+
+
+<span class="k">class</span> <span class="nc">DotPredictor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="c1"># Compute a new edge feature named &#39;score&#39; by a dot-product between the</span>
+            <span class="c1"># source node feature &#39;h&#39; and destination node feature &#39;h&#39;.</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">u_dot_v</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">))</span>
+            <span class="c1"># u_dot_v returns a 1-element vector for each edge so you need to squeeze it.</span>
+            <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>You can also write your own function if it is complex. For instance, the following module produces a scalar score on each edge by concatenating the incident nodes’ features and passing it to an MLP.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MLPPredictor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">h_feats</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h_feats</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">h_feats</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes a scalar score for each edge of the given graph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        edges :</span>
+<span class="sd">            Has three members ``src``, ``dst`` and ``data``, each of</span>
+<span class="sd">            which is a dictionary representing the features of the</span>
+<span class="sd">            source nodes, the destination nodes, and the edges</span>
+<span class="sd">            themselves.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary of new edge features.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">edges</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">],</span> <span class="n">edges</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">W2</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">W1</span><span class="p">(</span><span class="n">h</span><span class="p">)))</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>The builtin functions are optimized for both speed and memory. We recommend using builtin functions whenever possible.</p>
+</p></div>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>If you have read the :doc:<code class="docutils literal notranslate"><span class="pre">message</span> <span class="pre">passing</span>&#160;&#160;&#160; <span class="pre">tutorial</span> <span class="pre">&lt;3_message_passing&gt;</span></code>, you will notice that the argument <code class="docutils literal notranslate"><span class="pre">apply_edges</span></code> takes has exactly the same form as a message function in <code class="docutils literal notranslate"><span class="pre">update_all</span></code>.</p>
+</p></div>
+</section>
+<section id="Training-loop">
+<h2>Training loop<a class="headerlink" href="#Training-loop" title="Link to this heading"></a></h2>
+<p>After you defined the node representation computation and the edge score computation, you can go ahead and define the overall model, loss function, and evaluation metric.</p>
+<p>The loss function is simply binary cross entropy loss.</p>
+<p><span class="math">\begin{align}\mathcal{L} = -\sum_{u\sim v\in \mathcal{D}}\left( y_{u\sim v}\log(\hat{y}_{u\sim v}) + (1-y_{u\sim v})\log(1-\hat{y}_{u\sim v})) \right)\end{align}</span></p>
+<p>The evaluation metric in this tutorial is AUC.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">GraphSAGE</span><span class="p">(</span><span class="n">train_g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+<span class="c1"># You can replace DotPredictor with MLPPredictor.</span>
+<span class="c1"># pred = MLPPredictor(16)</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">DotPredictor</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">):</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">])</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">pos_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">neg_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">binary_cross_entropy_with_logits</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">compute_auc</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">):</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">])</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">pos_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">neg_score</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The training loop goes as follows:</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>This tutorial does not include evaluation on a validation set. In practice you should save and evaluate the best model based on performance on the validation set.</p>
+</p></div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ----------- 3. set up loss and optimizer -------------- #</span>
+<span class="c1"># in this case, loss will in training loop</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/itertools.html#itertools.chain" title="itertools.chain" class="sphx-glr-backref-module-itertools sphx-glr-backref-type-py-function"><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span></a><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">pred</span><span class="o">.</span><span class="n">parameters</span><span class="p">()),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="p">)</span>
+
+<span class="c1"># ----------- 4. training -------------------------------- #</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_logits</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">e</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># forward</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">train_g</span><span class="p">,</span> <span class="n">train_g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">])</span>
+    <span class="n">pos_score</span> <span class="o">=</span> <span class="n">pred</span><span class="p">(</span><span class="n">train_pos_g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">neg_score</span> <span class="o">=</span> <span class="n">pred</span><span class="p">(</span><span class="n">train_neg_g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">)</span>
+
+    <span class="c1"># backward</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">e</span></a> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In epoch </span><span class="si">{}</span><span class="s2">, loss: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">e</span></a><span class="p">,</span> <span class="n">loss</span><span class="p">))</span>
+
+<span class="c1"># ----------- 5. check results ------------------------ #</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">roc_auc_score</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">pos_score</span> <span class="o">=</span> <span class="n">pred</span><span class="p">(</span><span class="n">test_pos_g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">neg_score</span> <span class="o">=</span> <span class="n">pred</span><span class="p">(</span><span class="n">test_neg_g</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AUC&quot;</span><span class="p">,</span> <span class="n">compute_auc</span><span class="p">(</span><span class="n">pos_score</span><span class="p">,</span> <span class="n">neg_score</span><span class="p">))</span>
+
+
+<span class="c1"># Thumbnail credits: Link Prediction with Neo4j, Mark Needham</span>
+<span class="c1"># sphinx_gallery_thumbnail_path = &#39;_static/blitz_4_link_predict.png&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+In epoch 0, loss: 0.7063948512077332
+In epoch 5, loss: 0.6911881566047668
+In epoch 10, loss: 0.6749348044395447
+In epoch 15, loss: 0.6355288624763489
+In epoch 20, loss: 0.5740757584571838
+In epoch 25, loss: 0.5356282591819763
+In epoch 30, loss: 0.49707600474357605
+In epoch 35, loss: 0.4713204503059387
+In epoch 40, loss: 0.4532330334186554
+In epoch 45, loss: 0.4305190443992615
+In epoch 50, loss: 0.41003847122192383
+In epoch 55, loss: 0.3894040584564209
+In epoch 60, loss: 0.3686477541923523
+In epoch 65, loss: 0.3480415940284729
+In epoch 70, loss: 0.32715702056884766
+In epoch 75, loss: 0.3062360882759094
+In epoch 80, loss: 0.28521814942359924
+In epoch 85, loss: 0.2642972469329834
+In epoch 90, loss: 0.2435828596353531
+In epoch 95, loss: 0.22313538193702698
+AUC 0.8600992789919365
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="3_message_passing.html" class="btn btn-neutral float-left" title="Write your own GNN module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="5_graph_classification.html" class="btn btn-neutral float-right" title="Training a GNN for Graph Classification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

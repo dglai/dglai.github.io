@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.8 Using GPU for Neighborhood Sampling &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.9 Data Loading Parallelism" href="minibatch-parallelism.html" />
+    <link rel="prev" title="6.7 Exact Offline Inference on Large Graphs" href="minibatch-inference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 Training GNN for Node Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 Training GNN for Edge Classification with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 Training GNN for Link Prediction with Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 Implementing Custom Graph Samplers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-sparse.html">6.5 Training GNN with DGL sparse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.6 Implementing Custom GNN Module for Mini-batch Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.7 Exact Offline Inference on Large Graphs</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.8 Using GPU for Neighborhood Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-parallelism.html">6.9 Data Loading Parallelism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+      <li class="breadcrumb-item active">6.8 Using GPU for Neighborhood Sampling</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/minibatch-gpu-sampling.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="using-gpu-for-neighborhood-sampling">
+<span id="guide-minibatch-gpu-sampling"></span><h1>6.8 Using GPU for Neighborhood Sampling<a class="headerlink" href="#using-gpu-for-neighborhood-sampling" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GraphBolt does not support GPU-based neighborhood sampling yet. So this guide is
+utilizing <a class="reference internal" href="../generated/dgl.dataloading.DataLoader.html#dgl.dataloading.DataLoader" title="dgl.dataloading.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></a> for illustration.</p>
+</div>
+<p>DGL since 0.7 has been supporting GPU-based neighborhood sampling, which has a significant
+speed advantage over CPU-based neighborhood sampling.  If you estimate that your graph
+can fit onto GPU and your model does not take a lot of GPU memory, then it is best to
+put the graph onto GPU memory and use GPU-based neighbor sampling.</p>
+<p>For example, <a class="reference external" href="https://ogb.stanford.edu/docs/nodeprop/#ogbn-products">OGB Products</a> has
+2.4M nodes and 61M edges.  The graph takes less than 1GB since the memory consumption of
+a graph depends on the number of edges.  Therefore it is entirely possible to fit the
+whole graph onto GPU.</p>
+<section id="using-gpu-based-neighborhood-sampling-in-dgl-data-loaders">
+<h2>Using GPU-based neighborhood sampling in DGL data loaders<a class="headerlink" href="#using-gpu-based-neighborhood-sampling-in-dgl-data-loaders" title="Link to this heading"></a></h2>
+<p>One can use GPU-based neighborhood sampling with DGL data loaders via:</p>
+<ul class="simple">
+<li><p>Put the graph onto GPU.</p></li>
+<li><p>Put the <code class="docutils literal notranslate"><span class="pre">train_nid</span></code> onto GPU.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">device</span></code> argument to a GPU device.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">num_workers</span></code> argument to 0, because CUDA does not allow multiple processes
+accessing the same context.</p></li>
+</ul>
+<p>All the other arguments for the <a class="reference internal" href="../generated/dgl.dataloading.DataLoader.html#dgl.dataloading.DataLoader" title="dgl.dataloading.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></a> can be
+the same as the other user guides and tutorials.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">)</span>
+<span class="n">train_nid</span> <span class="o">=</span> <span class="n">train_nid</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>                                <span class="c1"># The graph must be on GPU.</span>
+    <span class="n">train_nid</span><span class="p">,</span>                        <span class="c1"># train_nid must be on GPU.</span>
+    <span class="n">sampler</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">),</span>    <span class="c1"># The device argument must be GPU.</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>                    <span class="c1"># Number of workers must be 0.</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GPU-based neighbor sampling also works for custom neighborhood samplers as long as
+(1) your sampler is subclassed from <a class="reference internal" href="../generated/dgl.dataloading.BlockSampler.html#dgl.dataloading.BlockSampler" title="dgl.dataloading.BlockSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockSampler</span></code></a>, and (2)
+your sampler entirely works on GPU.</p>
+</div>
+</section>
+<section id="using-cuda-uva-based-neighborhood-sampling-in-dgl-data-loaders">
+<h2>Using CUDA UVA-based neighborhood sampling in DGL data loaders<a class="headerlink" href="#using-cuda-uva-based-neighborhood-sampling-in-dgl-data-loaders" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New feature introduced in DGL 0.8.</p>
+</div>
+<p>For the case where the graph is too large to fit onto the GPU memory, we introduce the
+CUDA UVA (Unified Virtual Addressing)-based sampling, in which GPUs perform the sampling
+on the graph pinned in CPU memory via zero-copy access.
+You can enable UVA-based neighborhood sampling in DGL data loaders via:</p>
+<ul class="simple">
+<li><p>Put the <code class="docutils literal notranslate"><span class="pre">train_nid</span></code> onto GPU.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">device</span></code> argument to a GPU device.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">num_workers</span></code> argument to 0, because CUDA does not allow multiple processes
+accessing the same context.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">use_uva=True</span></code>.</p></li>
+</ul>
+<p>All the other arguments for the <a class="reference internal" href="../generated/dgl.dataloading.DataLoader.html#dgl.dataloading.DataLoader" title="dgl.dataloading.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></a> can be
+the same as the other user guides and tutorials.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_nid</span> <span class="o">=</span> <span class="n">train_nid</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">train_nid</span><span class="p">,</span>                        <span class="c1"># train_nid must be on GPU.</span>
+    <span class="n">sampler</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">),</span>    <span class="c1"># The device argument must be GPU.</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>                    <span class="c1"># Number of workers must be 0.</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">use_uva</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>                     <span class="c1"># Set use_uva=True</span>
+</pre></div>
+</div>
+<p>UVA-based sampling is the recommended solution for mini-batch training on large graphs,
+especially for multi-GPU training.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To use UVA-based sampling in multi-GPU training, you should first materialize all the
+necessary sparse formats of the graph before spawning training processes.
+Refer to our <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/graphsage/multi_gpu_node_classification.py">GraphSAGE example</a> for more details.</p>
+</div>
+</section>
+<section id="uva-and-gpu-support-for-pinsagesampler-randomwalkneighborsampler">
+<h2>UVA and GPU support for PinSAGESampler/RandomWalkNeighborSampler<a class="headerlink" href="#uva-and-gpu-support-for-pinsagesampler-randomwalkneighborsampler" title="Link to this heading"></a></h2>
+<p>PinSAGESampler and RandomWalkNeighborSampler support UVA and GPU sampling.
+You can enable them via:</p>
+<ul class="simple">
+<li><p>Pin the graph (for UVA sampling) or put the graph onto GPU (for GPU sampling).</p></li>
+<li><p>Put the <code class="docutils literal notranslate"><span class="pre">train_nid</span></code> onto GPU.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">heterograph</span><span class="p">({</span>
+    <span class="p">(</span><span class="s1">&#39;item&#39;</span><span class="p">,</span> <span class="s1">&#39;bought-by&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">):</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+    <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;bought&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">):</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])})</span>
+
+<span class="c1"># UVA setup</span>
+<span class="c1"># g.create_formats_()</span>
+<span class="c1"># g.pin_memory_()</span>
+
+<span class="c1"># GPU setup</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="n">sampler1</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">PinSAGESampler</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sampler2</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">RandomWalkNeighborSampler</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;bought-by&#39;</span><span class="p">,</span> <span class="s1">&#39;bought&#39;</span><span class="p">])</span>
+
+<span class="n">train_nid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">idtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+<span class="n">sampler1</span><span class="p">(</span><span class="n">train_nid</span><span class="p">)</span>
+<span class="n">sampler2</span><span class="p">(</span><span class="n">train_nid</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-gpu-based-neighbor-sampling-with-dgl-functions">
+<h2>Using GPU-based neighbor sampling with DGL functions<a class="headerlink" href="#using-gpu-based-neighbor-sampling-with-dgl-functions" title="Link to this heading"></a></h2>
+<p>You can build your own GPU sampling pipelines with the following functions that support
+operating on GPU:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generated/dgl.sampling.sample_neighbors.html#dgl.sampling.sample_neighbors" title="dgl.sampling.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.sampling.sample_neighbors()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/dgl.sampling.random_walk.html#dgl.sampling.random_walk" title="dgl.sampling.random_walk"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.sampling.random_walk()</span></code></a></p></li>
+</ul>
+<p>Subgraph extraction ops:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generated/dgl.node_subgraph.html#dgl.node_subgraph" title="dgl.node_subgraph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.node_subgraph()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/dgl.edge_subgraph.html#dgl.edge_subgraph" title="dgl.edge_subgraph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.edge_subgraph()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/dgl.in_subgraph.html#dgl.in_subgraph" title="dgl.in_subgraph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.in_subgraph()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/dgl.out_subgraph.html#dgl.out_subgraph" title="dgl.out_subgraph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.out_subgraph()</span></code></a></p></li>
+</ul>
+<p>Graph transform ops for subgraph construction:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generated/dgl.to_block.html#dgl.to_block" title="dgl.to_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.to_block()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.compact_graph()</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-inference.html" class="btn btn-neutral float-left" title="6.7 Exact Offline Inference on Large Graphs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-parallelism.html" class="btn btn-neutral float-right" title="6.9 Data Loading Parallelism" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

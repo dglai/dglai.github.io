@@ -1,0 +1,32 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "\n# CPU Best Practices\n\nThis chapter focus on providing best practises for environment setup\nto get the best performance during training and inference on the CPU.\n\n## Intel\n\n### Hyper-threading\n\nFor specific workloads as GNN\u2019s domain, suggested default setting for having best performance\nis to turn off hyperthreading.\nTurning off the hyper threading feature can be done at BIOS [#f1]_ or operating system level [#f2]_ [#f3]_ .\n\n### Alternative memory allocators\n\nAlternative memory allocators, such as *tcmalloc*, might provide significant performance improvements by more efficient memory usage, reducing overhead on unnecessary memory allocations or deallocations. *tcmalloc* uses thread-local caches to reduce overhead on thread synchronization, locks contention by using spinlocks and per-thread arenas respectively and categorizes memory allocations by sizes to reduce overhead on memory fragmentation.\n\nTo take advantage of optimizations *tcmalloc* provides, install it on your system (on Ubuntu *tcmalloc* is included in libgoogle-perftools4 package) and add shared library to the LD_PRELOAD environment variable:\n\n```shell\nexport LD_PRELOAD=/lib/x86_64-linux-gnu/libtcmalloc.so.4:$LD_PRELOAD\n```\n### OpenMP settings\n\nAs `OpenMP` is the default parallel backend, we could control performance\nincluding sampling and training via `dgl.utils.set_num_threads()`.\n\nIf number of OpenMP threads is not set and `num_workers` in dataloader is set\nto 0, the OpenMP runtime typically use the number of available CPU cores by\ndefault. This works well for most cases, and is also the default behavior in DGL.\n\nIf `num_workers` in dataloader is set to greater than 0, the number of\nOpenMP threads will be set to **1** for each worker process. This is the\ndefault behavior in PyTorch. In this case, we can set the number of OpenMP\nthreads to the number of CPU cores in the main process.\n\nPerformance tuning is highly dependent on the workload and hardware\nconfiguration. We recommend users to try different settings and choose the\nbest one for their own cases.\n\n**Dataloader CPU affinity**\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>This feature is available for `dgl.dataloading.DataLoader` only. Not\n    available for dataloaders in `dgl.graphbolt` yet.</p></div>\n\n\nIf number of dataloader workers is more than 0, please consider using **use_cpu_affinity()** method\nof DGL Dataloader class, it will generally result in significant performance improvement for training.\n\n*use_cpu_affinity* will set the proper OpenMP thread count (equal to the number of CPU cores allocated for main process),\naffinitize dataloader workers for separate CPU cores and restrict the main process to remaining cores\n\nIn multiple NUMA nodes setups *use_cpu_affinity* will only use cores of NUMA node 0 by default\nwith an assumption, that the workload is scaling poorly across multiple NUMA nodes. If you believe\nyour workload will have better performance utilizing more than one NUMA node, you can pass\nthe list of cores to use for dataloading (loader_cores) and for compute (compute_cores).\n\nloader_cores and compute_cores arguments (list of CPU cores) can be passed to *enable_cpu_affinity* for more\ncontrol over which cores should be used, e.g. in case a workload scales well across multiple NUMA nodes.\n\nUsage:\n    .. code:: python\n\n        dataloader = dgl.dataloading.DataLoader(...)\n        ...\n        with dataloader.enable_cpu_affinity():\n            <training loop or inferencing>\n\n**Manual control**\n\nFor advanced and more fine-grained control over OpenMP settings please refer to Maximize Performance of Intel\u00ae Optimization for PyTorch* on CPU [#f4]_ article\n\n.. rubric:: Footnotes\n\n.. [#f1] https://www.intel.com/content/www/us/en/support/articles/000007645/boards-and-kits/desktop-boards.html\n.. [#f2] https://aws.amazon.com/blogs/compute/disabling-intel-hyper-threading-technology-on-amazon-linux/\n.. [#f3] https://aws.amazon.com/blogs/compute/disabling-intel-hyper-threading-technology-on-amazon-ec2-windows-instances/\n.. [#f4] https://software.intel.com/content/www/us/en/develop/articles/how-to-get-better-performance-on-pytorchcaffe2-with-intel-acceleration.html\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.14"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
