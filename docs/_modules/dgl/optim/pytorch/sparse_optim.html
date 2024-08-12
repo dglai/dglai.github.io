@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.optim.pytorch.sparse_optim &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.optim.pytorch.sparse_optim</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.optim.pytorch.sparse_optim</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Node embedding optimizers&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+
+<span class="kn">from</span> <span class="nn">...cuda</span> <span class="kn">import</span> <span class="n">nccl</span>
+<span class="kn">from</span> <span class="nn">...nn.pytorch</span> <span class="kn">import</span> <span class="n">NodeEmbedding</span>
+<span class="kn">from</span> <span class="nn">...partition</span> <span class="kn">import</span> <span class="n">NDArrayPartition</span>
+<span class="kn">from</span> <span class="nn">...utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">create_shared_mem_array</span><span class="p">,</span>
+    <span class="n">gather_pinned_tensor_rows</span><span class="p">,</span>
+    <span class="n">get_shared_mem_array</span><span class="p">,</span>
+    <span class="n">pin_memory_inplace</span><span class="p">,</span>
+    <span class="n">scatter_pinned_tensor_rows</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SparseGradOptimizer</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The abstract sparse optimizer.</span>
+
+<span class="sd">    Note: dgl sparse optimizer only work with dgl.NodeEmbedding</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    params : list of NodeEmbedding</span>
+<span class="sd">        The list of NodeEmbeddings.</span>
+<span class="sd">    lr : float</span>
+<span class="sd">        The learning rate.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_grad</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opt_meta</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_first_step</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># hold released shared memory to let other process to munmap it first</span>
+        <span class="c1"># otherwise it will crash the training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shmem_buffer_holder</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Empty parameters&quot;</span>
+        <span class="c1"># if we are using shared memory for communication</span>
+        <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">emb</span><span class="p">,</span> <span class="n">NodeEmbedding</span>
+            <span class="p">),</span> <span class="s2">&quot;DGL SparseOptimizer only supports dgl.nn.NodeEmbedding&quot;</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">rank</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">world_size</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">==</span> <span class="n">emb</span><span class="o">.</span><span class="n">rank</span>
+                <span class="p">),</span> <span class="s2">&quot;MultiGPU rank for each embedding should be same.&quot;</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">==</span> <span class="n">emb</span><span class="o">.</span><span class="n">world_size</span>
+                <span class="p">),</span> <span class="s2">&quot;MultiGPU world_size for each embedding should be same.&quot;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The step function.</span>
+
+<span class="sd">        The step function is invoked at the end of every batch to update embeddings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># on the first step, check to see if the grads are on the GPU</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_step</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">emb</span><span class="o">.</span><span class="n">_trace</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
+                        <span class="c1"># create a communicator</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">:</span>
+                            <span class="k">assert</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">==</span> <span class="n">data</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">device</span>
+                            <span class="p">),</span> <span class="s2">&quot;All gradients must be on the same device&quot;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">device</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="p">(</span>
+                            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span>
+                        <span class="p">),</span> <span class="s2">&quot;All gradients must be on the same device&quot;</span>
+
+            <span class="c1"># distributed backend use nccl</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
+                <span class="ow">or</span> <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nccl&quot;</span>
+            <span class="p">):</span>
+                <span class="c1"># device is only set if the grads are on a GPU</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_comm_setup</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_shared_setup</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_first_step</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comm</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_comm_step</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shared_step</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is function where subclasses can perform any setup they need</span>
+<span class="sd">        to. It will be called during the first step, and communicators or</span>
+<span class="sd">        shared memory will have been setup before this call.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        params : list of NodeEmbedding</span>
+<span class="sd">            The list of NodeEmbeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_comm_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comm</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_shared_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+            <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># the master gpu process</span>
+                <span class="n">opt_meta</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                    <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt_meta&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span><span class="p">),</span>
+                    <span class="n">th</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">emb</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt_meta&quot;</span><span class="p">,</span> <span class="n">emb_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_opt_meta</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">opt_meta</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># receive</span>
+                <span class="n">emb</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt_meta&quot;</span><span class="p">])</span>
+                <span class="n">opt_meta</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                    <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt_meta&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span><span class="p">),</span>
+                    <span class="n">th</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_opt_meta</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">opt_meta</span>
+
+    <span class="k">def</span> <span class="nf">_comm_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">th</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">idx_in</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">grad_in</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-nested-blocks</span>
+                <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">partition</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">partition</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">partition</span><span class="p">:</span>
+                    <span class="c1"># use default partitioning</span>
+                    <span class="n">partition</span> <span class="o">=</span> <span class="n">NDArrayPartition</span><span class="p">(</span>
+                        <span class="n">emb</span><span class="o">.</span><span class="n">num_embeddings</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># we need to combine gradients from multiple forward paths</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">_trace</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+                    <span class="n">grad</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">embedding_dim</span><span class="p">),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">_trace</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># the special case where we can use the tensors as is</span>
+                    <span class="c1"># without any memcpy&#39;s</span>
+                    <span class="n">idx</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">_trace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">grad</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">emb</span><span class="o">.</span><span class="n">_trace</span><span class="p">:</span>
+                        <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="n">grad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">grad</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="p">(</span>
+                    <span class="n">idx_in</span><span class="p">[</span><span class="n">emb_name</span><span class="p">],</span>
+                    <span class="n">grad_in</span><span class="p">[</span><span class="n">emb_name</span><span class="p">],</span>
+                <span class="p">)</span> <span class="o">=</span> <span class="n">nccl</span><span class="o">.</span><span class="n">sparse_all_to_all_push</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">partition</span><span class="o">=</span><span class="n">partition</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">emb</span><span class="o">.</span><span class="n">partition</span><span class="p">:</span>
+                    <span class="c1"># if the embedding is partitioned, map back to indexes</span>
+                    <span class="c1"># into the local tensor</span>
+                    <span class="n">idx_in</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">partition</span><span class="o">.</span><span class="n">map_to_local</span><span class="p">(</span><span class="n">idx_in</span><span class="p">[</span><span class="n">emb_name</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_grad</span><span class="p">:</span>
+                <span class="c1"># clean gradient track</span>
+                <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+                    <span class="n">emb</span><span class="o">.</span><span class="n">reset_trace</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean_grad</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+                <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">idx_in</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span>
+                <span class="n">grad</span> <span class="o">=</span> <span class="n">grad_in</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">emb</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_shared_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">th</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="c1"># Frequently alloc and free shared memory to hold intermediate tensor is expensive</span>
+            <span class="c1"># We cache shared memory buffers in shared_emb.</span>
+            <span class="n">shared_emb</span> <span class="o">=</span> <span class="p">{</span><span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">([],</span> <span class="p">[])</span> <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">}</span>
+
+            <span class="c1"># Go through all sparse embeddings</span>
+            <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-nested-blocks</span>
+                <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+
+                <span class="c1"># we need to combine gradients from multiple forward paths</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">grad</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">emb</span><span class="o">.</span><span class="n">_trace</span><span class="p">:</span>
+                    <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="n">grad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="c1"># If the sparse embedding is not used in the previous forward step</span>
+                <span class="c1"># The idx and grad will be empty, initialize them as empty tensors to</span>
+                <span class="c1"># avoid crashing the optimizer step logic.</span>
+                <span class="c1">#</span>
+                <span class="c1"># Note: we cannot skip the gradient exchange and update steps as other</span>
+                <span class="c1"># working processes may send gradient update requests corresponding</span>
+                <span class="c1"># to certain embedding to this process.</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
+                    <span class="k">else</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>
+                <span class="p">)</span>
+                <span class="n">grad</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
+                    <span class="k">else</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">embedding_dim</span><span class="p">),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="n">device</span> <span class="o">=</span> <span class="n">grad</span><span class="o">.</span><span class="n">device</span>
+                <span class="n">idx_dtype</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">dtype</span>
+                <span class="n">grad_dtype</span> <span class="o">=</span> <span class="n">grad</span><span class="o">.</span><span class="n">dtype</span>
+                <span class="n">grad_dim</span> <span class="o">=</span> <span class="n">grad</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">emb_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+                    <span class="c1"># Each training process takes the resposibility of updating a range</span>
+                    <span class="c1"># of node embeddings, thus we can parallel the gradient update.</span>
+                    <span class="c1"># The overall progress includes:</span>
+                    <span class="c1">#   1. In each training process:</span>
+                    <span class="c1">#     1.a Deciding which process a node embedding belongs to according</span>
+                    <span class="c1">#         to the formula: process_id = node_idx mod num_of_process(N)</span>
+                    <span class="c1">#     1.b Split the node index tensor and gradient tensor into N parts</span>
+                    <span class="c1">#         according to step 1.</span>
+                    <span class="c1">#     1.c Write each node index sub-tensor and gradient sub-tensor into</span>
+                    <span class="c1">#         different DGL shared memory buffers.</span>
+                    <span class="c1">#   2. Cross training process synchronization</span>
+                    <span class="c1">#   3. In each traning process:</span>
+                    <span class="c1">#     3.a Collect node index sub-tensors and gradient sub-tensors</span>
+                    <span class="c1">#     3.b Do gradient update</span>
+                    <span class="c1">#   4. Done</span>
+                    <span class="n">idx_split</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span><span class="p">):</span>
+                        <span class="n">mask</span> <span class="o">=</span> <span class="n">idx_split</span> <span class="o">==</span> <span class="n">i</span>
+                        <span class="n">idx_i</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+                        <span class="n">grad_i</span> <span class="o">=</span> <span class="n">grad</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">:</span>
+                            <span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_i</span><span class="p">)</span>
+                            <span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grad_i</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># currently nccl does not support Alltoallv operation</span>
+                            <span class="c1"># we need to use CPU shared memory to share gradient</span>
+                            <span class="c1"># across processes</span>
+                            <span class="n">idx_i</span> <span class="o">=</span> <span class="n">idx_i</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>
+                            <span class="n">grad_i</span> <span class="o">=</span> <span class="n">grad_i</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>
+                            <span class="n">idx_shmem_name</span> <span class="o">=</span> <span class="s2">&quot;idx_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">emb_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="n">i</span>
+                            <span class="p">)</span>
+                            <span class="n">grad_shmem_name</span> <span class="o">=</span> <span class="s2">&quot;grad_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">emb_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="n">i</span>
+                            <span class="p">)</span>
+
+                            <span class="c1"># Create shared memory to hold temporary index and gradient tensor for</span>
+                            <span class="c1"># cross-process send and recv.</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">idx_shmem_name</span>
+                                <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span>
+                                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                    <span class="n">idx_shmem_name</span>
+                                <span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="o">&lt;</span> <span class="n">idx_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="p">):</span>
+
+                                <span class="k">if</span> <span class="p">(</span>
+                                    <span class="n">idx_shmem_name</span>
+                                    <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span>
+                                <span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">shmem_buffer_holder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                            <span class="n">idx_shmem_name</span>
+                                        <span class="p">]</span>
+                                    <span class="p">)</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">shmem_buffer_holder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                            <span class="n">grad_shmem_name</span>
+                                        <span class="p">]</span>
+                                    <span class="p">)</span>
+
+                                <span class="c1"># The total number of buffers is the number of NodeEmbeddings *</span>
+                                <span class="c1"># world_size * (world_size - 1). The minimun buffer size is 128.</span>
+                                <span class="c1">#</span>
+                                <span class="c1"># We extend the buffer by idx_i.shape[0] * 2 to avoid</span>
+                                <span class="c1"># frequent shared memory allocation.</span>
+                                <span class="c1"># The overall buffer cost will be smaller than three times</span>
+                                <span class="c1"># the maximum memory requirement for sharing gradients.</span>
+                                <span class="n">buffer_size</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="mi">128</span>
+                                    <span class="k">if</span> <span class="n">idx_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">128</span>
+                                    <span class="k">else</span> <span class="n">idx_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+                                <span class="p">)</span>
+                                <span class="n">idx_shmem</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_shmem_name</span><span class="p">,</span> <span class="n">buffer_size</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="n">buffer_size</span><span class="p">,),</span>
+                                    <span class="n">idx_dtype</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="n">grad_shmem</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                        <span class="n">grad_shmem_name</span><span class="p">,</span> <span class="n">buffer_size</span>
+                                    <span class="p">),</span>
+                                    <span class="p">(</span><span class="n">buffer_size</span><span class="p">,</span> <span class="n">grad_dim</span><span class="p">),</span>
+                                    <span class="n">grad_dtype</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                    <span class="n">idx_shmem_name</span>
+                                <span class="p">]</span> <span class="o">=</span> <span class="n">idx_shmem</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                    <span class="n">grad_shmem_name</span>
+                                <span class="p">]</span> <span class="o">=</span> <span class="n">grad_shmem</span>
+
+                            <span class="c1"># Fill shared memory with temporal index tensor and gradient tensor</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="n">idx_shmem_name</span><span class="p">][</span>
+                                <span class="p">:</span> <span class="n">idx_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="p">]</span> <span class="o">=</span> <span class="n">idx_i</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="n">grad_shmem_name</span><span class="p">][</span>
+                                <span class="p">:</span> <span class="n">idx_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="p">]</span> <span class="o">=</span> <span class="n">grad_i</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_opt_meta</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">][</span>
+                                <span class="n">i</span>
+                            <span class="p">]</span> <span class="o">=</span> <span class="n">idx_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                    <span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span>
+
+            <span class="c1"># make sure the idx shape is passed to each process through opt_meta</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-nested-blocks</span>
+                <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># The first element in shared_emb[emb_name][0] is the local idx</span>
+                    <span class="n">device</span> <span class="o">=</span> <span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span>
+                    <span class="c1"># gather gradients from all other processes</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">:</span>
+                            <span class="n">idx_shmem_name</span> <span class="o">=</span> <span class="s2">&quot;idx_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">emb_name</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span>
+                            <span class="p">)</span>
+                            <span class="n">grad_shmem_name</span> <span class="o">=</span> <span class="s2">&quot;grad_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">emb_name</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span>
+                            <span class="p">)</span>
+                            <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opt_meta</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">]</span>
+
+                            <span class="c1"># Retrive shared memory holding the temporal index and gradient</span>
+                            <span class="c1"># tensor that is sent to current training process</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">idx_shmem_name</span>
+                                <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span>
+                                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                    <span class="n">idx_shmem_name</span>
+                                <span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="o">&lt;</span> <span class="n">size</span>
+                            <span class="p">):</span>
+                                <span class="n">buffer_size</span> <span class="o">=</span> <span class="mi">128</span> <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">128</span> <span class="k">else</span> <span class="n">size</span> <span class="o">*</span> <span class="mi">2</span>
+                                <span class="n">idx_shmem</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_shmem_name</span><span class="p">,</span> <span class="n">buffer_size</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="n">buffer_size</span><span class="p">,),</span>
+                                    <span class="n">idx_dtype</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="n">grad_shmem</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                        <span class="n">grad_shmem_name</span><span class="p">,</span> <span class="n">buffer_size</span>
+                                    <span class="p">),</span>
+                                    <span class="p">(</span><span class="n">buffer_size</span><span class="p">,</span> <span class="n">grad_dim</span><span class="p">),</span>
+                                    <span class="n">grad_dtype</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                    <span class="n">idx_shmem_name</span>
+                                <span class="p">]</span> <span class="o">=</span> <span class="n">idx_shmem</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                    <span class="n">grad_shmem_name</span>
+                                <span class="p">]</span> <span class="o">=</span> <span class="n">grad_shmem</span>
+
+                            <span class="n">idx_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                <span class="n">idx_shmem_name</span>
+                            <span class="p">][:</span><span class="n">size</span><span class="p">]</span>
+                            <span class="n">grad_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_cache</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span>
+                                <span class="n">grad_shmem_name</span>
+                            <span class="p">][:</span><span class="n">size</span><span class="p">]</span>
+                            <span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">idx_i</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">grad_i</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_grad</span><span class="p">:</span>
+                <span class="c1"># clean gradient track</span>
+                <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+                    <span class="n">emb</span><span class="o">.</span><span class="n">reset_trace</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean_grad</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+                <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">grad</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">shared_emb</span><span class="p">[</span><span class="n">emb_name</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">emb</span><span class="p">)</span>
+
+            <span class="c1"># synchronized gradient update</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">emb</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update embeddings in a sparse manner</span>
+<span class="sd">        Sparse embeddings are updated in mini batches. We maintain gradient states for</span>
+<span class="sd">        each embedding so they can be updated separately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        idx : tensor</span>
+<span class="sd">            Index of the embeddings to be updated.</span>
+<span class="sd">        grad : tensor</span>
+<span class="sd">            Gradient of each embedding.</span>
+<span class="sd">        emb : dgl.nn.NodeEmbedding</span>
+<span class="sd">            Sparse node embedding to update.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">zero_grad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;clean grad cache&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_grad</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of the whole optimizer states stored in CPU memory.</span>
+<span class="sd">        If this is a multi-processing instance, the states will be returned in</span>
+<span class="sd">        shared memory. If the underlying embedding is currently stored on</span>
+<span class="sd">        multiple GPUs, all processes must call this method in the same order.</span>
+
+<span class="sd">        NOTE: This method must be called by all processes sharing the</span>
+<span class="sd">        underlying embedding, or it may result in a deadlock.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dictionary of optimizer states</span>
+<span class="sd">            The optimizer states stored in CPU memory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">emb</span><span class="o">.</span><span class="n">_all_get_optm_state</span><span class="p">()</span> <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;param_groups&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the optimizer states. This method must be called by all</span>
+<span class="sd">        processes sharing the underlying embedding with identical</span>
+<span class="sd">        :attr:`state_dict`.</span>
+
+<span class="sd">        NOTE: This method must be called by all processes sharing the</span>
+<span class="sd">        underlying embedding, or it may result in a deadlock.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state_dict : dictionary of optimizer states</span>
+<span class="sd">            The global states to pull values from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+            <span class="n">emb</span><span class="o">.</span><span class="n">_all_set_optm_state</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">][</span><span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_param_groups</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;param_groups&quot;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">param_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emulate &#39;param_groups&#39; of torch.optim.Optimizer.</span>
+<span class="sd">        Different from that, the returned &#39;param_groups&#39; doesn&#39;t contain</span>
+<span class="sd">        parameters because getting the whole embedding is very expensive.</span>
+<span class="sd">        It contains other attributes, e.g., lr, eps, for debugging.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_set_param_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A helper method to load param_groups from saved state_dict.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="SparseAdagrad">
+<a class="viewcode-back" href="../../../../api/python/dgl.optim.html#dgl.optim.pytorch.SparseAdagrad">[docs]</a>
+<span class="k">class</span> <span class="nc">SparseAdagrad</span><span class="p">(</span><span class="n">SparseGradOptimizer</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node embedding optimizer using the Adagrad algorithm.</span>
+
+<span class="sd">    This optimizer implements a sparse version of Adagrad algorithm for</span>
+<span class="sd">    optimizing :class:`dgl.nn.NodeEmbedding`. Being sparse means it only updates</span>
+<span class="sd">    the embeddings whose gradients have updates, which are usually a very</span>
+<span class="sd">    small portion of the total embeddings.</span>
+
+<span class="sd">    Adagrad maintains a :math:`G_{t,i,j}` for every parameter in the embeddings, where</span>
+<span class="sd">    :math:`G_{t,i,j}=G_{t-1,i,j} + g_{t,i,j}^2` and :math:`g_{t,i,j}` is the gradient of</span>
+<span class="sd">    the dimension :math:`j` of embedding :math:`i` at step :math:`t`.</span>
+
+<span class="sd">    NOTE: The support of sparse Adagrad optimizer is experimental.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    params : list[dgl.nn.NodeEmbedding]</span>
+<span class="sd">        The list of dgl.nn.NodeEmbedding.</span>
+<span class="sd">    lr : float</span>
+<span class="sd">        The learning rate.</span>
+<span class="sd">    eps : float, Optional</span>
+<span class="sd">        The term added to the denominator to improve numerical stability</span>
+<span class="sd">        Default: 1e-10</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; def initializer(emb):</span>
+<span class="sd">            th.nn.init.xavier_uniform_(emb)</span>
+<span class="sd">            return emb</span>
+<span class="sd">    &gt;&gt;&gt; emb = dgl.nn.NodeEmbedding(g.num_nodes(), 10, &#39;emb&#39;, init_func=initializer)</span>
+<span class="sd">    &gt;&gt;&gt; optimizer = dgl.optim.SparseAdagrad([emb], lr=0.001)</span>
+<span class="sd">    &gt;&gt;&gt; for blocks in dataloader:</span>
+<span class="sd">    ...     ...</span>
+<span class="sd">    ...     feats = emb(nids, gpu_0)</span>
+<span class="sd">    ...     loss = F.sum(feats + 1, 0)</span>
+<span class="sd">    ...     loss.backward()</span>
+<span class="sd">    ...     optimizer.step()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SparseAdagrad</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span> <span class="o">=</span> <span class="n">eps</span>
+
+        <span class="c1"># setup tensors for optimizer states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="c1"># We need to register a state sum for each embedding in the kvstore.</span>
+        <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">emb</span><span class="p">,</span> <span class="n">NodeEmbedding</span>
+            <span class="p">),</span> <span class="s2">&quot;SparseAdagrad only supports dgl.nn.NodeEmbedding&quot;</span>
+
+            <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">==</span> <span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">):</span>
+                <span class="c1"># if our embedding is on the CPU, our state also has to be</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                        <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_state&quot;</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">emb</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt&quot;</span><span class="p">,</span> <span class="n">emb_name</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># receive</span>
+                    <span class="n">emb</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt&quot;</span><span class="p">])</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_state&quot;</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># distributed state on on gpu</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+            <span class="n">emb</span><span class="o">.</span><span class="n">set_optm_state</span><span class="p">((</span><span class="n">state</span><span class="p">,))</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">emb</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update embeddings in a sparse manner</span>
+<span class="sd">        Sparse embeddings are updated in mini batches. We maintain gradient states for</span>
+<span class="sd">        each embedding so they can be updated separately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        idx : tensor</span>
+<span class="sd">            Index of the embeddings to be updated.</span>
+<span class="sd">        grad : tensor</span>
+<span class="sd">            Gradient of each embedding.</span>
+<span class="sd">        emb : dgl.nn.NodeEmbedding</span>
+<span class="sd">            Sparse embedding to update.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span>
+        <span class="n">clr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+
+        <span class="c1"># the update is non-linear so indices must be unique</span>
+        <span class="n">grad_indices</span><span class="p">,</span> <span class="n">inverse</span><span class="p">,</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+            <span class="n">idx</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">grad_values</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">grad_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grad</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">device</span><span class="o">=</span><span class="n">grad</span><span class="o">.</span><span class="n">device</span>
+        <span class="p">)</span>
+        <span class="n">grad_values</span><span class="o">.</span><span class="n">index_add_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inverse</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
+        <span class="n">grad_values</span> <span class="o">=</span> <span class="n">grad_values</span> <span class="o">/</span> <span class="n">cnt</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">grad_sum</span> <span class="o">=</span> <span class="n">grad_values</span> <span class="o">*</span> <span class="n">grad_values</span>
+        <span class="p">(</span><span class="n">state</span><span class="p">,)</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">optm_state</span>
+        <span class="n">state_dev</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">state_idx</span> <span class="o">=</span> <span class="n">grad_indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">state_dev</span><span class="p">)</span>
+        <span class="n">grad_state</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">grad</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">grad_state</span> <span class="o">+=</span> <span class="n">grad_sum</span>
+        <span class="n">state</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad_state</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">state_dev</span><span class="p">)</span>
+
+        <span class="n">std_values</span> <span class="o">=</span> <span class="n">grad_state</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt_</span><span class="p">()</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">clr</span> <span class="o">*</span> <span class="n">grad_values</span> <span class="o">/</span> <span class="n">std_values</span>
+        <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span> <span class="o">-=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">state_dev</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emulate &#39;param_groups&#39; of torch.optim.Optimizer.</span>
+<span class="sd">        Different from that, the returned &#39;param_groups&#39; doesn&#39;t contain</span>
+<span class="sd">        parameters because getting the whole embedding is very expensive.</span>
+<span class="sd">        It contains other attributes, e.g., lr, eps, for debugging.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span><span class="p">,</span> <span class="s2">&quot;eps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">}]</span>
+
+    <span class="k">def</span> <span class="nf">_set_param_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A helper method to load param_groups from saved state_dict.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;eps&quot;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="SparseAdam">
+<a class="viewcode-back" href="../../../../api/python/dgl.optim.html#dgl.optim.pytorch.SparseAdam">[docs]</a>
+<span class="k">class</span> <span class="nc">SparseAdam</span><span class="p">(</span><span class="n">SparseGradOptimizer</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node embedding optimizer using the Adam algorithm.</span>
+
+<span class="sd">    This optimizer implements a sparse version of Adagrad algorithm for</span>
+<span class="sd">    optimizing :class:`dgl.nn.NodeEmbedding`. Being sparse means it only</span>
+<span class="sd">    updates the embeddings whose gradients have updates, which are usually</span>
+<span class="sd">    a very small portion of the total embeddings.</span>
+
+<span class="sd">    Adam maintains a :math:`Gm_{t,i,j}` and `Gp_{t,i,j}` for every parameter</span>
+<span class="sd">    in the embeddings, where</span>
+<span class="sd">    :math:`Gm_{t,i,j}=beta1 * Gm_{t-1,i,j} + (1-beta1) * g_{t,i,j}`,</span>
+<span class="sd">    :math:`Gp_{t,i,j}=beta2 * Gp_{t-1,i,j} + (1-beta2) * g_{t,i,j}^2`,</span>
+<span class="sd">    :math:`g_{t,i,j} = lr * Gm_{t,i,j} / (1 - beta1^t) / \sqrt{Gp_{t,i,j} / (1 - beta2^t)}` and</span>
+<span class="sd">    :math:`g_{t,i,j}` is the gradient of the dimension :math:`j` of embedding :math:`i`</span>
+<span class="sd">    at step :math:`t`.</span>
+
+<span class="sd">    NOTE: The support of sparse Adam optimizer is experimental.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    params : list[dgl.nn.NodeEmbedding]</span>
+<span class="sd">        The list of dgl.nn.NodeEmbeddings.</span>
+<span class="sd">    lr : float</span>
+<span class="sd">        The learning rate.</span>
+<span class="sd">    betas : tuple[float, float], Optional</span>
+<span class="sd">        Coefficients used for computing running averages of gradient and its square.</span>
+<span class="sd">        Default: (0.9, 0.999)</span>
+<span class="sd">    eps : float, Optional</span>
+<span class="sd">        The term added to the denominator to improve numerical stability</span>
+<span class="sd">        Default: 1e-8</span>
+<span class="sd">    use_uva : bool, Optional</span>
+<span class="sd">        Whether to use pinned memory for storing &#39;mem&#39; and &#39;power&#39; parameters,</span>
+<span class="sd">        when the embedding is stored on the CPU. This will improve training</span>
+<span class="sd">        speed, but will require locking a large number of virtual memory pages.</span>
+<span class="sd">        For embeddings which are stored in GPU memory, this setting will have</span>
+<span class="sd">        no effect.</span>
+<span class="sd">        Default: True if the gradients are generated on the GPU, and False</span>
+<span class="sd">        if the gradients are on the CPU.</span>
+<span class="sd">    dtype : torch.dtype, Optional</span>
+<span class="sd">        The type to store optimizer state with. Default: th.float32.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; def initializer(emb):</span>
+<span class="sd">            th.nn.init.xavier_uniform_(emb)</span>
+<span class="sd">            return emb</span>
+<span class="sd">    &gt;&gt;&gt; emb = dgl.nn.NodeEmbedding(g.num_nodes(), 10, &#39;emb&#39;, init_func=initializer)</span>
+<span class="sd">    &gt;&gt;&gt; optimizer = dgl.optim.SparseAdam([emb], lr=0.001)</span>
+<span class="sd">    &gt;&gt;&gt; for blocks in dataloader:</span>
+<span class="sd">    ...     ...</span>
+<span class="sd">    ...     feats = emb(nids, gpu_0)</span>
+<span class="sd">    ...     loss = F.sum(feats + 1, 0)</span>
+<span class="sd">    ...     loss.backward()</span>
+<span class="sd">    ...     optimizer.step()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">,</span>
+        <span class="n">lr</span><span class="p">,</span>
+        <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">),</span>
+        <span class="n">eps</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span>
+        <span class="n">use_uva</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SparseAdam</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta1</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta2</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_uva</span> <span class="o">=</span> <span class="n">use_uva</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nd_handle</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">assert</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">th</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">],</span> <span class="p">(</span>
+            <span class="s2">&quot;Unsupported dtype </span><span class="si">{}</span><span class="s2">. Valid choices are th.float32 &quot;</span>
+            <span class="s2">&quot;and th.float32&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+
+        <span class="c1"># setup tensors for optimizer states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_uva</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mem_nd</span> <span class="o">=</span> <span class="n">pin_memory_inplace</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span>
+        <span class="n">power_nd</span> <span class="o">=</span> <span class="n">pin_memory_inplace</span><span class="p">(</span><span class="n">power</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nd_handle</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mem_nd</span><span class="p">,</span> <span class="n">power_nd</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="c1"># We need to register a state sum for each embedding in the kvstore.</span>
+        <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">emb</span><span class="p">,</span> <span class="n">NodeEmbedding</span>
+            <span class="p">),</span> <span class="s2">&quot;SparseAdam only supports dgl.nn.NodeEmbedding&quot;</span>
+            <span class="n">emb_name</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_uva</span>
+            <span class="k">if</span> <span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">==</span> <span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">):</span>
+                <span class="c1"># if our embedding is on the CPU, our state also has to be</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">state_step</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                    <span class="n">state_mem</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                        <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                    <span class="n">state_power</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                        <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">state_step</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_step&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="n">th</span><span class="o">.</span><span class="n">int32</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                    <span class="n">state_mem</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_mem&quot;</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                    <span class="n">state_power</span> <span class="o">=</span> <span class="n">create_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_power&quot;</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">emb</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt&quot;</span><span class="p">,</span> <span class="n">emb_name</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># receive</span>
+                    <span class="n">emb</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_opt&quot;</span><span class="p">])</span>
+                    <span class="n">state_step</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_step&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="n">th</span><span class="o">.</span><span class="n">int32</span>
+                    <span class="p">)</span>
+                    <span class="n">state_mem</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_mem&quot;</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span>
+                    <span class="p">)</span>
+                    <span class="n">state_power</span> <span class="o">=</span> <span class="n">get_shared_mem_array</span><span class="p">(</span>
+                        <span class="n">emb_name</span> <span class="o">+</span> <span class="s2">&quot;_power&quot;</span><span class="p">,</span> <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]:</span>
+                    <span class="c1"># if use_uva has been explicitly set to true, otherwise</span>
+                    <span class="c1"># wait until first step to decide</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_setup_uva</span><span class="p">(</span><span class="n">emb_name</span><span class="p">,</span> <span class="n">state_mem</span><span class="p">,</span> <span class="n">state_power</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># make sure we don&#39;t use UVA when data is on the GPU</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">emb_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="c1"># distributed state on on gpu</span>
+                <span class="n">state_step</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">th</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                <span class="n">state_mem</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">,</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                <span class="n">state_power</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">,</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="p">(</span><span class="n">state_step</span><span class="p">,</span> <span class="n">state_mem</span><span class="p">,</span> <span class="n">state_power</span><span class="p">)</span>
+            <span class="n">emb</span><span class="o">.</span><span class="n">set_optm_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">emb</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update embeddings in a sparse manner</span>
+<span class="sd">        Sparse embeddings are updated in mini batches. We maintain gradient states for</span>
+<span class="sd">        each embedding so they can be updated separately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        idx : tensor</span>
+<span class="sd">            Index of the embeddings to be updated.</span>
+<span class="sd">        grad : tensor</span>
+<span class="sd">            Gradient of each embedding.</span>
+<span class="sd">        emb : dgl.nn.NodeEmbedding</span>
+<span class="sd">            Sparse embedding to update.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">th</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">state_step</span><span class="p">,</span> <span class="n">state_mem</span><span class="p">,</span> <span class="n">state_power</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">optm_state</span>
+            <span class="n">exec_dtype</span> <span class="o">=</span> <span class="n">grad</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="n">exec_dev</span> <span class="o">=</span> <span class="n">grad</span><span class="o">.</span><span class="n">device</span>
+            <span class="n">state_dev</span> <span class="o">=</span> <span class="n">state_step</span><span class="o">.</span><span class="n">device</span>
+
+            <span class="c1"># whether or not we need to transfer data from the GPU to the CPU</span>
+            <span class="c1"># while updating the weights</span>
+            <span class="n">is_d2h</span> <span class="o">=</span> <span class="n">state_dev</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span> <span class="ow">and</span> <span class="n">exec_dev</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
+
+            <span class="c1"># only perform async copies cpu -&gt; gpu, or gpu-&gt; gpu, but block</span>
+            <span class="c1"># when copying to the cpu, so as to ensure the copy is finished</span>
+            <span class="c1"># before operating on the data on the cpu</span>
+            <span class="n">state_block</span> <span class="o">=</span> <span class="n">is_d2h</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">is_d2h</span><span class="p">:</span>
+                <span class="c1"># we should use UVA going forward</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_uva</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">state_mem</span><span class="p">,</span> <span class="n">state_power</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># we shouldn&#39;t use UVA going forward</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">use_uva</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_using_uva</span><span class="p">[</span><span class="n">emb</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+            <span class="n">beta1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta1</span>
+            <span class="n">beta2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta2</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span>
+
+            <span class="n">clr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+            <span class="c1"># There can be duplicated indices due to sampling.</span>
+            <span class="c1"># Thus unique them here and average the gradient here.</span>
+            <span class="n">grad_indices</span><span class="p">,</span> <span class="n">inverse</span><span class="p">,</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+                <span class="n">idx</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">state_idx</span> <span class="o">=</span> <span class="n">grad_indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">state_dev</span><span class="p">)</span>
+            <span class="n">state_step</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">state_step</span> <span class="o">=</span> <span class="n">state_step</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">exec_dev</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">use_uva</span><span class="p">:</span>
+                <span class="n">orig_mem</span> <span class="o">=</span> <span class="n">gather_pinned_tensor_rows</span><span class="p">(</span><span class="n">state_mem</span><span class="p">,</span> <span class="n">grad_indices</span><span class="p">)</span>
+                <span class="n">orig_power</span> <span class="o">=</span> <span class="n">gather_pinned_tensor_rows</span><span class="p">(</span>
+                    <span class="n">state_power</span><span class="p">,</span> <span class="n">grad_indices</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">orig_mem</span> <span class="o">=</span> <span class="n">state_mem</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">exec_dev</span><span class="p">)</span>
+                <span class="n">orig_power</span> <span class="o">=</span> <span class="n">state_power</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">exec_dev</span><span class="p">)</span>
+            <span class="c1"># convert to exec dtype</span>
+            <span class="n">orig_mem</span> <span class="o">=</span> <span class="n">orig_mem</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">exec_dtype</span><span class="p">)</span>
+            <span class="n">orig_power</span> <span class="o">=</span> <span class="n">orig_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">exec_dtype</span><span class="p">)</span>
+
+            <span class="n">grad_values</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">grad_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grad</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">device</span><span class="o">=</span><span class="n">exec_dev</span>
+            <span class="p">)</span>
+            <span class="n">grad_values</span><span class="o">.</span><span class="n">index_add_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inverse</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
+            <span class="n">grad_values</span> <span class="o">=</span> <span class="n">grad_values</span> <span class="o">/</span> <span class="n">cnt</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">grad_mem</span> <span class="o">=</span> <span class="n">grad_values</span>
+            <span class="n">grad_power</span> <span class="o">=</span> <span class="n">grad_values</span> <span class="o">*</span> <span class="n">grad_values</span>
+
+            <span class="n">update_mem</span> <span class="o">=</span> <span class="n">beta1</span> <span class="o">*</span> <span class="n">orig_mem</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">beta1</span><span class="p">)</span> <span class="o">*</span> <span class="n">grad_mem</span>
+            <span class="n">update_power</span> <span class="o">=</span> <span class="n">beta2</span> <span class="o">*</span> <span class="n">orig_power</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">beta2</span><span class="p">)</span> <span class="o">*</span> <span class="n">grad_power</span>
+
+            <span class="k">if</span> <span class="n">use_uva</span><span class="p">:</span>
+                <span class="n">scatter_pinned_tensor_rows</span><span class="p">(</span>
+                    <span class="n">state_mem</span><span class="p">,</span> <span class="n">grad_indices</span><span class="p">,</span> <span class="n">update_mem</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">scatter_pinned_tensor_rows</span><span class="p">(</span>
+                    <span class="n">state_power</span><span class="p">,</span>
+                    <span class="n">grad_indices</span><span class="p">,</span>
+                    <span class="n">update_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">update_mem_dst</span> <span class="o">=</span> <span class="n">update_mem</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                    <span class="n">state_dev</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">update_power_dst</span> <span class="o">=</span> <span class="n">update_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                    <span class="n">state_dev</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">state_block</span><span class="p">:</span>
+                    <span class="c1"># use events to try and overlap CPU and GPU as much as possible</span>
+                    <span class="n">update_event</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+                    <span class="n">update_event</span><span class="o">.</span><span class="n">record</span><span class="p">()</span>
+
+            <span class="n">update_mem_corr</span> <span class="o">=</span> <span class="n">update_mem</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="mf">1.0</span> <span class="o">-</span> <span class="n">th</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">beta1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">exec_dev</span><span class="p">),</span> <span class="n">state_step</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">update_power_corr</span> <span class="o">=</span> <span class="n">update_power</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="mf">1.0</span> <span class="o">-</span> <span class="n">th</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">beta2</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">exec_dev</span><span class="p">),</span> <span class="n">state_step</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">std_values</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">clr</span> <span class="o">*</span> <span class="n">update_mem_corr</span> <span class="o">/</span> <span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">update_power_corr</span><span class="p">)</span> <span class="o">+</span> <span class="n">eps</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">std_values_dst</span> <span class="o">=</span> <span class="n">std_values</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">state_dev</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">state_block</span><span class="p">:</span>
+                <span class="n">std_event</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+                <span class="n">std_event</span><span class="o">.</span><span class="n">record</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">use_uva</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">state_block</span><span class="p">:</span>
+                    <span class="c1"># wait for our transfers from exec_dev to state_dev to finish</span>
+                    <span class="c1"># before we can use them</span>
+                    <span class="n">update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="n">state_mem</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">update_mem_dst</span>
+                <span class="n">state_power</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">update_power_dst</span>
+
+            <span class="k">if</span> <span class="n">state_block</span><span class="p">:</span>
+                <span class="c1"># wait for the transfer of std_values to finish before we</span>
+                <span class="c1"># can use it</span>
+                <span class="n">std_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span> <span class="o">-=</span> <span class="n">std_values_dst</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emulate &#39;param_groups&#39; of torch.optim.Optimizer.</span>
+<span class="sd">        Different from that, the returned &#39;param_groups&#39; doesn&#39;t contain</span>
+<span class="sd">        parameters because getting the whole embedding is very expensive.</span>
+<span class="sd">        It contains other attributes, e.g., lr, betas, eps, for debugging.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span><span class="p">,</span>
+                <span class="s2">&quot;betas&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_beta1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta2</span><span class="p">),</span>
+                <span class="s2">&quot;eps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_set_param_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A helper method to load param_groups from saved state_dict.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta2</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;betas&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;eps&quot;</span><span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

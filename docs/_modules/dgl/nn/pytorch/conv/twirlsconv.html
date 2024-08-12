@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.nn.pytorch.conv.twirlsconv &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.nn.pytorch.conv.twirlsconv</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.nn.pytorch.conv.twirlsconv</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Torch modules for TWIRLS&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=invalid-name, useless-super-delegation, no-member</span>
+
+<span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">tc</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">function</span> <span class="k">as</span> <span class="n">fn</span>
+
+
+<div class="viewcode-block" id="TWIRLSConv">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.conv.TWIRLSConv.html#dgl.nn.pytorch.conv.TWIRLSConv">[docs]</a>
+<span class="k">class</span> <span class="nc">TWIRLSConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convolution together with iteratively reweighting least squre from</span>
+<span class="sd">    `Graph Neural Networks Inspired by Classical Iterative Algorithms</span>
+<span class="sd">    &lt;https://arxiv.org/pdf/2103.06064.pdf&gt;`__</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_d : int</span>
+<span class="sd">        Number of input features.</span>
+<span class="sd">    output_d : int</span>
+<span class="sd">        Number of output features.</span>
+<span class="sd">    hidden_d : int</span>
+<span class="sd">        Size of hidden layers.</span>
+<span class="sd">    prop_step : int</span>
+<span class="sd">        Number of propagation steps</span>
+<span class="sd">    num_mlp_before : int</span>
+<span class="sd">        Number of mlp layers before propagation. Default: ``1``.</span>
+<span class="sd">    num_mlp_after : int</span>
+<span class="sd">        Number of mlp layers after propagation.  Default: ``1``.</span>
+<span class="sd">    norm : str</span>
+<span class="sd">        The type of norm layers inside mlp layers. Can be ``&#39;batch&#39;``, ``&#39;layer&#39;`` or ``&#39;none&#39;``.</span>
+<span class="sd">        Default: ``&#39;none&#39;``</span>
+<span class="sd">    precond : str</span>
+<span class="sd">        If True, use pre conditioning and unormalized laplacian, else not use pre conditioning</span>
+<span class="sd">        and use normalized laplacian. Default: ``True``</span>
+<span class="sd">    alp : float</span>
+<span class="sd">        The :math:`\alpha` in paper. If equal to :math:`0`, will be automatically decided based</span>
+<span class="sd">        on other hyper prameters. Default: ``0``.</span>
+<span class="sd">    lam : float</span>
+<span class="sd">        The :math:`\lambda` in paper. Default: ``1``.</span>
+<span class="sd">    attention : bool</span>
+<span class="sd">        If ``True``, add an attention layer inside propagations. Default: ``False``.</span>
+<span class="sd">    tau : float</span>
+<span class="sd">        The :math:`\tau` in paper. Default: ``0.2``.</span>
+<span class="sd">    T : float</span>
+<span class="sd">        The :math:`T` in paper. If &lt; 0, :math:`T` will be set to `\infty`. Default: ``-1``.</span>
+<span class="sd">    p : float</span>
+<span class="sd">        The :math:`p` in paper. Default: ``1``.</span>
+<span class="sd">    use_eta : bool</span>
+<span class="sd">        If ``True``, add a learnable weight on each dimension in attention. Default: ``False``.</span>
+<span class="sd">    attn_bef : bool</span>
+<span class="sd">        If ``True``, add another attention layer before propagation. Default: ``False``.</span>
+<span class="sd">    dropout : float</span>
+<span class="sd">        The dropout rate in mlp layers. Default: ``0.0``.</span>
+<span class="sd">    attn_dropout : float</span>
+<span class="sd">        The dropout rate of attention values. Default: ``0.0``.</span>
+<span class="sd">    inp_dropout : float</span>
+<span class="sd">        The dropout rate on input features. Default: ``0.0``.</span>
+
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">     ``add_self_loop`` will be automatically called before propagation.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; from dgl.nn import TWIRLSConv</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0,1,2,3,2,5], [1,2,3,4,0,3]))</span>
+<span class="sd">    &gt;&gt;&gt; feat = th.ones(6, 10)</span>
+<span class="sd">    &gt;&gt;&gt; conv = TWIRLSConv(10, 2, 128, prop_step = 64)</span>
+<span class="sd">    &gt;&gt;&gt; res = conv(g , feat)</span>
+<span class="sd">    &gt;&gt;&gt; res.size()</span>
+<span class="sd">    torch.Size([6, 2])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_d</span><span class="p">,</span>
+        <span class="n">output_d</span><span class="p">,</span>
+        <span class="n">hidden_d</span><span class="p">,</span>
+        <span class="n">prop_step</span><span class="p">,</span>
+        <span class="n">num_mlp_before</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">num_mlp_after</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">precond</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">alp</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">lam</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">attention</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tau</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">T</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">use_eta</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">attn_bef</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">attn_dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">inp_dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_d</span> <span class="o">=</span> <span class="n">input_d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_d</span> <span class="o">=</span> <span class="n">output_d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_d</span> <span class="o">=</span> <span class="n">hidden_d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prop_step</span> <span class="o">=</span> <span class="n">prop_step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_before</span> <span class="o">=</span> <span class="n">num_mlp_before</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_after</span> <span class="o">=</span> <span class="n">num_mlp_after</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">precond</span> <span class="o">=</span> <span class="n">precond</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attention</span> <span class="o">=</span> <span class="n">attention</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alp</span> <span class="o">=</span> <span class="n">alp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lam</span> <span class="o">=</span> <span class="n">lam</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_eta</span> <span class="o">=</span> <span class="n">use_eta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_att</span> <span class="o">=</span> <span class="n">attn_bef</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn_dropout</span> <span class="o">=</span> <span class="n">attn_dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inp_dropout</span> <span class="o">=</span> <span class="n">inp_dropout</span>
+
+        <span class="c1"># ----- initialization of some variables -----</span>
+        <span class="c1"># where to put attention</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn_aft</span> <span class="o">=</span> <span class="n">prop_step</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">attention</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="c1"># whether we can cache unfolding result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cacheable</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_before</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp_dropout</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cacheable</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cached_unfolding</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># if only one layer, then no hidden size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_bef_unf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_aft_unf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_d</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_before</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size_aft_unf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_d</span>  <span class="c1"># as the input  of mlp_aft</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_after</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size_bef_unf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_d</span>  <span class="c1"># as the output of mlp_bef</span>
+
+        <span class="c1"># ----- computational modules -----</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp_bef</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_d</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hidden_d</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size_bef_unf</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_before</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span>
+            <span class="n">init_activate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unfolding</span> <span class="o">=</span> <span class="n">TWIRLSUnfoldingAndAttention</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hidden_d</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alp</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lam</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prop_step</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn_aft</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_eta</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_att</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn_dropout</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">precond</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># if there are really transformations before unfolding, then do init_activate in mlp_aft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp_aft</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size_aft_unf</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hidden_d</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_d</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_after</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span>
+            <span class="n">init_activate</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_before</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_mlp_after</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="TWIRLSConv.forward">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.conv.TWIRLSConv.html#dgl.nn.pytorch.conv.TWIRLSConv.forward">[docs]</a>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Description</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Run TWIRLS forward.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : DGLGraph</span>
+<span class="sd">            The graph.</span>
+<span class="sd">        feat : torch.Tensor</span>
+<span class="sd">            The initial node features.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The output feature</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        * Input shape: :math:`(N, \text{input_d})` where :math:`N` is the number of nodes.</span>
+<span class="sd">        * Output shape: :math:`(N, \text{output_d})`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># ensure self loop</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">remove_self_loop</span><span class="p">()</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">add_self_loop</span><span class="p">()</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">feat</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cacheable</span><span class="p">:</span>
+            <span class="c1"># to cache unfolding result becase there is no paramaters before it</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cached_unfolding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cached_unfolding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unfolding</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cached_unfolding</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp_dropout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp_dropout</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_bef</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unfolding</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_aft</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+
+
+<span class="k">class</span> <span class="nc">Propagate</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    The propagation method which is with pre-conditioning and reparameterizing. Correspond to</span>
+<span class="sd">    eq.28 in the paper.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">lam</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;propagation part.&quot;&quot;&quot;</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">D_power_bias_X</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">AX</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">D_power_bias_X</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Y</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">alp</span><span class="p">,</span> <span class="n">lam</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Description</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Propagation forward.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : DGLGraph</span>
+<span class="sd">            The graph.</span>
+<span class="sd">        Y : torch.Tensor</span>
+<span class="sd">            The feature under propagation. Corresponds to :math:`Z^{(k)}` in eq.28 in the paper.</span>
+<span class="sd">        X : torch.Tensor</span>
+<span class="sd">            The original feature. Corresponds to :math:`Z^{(0)}` in eq.28 in the paper.</span>
+<span class="sd">        alp : float</span>
+<span class="sd">            The step size. Corresponds to :math:`\alpha` in the paper.</span>
+<span class="sd">        lam : torch.Tensor</span>
+<span class="sd">            The coefficient of smoothing term. Corresponds to :math:`\lambda` in the paper.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            Propagated feature. :math:`Z^{(k+1)}` in eq.28 in the paper.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alp</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span>
+            <span class="o">+</span> <span class="n">alp</span> <span class="o">*</span> <span class="n">lam</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">lam</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">alp</span> <span class="o">*</span> <span class="n">D_power_bias_X</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PropagateNoPrecond</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    The propagation method which is without pre-conditioning and reparameterizing and using</span>
+<span class="sd">    normalized laplacian.</span>
+<span class="sd">    Correspond to eq.30 in the paper.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">alp</span><span class="p">,</span> <span class="n">lam</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Description</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Propagation forward.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : DGLGraph</span>
+<span class="sd">            The graph.</span>
+<span class="sd">        Y : torch.Tensor</span>
+<span class="sd">            The feature under propagation. Corresponds to :math:`Y^{(k)}` in eq.30 in the paper.</span>
+<span class="sd">        X : torch.Tensor</span>
+<span class="sd">            The original feature. Corresponds to :math:`Y^{(0)}` in eq.30 in the paper.</span>
+<span class="sd">        alp : float</span>
+<span class="sd">            The step size. Corresponds to :math:`\alpha` in the paper.</span>
+<span class="sd">        lam : torch.Tensor</span>
+<span class="sd">            The coefficient of smoothing term. Corresponds to :math:`\lambda` in the paper.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            Propagated feature. :math:`Y^{(k+1)}` in eq.30 in the paper.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alp</span> <span class="o">*</span> <span class="n">lam</span> <span class="o">-</span> <span class="n">alp</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span>
+            <span class="o">+</span> <span class="n">alp</span> <span class="o">*</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">normalized_AX</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">alp</span> <span class="o">*</span> <span class="n">X</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Attention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    The attention function. Correspond to :math:`s` in eq.27 the paper.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tau : float</span>
+<span class="sd">        The lower thresholding parameter. Correspond to :math:`\tau` in the paper.</span>
+<span class="sd">    T : float</span>
+<span class="sd">        The upper thresholding parameter. Correspond to :math:`T` in the paper.</span>
+<span class="sd">    p : float</span>
+<span class="sd">        Correspond to :math:`\rho` in the paper..</span>
+<span class="sd">    attn_dropout : float</span>
+<span class="sd">        the dropout rate of attention value. Default: ``0.0``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        The output feature</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">attn_dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn_dropout</span> <span class="o">=</span> <span class="n">attn_dropout</span>
+
+    <span class="k">def</span> <span class="nf">reweighting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute graph edge weight. Would be stored in ``graph.edata[&#39;w&#39;]``&quot;&quot;&quot;</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span>
+
+        <span class="c1"># It is not activation here but to ensure w &gt; 0.</span>
+        <span class="c1"># w can be &lt; 0 here because of some precision issue in dgl, which causes NaN afterwards.</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-7</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">tc</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="n">w</span><span class="p">[(</span><span class="n">w</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">w</span><span class="p">[(</span><span class="n">w</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">w</span>
+
+        <span class="c1"># if not (w == w).all():</span>
+        <span class="c1">#     raise &quot;nan occured!&quot;</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="mf">1e-9</span>  <span class="c1"># avoid 0 degree</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">etas</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Description</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Attention forward. Will update ``graph.edata[&#39;w&#39;]`` and ``graph.ndata[&#39;deg&#39;]``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : DGLGraph</span>
+<span class="sd">            The graph.</span>
+<span class="sd">        Y : torch.Tensor</span>
+<span class="sd">            The feature to compute attention.</span>
+<span class="sd">        etas : float</span>
+<span class="sd">            The weight of each dimension. If ``None``, then weight of each dimension is 1.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        DGLGraph</span>
+<span class="sd">            The graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">etas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">*</span> <span class="n">etas</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># computing edge distance</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Y</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s2">&quot;h_norm&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">u_dot_v</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;dot_&quot;</span><span class="p">))</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">u_add_v</span><span class="p">(</span><span class="s2">&quot;h_norm&quot;</span><span class="p">,</span> <span class="s2">&quot;h_norm&quot;</span><span class="p">,</span> <span class="s2">&quot;norm_&quot;</span><span class="p">))</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;dot_&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;dot_&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;norm_&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;norm_&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;norm_&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;dot_&quot;</span><span class="p">]</span>
+
+        <span class="c1"># apply edge distance to get edge weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reweighting</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+        <span class="c1"># update node degrees</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_e</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">))</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;deg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;deg&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># attention dropout. the implementation can ensure the degrees do not change in expectation.</span>
+        <span class="c1"># FIXME: consider if there is a better way</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_dropout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_dropout</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">graph</span>
+
+
+<span class="k">def</span> <span class="nf">normalized_AX</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Y = D^{-1/2}AD^{-1/2}X&quot;&quot;&quot;</span>
+
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">D_power_X</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Y = D^{-1/2}X</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">AX</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>  <span class="c1"># Y = AD^{-1/2}X</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">D_power_X</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Y = D^{-1/2}AD^{-1/2}X</span>
+
+    <span class="k">return</span> <span class="n">Y</span>
+
+
+<span class="k">def</span> <span class="nf">AX</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Y = AX&quot;&quot;&quot;</span>
+
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span>
+        <span class="n">fn</span><span class="o">.</span><span class="n">u_mul_e</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">),</span>
+        <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">Y</span>
+
+
+<span class="k">def</span> <span class="nf">D_power_X</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Y = D^{power}X&quot;&quot;&quot;</span>
+
+    <span class="n">degs</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;deg&quot;</span><span class="p">]</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">tc</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">degs</span><span class="p">,</span> <span class="n">power</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">norm</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Y</span>
+
+
+<span class="k">def</span> <span class="nf">D_power_bias_X</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">power</span><span class="p">,</span> <span class="n">coeff</span><span class="p">,</span> <span class="n">bias</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Y = (coeff*D + bias*I)^{power} X&quot;&quot;&quot;</span>
+    <span class="n">degs</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;deg&quot;</span><span class="p">]</span>
+    <span class="n">degs</span> <span class="o">=</span> <span class="n">coeff</span> <span class="o">*</span> <span class="n">degs</span> <span class="o">+</span> <span class="n">bias</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">tc</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">degs</span><span class="p">,</span> <span class="n">power</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">norm</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Y</span>
+
+
+<div class="viewcode-block" id="TWIRLSUnfoldingAndAttention">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.conv.TWIRLSUnfoldingAndAttention.html#dgl.nn.pytorch.conv.TWIRLSUnfoldingAndAttention">[docs]</a>
+<span class="k">class</span> <span class="nc">TWIRLSUnfoldingAndAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Combine propagation and attention together.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : int</span>
+<span class="sd">        Size of graph feature.</span>
+<span class="sd">    alp : float</span>
+<span class="sd">        Step size. :math:`\alpha` in ther paper.</span>
+<span class="sd">    lam : int</span>
+<span class="sd">        Coefficient of graph smooth term. :math:`\lambda` in ther paper.</span>
+<span class="sd">    prop_step : int</span>
+<span class="sd">        Number of propagation steps</span>
+<span class="sd">    attn_aft : int</span>
+<span class="sd">        Where to put attention layer. i.e. number of propagation steps before attention.</span>
+<span class="sd">        If set to ``-1``, then no attention.</span>
+<span class="sd">    tau : float</span>
+<span class="sd">        The lower thresholding parameter. Correspond to :math:`\tau` in the paper.</span>
+<span class="sd">    T : float</span>
+<span class="sd">        The upper thresholding parameter. Correspond to :math:`T` in the paper.</span>
+<span class="sd">    p : float</span>
+<span class="sd">        Correspond to :math:`\rho` in the paper..</span>
+<span class="sd">    use_eta : bool</span>
+<span class="sd">        If `True`, learn a weight vector for each dimension when doing attention.</span>
+<span class="sd">    init_att : bool</span>
+<span class="sd">        If ``True``, add an extra attention layer before propagation.</span>
+<span class="sd">    attn_dropout : float</span>
+<span class="sd">        the dropout rate of attention value. Default: ``0.0``.</span>
+<span class="sd">    precond : bool</span>
+<span class="sd">        If ``True``, use pre-conditioned &amp; reparameterized version propagation (eq.28), else use</span>
+<span class="sd">        normalized laplacian (eq.30).</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; from dgl.nn import TWIRLSUnfoldingAndAttention</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.graph(([0, 1, 2, 3, 2, 5], [1, 2, 3, 4, 0, 3])).add_self_loop()</span>
+<span class="sd">    &gt;&gt;&gt; feat = th.ones(6,5)</span>
+<span class="sd">    &gt;&gt;&gt; prop = TWIRLSUnfoldingAndAttention(10, 1, 1, prop_step=3)</span>
+<span class="sd">    &gt;&gt;&gt; res = prop(g,feat)</span>
+<span class="sd">    &gt;&gt;&gt; res</span>
+<span class="sd">    tensor([[2.5000, 2.5000, 2.5000, 2.5000, 2.5000],</span>
+<span class="sd">            [2.5000, 2.5000, 2.5000, 2.5000, 2.5000],</span>
+<span class="sd">            [2.5000, 2.5000, 2.5000, 2.5000, 2.5000],</span>
+<span class="sd">            [3.7656, 3.7656, 3.7656, 3.7656, 3.7656],</span>
+<span class="sd">            [2.5217, 2.5217, 2.5217, 2.5217, 2.5217],</span>
+<span class="sd">            [4.0000, 4.0000, 4.0000, 4.0000, 4.0000]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">alp</span><span class="p">,</span>
+        <span class="n">lam</span><span class="p">,</span>
+        <span class="n">prop_step</span><span class="p">,</span>
+        <span class="n">attn_aft</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">tau</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">T</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">use_eta</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">init_att</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">attn_dropout</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">precond</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alp</span> <span class="o">=</span> <span class="n">alp</span> <span class="k">if</span> <span class="n">alp</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># automatic set alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lam</span> <span class="o">=</span> <span class="n">lam</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prop_step</span> <span class="o">=</span> <span class="n">prop_step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn_aft</span> <span class="o">=</span> <span class="n">attn_aft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_eta</span> <span class="o">=</span> <span class="n">use_eta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_att</span> <span class="o">=</span> <span class="n">init_att</span>
+
+        <span class="n">prop_method</span> <span class="o">=</span> <span class="n">Propagate</span> <span class="k">if</span> <span class="n">precond</span> <span class="k">else</span> <span class="n">PropagateNoPrecond</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prop_layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">prop_method</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prop_step</span><span class="p">)]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_attn</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Attention</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">attn_dropout</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_att</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn_layer</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Attention</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">attn_dropout</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_aft</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">etas</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">tc</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_eta</span> <span class="k">else</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TWIRLSUnfoldingAndAttention.forward">
+<a class="viewcode-back" href="../../../../../generated/dgl.nn.pytorch.conv.TWIRLSUnfoldingAndAttention.html#dgl.nn.pytorch.conv.TWIRLSUnfoldingAndAttention.forward">[docs]</a>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Description</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Compute forward pass of propagation &amp; attention.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        g : DGLGraph</span>
+<span class="sd">            The graph.</span>
+<span class="sd">        X : torch.Tensor</span>
+<span class="sd">            Init features.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span>
+
+        <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tc</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;deg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_att</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_attn</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">etas</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prop_layers</span><span class="p">):</span>
+            <span class="c1"># do unfolding</span>
+            <span class="n">Y</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lam</span><span class="p">)</span>
+
+            <span class="c1"># do attention at certain layer</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_aft</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_layer</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">etas</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Y</span></div>
+</div>
+
+
+
+<span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    An MLP module.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_d : int</span>
+<span class="sd">        Number of input features.</span>
+<span class="sd">    output_d : int</span>
+<span class="sd">        Number of output features.</span>
+<span class="sd">    hidden_d : int</span>
+<span class="sd">        Size of hidden layers.</span>
+<span class="sd">    num_layers : int</span>
+<span class="sd">        Number of mlp layers.</span>
+<span class="sd">    dropout : float</span>
+<span class="sd">        The dropout rate in mlp layers.</span>
+<span class="sd">    norm : str</span>
+<span class="sd">        The type of norm layers inside mlp layers. Can be ``&#39;batch&#39;``, ``&#39;layer&#39;`` or ``&#39;none&#39;``.</span>
+<span class="sd">    init_activate : bool</span>
+<span class="sd">        If add a relu at the beginning.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_d</span><span class="p">,</span>
+        <span class="n">hidden_d</span><span class="p">,</span>
+        <span class="n">output_d</span><span class="p">,</span>
+        <span class="n">num_layers</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="p">,</span>
+        <span class="n">norm</span><span class="p">,</span>
+        <span class="n">init_activate</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_activate</span> <span class="o">=</span> <span class="n">init_activate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([])</span>
+
+        <span class="k">if</span> <span class="n">num_layers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_d</span><span class="p">,</span> <span class="n">output_d</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">num_layers</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_d</span><span class="p">,</span> <span class="n">hidden_d</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layers</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_d</span><span class="p">,</span> <span class="n">hidden_d</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_d</span><span class="p">,</span> <span class="n">output_d</span><span class="p">))</span>
+
+        <span class="c1"># how many norm layers we have</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm_cnt</span> <span class="o">=</span> <span class="n">num_layers</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">init_activate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norms</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">hidden_d</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm_cnt</span><span class="p">)]</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">norm</span> <span class="o">==</span> <span class="s2">&quot;layer&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norms</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_d</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm_cnt</span><span class="p">)]</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_params</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">reset_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;reset mlp parameters using xavier_norm&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_normal_</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;do normlaization and activation&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_norm_idx</span><span class="p">](</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># use the last norm layer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_norm_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The forward pass of mlp.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_norm_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_activate</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># do not activate in the last layer</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

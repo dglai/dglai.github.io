@@ -1,0 +1,237 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "\n\n# Line Graph Neural Network\n\n**Author**: [Qi Huang](https://github.com/HQ01), Yu Gai,\n[Minjie Wang](https://jermainewang.github.io/), Zheng Zhang\n\n<div class=\"alert alert-danger\"><h4>Warning</h4><p>The tutorial aims at gaining insights into the paper, with code as a mean\n    of explanation. The implementation thus is NOT optimized for running\n    efficiency. For recommended implementation, please refer to the [official\n    examples](https://github.com/dmlc/dgl/tree/master/examples).</p></div>\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "In this tutorial, you learn how to solve community detection tasks by implementing a line\ngraph neural network (LGNN). Community detection, or graph clustering, consists of partitioning\nthe vertices in a graph into clusters in which nodes are more similar to\none another.\n\nIn the :doc:`Graph convolutinal network tutorial <1_gcn>`, you learned how to classify the nodes of an input\ngraph in a semi-supervised setting. You used a graph convolutional neural network (GCN)\nas an embedding mechanism for graph features.\n\nTo generalize a graph neural network (GNN) into supervised community detection, a line-graph based\nvariation of GNN is introduced in the research paper\n[Supervised Community Detection with Line Graph Neural Networks](https://arxiv.org/abs/1705.08415)_.\nOne of the highlights of the model is\nto augment the straightforward GNN architecture so that it operates on\na line graph of edge adjacencies, defined with a non-backtracking operator.\n\nA line graph neural network (LGNN) shows how DGL can implement an advanced graph algorithm by\nmixing basic tensor operations, sparse-matrix multiplication, and message-\npassing APIs.\n\nIn the following sections, you learn about community detection, line\ngraphs, LGNN, and its implementation.\n\n## Supervised community detection task with the Cora dataset\nCommunity detection\n~~~~~~~~~~~~~~~~~~~~\nIn a community detection task, you cluster similar nodes instead of\nlabeling them. The node similarity is typically described as having higher inner\ndensity within each cluster.\n\nWhat's the difference between community detection and node classification\uff1f\nComparing to node classification, community detection focuses on retrieving\ncluster information in the graph, rather than assigning a specific label to\na node. For example, as long as a node is clustered with its community\nmembers, it doesn't matter whether the node is assigned as \"community A\",\nor \"community B\", while assigning all \"great movies\" to label \"bad movies\"\nwill be a disaster in a movie network classification task.\n\nWhat's the difference then, between a community detection algorithm and\nother clustering algorithm such as k-means? Community detection algorithm operates on\ngraph-structured data. Comparing to k-means, community detection leverages\ngraph structure, instead of simply clustering nodes based on their\nfeatures.\n\n### Cora dataset\nTo be consistent with the GCN tutorial,\nyou use the [Cora dataset](https://linqs.soe.ucsc.edu/data)_\nto illustrate a simple community detection task. Cora is a scientific publication dataset,\nwith 2708 papers belonging to seven\ndifferent machine learning fields. Here, you formulate Cora as a\ndirected graph, with each node being a paper, and each edge being a\ncitation link (A->B means A cites B). Here is a visualization of the whole\nCora dataset.\n\n.. figure:: https://i.imgur.com/X404Byc.png\n   :alt: cora\n   :height: 400px\n   :width: 500px\n   :align: center\n\nCora naturally contains seven classes, and statistics below show that each\nclass does satisfy our assumption of community, i.e. nodes of same class\nclass have higher connection probability among them than with nodes of different class.\nThe following code snippet verifies that there are more intra-class edges\nthan inter-class.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import os\n\nos.environ[\"DGLBACKEND\"] = \"pytorch\"\nimport dgl\nimport torch\nimport torch as th\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom dgl.data import citation_graph as citegrh\n\ndata = citegrh.load_cora()\n\nG = data[0]\nlabels = th.tensor(G.ndata[\"label\"])\n\n# find all the nodes labeled with class 0\nlabel0_nodes = th.nonzero(labels == 0, as_tuple=False).squeeze()\n# find all the edges pointing to class 0 nodes\nsrc, _ = G.in_edges(label0_nodes)\nsrc_labels = labels[src]\n# find all the edges whose both endpoints are in class 0\nintra_src = th.nonzero(src_labels == 0, as_tuple=False)\nprint(\"Intra-class edges percent: %.4f\" % (len(intra_src) / len(src_labels)))\n\nimport matplotlib.pyplot as plt"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Binary community subgraph from Cora with a test dataset\nWithout loss of generality, in this tutorial you limit the scope of the\ntask to binary community detection.\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>To create a practice binary-community dataset from Cora, first extract\n   all two-class pairs from the original Cora seven classes. For each pair, you\n   treat each class as one community, and find the largest subgraph that\n   at least contains one cross-community edge as the training example. As\n   a result, there are a total of 21 training samples in this small dataset.</p></div>\n\nWith the following code, you can visualize one of the training samples and its community structure.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import networkx as nx\n\ntrain_set = dgl.data.CoraBinary()\nG1, pmpd1, label1 = train_set[1]\nnx_G1 = G1.to_networkx()\n\n\ndef visualize(labels, g):\n    pos = nx.spring_layout(g, seed=1)\n    plt.figure(figsize=(8, 8))\n    plt.axis(\"off\")\n    nx.draw_networkx(\n        g,\n        pos=pos,\n        node_size=50,\n        cmap=plt.get_cmap(\"coolwarm\"),\n        node_color=labels,\n        edge_color=\"k\",\n        arrows=False,\n        width=0.5,\n        style=\"dotted\",\n        with_labels=False,\n    )\n\n\nvisualize(label1, nx_G1)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "To learn more, go the original research paper to see how to generalize\nto multiple communities case.\n\n### Community detection in a supervised setting\nThe community detection problem could be tackled with both supervised and\nunsupervised approaches. You can formulate\ncommunity detection in a supervised setting as follows:\n\n- Each training example consists of $(G, L)$, where $G$ is a\n  directed graph $(V, E)$. For each node $v$ in $V$, we\n  assign a ground truth community label $z_v \\in \\{0,1\\}$.\n- The parameterized model $f(G, \\theta)$ predicts a label set\n  $\\tilde{Z} = f(G)$ for nodes $V$.\n- For each example $(G,L)$, the model learns to minimize a specially\n  designed loss function (equivariant loss) $L_{equivariant} =\n  (\\tilde{Z}\uff0cZ)$\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>In this supervised setting, the model naturally predicts a label for\n   each community. However, community assignment should be equivariant to\n   label permutations. To achieve this, in each forward process, we take\n   the minimum among losses calculated from all possible permutations of\n   labels.\n\n   Mathematically, this means\n   $L_{equivariant} = \\underset{\\pi \\in S_c} {min}-\\log(\\hat{\\pi}, \\pi)$,\n   where $S_c$ is the set of all permutations of labels, and\n   $\\hat{\\pi}$ is the set of predicted labels,\n   $- \\log(\\hat{\\pi},\\pi)$ denotes negative log likelihood.\n\n   For instance, for a sample graph with node $\\{1,2,3,4\\}$ and\n   community assignment $\\{A, A, A, B\\}$, with each node's label\n   $l \\in \\{0,1\\}$,The group of all possible permutations\n   $S_c = \\{\\{0,0,0,1\\}, \\{1,1,1,0\\}\\}$.</p></div>\n\n## Line graph neural network key ideas\nAn key innovation in this topic is the use of a line graph.\nUnlike models in previous tutorials, message passing happens not only on the\noriginal graph, e.g. the binary community subgraph from Cora, but also on the\nline graph associated with the original graph.\n\n### What is a line-graph?\nIn graph theory, line graph is a graph representation that encodes the\nedge adjacency structure in the original graph.\n\nSpecifically, a line-graph $L(G)$ turns an edge of the original graph `G`\ninto a node. This is illustrated with the graph below (taken from the\nresearch paper).\n\n.. figure:: https://i.imgur.com/4WO5jEm.png\n   :alt: lg\n   :align: center\n\nHere, $e_{A}:= \uff08i\\rightarrow j\uff09$ and $e_{B}:= (j\\rightarrow k)$\nare two edges in the original graph $G$. In line graph $G_L$,\nthey correspond to nodes $v^{l}_{A}, v^{l}_{B}$.\n\nThe next natural question is, how to connect nodes in line-graph\uff1f How to\nconnect two edges? Here, we use the following connection rule:\n\nTwo nodes $v^{l}_{A}$, $v^{l}_{B}$ in `lg` are connected if\nthe corresponding two edges $e_{A}, e_{B}$ in `g` share one and only\none node:\n$e_{A}$'s destination node is $e_{B}$'s source node\n($j$).\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>Mathematically, this definition corresponds to a notion called non-backtracking\n   operator:\n   $B_{(i \\rightarrow j), (\\hat{i} \\rightarrow \\hat{j})}$\n   $= \\begin{cases}\n   1 \\text{ if } j = \\hat{i}, \\hat{j} \\neq i\\\\\n   0 \\text{ otherwise} \\end{cases}$\n   where an edge is formed if $B_{node1, node2} = 1$.</p></div>\n\n\n### One layer in LGNN, algorithm structure\n\nLGNN chains together a series of line graph neural network layers. The graph\nrepresentation $x$ and its line graph companion $y$ evolve with\nthe dataflow as follows.\n\n.. figure:: https://i.imgur.com/bZGGIGp.png\n   :alt: alg\n   :align: center\n\nAt the $k$-th layer, the $i$-th neuron of the $l$-th\nchannel updates its embedding $x^{(k+1)}_{i,l}$ with:\n\n\\begin{align}\\begin{split}\n   x^{(k+1)}_{i,l} ={}&\\rho[x^{(k)}_{i}\\theta^{(k)}_{1,l}\n   +(Dx^{(k)})_{i}\\theta^{(k)}_{2,l} \\\\\n   &+\\sum^{J-1}_{j=0}(A^{2^{j}}x^{k})_{i}\\theta^{(k)}_{3+j,l}\\\\\n   &+[\\{\\text{Pm},\\text{Pd}\\}y^{(k)}]_{i}\\theta^{(k)}_{3+J,l}] \\\\\n   &+\\text{skip-connection}\n   \\qquad i \\in V, l = 1,2,3, ... b_{k+1}/2\n   \\end{split}\\end{align}\n\nThen, the line-graph representation $y^{(k+1)}_{i,l}$ with,\n\n\\begin{align}\\begin{split}\n   y^{(k+1)}_{i',l^{'}} = {}&\\rho[y^{(k)}_{i^{'}}\\gamma^{(k)}_{1,l^{'}}+\n   (D_{L(G)}y^{(k)})_{i^{'}}\\gamma^{(k)}_{2,l^{'}}\\\\\n   &+\\sum^{J-1}_{j=0}(A_{L(G)}^{2^{j}}y^{k})_{i}\\gamma^{(k)}_{3+j,l^{'}}\\\\\n   &+[\\{\\text{Pm},\\text{Pd}\\}^{T}x^{(k+1)}]_{i^{'}}\\gamma^{(k)}_{3+J,l^{'}}]\\\\\n   &+\\text{skip-connection}\n   \\qquad i^{'} \\in V_{l}, l^{'} = 1,2,3, ... b^{'}_{k+1}/2\n   \\end{split}\\end{align}\n\nWhere $\\text{skip-connection}$ refers to performing the same operation without the non-linearity\n$\\rho$, and with linear projection $\\theta_\\{\\frac{b_{k+1}}{2} + 1, ..., b_{k+1}-1, b_{k+1}\\}$\nand $\\gamma_\\{\\frac{b_{k+1}}{2} + 1, ..., b_{k+1}-1, b_{k+1}\\}$.\n\n## Implement LGNN in DGL\nEven though the equations in the previous section might seem intimidating,\nit helps to understand the following information before you implement the LGNN.\n\nThe two equations are symmetric and can be implemented as two instances\nof the same class with different parameters.\nThe first equation operates on graph representation $x$,\nwhereas the second operates on line-graph\nrepresentation $y$. Let us denote this abstraction as $f$. Then\nthe first is $f(x,y; \\theta_x)$, and the second\nis $f(y,x, \\theta_y)$. That is, they are parameterized to compute\nrepresentations of the original graph and its\ncompanion line graph, respectively.\n\nEach equation consists of four terms. Take the first one as an example, which follows.\n\n  - $x^{(k)}\\theta^{(k)}_{1,l}$, a linear projection of previous\n    layer's output $x^{(k)}$, denote as $\\text{prev}(x)$.\n  - $(Dx^{(k)})\\theta^{(k)}_{2,l}$, a linear projection of degree\n    operator on $x^{(k)}$, denote as $\\text{deg}(x)$.\n  - $\\sum^{J-1}_{j=0}(A^{2^{j}}x^{(k)})\\theta^{(k)}_{3+j,l}$,\n    a summation of $2^{j}$ adjacency operator on $x^{(k)}$,\n    denote as $\\text{radius}(x)$\n  - $[\\{Pm,Pd\\}y^{(k)}]\\theta^{(k)}_{3+J,l}$, fusing another\n    graph's embedding information using incidence matrix\n    $\\{Pm, Pd\\}$, followed with a linear projection,\n    denote as $\\text{fuse}(y)$.\n\nEach of the terms are performed again with different\nparameters, and without the nonlinearity after the sum.\nTherefore, $f$ could be written as:\n\n  .. math::\n     \\begin{split}\n     f(x^{(k)},y^{(k)}) = {}\\rho[&\\text{prev}(x^{(k-1)}) + \\text{deg}(x^{(k-1)}) +\\text{radius}(x^{k-1})\n     +\\text{fuse}(y^{(k)})]\\\\\n     +&\\text{prev}(x^{(k-1)}) + \\text{deg}(x^{(k-1)}) +\\text{radius}(x^{k-1}) +\\text{fuse}(y^{(k)})\n     \\end{split}\n\nTwo equations are chained-up in the following order:\n\n  .. math::\n     \\begin{split}\n     x^{(k+1)} = {}& f(x^{(k)}, y^{(k)})\\\\\n     y^{(k+1)} = {}& f(y^{(k)}, x^{(k+1)})\n     \\end{split}\n\nKeep in mind the listed observations in this overview and proceed to implementation.\nAn important point is that you use different strategies for the noted terms.\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>You can understand $\\{Pm, Pd\\}$ more thoroughly with this explanation.\n   Roughly speaking, there is a relationship between how $g$ and\n   $lg$ (the line graph) work together with loopy brief propagation.\n   Here, you implement $\\{Pm, Pd\\}$ as a SciPy COO sparse matrix in the dataset,\n   and stack them as tensors when batching. Another batching solution is to\n   treat $\\{Pm, Pd\\}$ as the adjacency matrix of a bipartite graph, which maps\n   line graph's feature to graph's, and vice versa.</p></div>\n\n### Implementing $\\text{prev}$ and $\\text{deg}$ as tensor operation\nLinear projection and degree operation are both simply matrix\nmultiplication. Write them as PyTorch tensor operations.\n\nIn ``__init__``, you define the projection variables.\n\n::\n\n   self.linear_prev = nn.Linear(in_feats, out_feats)\n   self.linear_deg = nn.Linear(in_feats, out_feats)\n\n\nIn ``forward()``, $\\text{prev}$ and $\\text{deg}$ are the same\nas any other PyTorch tensor operations.\n\n::\n\n   prev_proj = self.linear_prev(feat_a)\n   deg_proj = self.linear_deg(deg * feat_a)\n\n### Implementing $\\text{radius}$ as message passing in DGL\nAs discussed in GCN tutorial, you can formulate one adjacency operator as\ndoing one-step message passing. As a generalization, $2^j$ adjacency\noperations can be formulated as performing $2^j$ step of message\npassing. Therefore, the summation is equivalent to summing nodes'\nrepresentation of $2^j, j=0, 1, 2..$ step message passing, i.e.\ngathering information in $2^{j}$ neighborhood of each node.\n\nIn ``__init__``, define the projection variables used in each\n$2^j$ steps of message passing.\n\n::\n\n  self.linear_radius = nn.ModuleList(\n          [nn.Linear(in_feats, out_feats) for i in range(radius)])\n\nIn ``__forward__``, use following function ``aggregate_radius()`` to\ngather data from multiple hops. This can be seen in the following code.\nNote that the ``update_all`` is called multiple times.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "# Return a list containing features gathered from multiple radius.\nimport dgl.function as fn\n\n\ndef aggregate_radius(radius, g, z):\n    # initializing list to collect message passing result\n    z_list = []\n    g.ndata[\"z\"] = z\n    # pulling message from 1-hop neighbourhood\n    g.update_all(fn.copy_u(u=\"z\", out=\"m\"), fn.sum(msg=\"m\", out=\"z\"))\n    z_list.append(g.ndata[\"z\"])\n    for i in range(radius - 1):\n        for j in range(2**i):\n            # pulling message from 2^j neighborhood\n            g.update_all(fn.copy_u(u=\"z\", out=\"m\"), fn.sum(msg=\"m\", out=\"z\"))\n        z_list.append(g.ndata[\"z\"])\n    return z_list"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Implementing $\\text{fuse}$ as sparse matrix multiplication\n$\\{Pm, Pd\\}$ is a sparse matrix with only two non-zero entries on\neach column. Therefore, you construct it as a sparse matrix in the dataset,\nand implement $\\text{fuse}$ as a sparse matrix multiplication.\n\nin ``__forward__``:\n\n::\n\n  fuse = self.linear_fuse(th.mm(pm_pd, feat_b))\n\n### Completing $f(x, y)$\nFinally, the following shows how to sum up all the terms together, pass it to skip connection, and\nbatch norm.\n\n::\n\n  result = prev_proj + deg_proj + radius_proj + fuse\n\nPass result to skip connection.\n\n::\n\n  result = th.cat([result[:, :n], F.relu(result[:, n:])], 1)\n\nThen pass the result to batch norm.\n\n::\n\n  result = self.bn(result) #Batch Normalization.\n\n\nHere is the complete code for one LGNN layer's abstraction $f(x,y)$\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "class LGNNCore(nn.Module):\n    def __init__(self, in_feats, out_feats, radius):\n        super(LGNNCore, self).__init__()\n        self.out_feats = out_feats\n        self.radius = radius\n\n        self.linear_prev = nn.Linear(in_feats, out_feats)\n        self.linear_deg = nn.Linear(in_feats, out_feats)\n        self.linear_radius = nn.ModuleList(\n            [nn.Linear(in_feats, out_feats) for i in range(radius)]\n        )\n        self.linear_fuse = nn.Linear(in_feats, out_feats)\n        self.bn = nn.BatchNorm1d(out_feats)\n\n    def forward(self, g, feat_a, feat_b, deg, pm_pd):\n        # term \"prev\"\n        prev_proj = self.linear_prev(feat_a)\n        # term \"deg\"\n        deg_proj = self.linear_deg(deg * feat_a)\n\n        # term \"radius\"\n        # aggregate 2^j-hop features\n        hop2j_list = aggregate_radius(self.radius, g, feat_a)\n        # apply linear transformation\n        hop2j_list = [\n            linear(x) for linear, x in zip(self.linear_radius, hop2j_list)\n        ]\n        radius_proj = sum(hop2j_list)\n\n        # term \"fuse\"\n        fuse = self.linear_fuse(th.mm(pm_pd, feat_b))\n\n        # sum them together\n        result = prev_proj + deg_proj + radius_proj + fuse\n\n        # skip connection and batch norm\n        n = self.out_feats // 2\n        result = th.cat([result[:, :n], F.relu(result[:, n:])], 1)\n        result = self.bn(result)\n\n        return result"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Chain-up LGNN abstractions as an LGNN layer\nTo implement:\n\n\\begin{align}\\begin{split}\n   x^{(k+1)} = {}& f(x^{(k)}, y^{(k)})\\\\\n   y^{(k+1)} = {}& f(y^{(k)}, x^{(k+1)})\n   \\end{split}\\end{align}\n\nChain-up two ``LGNNCore`` instances, as in the example code, with different parameters in the forward pass.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "class LGNNLayer(nn.Module):\n    def __init__(self, in_feats, out_feats, radius):\n        super(LGNNLayer, self).__init__()\n        self.g_layer = LGNNCore(in_feats, out_feats, radius)\n        self.lg_layer = LGNNCore(in_feats, out_feats, radius)\n\n    def forward(self, g, lg, x, lg_x, deg_g, deg_lg, pm_pd):\n        next_x = self.g_layer(g, x, lg_x, deg_g, pm_pd)\n        pm_pd_y = th.transpose(pm_pd, 0, 1)\n        next_lg_x = self.lg_layer(lg, lg_x, x, deg_lg, pm_pd_y)\n        return next_x, next_lg_x"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Chain-up LGNN layers\nDefine an LGNN with three hidden layers, as in the following example.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "class LGNN(nn.Module):\n    def __init__(self, radius):\n        super(LGNN, self).__init__()\n        self.layer1 = LGNNLayer(1, 16, radius)  # input is scalar feature\n        self.layer2 = LGNNLayer(16, 16, radius)  # hidden size is 16\n        self.layer3 = LGNNLayer(16, 16, radius)\n        self.linear = nn.Linear(16, 2)  # predice two classes\n\n    def forward(self, g, lg, pm_pd):\n        # compute the degrees\n        deg_g = g.in_degrees().float().unsqueeze(1)\n        deg_lg = lg.in_degrees().float().unsqueeze(1)\n        # use degree as the input feature\n        x, lg_x = deg_g, deg_lg\n        x, lg_x = self.layer1(g, lg, x, lg_x, deg_g, deg_lg, pm_pd)\n        x, lg_x = self.layer2(g, lg, x, lg_x, deg_g, deg_lg, pm_pd)\n        x, lg_x = self.layer3(g, lg, x, lg_x, deg_g, deg_lg, pm_pd)\n        return self.linear(x)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Training and inference\nFirst load the data.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "from torch.utils.data import DataLoader\n\ntraining_loader = DataLoader(\n    train_set, batch_size=1, collate_fn=train_set.collate_fn, drop_last=True\n)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Next, define the main training loop. Note that each training sample contains\nthree objects: A :class:`~dgl.DGLGraph`, a SciPy sparse matrix ``pmpd``, and a label\narray in ``numpy.ndarray``. Generate the line graph by using this command:\n\n::\n\n  lg = g.line_graph(backtracking=False)\n\nNote that ``backtracking=False`` is required to correctly simulate non-backtracking\noperation. We also define a utility function to convert the SciPy sparse matrix to\ntorch sparse tensor.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "# Create the model\nmodel = LGNN(radius=3)\n# define the optimizer\noptimizer = th.optim.Adam(model.parameters(), lr=1e-2)\n\n# A utility function to convert a scipy.coo_matrix to torch.SparseFloat\ndef sparse2th(mat):\n    value = mat.data\n    indices = th.LongTensor([mat.row, mat.col])\n    tensor = th.sparse.FloatTensor(\n        indices, th.from_numpy(value).float(), mat.shape\n    )\n    return tensor\n\n\n# Train for 20 epochs\nfor i in range(20):\n    all_loss = []\n    all_acc = []\n    for [g, pmpd, label] in training_loader:\n        # Generate the line graph.\n        lg = g.line_graph(backtracking=False)\n        # Create torch tensors\n        pmpd = sparse2th(pmpd)\n        label = th.from_numpy(label)\n\n        # Forward\n        z = model(g, lg, pmpd)\n\n        # Calculate loss:\n        # Since there are only two communities, there are only two permutations\n        #  of the community labels.\n        loss_perm1 = F.cross_entropy(z, label)\n        loss_perm2 = F.cross_entropy(z, 1 - label)\n        loss = th.min(loss_perm1, loss_perm2)\n\n        # Calculate accuracy:\n        _, pred = th.max(z, 1)\n        acc_perm1 = (pred == label).float().mean()\n        acc_perm2 = (pred == 1 - label).float().mean()\n        acc = th.max(acc_perm1, acc_perm2)\n        all_loss.append(loss.item())\n        all_acc.append(acc.item())\n\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    niters = len(all_loss)\n    print(\n        \"Epoch %d | loss %.4f | accuracy %.4f\"\n        % (i, sum(all_loss) / niters, sum(all_acc) / niters)\n    )"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Visualize training progress\nYou can visualize the network's community prediction on one training example,\ntogether with the ground truth. Start this with the following code example.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "pmpd1 = sparse2th(pmpd1)\nLG1 = G1.line_graph(backtracking=False)\nz = model(G1, LG1, pmpd1)\n_, pred = th.max(z, 1)\nvisualize(pred, nx_G1)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Compared with the ground truth. Note that the color might be reversed for the\ntwo communities because the model is for correctly predicting the partitioning.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "visualize(label1, nx_G1)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Here is an animation to better understand the process. (40 epochs)\n\n.. figure:: https://i.imgur.com/KDUyE1S.gif\n   :alt: lgnn-anim\n\n## Batching graphs for parallelism\n\nLGNN takes a collection of different graphs.\nYou might consider whether batching can be used for parallelism.\n\nBatching has been into the data loader itself.\nIn the ``collate_fn`` for PyTorch data loader, graphs are batched using DGL's\nbatched_graph API. DGL batches graphs by merging them\ninto a large graph, with each smaller graph's adjacency matrix being a block\nalong the diagonal of the large graph's adjacency matrix.  Concatenate\n:math`\\{Pm,Pd\\}` as block diagonal matrix in correspondence to DGL batched\ngraph API.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def collate_fn(batch):\n    graphs, pmpds, labels = zip(*batch)\n    batched_graphs = dgl.batch(graphs)\n    batched_pmpds = sp.block_diag(pmpds)\n    batched_labels = np.concatenate(labels, axis=0)\n    return batched_graphs, batched_pmpds, batched_labels"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "You can find the complete code on Github at\n[Community Detection with Graph Neural Networks (CDGNN)](https://github.com/dmlc/dgl/tree/master/examples/pytorch/line_graph).\n\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.14"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

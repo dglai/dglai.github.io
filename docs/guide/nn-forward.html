@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.2 DGL NN Module Forward Function &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.3 Heterogeneous GraphConv Module" href="nn-heterograph.html" />
+    <link rel="prev" title="3.1 DGL NN Module Construction Function" href="nn-construction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nn-construction.html">3.1 DGL NN Module Construction Function</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.2 DGL NN Module Forward Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nn-heterograph.html">3.3 Heterogeneous GraphConv Module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="nn.html">Chapter 3: Building GNN Modules</a></li>
+      <li class="breadcrumb-item active">3.2 DGL NN Module Forward Function</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/nn-forward.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dgl-nn-module-forward-function">
+<span id="guide-nn-forward"></span><h1>3.2 DGL NN Module Forward Function<a class="headerlink" href="#dgl-nn-module-forward-function" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide_cn/nn-forward.html#guide-cn-nn-forward"><span class="std std-ref">(中文版)</span></a></p>
+<p>In NN module, <code class="docutils literal notranslate"><span class="pre">forward()</span></code> function does the actual message passing and
+computation. Compared with PyTorch’s NN module which usually takes
+tensors as the parameters, DGL NN module takes an additional parameter
+<a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code></a>. The
+workload for <code class="docutils literal notranslate"><span class="pre">forward()</span></code> function can be split into three parts:</p>
+<ul class="simple">
+<li><p>Graph checking and graph type specification.</p></li>
+<li><p>Message passing.</p></li>
+<li><p>Feature update.</p></li>
+</ul>
+<p>The rest of the section takes a deep dive into the <code class="docutils literal notranslate"><span class="pre">forward()</span></code> function in SAGEConv example.</p>
+<section id="graph-checking-and-graph-type-specification">
+<h2>Graph checking and graph type specification<a class="headerlink" href="#graph-checking-and-graph-type-specification" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+        <span class="c1"># Specify graph type then expand input feature according to graph type</span>
+        <span class="n">feat_src</span><span class="p">,</span> <span class="n">feat_dst</span> <span class="o">=</span> <span class="n">expand_as_pair</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">forward()</span></code> needs to handle many corner cases on the input that can
+lead to invalid values in computing and message passing. One typical check in conv modules
+like <a class="reference internal" href="../generated/dgl.nn.pytorch.conv.GraphConv.html#dgl.nn.pytorch.conv.GraphConv" title="dgl.nn.pytorch.conv.GraphConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConv</span></code></a> is to verify that the input graph has no 0-in-degree nodes.
+When a node has 0 in-degree, the <code class="docutils literal notranslate"><span class="pre">mailbox</span></code> will be empty and the reduce function will produce
+all-zero values. This may cause silent regression in model performance. However, in
+<a class="reference internal" href="../generated/dgl.nn.pytorch.conv.SAGEConv.html#dgl.nn.pytorch.conv.SAGEConv" title="dgl.nn.pytorch.conv.SAGEConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">SAGEConv</span></code></a> module, the aggregated representation will be concatenated
+with the original node feature, the output of <code class="docutils literal notranslate"><span class="pre">forward()</span></code> will not be all-zero. No such check is
+needed in this case.</p>
+<p>DGL NN module should be reusable across different types of graph input
+including: homogeneous graph, heterogeneous
+graph (<a class="reference internal" href="graph-heterogeneous.html#guide-graph-heterogeneous"><span class="std std-ref">1.5 Heterogeneous Graphs</span></a>), subgraph
+block (<a class="reference internal" href="minibatch.html#guide-minibatch"><span class="std std-ref">Chapter 6: Stochastic Training on Large Graphs</span></a>).</p>
+<p>The math formulas for SAGEConv are:</p>
+<div class="math notranslate nohighlight">
+\[h_{\mathcal{N}(dst)}^{(l+1)}  = \mathrm{aggregate}
+        \left(\{h_{src}^{l}, \forall src \in \mathcal{N}(dst) \}\right)\]</div>
+<div class="math notranslate nohighlight">
+\[h_{dst}^{(l+1)} = \sigma \left(W \cdot \mathrm{concat}
+       (h_{dst}^{l}, h_{\mathcal{N}(dst)}^{l+1}) + b \right)\]</div>
+<div class="math notranslate nohighlight">
+\[h_{dst}^{(l+1)} = \mathrm{norm}(h_{dst}^{l+1})\]</div>
+<p>One needs to specify the source node feature <code class="docutils literal notranslate"><span class="pre">feat_src</span></code> and destination
+node feature <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> according to the graph type.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">expand_as_pair()</span></code> is a function that specifies the graph
+type and expand <code class="docutils literal notranslate"><span class="pre">feat</span></code> into <code class="docutils literal notranslate"><span class="pre">feat_src</span></code> and <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code>.
+The detail of this function is shown below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">expand_as_pair</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="c1"># Bipartite graph case</span>
+        <span class="k">return</span> <span class="n">input_</span>
+    <span class="k">elif</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+        <span class="c1"># Subgraph block case</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">input_dst</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">narrow_row</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_dst</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">narrow_row</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">input_</span><span class="p">,</span> <span class="n">input_dst</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Homogeneous graph case</span>
+        <span class="k">return</span> <span class="n">input_</span><span class="p">,</span> <span class="n">input_</span>
+</pre></div>
+</div>
+<p>For homogeneous whole graph training, source nodes and destination nodes
+are the same. They are all the nodes in the graph.</p>
+<p>For heterogeneous case, the graph can be split into several bipartite
+graphs, one for each relation. The relations are represented as
+<code class="docutils literal notranslate"><span class="pre">(src_type,</span> <span class="pre">edge_type,</span> <span class="pre">dst_dtype)</span></code>. When it identifies that the input feature
+<code class="docutils literal notranslate"><span class="pre">feat</span></code> is a tuple, it will treat the graph as bipartite. The first
+element in the tuple will be the source node feature and the second
+element will be the destination node feature.</p>
+<p>In mini-batch training, the computing is applied on a subgraph sampled
+based on a bunch of destination nodes. The subgraph is called as
+<code class="docutils literal notranslate"><span class="pre">block</span></code> in DGL. In the block creation phase,
+<code class="docutils literal notranslate"><span class="pre">dst</span> <span class="pre">nodes</span></code> are in the front of the node list. One can find the
+<code class="docutils literal notranslate"><span class="pre">feat_dst</span></code> by the index <code class="docutils literal notranslate"><span class="pre">[0:g.number_of_dst_nodes()]</span></code>.</p>
+<p>After determining <code class="docutils literal notranslate"><span class="pre">feat_src</span></code> and <code class="docutils literal notranslate"><span class="pre">feat_dst</span></code>, the computing for the
+above three graph types are the same.</p>
+</section>
+<section id="message-passing-and-reducing">
+<h2>Message passing and reducing<a class="headerlink" href="#message-passing-and-reducing" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.function</span> <span class="k">as</span> <span class="nn">fn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">dgl.utils</span> <span class="kn">import</span> <span class="n">check_eq_shape</span>
+
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_src</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span>
+<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
+    <span class="n">check_eq_shape</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_src</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_dst</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="c1"># divide in_degrees</span>
+    <span class="n">degs</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">feat_dst</span><span class="p">)</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">degs</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;pool&#39;</span><span class="p">:</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc_pool</span><span class="p">(</span><span class="n">feat_src</span><span class="p">))</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;neigh&#39;</span><span class="p">))</span>
+    <span class="n">h_neigh</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;neigh&#39;</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Aggregator type </span><span class="si">{}</span><span class="s1"> not recognized.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span><span class="p">))</span>
+
+<span class="c1"># GraphSAGE GCN does not require fc_self.</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggre_type</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_neigh</span><span class="p">(</span><span class="n">h_neigh</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_self</span><span class="p">(</span><span class="n">h_self</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_neigh</span><span class="p">(</span><span class="n">h_neigh</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The code actually does message passing and reducing computing. This part
+of code varies module by module. Note that all the message passing in
+the above code are implemented using <a class="reference internal" href="../generated/dgl.DGLGraph.update_all.html#dgl.DGLGraph.update_all" title="dgl.DGLGraph.update_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_all()</span></code></a> API and
+<code class="docutils literal notranslate"><span class="pre">built-in</span></code> message/reduce functions to fully utilize DGL’s performance
+optimization as described in <a class="reference internal" href="message-efficient.html#guide-message-passing-efficient"><span class="std std-ref">2.2 Writing Efficient Message Passing Code</span></a>.</p>
+</section>
+<section id="update-feature-after-reducing-for-output">
+<h2>Update feature after reducing for output<a class="headerlink" href="#update-feature-after-reducing-for-output" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># activation</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="c1"># normalization</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">rst</span>
+</pre></div>
+</div>
+<p>The last part of <code class="docutils literal notranslate"><span class="pre">forward()</span></code> function is to update the feature after
+the <code class="docutils literal notranslate"><span class="pre">reduce</span> <span class="pre">function</span></code>. Common update operations are applying
+activation function and normalization according to the option set in the
+object construction phase.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="nn-construction.html" class="btn btn-neutral float-left" title="3.1 DGL NN Module Construction Function" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="nn-heterograph.html" class="btn btn-neutral float-right" title="3.3 Heterogeneous GraphConv Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

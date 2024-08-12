@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.distributed.dist_context &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.distributed.dist_context</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.distributed.dist_context</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Initialize the distributed services&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=line-too-long</span>
+
+<span class="kn">import</span> <span class="nn">atexit</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">dgl_warning</span><span class="p">,</span> <span class="n">DGLError</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rpc</span>
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">MAX_QUEUE_SIZE</span>
+<span class="kn">from</span> <span class="nn">.kvstore</span> <span class="kn">import</span> <span class="n">close_kvstore</span><span class="p">,</span> <span class="n">init_kvstore</span>
+<span class="kn">from</span> <span class="nn">.role</span> <span class="kn">import</span> <span class="n">init_role</span>
+<span class="kn">from</span> <span class="nn">.rpc_client</span> <span class="kn">import</span> <span class="n">connect_to_server</span>
+
+<span class="n">SAMPLER_POOL</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">NUM_SAMPLER_WORKERS</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">INITIALIZED</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">set_initialized</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the initialized state of rpc&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">INITIALIZED</span>
+    <span class="n">INITIALIZED</span> <span class="o">=</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">get_sampler_pool</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the sampler pool and num_workers&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">SAMPLER_POOL</span><span class="p">,</span> <span class="n">NUM_SAMPLER_WORKERS</span>
+
+
+<span class="k">def</span> <span class="nf">_init_rpc</span><span class="p">(</span>
+    <span class="n">ip_config</span><span class="p">,</span>
+    <span class="n">num_servers</span><span class="p">,</span>
+    <span class="n">max_queue_size</span><span class="p">,</span>
+    <span class="n">role</span><span class="p">,</span>
+    <span class="n">num_threads</span><span class="p">,</span>
+    <span class="n">group_id</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This init function is called in the worker processes.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">num_threads</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_DIST_MODE&quot;</span><span class="p">,</span> <span class="s2">&quot;standalone&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;standalone&quot;</span><span class="p">:</span>
+            <span class="n">connect_to_server</span><span class="p">(</span><span class="n">ip_config</span><span class="p">,</span> <span class="n">num_servers</span><span class="p">,</span> <span class="n">max_queue_size</span><span class="p">,</span> <span class="n">group_id</span><span class="p">)</span>
+        <span class="n">init_role</span><span class="p">(</span><span class="n">role</span><span class="p">)</span>
+        <span class="n">init_kvstore</span><span class="p">(</span><span class="n">ip_config</span><span class="p">,</span> <span class="n">num_servers</span><span class="p">,</span> <span class="n">role</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+
+<span class="k">class</span> <span class="nc">MpCommand</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class for multiprocessing command&quot;&quot;&quot;</span>
+
+    <span class="n">INIT_RPC</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Not used in the task queue</span>
+    <span class="n">SET_COLLATE_FN</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">CALL_BARRIER</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">DELETE_COLLATE_FN</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">CALL_COLLATE_FN</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">CALL_FN_ALL_WORKERS</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">FINALIZE_POOL</span> <span class="o">=</span> <span class="mi">6</span>
+
+
+<span class="k">def</span> <span class="nf">init_process</span><span class="p">(</span><span class="n">rpc_config</span><span class="p">,</span> <span class="n">mp_contexts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Work loop in the worker&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_init_rpc</span><span class="p">(</span><span class="o">*</span><span class="n">rpc_config</span><span class="p">)</span>
+        <span class="n">keep_polling</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">data_queue</span><span class="p">,</span> <span class="n">task_queue</span><span class="p">,</span> <span class="n">barrier</span> <span class="o">=</span> <span class="n">mp_contexts</span>
+        <span class="n">collate_fn_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">while</span> <span class="n">keep_polling</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Follow https://github.com/pytorch/pytorch/blob/d57ce8cf8989c0b737e636d8d7abe16c1f08f70b/torch/utils/data/_utils/worker.py#L260</span>
+                <span class="n">command</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">task_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">command</span> <span class="o">==</span> <span class="n">MpCommand</span><span class="o">.</span><span class="n">SET_COLLATE_FN</span><span class="p">:</span>
+                <span class="n">dataloader_name</span><span class="p">,</span> <span class="n">func</span> <span class="o">=</span> <span class="n">args</span>
+                <span class="n">collate_fn_dict</span><span class="p">[</span><span class="n">dataloader_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
+            <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="n">MpCommand</span><span class="o">.</span><span class="n">CALL_BARRIER</span><span class="p">:</span>
+                <span class="n">barrier</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="n">MpCommand</span><span class="o">.</span><span class="n">DELETE_COLLATE_FN</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">dataloader_name</span><span class="p">,)</span> <span class="o">=</span> <span class="n">args</span>
+                <span class="k">del</span> <span class="n">collate_fn_dict</span><span class="p">[</span><span class="n">dataloader_name</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="n">MpCommand</span><span class="o">.</span><span class="n">CALL_COLLATE_FN</span><span class="p">:</span>
+                <span class="n">dataloader_name</span><span class="p">,</span> <span class="n">collate_args</span> <span class="o">=</span> <span class="n">args</span>
+                <span class="n">data_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">dataloader_name</span><span class="p">,</span>
+                        <span class="n">collate_fn_dict</span><span class="p">[</span><span class="n">dataloader_name</span><span class="p">](</span><span class="n">collate_args</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="n">MpCommand</span><span class="o">.</span><span class="n">CALL_FN_ALL_WORKERS</span><span class="p">:</span>
+                <span class="n">func</span><span class="p">,</span> <span class="n">func_args</span> <span class="o">=</span> <span class="n">args</span>
+                <span class="n">func</span><span class="p">(</span><span class="n">func_args</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="n">MpCommand</span><span class="o">.</span><span class="n">FINALIZE_POOL</span><span class="p">:</span>
+                <span class="n">_exit</span><span class="p">()</span>
+                <span class="n">keep_polling</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unknown command&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+
+<span class="k">class</span> <span class="nc">CustomPool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Customized worker pool&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">,</span> <span class="n">rpc_config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Customized worker pool init function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">=</span> <span class="n">num_workers</span>
+        <span class="c1"># As pool could be used by any number of dataloaders, queues</span>
+        <span class="c1"># should be able to take infinite elements to avoid dead lock.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_queue</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># key is dataloader name, value is fetched batch.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_proc_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_result_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">barrier</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Barrier</span><span class="p">(</span><span class="n">num_workers</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="n">task_queue</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_queue</span><span class="p">)</span>
+            <span class="n">proc</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">init_process</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">rpc_config</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_queue</span><span class="p">,</span> <span class="n">task_queue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">barrier</span><span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">proc</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">dataloader_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set collate function in subprocess&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">MpCommand</span><span class="o">.</span><span class="n">SET_COLLATE_FN</span><span class="p">,</span> <span class="p">(</span><span class="n">dataloader_name</span><span class="p">,</span> <span class="n">func</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">dataloader_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">submit_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataloader_name</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Submit task to workers&quot;&quot;&quot;</span>
+        <span class="c1"># Round robin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_proc_id</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">MpCommand</span><span class="o">.</span><span class="n">CALL_COLLATE_FN</span><span class="p">,</span> <span class="p">(</span><span class="n">dataloader_name</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_proc_id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_proc_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
+
+    <span class="k">def</span> <span class="nf">submit_task_to_all_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Submit task to all workers&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">MpCommand</span><span class="o">.</span><span class="n">CALL_FN_ALL_WORKERS</span><span class="p">,</span> <span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataloader_name</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1800</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get result from result queue&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dataloader_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Got result from an unknown dataloader </span><span class="si">{</span><span class="n">dataloader_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">dataloader_name</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dl_name</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">dl_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">dataloader_name</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">delete_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataloader_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete collate function&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">MpCommand</span><span class="o">.</span><span class="n">DELETE_COLLATE_FN</span><span class="p">,</span> <span class="p">(</span><span class="n">dataloader_name</span><span class="p">,))</span>
+            <span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">dataloader_name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">call_barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call barrier at all workers&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">MpCommand</span><span class="o">.</span><span class="n">CALL_BARRIER</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">()))</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close worker pool&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_queues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">MpCommand</span><span class="o">.</span><span class="n">FINALIZE_POOL</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">()),</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Fix for early python version</span>
+
+    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Join the close process of worker pool&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="initialize">
+<a class="viewcode-back" href="../../../generated/dgl.distributed.initialize.html#dgl.distributed.initialize">[docs]</a>
+<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span>
+    <span class="n">ip_config</span><span class="p">,</span>
+    <span class="n">max_queue_size</span><span class="o">=</span><span class="n">MAX_QUEUE_SIZE</span><span class="p">,</span>
+    <span class="n">net_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_worker_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">use_graphbolt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize DGL&#39;s distributed module</span>
+
+<span class="sd">    This function initializes DGL&#39;s distributed module. It acts differently in server</span>
+<span class="sd">    or client modes. In the server mode, it runs the server code and never returns.</span>
+<span class="sd">    In the client mode, it builds connections with servers for communication and</span>
+<span class="sd">    creates worker processes for distributed sampling.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ip_config: str</span>
+<span class="sd">        File path of ip_config file</span>
+<span class="sd">    max_queue_size : int</span>
+<span class="sd">        Maximal size (bytes) of client queue buffer (~20 GB on default).</span>
+
+<span class="sd">        Note that the 20 GB is just an upper-bound and DGL uses zero-copy and</span>
+<span class="sd">        it will not allocate 20GB memory at once.</span>
+<span class="sd">    net_type : str, optional</span>
+<span class="sd">        [Deprecated] Networking type, can be &#39;socket&#39; only.</span>
+<span class="sd">    num_worker_threads: int</span>
+<span class="sd">        The number of OMP threads in each sampler process.</span>
+<span class="sd">    use_graphbolt: bool, optional</span>
+<span class="sd">        Whether to use GraphBolt for distributed train.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    Users have to invoke this API before any DGL&#39;s distributed API and framework-specific</span>
+<span class="sd">    distributed API. For example, when used with Pytorch, users have to invoke this function</span>
+<span class="sd">    before Pytorch&#39;s `pytorch.distributed.init_process_group`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Initialize the distributed services with graphbolt: </span><span class="si">{</span><span class="n">use_graphbolt</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">net_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dgl_warning</span><span class="p">(</span>
+            <span class="s2">&quot;net_type is deprecated and will be removed in future release.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_ROLE&quot;</span><span class="p">,</span> <span class="s2">&quot;client&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;server&quot;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.dist_graph</span> <span class="kn">import</span> <span class="n">DistGraphServer</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_SERVER_ID&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Please define DGL_SERVER_ID to run DistGraph server&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_IP_CONFIG&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Please define DGL_IP_CONFIG to run DistGraph server&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_NUM_SERVER&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Please define DGL_NUM_SERVER to run DistGraph server&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_NUM_CLIENT&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Please define DGL_NUM_CLIENT to run DistGraph server&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_CONF_PATH&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Please define DGL_CONF_PATH to run DistGraph server&quot;</span>
+        <span class="n">formats</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_GRAPH_FORMAT&quot;</span><span class="p">,</span> <span class="s2">&quot;csc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="n">formats</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">formats</span><span class="p">]</span>
+        <span class="n">rpc</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">serv</span> <span class="o">=</span> <span class="n">DistGraphServer</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_SERVER_ID&quot;</span><span class="p">)),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_IP_CONFIG&quot;</span><span class="p">),</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_NUM_SERVER&quot;</span><span class="p">)),</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_NUM_CLIENT&quot;</span><span class="p">)),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_CONF_PATH&quot;</span><span class="p">),</span>
+            <span class="n">graph_format</span><span class="o">=</span><span class="n">formats</span><span class="p">,</span>
+            <span class="n">use_graphbolt</span><span class="o">=</span><span class="n">use_graphbolt</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">serv</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">num_workers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_NUM_SAMPLER&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">num_servers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_NUM_SERVER&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">group_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_GROUP_ID&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">rpc</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">global</span> <span class="n">SAMPLER_POOL</span>
+        <span class="k">global</span> <span class="n">NUM_SAMPLER_WORKERS</span>
+        <span class="n">is_standalone</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_DIST_MODE&quot;</span><span class="p">,</span> <span class="s2">&quot;standalone&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;standalone&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_workers</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_standalone</span><span class="p">:</span>
+            <span class="n">SAMPLER_POOL</span> <span class="o">=</span> <span class="n">CustomPool</span><span class="p">(</span>
+                <span class="n">num_workers</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="n">ip_config</span><span class="p">,</span>
+                    <span class="n">num_servers</span><span class="p">,</span>
+                    <span class="n">max_queue_size</span><span class="p">,</span>
+                    <span class="s2">&quot;sampler&quot;</span><span class="p">,</span>
+                    <span class="n">num_worker_threads</span><span class="p">,</span>
+                    <span class="n">group_id</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">SAMPLER_POOL</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">NUM_SAMPLER_WORKERS</span> <span class="o">=</span> <span class="n">num_workers</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_standalone</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">num_servers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">num_servers</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">),</span> <span class="s2">&quot;The number of servers per machine must be specified with a positive number.&quot;</span>
+            <span class="n">connect_to_server</span><span class="p">(</span>
+                <span class="n">ip_config</span><span class="p">,</span>
+                <span class="n">num_servers</span><span class="p">,</span>
+                <span class="n">max_queue_size</span><span class="p">,</span>
+                <span class="n">group_id</span><span class="o">=</span><span class="n">group_id</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">init_role</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+        <span class="n">init_kvstore</span><span class="p">(</span><span class="n">ip_config</span><span class="p">,</span> <span class="n">num_servers</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">finalize_client</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Release resources of this client.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_DIST_MODE&quot;</span><span class="p">,</span> <span class="s2">&quot;standalone&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;standalone&quot;</span><span class="p">:</span>
+        <span class="n">rpc</span><span class="o">.</span><span class="n">finalize_sender</span><span class="p">()</span>
+        <span class="n">rpc</span><span class="o">.</span><span class="n">finalize_receiver</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_exit</span><span class="p">():</span>
+    <span class="n">exit_client</span><span class="p">()</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">finalize_worker</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finalize workers</span>
+<span class="sd">    Python&#39;s multiprocessing pool will not call atexit function when close</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">SAMPLER_POOL</span>
+    <span class="k">if</span> <span class="n">SAMPLER_POOL</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">SAMPLER_POOL</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">join_finalize_worker</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;join the worker close process&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">SAMPLER_POOL</span>
+    <span class="k">if</span> <span class="n">SAMPLER_POOL</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">SAMPLER_POOL</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="n">SAMPLER_POOL</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">is_initialized</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Is RPC initialized?&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">INITIALIZED</span>
+
+
+<span class="k">def</span> <span class="nf">_shutdown_servers</span><span class="p">():</span>
+    <span class="n">set_initialized</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># send ShutDownRequest to servers</span>
+    <span class="k">if</span> <span class="n">rpc</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Only client_0 issue this command</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">ShutDownRequest</span><span class="p">(</span><span class="n">rpc</span><span class="o">.</span><span class="n">get_rank</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">server_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rpc</span><span class="o">.</span><span class="n">get_num_server</span><span class="p">()):</span>
+            <span class="n">rpc</span><span class="o">.</span><span class="n">send_request</span><span class="p">(</span><span class="n">server_id</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">exit_client</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trainer exits</span>
+
+<span class="sd">    This function is called automatically when a Python process exits. Normally,</span>
+<span class="sd">    the training script does not need to invoke this function at the end.</span>
+
+<span class="sd">    In the case that the training script needs to initialize the distributed module</span>
+<span class="sd">    multiple times (so far, this is needed in the unit tests), the training script</span>
+<span class="sd">    needs to call `exit_client` before calling `initialize` again.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Only client with rank_0 will send shutdown request to servers.</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Client[</span><span class="si">{}</span><span class="s2">] in group[</span><span class="si">{}</span><span class="s2">] is exiting...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">rpc</span><span class="o">.</span><span class="n">get_rank</span><span class="p">(),</span> <span class="n">rpc</span><span class="o">.</span><span class="n">get_group_id</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">finalize_worker</span><span class="p">()</span>  <span class="c1"># finalize workers should be earilier than barrier, and non-blocking</span>
+    <span class="c1"># collect data such as DistTensor before exit</span>
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DGL_DIST_MODE&quot;</span><span class="p">,</span> <span class="s2">&quot;standalone&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;standalone&quot;</span><span class="p">:</span>
+        <span class="n">rpc</span><span class="o">.</span><span class="n">client_barrier</span><span class="p">()</span>
+        <span class="n">_shutdown_servers</span><span class="p">()</span>
+    <span class="n">finalize_client</span><span class="p">()</span>
+    <span class="n">join_finalize_worker</span><span class="p">()</span>
+    <span class="n">close_kvstore</span><span class="p">()</span>
+    <span class="n">atexit</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">exit_client</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

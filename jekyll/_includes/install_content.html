@@ -30,6 +30,7 @@
                     <radio label="2.1.x"></radio>
                     <radio label="2.2.x"></radio>
                     <radio label="2.3.x"></radio>
+                    <radio label="2.4.x"></radio>
                   </radio-group>
                 </div>
                 </i-col>
@@ -45,6 +46,7 @@
                     <radio label="None"></radio>
                     <radio label="11.8"></radio>
                     <radio label="12.1"></radio>
+                    <radio label="12.4"></radio>
                   </radio-group>
                 </div>
                 </i-col>
@@ -135,10 +137,14 @@
 <script>
   Vue.component('vue-multiselect', window.VueMultiselect.default)
   function pip_path_cuda(target_os, pytorch_version, _build_dir, _pkg) {
+    if (_pkg != 'Pip(Nightly Build)' && pytorch_version == '2.4.x') {
+      return "Not supported yet.";
+    }
     var valid_pytorch_cuda = {
       '2.1.x': ['None', '11.8', '12.1'],
       '2.2.x': ['None', '11.8', '12.1'],
       '2.3.x': ['None', '11.8', '12.1'],
+      '2.4.x': ['None', '11.8', '12.1', '12.4'],
     };
     if (!valid_pytorch_cuda[pytorch_version].includes(_build_dir)) {
       return "# PyTorch " + pytorch_version + " does not support CUDA " + _build_dir + ".";
@@ -147,10 +153,12 @@
       '2.1.x': 'torch-2.1',
       '2.2.x': 'torch-2.2',
       '2.3.x': 'torch-2.3',
+      '2.4.x': 'torch-2.4',
     }[pytorch_version];
     var build_dir = {
       '11.8': 'cu118',
       '12.1': 'cu121',
+      '12.4': 'cu124',
       'None': '',
     }[_build_dir];
     var prefix = (_pkg == 'Pip(Nightly Build)') ? 'wheels-test' : 'wheels';
@@ -165,10 +173,13 @@
   }
 
   function conda_path(cuda, target_os, pytorch_version) {
+    if (cuda === '12.4' || pytorch_version === '2.4.x') {
+      return "Not supported yet.";
+    }
     var link_dict = {
       'None': 'conda install -c dglteam dgl',
       '11.8': 'conda install -c dglteam/label/cu118 dgl',
-      '12.1': 'conda install -c dglteam/label/cu121 dgl'
+      '12.1': 'conda install -c dglteam/label/cu121 dgl',
     };
     var install_cmd = link_dict[cuda];
     if (target_os === 'Linux') {

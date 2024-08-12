@@ -1,0 +1,147 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "\n\n# Graph Convolutional Network\n\n**Author:** [Qi Huang](https://github.com/HQ01), [Minjie Wang](https://jermainewang.github.io/),\nYu Gai, Quan Gan, Zheng Zhang\n\n<div class=\"alert alert-danger\"><h4>Warning</h4><p>The tutorial aims at gaining insights into the paper, with code as a mean\n    of explanation. The implementation thus is NOT optimized for running\n    efficiency. For recommended implementation, please refer to the [official\n    examples](https://github.com/dmlc/dgl/tree/master/examples).</p></div>\n\nThis is a gentle introduction of using DGL to implement Graph Convolutional\nNetworks (Kipf & Welling et al., [Semi-Supervised Classification with Graph\nConvolutional Networks](https://arxiv.org/pdf/1609.02907.pdf)). We explain\nwhat is under the hood of the :class:`~dgl.nn.GraphConv` module.\nThe reader is expected to learn how to define a new GNN layer using DGL's\nmessage passing APIs.\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Model Overview\nGCN from the perspective of message passing\n```````````````````````````````````````````````\nWe describe a layer of graph convolutional neural network from a message\npassing perspective; the math can be found [here](math_).\nIt boils down to the following step, for each node $u$:\n\n1) Aggregate neighbors' representations $h_{v}$ to produce an\nintermediate representation $\\hat{h}_u$.  2) Transform the aggregated\nrepresentation $\\hat{h}_{u}$ with a linear projection followed by a\nnon-linearity: $h_{u} = f(W_{u} \\hat{h}_u)$.\n\nWe will implement step 1 with DGL message passing, and step 2 by\nPyTorch ``nn.Module``.\n\n### GCN implementation with DGL\nWe first define the message and reduce function as usual.  Since the\naggregation on a node $u$ only involves summing over the neighbors'\nrepresentations $h_v$, we can simply use builtin functions:\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import os\n\nos.environ[\"DGLBACKEND\"] = \"pytorch\"\nimport dgl\nimport dgl.function as fn\nimport torch as th\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom dgl import DGLGraph\n\ngcn_msg = fn.copy_u(u=\"h\", out=\"m\")\ngcn_reduce = fn.sum(msg=\"m\", out=\"h\")"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We then proceed to define the GCNLayer module. A GCNLayer essentially performs\nmessage passing on all the nodes then applies a fully-connected layer.\n\n<div class=\"alert alert-info\"><h4>Note</h4><p>This is showing how to implement a GCN from scratch.  DGL provides a more\n   efficient :class:`builtin GCN layer module <dgl.nn.pytorch.conv.GraphConv>`.</p></div>\n\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "class GCNLayer(nn.Module):\n    def __init__(self, in_feats, out_feats):\n        super(GCNLayer, self).__init__()\n        self.linear = nn.Linear(in_feats, out_feats)\n\n    def forward(self, g, feature):\n        # Creating a local scope so that all the stored ndata and edata\n        # (such as the `'h'` ndata below) are automatically popped out\n        # when the scope exits.\n        with g.local_scope():\n            g.ndata[\"h\"] = feature\n            g.update_all(gcn_msg, gcn_reduce)\n            h = g.ndata[\"h\"]\n            return self.linear(h)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The forward function is essentially the same as any other commonly seen NNs\nmodel in PyTorch.  We can initialize GCN like any ``nn.Module``. For example,\nlet's define a simple neural network consisting of two GCN layers. Suppose we\nare training the classifier for the cora dataset (the input feature size is\n1433 and the number of classes is 7). The last GCN layer computes node embeddings,\nso the last layer in general does not apply activation.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "class Net(nn.Module):\n    def __init__(self):\n        super(Net, self).__init__()\n        self.layer1 = GCNLayer(1433, 16)\n        self.layer2 = GCNLayer(16, 7)\n\n    def forward(self, g, features):\n        x = F.relu(self.layer1(g, features))\n        x = self.layer2(g, x)\n        return x\n\n\nnet = Net()\nprint(net)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We load the cora dataset using DGL's built-in data module.\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "from dgl.data import CoraGraphDataset\n\n\ndef load_cora_data():\n    dataset = CoraGraphDataset()\n    g = dataset[0]\n    features = g.ndata[\"feat\"]\n    labels = g.ndata[\"label\"]\n    train_mask = g.ndata[\"train_mask\"]\n    test_mask = g.ndata[\"test_mask\"]\n    return g, features, labels, train_mask, test_mask"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "When a model is trained, we can use the following method to evaluate\nthe performance of the model on the test dataset:\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def evaluate(model, g, features, labels, mask):\n    model.eval()\n    with th.no_grad():\n        logits = model(g, features)\n        logits = logits[mask]\n        labels = labels[mask]\n        _, indices = th.max(logits, dim=1)\n        correct = th.sum(indices == labels)\n        return correct.item() * 1.0 / len(labels)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We then train the network as follows:\n\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import time\n\nimport numpy as np\n\ng, features, labels, train_mask, test_mask = load_cora_data()\n# Add edges between each node and itself to preserve old node representations\ng.add_edges(g.nodes(), g.nodes())\noptimizer = th.optim.Adam(net.parameters(), lr=1e-2)\ndur = []\nfor epoch in range(50):\n    if epoch >= 3:\n        t0 = time.time()\n    net.train()\n    logits = net(g, features)\n    logp = F.log_softmax(logits, 1)\n    loss = F.nll_loss(logp[train_mask], labels[train_mask])\n\n    optimizer.zero_grad()\n    loss.backward()\n    optimizer.step()\n\n    if epoch >= 3:\n        dur.append(time.time() - t0)\n    acc = evaluate(net, g, features, labels, test_mask)\n    print(\n        \"Epoch {:05d} | Loss {:.4f} | Test Acc {:.4f} | Time(s) {:.4f}\".format(\n            epoch, loss.item(), acc, np.mean(dur)\n        )\n    )"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "\n## GCN in one formula\nMathematically, the GCN model follows this formula:\n\n$H^{(l+1)} = \\sigma(\\tilde{D}^{-\\frac{1}{2}}\\tilde{A}\\tilde{D}^{-\\frac{1}{2}}H^{(l)}W^{(l)})$\n\nHere, $H^{(l)}$ denotes the $l^{th}$ layer in the network,\n$\\sigma$ is the non-linearity, and $W$ is the weight matrix for\nthis layer. $\\tilde{D}$ and $\\tilde{A}$ are separately the degree\nand adjacency matrices for the graph. With the superscript ~, we are referring\nto the variant where we add additional edges between each node and itself to\npreserve its old representation in graph convolutions. The shape of the input\n$H^{(0)}$ is $N \\times D$, where $N$ is the number of nodes\nand $D$ is the number of input features. We can chain up multiple\nlayers as such to produce a node-level representation output with shape\n$N \\times F$, where $F$ is the dimension of the output node\nfeature vector.\n\nThe equation can be efficiently implemented using sparse matrix\nmultiplication kernels (such as Kipf's\n[pygcn](https://github.com/tkipf/pygcn) code). The above DGL implementation\nin fact has already used this trick due to the use of builtin functions.\n\nNote that the tutorial code implements a simplified version of GCN where we\nreplace $\\tilde{D}^{-\\frac{1}{2}}\\tilde{A}\\tilde{D}^{-\\frac{1}{2}}$ with\n$\\tilde{A}$. For a full implementation, see our example\n[here](https://github.com/dmlc/dgl/tree/master/examples/pytorch/gcn).\n\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.14"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

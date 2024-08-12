@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.2 분산 APIs &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.3 분산 heterogeneous 그래프 학습하기" href="distributed-hetero.html" />
+    <link rel="prev" title="7.1 분산 학습을 위한 전처리" href="distributed-preprocessing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="distributed.html">7장: 분산 학습</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="distributed-preprocessing.html">7.1 분산 학습을 위한 전처리</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">7.2 분산 APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-hetero.html">7.3 분산 heterogeneous 그래프 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-tools.html">7.4 분산 학습/추론을 런칭하기 위한 툴들</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="distributed.html">7장: 분산 학습</a></li>
+      <li class="breadcrumb-item active">7.2 분산 APIs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/distributed-apis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="apis">
+<span id="guide-ko-distributed-apis"></span><h1>7.2 분산 APIs<a class="headerlink" href="#apis" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/distributed-apis.html#guide-distributed-apis"><span class="std std-ref">(English Version)</span></a></p>
+<p>이 절은 학습 스크립트에 사용할 분산 API들을 다룬다. DGL은 초기화, 분산 샘플링, 그리고 워크로드 분할(split)을 위한 세가지 분산 데이터 구조와 다양한 API들을 제공한다. 분산 학습/추론에 사용되는 세가지 분산 자료 구조는 분산 그래프를 위한 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> , 분산 텐서를 위한 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> , 그리고 분산 learnable 임베딩을 위한 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a> 이다.</p>
+<section id="dgl">
+<h2>DGL 분산 모듈 초기화<a class="headerlink" href="#dgl" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize()</span></code></a> 은 분산 모듈을 초기화한다. 학습 스크립트가 학습 모드로 수행되면, 이 API는 DGL 서버들간의 연결을 만들고, 샘플러 프로세스들을 생성한다; 스크립트가 서버 모드로 실행되면, 이 API는 서버 코드를 실행하고 절대로 리턴되지 않는다. 이 API는 어떤 DGL 분산 API들 보다 먼저 호출되어야 한다. PyTorch와 함께 사용될 때, <a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize()</span></code></a> 는 <code class="docutils literal notranslate"><span class="pre">torch.distributed.init_process_group</span></code> 전에 호출되어야 한다. 일반적으로 초기화 API들은 다음 순서로 실행된다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;ip_config.txt&#39;</span><span class="p">)</span>
+<span class="n">th</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">init_process_group</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;gloo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="distributed">
+<h2>Distributed 그래프<a class="headerlink" href="#distributed" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 는 클러스터에서 그래프 구조와 노드/에지 피쳐들을 접근하기 위한 Python 클래스이다. 각 컴퓨터는 단 하나의 파티션을 담당한다. 이 클래스는 파티션 데이터(그 파티션의 그래프 구조, 노드 데이터와 에지 데이터)를 로드하고, 클러스터의 모든 트레이너들이 접근할 수 있도록 만들어 준다. <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 는 데이터 접근을 위한 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a> API들의 작은 서브셋을 지원한다.</p>
+<p><strong>Note</strong>: <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 는 현재 한 개의 노드 타입과 한 개의 에지 타입만을 지원한다.</p>
+<section id="vs-standalone">
+<h3>분산 모드 vs. 단독(standalone) 모드<a class="headerlink" href="#vs-standalone" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 는 두가지 모드로 실행된다: 분산 모드와 단독 모드. 사용자가 학습 스크립트를 Python 명령행이나 Jupyter notebook에서 실행하면, 단독 모드로 수행된다. 즉, 모든 계산이 단일 프로세스에서 수행되고, 다른 어떤 프로세스들과의 통신이 없다. 따라서, 단독 모드에서는 입력 그래프가 한 개의 파티션이다. 이 모드는 주로 개발 및 테스트를 위해서 사용된다 (즉, Jupyter notebook에서 코드를 개발하고 수행할 때). 학습 스크립트가 launch 스크립트를 사용해서 실행되면 (launch 스크립트 섹션 참조), <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 가 분산 모드로 동작한다. Launch 툴은 자동으로 (노드/에지 피쳐 접근 및 그래프 샘플링을 하는) 서버들을 구동하고, 클러스터의 각 컴퓨터에 파티션 데이터를 자동으로 로드한다. <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 는 클러스터의 서버들과 네트워크를 통해서 연결한다.</p>
+</section>
+<section id="distgraph">
+<h3>DistGraph 생성<a class="headerlink" href="#distgraph" title="Link to this heading"></a></h3>
+<p>분산 모드에서는, <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 를 생성할 때 파티션에서 사용된 그래프 이름이 필요하다. 그래프 이름은 클러스터에서 로드될 그래프를 지정한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>단독 모드로 수행될 때, 로컬 머신의 그래프 데이터를 로드한다. 따라서, 사용자는 입력 그래프에 대한 모든 정보를 담고 있는 파티션 설정 파일을 제공해야 한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="n">part_config</span><span class="o">=</span><span class="s1">&#39;data/graph_name.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: DGL의 현재 구현은 <cite>DistGraph</cite> 객체를 한 개만 만들 수 있다. <cite>DistGraph</cite> 를 없애고 새로운 것을 다시 만드는 것은 정의되어 있지 않다.</p>
+</section>
+<section id="id1">
+<h3>그래프 구조 접근<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 는 그래프 구조 접근을 위한 적은 수의 API들을 갖고 있다. 현재 대부분 API들은 노드 및 에지 수와 같은 그래프 정보를 제공한다. DistGraph의 주요 사용 케이스는 미니-배치 학습을 지원하기 위한 샘플링 API를 수행하는 것이다. (분산 그래프 샘플링은 섹션 참조)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>노드/에지 데이터 접근<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a> 처럼 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 는 노드와 에지의 데이터 접근을 위해서 <code class="docutils literal notranslate"><span class="pre">ndata</span></code> 와 <code class="docutils literal notranslate"><span class="pre">edata</span></code> 를 제공한다. 차이점은 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 의 <code class="docutils literal notranslate"><span class="pre">ndata</span></code> / <code class="docutils literal notranslate"><span class="pre">edata</span></code> 는 사용되는 프레임워크의 텐서 대신 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 를 리턴한다는 것이다. 사용자는 새로운 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 를 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 노드 데이터 또는 에지 데이터로서 할당할 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">]</span>  <span class="c1"># &lt;dgl.distributed.dist_graph.DistTensor at 0x7fec820937b8&gt;</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># tensor([1], dtype=torch.uint8)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="distributed-tensor">
+<h2>분산 텐서(Distributed Tensor)<a class="headerlink" href="#distributed-tensor" title="Link to this heading"></a></h2>
+<p>앞에서 언급했듯이, DGL은 노드/에치 피쳐들을 샤드(shard)해서, 머신들의 클러스터에 이것들을 저장한다. DGL은 클러스터에서 파티션된 노드/에지 피쳐들을 접근하기 위해서 tensor-like 인터패이스를 갖는 분산 텐서를 제공한다. 분산 세팅에서 DGL은 덴스 노드/에지 피쳐들만 지원한다.</p>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 는 파티션되어 여러 머신들에 저장되어 있는 덴스 텐서들을 관리한다. 지금은 부산 텐서는 그래프의 노드 또는 에지와 연결되어 있어야만 한다. 다르게 말하자면, <cite>DistTensor</cite> 의 행 개수는 그래프의 노드 개수 또는 에지의 개수과 같아야만 한다. 아래 코드는 분산 텐서를 생성하고 있다. <cite>shape</cite> 과 <cite>dtype</cite> 뿐만아니라, 유일한 텐서 이름을 지정할 수 있다. 사용자가 영속적인 분산 텐서를 참고하고자 할 경우 이 이름은 유용하다 (즉, <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 객체가 사라져도 클러스터에 존재하는 텐서).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tensor</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistTensor</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="mi">10</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 생성은 동기화 수행이다. 모든 트레이너들은 생성을 실행해야하고, 모든 트레이너가 이를 호출한 경우에만 생성이 완료된다.</p>
+<p>사용자는 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 를 노드 데이터 또는 에지 데이터의 하나로서 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a>  객체에 추가할 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tensor</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: 노드 데이터 이름과 텐서 이름이 같을 필요는 없다. 전자는 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 로부터 노드 데이터를 구별하고(트레이너 프로세스에서), 후자는 DGL 서버들에서 분산 텐서를 구별하는데 사용된다.</p>
+<p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 는 적은 수의 함수들을 제공한다. 이는 일반 텐서가 <cite>shape</cite> 또는 <cite>dtype</cite> 과 같은 메타데이터를 접근하는 것과 같은 API들이다. <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistTensor" title="dgl.distributed.DistTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistTensor</span></code></a> 는 인덱스를 사용한 읽기와 쓰기를 지원하지만, <cite>sum</cite> 또는 <cite>mean</cite> 과 같은 연산 오퍼레이터는 지원하지 않는다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">][[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">][[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: 현재 DGL은 한 머신이 여러 서버들을 수행할 때, 다중의 서버들이 동시에 쓰기를 동시에 수행하는 경우에 대한 보호를 지원하지 않는다. 이 경우 데이터 깨짐(data corruption)이 발생할 수 있다. 같은 행의 데이터에 동시 쓰기를 방지하는 방법 중에 하나로 한 머신에서 한 개의 서버 프로세스만 실행하는 것이다.</p>
+</section>
+<section id="distembedding">
+<h2>분산 DistEmbedding<a class="headerlink" href="#distembedding" title="Link to this heading"></a></h2>
+<p>DGL은 노드 임베딩들을 필요로 하는 변환 모델(transductive models)을 지원하기 위해서 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a> 를 제공한다. 분산 임베딩을 생성하는 것은 분산 텐서를 생성하는 것과 비슷하다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initializer</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">arr</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">arr</span>
+<span class="n">emb</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistEmbedding</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">init_func</span><span class="o">=</span><span class="n">initializer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>내부적으로는 분산 임배딩은 분산 텐서를 사용해서 만들어진다. 따라서, 분산 텐서와 비슷하게 동작한다. 예를 들어, 임베딩이 만들어지면, 그것들은 클러스터의 여러 머신들에 나눠져서(shard) 저장된다. 이는 이름을 통해서 고유하게 식별될 수 있다.</p>
+<p><strong>Note</strong>: 초기화 함수가 서버 프로세스에서 호출된다. 따라서, <a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-class docutils literal notranslate"><span class="pre">initialize</span></code></a> 전에 선언되야 한다.</p>
+<p>임배딩은 모델의 일부이기 때문에, 미니배치 학습을 위해서 이를 optimizer에 붙여줘야 한다. 현재는, DGL은 sparse Adagrad optimizer, <code class="xref py py-class docutils literal notranslate"><span class="pre">SparseAdagrad</span></code> 를 지원한다 (DGL은 sparse 임베딩을 위핸 더 많은 optimizer들을 추가할 예정이다). 사용자는 모델로 부터 모든 분산 임베딩을 수집하고, 이를 sparse optimizer에 전달해야 한다. 만약 모델이 노드 임베딩과 정상적인 dense 모델 파라메터들을 갖고, 사용자가 임베딩들에 sparse 업데이트를 수행하고 싶은 경우, optimizer 두 개를 만들어야 한다. 하나는 노드 임베딩을 위한 것이고, 다른 하나는 dense model 파라메터들을 위한 것이다. 다음 코드를 보자.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sparse_optimizer</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">SparseAdagrad</span><span class="p">([</span><span class="n">emb</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr1</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr2</span><span class="p">)</span>
+<span class="n">feats</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">nids</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">feats</span><span class="p">)</span>
+<span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="n">sparse_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistEmbedding" title="dgl.distributed.DistEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistEmbedding</span></code></a> 는 PyTorch nn 모듈이 아니다. 따라서, PyTorch nn 모듈의 파라메터들을 통해서 접근할 수 없다.</p>
+</section>
+<section id="id3">
+<h2>분산 샘플링<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>DGL은 미니-배치를 생성하기 위해 노드 및 에지 샘플링을 하는 두 수준의 API를 제공한다 (미니-배치 학습 섹션 참조). Low-level API는 노드들의 레이어가 어떻게 샘플링될지를 명시적으로 정의하는 코드를 직접 작성해야한다 (예를 들면, <a class="reference internal" href="../generated/dgl.sampling.sample_neighbors.html#dgl.sampling.sample_neighbors" title="dgl.sampling.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.sampling.sample_neighbors()</span></code></a> 사용해서). High-level API는 노드 분류 및 링크 예측(예, <code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code> 와
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EdgeDataLoader</span></code>) 에 사용되는 몇 가지 유명한 샘플링 알고리즘을 구현하고 있다.</p>
+<p>분산 샘플링 모듈도 같은 디자인을 따르고 있고, 두 level의 샘플링 API를 제공한다. Low-level 샘플링 API의 경우, <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 에 대한 분산 이웃 샘플링을 위해 <a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">sample_neighbors()</span></code></a> 가 있다. 또한, DGL은 분산 샘플링을 위해 분산 데이터 로더, <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistDataLoader" title="dgl.distributed.DistDataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistDataLoader</span></code></a> 를 제공한다. 분산 DataLoader는 PyTorch DataLoader와 같은 인터페이스를 갖는데, 다른 점은 사용자가 데이터 로더를 생성할 때 worker 프로세스의 개수를 지정할 수 없다는 점이다. Worker 프로세스들은 <a class="reference internal" href="../generated/dgl.distributed.initialize.html#dgl.distributed.initialize" title="dgl.distributed.initialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.initialize()</span></code></a> 에서 만들어진다.</p>
+<p><strong>Note</strong>: <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 에 <a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.sample_neighbors()</span></code></a> 를 실행할 때, 샘플러는 다중의 worker 프로세스를 갖는 PyTorch DataLoader에서 실행될 수 없다. 주요 이유는 PyTorch DataLoader는 매 epoch 마다 새로운 샘플링 worker 프로세스는 생성하는데, 이는 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 객체들을 여러번 생성하고 삭제하게하기 때문이다.</p>
+<p>Low-level API를 사용할 때, 샘플링 코드는 단일 프로세스 샘플링과 비슷하다. 유일한 차이점은 사용자가 <a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.sample_neighbors()</span></code></a> 와 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistDataLoader" title="dgl.distributed.DistDataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistDataLoader</span></code></a> 를 사용한다는 것이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sample_blocks</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
+    <span class="n">seeds</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seeds</span><span class="p">))</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">fanout</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]:</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">fanout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+        <span class="n">seeds</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+        <span class="n">blocks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">blocks</span>
+    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistDataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">train_nid</span><span class="p">,</span>
+                                                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                                                <span class="n">collate_fn</span><span class="o">=</span><span class="n">sample_blocks</span><span class="p">,</span>
+                                                <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>동일한 high-level 샘플링 API들(<code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code> 와 <code class="xref py py-class docutils literal notranslate"><span class="pre">EdgeDataLoader</span></code> )이 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a> 와 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 에 대해서 동작한다. <code class="xref py py-class docutils literal notranslate"><span class="pre">NodeDataLoader</span></code> 과 <code class="xref py py-class docutils literal notranslate"><span class="pre">EdgeDataLoader</span></code> 를 사용할 때, 분산 샘플링 코드는 싱글-프로세스 샘플링 코드와 정확하게 같다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">MultiLayerNeighborSampler</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">])</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">DistNodeDataLoader</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">train_nid</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span>
+                                             <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="split-workloads">
+<h2>워크로드 나누기(Split workloads)<a class="headerlink" href="#split-workloads" title="Link to this heading"></a></h2>
+<p>모델을 학습하기 위해서, 사용자는 우선 데이터를 학습, 검증 그리고 테스트 셋으로 나눠야한다. 분산 학습에서는, 이 단계가 보통은 그래프를 파터션하기 위해 <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 를 호출하기 전에 일어난다. 우리는 데이터 split를 노드 데이 또는 에지 데이터로서 boolean array들에 저장하는 것을 권장한다. 노드 분류 테스크의 경우에 이 boolean array들의 길이는 그래프의 노드의 개수와 같고, 각 원소들은 노드가 학습/검증/테스트 셋에 속하는지를 지정한다. 링크 예측 테스크에도 비슷한 boolean array들을 사용해야 한다. <a class="reference internal" href="../generated/dgl.distributed.partition_graph.html#dgl.distributed.partition_graph" title="dgl.distributed.partition_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.distributed.partition_graph()</span></code></a> 는 그래프 파티션 결과에 따라서 이 boolean array들을 나누고, 이를 그래프 파타션과 함께 저장한다.</p>
+<p>분산 학습을 수행하는 동안에 사용자는 학습 노드들/에지들을 각 트레이너에게 할당해야 한다. 비슷하게, 검증 및 테스트 셋도 같은 방법으로 나눠야만 한다. DGL은 분산학습이 수행될 때 학습, 검증, 테스트 셋을 나누는 <a class="reference internal" href="../generated/dgl.distributed.node_split.html#dgl.distributed.node_split" title="dgl.distributed.node_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">node_split()</span></code></a> 와 <a class="reference internal" href="../generated/dgl.distributed.edge_split.html#dgl.distributed.edge_split" title="dgl.distributed.edge_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">edge_split()</span></code></a> 를 제공한다. 이 두 함수는 그래프 파티셔닝 전에 생성된 boolean array들을 입력으로 받고, 그것들을 나누고 나눠진 부분을 로컬 트레이너에게 리턴한다. 기본 설정으로는 모든 부분들이 같은 개수의 노드와 에지를 갖도록 해준다. 이는 각 트레이너가 같은 크기의 미니-배치들을 갖는다고 가정하는 synchronous SDG에서 중요하다.</p>
+<p>아래 예제는 학습 셋을 나누고, 노들의 서브셋을 로컬 프로세스에 리턴한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_nids</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">node_split</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="distributed-preprocessing.html" class="btn btn-neutral float-left" title="7.1 분산 학습을 위한 전처리" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed-hetero.html" class="btn btn-neutral float-right" title="7.3 분산 heterogeneous 그래프 학습하기" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.5 为小批次训练实现定制化的GNN模块 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.6 超大图上的精准离线推断" href="minibatch-inference.html" />
+    <link rel="prev" title="6.4 定制用户自己的邻居采样器" href="minibatch-custom-sampler.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">用户指南【包含过时信息】</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">第1章：图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">第2章：消息传递范式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">第3章：构建图神经网络（GNN）模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">第4章：图数据处理管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">第5章：训练图神经网络</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">第6章：在大图上的随机（批次）训练</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 针对节点分类任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 针对边分类任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 针对链接预测任务的邻居采样训练方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-custom-sampler.html">6.4 定制用户自己的邻居采样器</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.5 为小批次训练实现定制化的GNN模块</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.6 超大图上的精准离线推断</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">第7章：分布式训练</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">用户指南【包含过时信息】</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">第6章：在大图上的随机（批次）训练</a></li>
+      <li class="breadcrumb-item active">6.5 为小批次训练实现定制化的GNN模块</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_cn/minibatch-nn.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gnn">
+<span id="guide-cn-minibatch-custom-gnn-module"></span><h1>6.5 为小批次训练实现定制化的GNN模块<a class="headerlink" href="#gnn" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/minibatch-nn.html#guide-minibatch-custom-gnn-module"><span class="std std-ref">(English Version)</span></a></p>
+<p>如果用户熟悉如何定制用于更新整个同构图或异构图的GNN模块(参见
+<a class="reference internal" href="nn.html#guide-cn-nn"><span class="std std-ref">第3章：构建图神经网络（GNN）模块</span></a>)，那么在块上计算的代码也是类似的，区别只在于节点被划分为输入节点和输出节点。</p>
+<p>以下面的自定义图卷积模块代码为例。注意，该代码并不一定是最高效的实现，
+此处只是将其作为自定义GNN模块的一个示例。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">]],</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>如果用户已有一个用于整个图的自定义消息传递模块，并且想将其用于块，则只需要按照如下的方法重写forward函数。
+注意，以下代码在注释里保留了整图实现的语句，用户可以将用于块的语句和原先用于整图的语句进行比较。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+
+    <span class="c1"># h现在是输入和输出节点的特征张量对，而不是一个单独的特征张量</span>
+
+    <span class="c1"># def forward(self, g, h):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="c1"># with g.local_scope():</span>
+        <span class="k">with</span> <span class="n">block</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="c1"># g.ndata[&#39;h&#39;] = h</span>
+            <span class="n">h_src</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span><span class="p">[:</span><span class="n">block</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()]</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_src</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_dst</span>
+
+            <span class="c1"># g.update_all(fn.copy_u(&#39;h&#39;, &#39;m&#39;), fn.mean(&#39;m&#39;, &#39;h_neigh&#39;))</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">))</span>
+
+            <span class="c1"># return self.W(torch.cat([g.ndata[&#39;h&#39;], g.ndata[&#39;h_neigh&#39;]], 1))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">]],</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>通常，需要对用于整图的GNN模块进行如下调整以将其用于块作为输入的情况：</p>
+<ul class="simple">
+<li><p>切片取输入特征的前几行，得到输出节点的特征。切片行数可以通过
+<a class="reference internal" href="../generated/dgl.DGLGraph.number_of_dst_nodes.html#dgl.DGLGraph.number_of_dst_nodes" title="dgl.DGLGraph.number_of_dst_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block.number_of_dst_nodes</span></code></a> 获得。</p></li>
+<li><p>如果原图只包含一种节点类型，对输入节点特征，将 <a class="reference internal" href="../generated/dgl.DGLGraph.ndata.html#dgl.DGLGraph.ndata" title="dgl.DGLGraph.ndata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">g.ndata</span></code></a> 替换为
+<a class="reference internal" href="../generated/dgl.DGLGraph.srcdata.html#dgl.DGLGraph.srcdata" title="dgl.DGLGraph.srcdata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.srcdata</span></code></a>；对于输出节点特征，将
+<a class="reference internal" href="../generated/dgl.DGLGraph.ndata.html#dgl.DGLGraph.ndata" title="dgl.DGLGraph.ndata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">g.ndata</span></code></a>  替换为
+<a class="reference internal" href="../generated/dgl.DGLGraph.dstdata.html#dgl.DGLGraph.dstdata" title="dgl.DGLGraph.dstdata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.dstdata</span></code></a>。</p></li>
+<li><p>如果原图包含多种节点类型，对于输入节点特征，将
+<a class="reference internal" href="../generated/dgl.DGLGraph.nodes.html#dgl.DGLGraph.nodes" title="dgl.DGLGraph.nodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">g.nodes</span></code></a> 替换为
+<a class="reference internal" href="../generated/dgl.DGLGraph.srcnodes.html#dgl.DGLGraph.srcnodes" title="dgl.DGLGraph.srcnodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.srcnodes</span></code></a>；对于输出节点特征，将
+<a class="reference internal" href="../generated/dgl.DGLGraph.nodes.html#dgl.DGLGraph.nodes" title="dgl.DGLGraph.nodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">g.nodes</span></code></a> 替换为
+<a class="reference internal" href="../generated/dgl.DGLGraph.dstnodes.html#dgl.DGLGraph.dstnodes" title="dgl.DGLGraph.dstnodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">block.dstnodes</span></code></a>。</p></li>
+<li><p>对于输入节点数量，将 <a class="reference internal" href="../generated/dgl.DGLGraph.num_nodes.html#dgl.DGLGraph.num_nodes" title="dgl.DGLGraph.num_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">g.num_nodes</span></code></a> 替换为
+<a class="reference internal" href="../generated/dgl.DGLGraph.number_of_src_nodes.html#dgl.DGLGraph.number_of_src_nodes" title="dgl.DGLGraph.number_of_src_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block.number_of_src_nodes</span></code></a> ；
+对于输出节点数量，将 <a class="reference internal" href="../generated/dgl.DGLGraph.num_nodes.html#dgl.DGLGraph.num_nodes" title="dgl.DGLGraph.num_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">g.num_nodes</span></code></a> 替换为
+<a class="reference internal" href="../generated/dgl.DGLGraph.number_of_dst_nodes.html#dgl.DGLGraph.number_of_dst_nodes" title="dgl.DGLGraph.number_of_dst_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block.number_of_dst_nodes</span></code></a> 。</p></li>
+</ul>
+<section id="id1">
+<h2>异构图上的模型定制<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>为异构图修改GNN模块的方法是类似的。例如，以下面用于全图的GNN模块为例：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomHeteroGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">utype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">vtype</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">](</span><span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_src&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+                <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span>
+                    <span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h_src&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">),</span>
+                    <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">](</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">CustomHeteroGraphConv</span></code>，原则是将 <code class="docutils literal notranslate"><span class="pre">g.nodes</span></code> 替换为 <code class="docutils literal notranslate"><span class="pre">g.srcnodes</span></code> 或
+<code class="docutils literal notranslate"><span class="pre">g.dstnodes</span></code> (根据需要输入还是输出节点的特征来选择)。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomHeteroGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">utype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">vtype</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">],</span> <span class="n">out_feats</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">local_scope</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">:</span>
+                <span class="n">h_src</span><span class="p">,</span> <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[</span><span class="n">ntype</span><span class="p">](</span><span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">srcnodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_src&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+                <span class="n">utype</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">etype</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span>
+                    <span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h_src&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">),</span>
+                    <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span><span class="p">[</span><span class="n">etype</span><span class="p">](</span><span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">vtype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">ntype</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h_dst&#39;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ntypes</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>实现能够处理同构图、二分图和块的模块<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>DGL中所有的消息传递模块(参见 <span class="xref std std-ref">apinn</span>)都能够处理同构图、
+单向二分图(包含两种节点类型和一种边类型)和包含一种边类型的块。
+本质上，内置的DGL神经网络模块的输入图及特征必须满足下列情况之一：</p>
+<ul class="simple">
+<li><p>如果输入特征是一个张量对，则输入图必须是一个单向二分图</p></li>
+<li><p>如果输入特征是一个单独的张量且输入图是一个块，则DGL会自动将输入节点特征前一部分设为输出节点的特征。</p></li>
+<li><p>如果输入特征是一个单独的张量且输入图不是块，则输入图必须是同构图。</p></li>
+</ul>
+<p>例如，下面的代码是 <code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.nn.pytorch.SAGEConv</span></code> 的简化版(DGL同样支持它在MXNet和TensorFlow后端里的实现)。
+代码里移除了归一化，且只考虑平均聚合函数的情况。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl.function</span> <span class="k">as</span> <span class="nn">fn</span>
+<span class="k">class</span> <span class="nc">SAGEConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_feats</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_feats</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">h_src</span><span class="p">,</span> <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="k">elif</span> <span class="n">g</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+            <span class="n">h_src</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span><span class="p">[:</span><span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">h_src</span> <span class="o">=</span> <span class="n">h_dst</span> <span class="o">=</span> <span class="n">h</span>
+
+        <span class="n">g</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_src</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_dst</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;h_neigh&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h_neigh&#39;</span><span class="p">]],</span> <span class="mi">1</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="nn.html#guide-cn-nn"><span class="std std-ref">第3章：构建图神经网络（GNN）模块</span></a> 提供了对 <code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.nn.pytorch.SAGEConv</span></code> 代码的详细解读，
+其适用于单向二分图、同构图和块。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-custom-sampler.html" class="btn btn-neutral float-left" title="6.4 定制用户自己的邻居采样器" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-inference.html" class="btn btn-neutral float-right" title="6.6 超大图上的精准离线推断" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

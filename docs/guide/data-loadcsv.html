@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.6 Loading data from CSV files &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 5: Training Graph Neural Networks" href="training.html" />
+    <link rel="prev" title="4.5 Loading OGB datasets using ogb package" href="data-loadogb.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="data-dataset.html">4.1 DGLDataset class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data-download.html">4.2 Download raw data (optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data-process.html">4.3 Process data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data-savenload.html">4.4 Save and load data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data-loadogb.html">4.5 Loading OGB datasets using <code class="docutils literal notranslate"><span class="pre">ogb</span></code> package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.6 Loading data from CSV files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+      <li class="breadcrumb-item active">4.6 Loading data from CSV files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/data-loadcsv.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="loading-data-from-csv-files">
+<span id="guide-data-pipeline-loadcsv"></span><h1>4.6 Loading data from CSV files<a class="headerlink" href="#loading-data-from-csv-files" title="Link to this heading"></a></h1>
+<p>Comma Separated Value (CSV) is a widely used data storage format. DGL provides
+<a class="reference internal" href="../generated/dgl.data.CSVDataset.html#dgl.data.CSVDataset" title="dgl.data.CSVDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSVDataset</span></code></a> for loading and parsing graph data stored in
+CSV format.</p>
+<p>To create a <code class="docutils literal notranslate"><span class="pre">CSVDataset</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CSVDataset</span><span class="p">(</span><span class="s1">&#39;/path/to/dataset&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">ds</span></code> object is a standard <a class="reference internal" href="../generated/dgl.data.DGLDataset.html#dgl.data.DGLDataset" title="dgl.data.DGLDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLDataset</span></code></a>. For
+example, one can get graph samples using <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> as well as node/edge
+features using <code class="docutils literal notranslate"><span class="pre">ndata</span></code>/<code class="docutils literal notranslate"><span class="pre">edata</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># A demonstration of how to use the loaded dataset. The feature names</span>
+<span class="c1"># may vary depending on the CSV contents.</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># get the graph</span>
+<span class="n">label</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="data-folder-structure">
+<h2>Data folder structure<a class="headerlink" href="#data-folder-structure" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span><span class="o">/</span>
+<span class="o">|--</span> <span class="n">meta</span><span class="o">.</span><span class="n">yaml</span>     <span class="c1"># metadata of the dataset</span>
+<span class="o">|--</span> <span class="n">edges_0</span><span class="o">.</span><span class="n">csv</span>   <span class="c1"># edge data including src_id, dst_id, feature, label and so on</span>
+<span class="o">|--</span> <span class="o">...</span>           <span class="c1"># you can have as many CSVs for edge data as you want</span>
+<span class="o">|--</span> <span class="n">nodes_0</span><span class="o">.</span><span class="n">csv</span>   <span class="c1"># node data including node_id, feature, label and so on</span>
+<span class="o">|--</span> <span class="o">...</span>           <span class="c1"># you can have as many CSVs for node data as you want</span>
+<span class="o">|--</span> <span class="n">graphs</span><span class="o">.</span><span class="n">csv</span>    <span class="c1"># graph-level features</span>
+</pre></div>
+</div>
+<p>Node/edge/graph-level data are stored in CSV files. <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> is a metadata file specifying
+where to read nodes/edges/graphs data and how to parse them to construct the dataset
+object. A minimal data folder contains one <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> and two CSVs, one for node data and one
+for edge data, in which case the dataset contains only a single graph with no graph-level data.</p>
+</section>
+<section id="dataset-of-a-single-feature-less-graph">
+<h2>Dataset of a single feature-less graph<a class="headerlink" href="#dataset-of-a-single-feature-less-graph" title="Link to this heading"></a></h2>
+<p>When the dataset contains only one graph with no node or edge features, there need only three
+files in the data folder: <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code>, one CSV for node IDs and one CSV for edges:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">mini_featureless_dataset</span><span class="o">/</span>
+<span class="o">|--</span> <span class="n">meta</span><span class="o">.</span><span class="n">yaml</span>
+<span class="o">|--</span> <span class="n">nodes</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">edges</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> contains the following information:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mini_featureless_dataset</span>
+<span class="nt">edge_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges.csv</span>
+<span class="nt">node_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes.csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">nodes.csv</span></code> lists the node IDs under the <code class="docutils literal notranslate"><span class="pre">node_id</span></code> field:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">node_id</span>
+<span class="mi">0</span>
+<span class="mi">1</span>
+<span class="mi">2</span>
+<span class="mi">3</span>
+<span class="mi">4</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">edges.csv</span></code> lists all the edges in two columns (<code class="docutils literal notranslate"><span class="pre">src_id</span></code> and <code class="docutils literal notranslate"><span class="pre">dst_id</span></code>) specifying the
+source and destination node ID of each edge:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src_id</span><span class="p">,</span><span class="n">dst_id</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">4</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span>
+<span class="mi">3</span><span class="p">,</span><span class="mi">0</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">0</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">2</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">3</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>After loaded, the dataset has one graph without any features:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CSVDataset</span><span class="p">(</span><span class="s1">&#39;./mini_featureless_dataset&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># only one graph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="go">Graph(num_nodes=5, num_edges=10,</span>
+<span class="go">      ndata_schemes={}</span>
+<span class="go">      edata_schemes={})</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Non-integer node IDs are allowed. When constructing the graph, <code class="docutils literal notranslate"><span class="pre">CSVDataset</span></code> will
+map each raw ID to an integer ID starting from zero.
+If the node IDs are already distinct integers from 0 to <code class="docutils literal notranslate"><span class="pre">num_nodes-1</span></code>, no mapping
+is applied.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Edges are always directed. To have both directions, add reversed edges in the edge
+CSV file or use <a class="reference internal" href="../generated/dgl.transforms.AddReverse.html#dgl.transforms.AddReverse" title="dgl.transforms.AddReverse"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddReverse</span></code></a> to transform the loaded graph.</p>
+</div>
+<p>A graph without any feature is often of less interest. In the next example, we will show
+how to load and parse node or edge features.</p>
+</section>
+<section id="dataset-of-a-single-graph-with-features-and-labels">
+<h2>Dataset of a single graph with features and labels<a class="headerlink" href="#dataset-of-a-single-graph-with-features-and-labels" title="Link to this heading"></a></h2>
+<p>When the dataset contains a single graph with node or edge features and labels, there still
+need only three files in the data folder: <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code>, one CSV for node IDs and one CSV
+for edges:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">mini_feature_dataset</span><span class="o">/</span>
+<span class="o">|--</span> <span class="n">meta</span><span class="o">.</span><span class="n">yaml</span>
+<span class="o">|--</span> <span class="n">nodes</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">edges</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mini_feature_dataset</span>
+<span class="nt">edge_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges.csv</span>
+<span class="nt">node_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes.csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">edges.csv</span></code> with five synthetic edge data (<code class="docutils literal notranslate"><span class="pre">label</span></code>, <code class="docutils literal notranslate"><span class="pre">train_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">val_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">test_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">feat</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src_id</span><span class="p">,</span><span class="n">dst_id</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">train_mask</span><span class="p">,</span><span class="n">val_mask</span><span class="p">,</span><span class="n">test_mask</span><span class="p">,</span><span class="n">feat</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.5477868606453535, 0.4470617033458436, 0.936706701616337&quot;</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.9794634290792008, 0.23682038840665198, 0.049629338970987646&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.8586722047523594, 0.5746912787380253, 0.6462162561249654&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;0.2730008213674695, 0.5937484188166621, 0.765544096939567&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.45441619816038514, 0.1681403185591509, 0.9952376085297715&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;0.4197669213305396, 0.849983324532477, 0.16974127573016262&quot;</span>
+<span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.5495035052928215, 0.21394654203489705, 0.7174910641836348&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;0.008790817766266334, 0.4216530595907526, 0.529195480661293&quot;</span>
+<span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.6598715708878852, 0.1932390907048961, 0.9774471538377553&quot;</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;0.16846068931179736, 0.41516080644186737, 0.002158116134429955&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">nodes.csv</span></code> with five synthetic node data (<code class="docutils literal notranslate"><span class="pre">label</span></code>, <code class="docutils literal notranslate"><span class="pre">train_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">val_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">test_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">feat</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">node_id</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">train_mask</span><span class="p">,</span><span class="n">val_mask</span><span class="p">,</span><span class="n">test_mask</span><span class="p">,</span><span class="n">feat</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.07816474278491703, 0.9137336384979067, 0.4654086994009452&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.05354099924658973, 0.8753101998792645, 0.33929432608774135&quot;</span>
+<span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;0.33234211884156384, 0.9370522452510665, 0.6694943496824788&quot;</span>
+<span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;0.9784264442230887, 0.22131880861864428, 0.3161154827254189&quot;</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;0.23142237259162102, 0.8715767748481147, 0.19117861103555467&quot;</span>
+</pre></div>
+</div>
+<p>After loaded, the dataset has one graph. Node/edge features are stored in <code class="docutils literal notranslate"><span class="pre">ndata</span></code> and <code class="docutils literal notranslate"><span class="pre">edata</span></code>
+with the same column names. The example demonstrates how to specify a vector-shaped feature
+using comma-separated list enclosed by double quotes <code class="docutils literal notranslate"><span class="pre">&quot;...&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CSVDataset</span><span class="p">(</span><span class="s1">&#39;./mini_feature_dataset&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># only one graph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="go">Graph(num_nodes=5, num_edges=10,</span>
+<span class="go">      ndata_schemes={&#39;label&#39;: Scheme(shape=(), dtype=torch.int64), &#39;train_mask&#39;: Scheme(shape=(), dtype=torch.bool), &#39;val_mask&#39;: Scheme(shape=(), dtype=torch.bool), &#39;test_mask&#39;: Scheme(shape=(), dtype=torch.bool), &#39;feat&#39;: Scheme(shape=(3,), dtype=torch.float64)}</span>
+<span class="go">      edata_schemes={&#39;label&#39;: Scheme(shape=(), dtype=torch.int64), &#39;train_mask&#39;: Scheme(shape=(), dtype=torch.bool), &#39;val_mask&#39;: Scheme(shape=(), dtype=torch.bool), &#39;test_mask&#39;: Scheme(shape=(), dtype=torch.bool), &#39;feat&#39;: Scheme(shape=(3,), dtype=torch.float64)})</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">CSVDatatset</span></code> assumes all feature data to be numerical values (e.g., int, float, bool or
+list) and missing values are not allowed. Users could provide custom data parser for these cases.
+See <a class="reference internal" href="#custom-data-parser">Custom Data Parser</a> for more details.</p>
+</div>
+</section>
+<section id="dataset-of-a-single-heterogeneous-graph">
+<h2>Dataset of a single heterogeneous graph<a class="headerlink" href="#dataset-of-a-single-heterogeneous-graph" title="Link to this heading"></a></h2>
+<p>One can specify multiple node and edge CSV files (each for one type) to represent a heterogeneous graph.
+Here is an example data with two node types and two edge types:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">mini_hetero_dataset</span><span class="o">/</span>
+<span class="o">|--</span> <span class="n">meta</span><span class="o">.</span><span class="n">yaml</span>
+<span class="o">|--</span> <span class="n">nodes_0</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">nodes_1</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">edges_0</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">edges_1</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> specifies the node type name (using <code class="docutils literal notranslate"><span class="pre">ntype</span></code>) and edge type name (using <code class="docutils literal notranslate"><span class="pre">etype</span></code>)
+of each CSV file. The edge type name is a string triplet containing the source node type name, relation
+name and the destination node type name.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mini_hetero_dataset</span>
+<span class="nt">edge_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges_0.csv</span>
+<span class="w">  </span><span class="nt">etype</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">user</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">follow</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">user</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges_1.csv</span>
+<span class="w">  </span><span class="nt">etype</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">user</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">like</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">item</span><span class="p p-Indicator">]</span>
+<span class="nt">node_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes_0.csv</span>
+<span class="w">  </span><span class="nt">ntype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes_1.csv</span>
+<span class="w">  </span><span class="nt">ntype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">item</span>
+</pre></div>
+</div>
+<p>The node and edge CSV files follow the same format as in homogeneous graphs. Here are some synthetic
+data for demonstration purposes:</p>
+<p><code class="docutils literal notranslate"><span class="pre">edges_0.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">edges_1.csv</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src_id</span><span class="p">,</span><span class="n">dst_id</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">feat</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.736833152378035,0.10522806046048205,0.9418796835016118&quot;</span>
+<span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.5749339182767451,0.20181320245665535,0.490938012147181&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.7697294432580938,0.49397782380750765,0.10864079337442234&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.1364240150959487,0.1393107840629273,0.7901988878812207&quot;</span>
+<span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.42988138237505735,0.18389137408509248,0.18431292077750894&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.8613368738351794,0.67985810014162,0.6580438064356824&quot;</span>
+<span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.6594951663841697,0.26499036865016423,0.7891429392727503&quot;</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.36649684241348557,0.9511783938523962,0.8494919263589972&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.698592283371875,0.038622249776255946,0.5563827995742111&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.5227112950269823,0.3148264185956532,0.47562693094002173&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">nodes_0.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">nodes_1.csv</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">node_id</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">feat</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.5400687466285844,0.7588441197954202,0.4268254673041745&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.08680051341900807,0.11446843700743892,0.7196969604886617&quot;</span>
+<span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.8964389655603473,0.23368113896545695,0.8813472954005022&quot;</span>
+<span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.5454703921677284,0.7819383771535038,0.3027939452162367&quot;</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.5365210052235699,0.8975240205792763,0.7613943085507672&quot;</span>
+</pre></div>
+</div>
+<p>After loaded, the dataset has one heterograph with features and labels:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CSVDataset</span><span class="p">(</span><span class="s1">&#39;./mini_hetero_dataset&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># only one graph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="go">Graph(num_nodes={&#39;item&#39;: 5, &#39;user&#39;: 5},</span>
+<span class="go">      num_edges={(&#39;user&#39;, &#39;follow&#39;, &#39;user&#39;): 10, (&#39;user&#39;, &#39;like&#39;, &#39;item&#39;): 10},</span>
+<span class="go">      metagraph=[(&#39;user&#39;, &#39;user&#39;, &#39;follow&#39;), (&#39;user&#39;, &#39;item&#39;, &#39;like&#39;)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="go">{&#39;label&#39;: tensor([2, 1, 2, 1, 1]), &#39;feat&#39;: tensor([[0.5401, 0.7588, 0.4268],</span>
+<span class="go">        [0.0868, 0.1145, 0.7197],</span>
+<span class="go">        [0.8964, 0.2337, 0.8813],</span>
+<span class="go">        [0.5455, 0.7819, 0.3028],</span>
+<span class="go">        [0.5365, 0.8975, 0.7614]], dtype=torch.float64)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;like&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="go">{&#39;label&#39;: tensor([1, 2, 2, 0, 1, 2, 1, 0, 2, 1]), &#39;feat&#39;: tensor([[0.7368, 0.1052, 0.9419],</span>
+<span class="go">        [0.5749, 0.2018, 0.4909],</span>
+<span class="go">        [0.7697, 0.4940, 0.1086],</span>
+<span class="go">        [0.1364, 0.1393, 0.7902],</span>
+<span class="go">        [0.4299, 0.1839, 0.1843],</span>
+<span class="go">        [0.8613, 0.6799, 0.6580],</span>
+<span class="go">        [0.6595, 0.2650, 0.7891],</span>
+<span class="go">        [0.3665, 0.9512, 0.8495],</span>
+<span class="go">        [0.6986, 0.0386, 0.5564],</span>
+<span class="go">        [0.5227, 0.3148, 0.4756]], dtype=torch.float64)}</span>
+</pre></div>
+</div>
+</section>
+<section id="dataset-of-multiple-graphs">
+<h2>Dataset of multiple graphs<a class="headerlink" href="#dataset-of-multiple-graphs" title="Link to this heading"></a></h2>
+<p>When there are multiple graphs, one can include an additional CSV file for storing graph-level features.
+Here is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">mini_multi_dataset</span><span class="o">/</span>
+<span class="o">|--</span> <span class="n">meta</span><span class="o">.</span><span class="n">yaml</span>
+<span class="o">|--</span> <span class="n">nodes</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">edges</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">graphs</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>Accordingly, the <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> should include an extra <code class="docutils literal notranslate"><span class="pre">graph_data</span></code> key to tell which CSV file to
+load graph-level features from.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mini_multi_dataset</span>
+<span class="nt">edge_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges.csv</span>
+<span class="nt">node_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes.csv</span>
+<span class="nt">graph_data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">graphs.csv</span>
+</pre></div>
+</div>
+<p>To distinguish nodes and edges of different graphs, the <code class="docutils literal notranslate"><span class="pre">node.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">edge.csv</span></code> must contain
+an extra column <code class="docutils literal notranslate"><span class="pre">graph_id</span></code>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">edges.csv</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">graph_id</span><span class="p">,</span><span class="n">src_id</span><span class="p">,</span><span class="n">dst_id</span><span class="p">,</span><span class="n">feat</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;0.39534097273254654,0.9422093637539785,0.634899790318452&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.04486384200747007,0.6453746567017163,0.8757520744192612&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.9397636966928355,0.6526403892728874,0.8643238446466464&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.40559906615287566,0.9848072295736628,0.493888090726854&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.253458867276219,0.9168191778828504,0.47224962583565544&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.3219496197945605,0.3439899477636117,0.7051530741717352&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.692873149428549,0.4770019763881086,0.21937428942781778&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.620118223673067,0.08691420300562658,0.86573472329756&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.00743445923710373,0.5251800239734318,0.054016385555202384&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.6776417760682221,0.7291568018841328,0.4523600060547709&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;0.6375445528248924,0.04878384701995819,0.4081642382536248&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;0.776002616178397,0.8851294998284638,0.7321742043493028&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.0928555079874982,0.6156748364694707,0.6985674921582508&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.31328748118329997,0.8326121496142408,0.04133991340612775&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.36786902637778773,0.39161865931662243,0.9971749359397111&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.4647410679872376,0.8478810655406659,0.6746269314422184&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.8117650553546695,0.7893727601272978,0.41527155506593394&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;0.40707309111756307,0.2796588354307046,0.34846782265758314&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.18626464175355095,0.3523777809254057,0.7863421810531344&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.28357022069634585,0.13774964202156292,0.5913335505943637&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">nodes.csv</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">graph_id</span><span class="p">,</span><span class="n">node_id</span><span class="p">,</span><span class="n">feat</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.5725330322207948,0.8451870383322376,0.44412796119211184&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.6624186423087752,0.6118386331195641,0.7352138669985214&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.7583372765843964,0.15218126307872892,0.6810484348765842&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;0.14627522432017592,0.7457985352827006,0.1037097085190507&quot;</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;0.49037522512771525,0.8778998699783784,0.0911194482288028&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.11158102039672668,0.08543289788089736,0.6901745368284345&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.28367647637469273,0.07502571020414439,0.01217200152200748&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;0.2472495901894738,0.24285506608575758,0.6494437360242048&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;0.5614197853127827,0.059172654879085296,0.4692371689047904&quot;</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;0.17583413999295983,0.5191278830882644,0.8453123358491914&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">graphs.csv</span></code> contains a <code class="docutils literal notranslate"><span class="pre">graph_id</span></code> column and arbitrary number of feature columns.
+The example dataset here has two graphs, each with a <code class="docutils literal notranslate"><span class="pre">feat</span></code> and a <code class="docutils literal notranslate"><span class="pre">label</span></code> graph-level
+data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">graph_id</span><span class="p">,</span><span class="n">feat</span><span class="p">,</span><span class="n">label</span>
+<span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0.7426272601929126,0.5197462471155317,0.8149104951283953&quot;</span><span class="p">,</span><span class="mi">0</span>
+<span class="mi">1</span><span class="p">,</span><span class="s2">&quot;0.534822233529295,0.2863627767733977,0.1154897249106891&quot;</span><span class="p">,</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>After loaded, the dataset has multiple homographs with features and labels:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CSVDataset</span><span class="p">(</span><span class="s1">&#39;./mini_multi_dataset&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph0</span><span class="p">,</span> <span class="n">data0</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">graph0</span><span class="p">)</span>
+<span class="go">Graph(num_nodes=5, num_edges=10,</span>
+<span class="go">      ndata_schemes={&#39;feat&#39;: Scheme(shape=(3,), dtype=torch.float64)}</span>
+<span class="go">      edata_schemes={&#39;feat&#39;: Scheme(shape=(3,), dtype=torch.float64)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data0</span><span class="p">)</span>
+<span class="go">{&#39;feat&#39;: tensor([0.7426, 0.5197, 0.8149], dtype=torch.float64), &#39;label&#39;: tensor(0)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph1</span><span class="p">,</span> <span class="n">data1</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">graph1</span><span class="p">)</span>
+<span class="go">Graph(num_nodes=5, num_edges=10,</span>
+<span class="go">      ndata_schemes={&#39;feat&#39;: Scheme(shape=(3,), dtype=torch.float64)}</span>
+<span class="go">      edata_schemes={&#39;feat&#39;: Scheme(shape=(3,), dtype=torch.float64)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+<span class="go">{&#39;feat&#39;: tensor([0.5348, 0.2864, 0.1155], dtype=torch.float64), &#39;label&#39;: tensor(0)}</span>
+</pre></div>
+</div>
+<p>If there is a single feature column in <code class="docutils literal notranslate"><span class="pre">graphs.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">data0</span></code> will directly be a tensor for the feature.</p>
+</section>
+<section id="custom-data-parser">
+<h2>Custom Data Parser<a class="headerlink" href="#custom-data-parser" title="Link to this heading"></a></h2>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">CSVDataset</span></code> assumes that all the stored node-/edge-/graph- level data are numerical
+values. Users can provide custom <code class="docutils literal notranslate"><span class="pre">DataParser</span></code> to <code class="docutils literal notranslate"><span class="pre">CSVDataset</span></code> to handle more complex
+data type. A <code class="docutils literal notranslate"><span class="pre">DataParser</span></code> needs to implement the <code class="docutils literal notranslate"><span class="pre">__call__</span></code> method which takes in the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> object created from CSV file and should return a dictionary of
+parsed feature data. The parsed feature data will be saved to the <code class="docutils literal notranslate"><span class="pre">ndata</span></code> and <code class="docutils literal notranslate"><span class="pre">edata</span></code> of
+the corresponding <code class="docutils literal notranslate"><span class="pre">DGLGraph</span></code> object, and thus must be tensors or numpy arrays. Below shows an example
+<code class="docutils literal notranslate"><span class="pre">DataParser</span></code> which converts string type labels to integers:</p>
+<p>Given a dataset as follows,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">customized_parser_dataset</span><span class="o">/</span>
+<span class="o">|--</span> <span class="n">meta</span><span class="o">.</span><span class="n">yaml</span>
+<span class="o">|--</span> <span class="n">nodes</span><span class="o">.</span><span class="n">csv</span>
+<span class="o">|--</span> <span class="n">edges</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">customized_parser_dataset</span>
+<span class="nt">edge_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges.csv</span>
+<span class="nt">node_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes.csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">edges.csv</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src_id</span><span class="p">,</span><span class="n">dst_id</span><span class="p">,</span><span class="n">label</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">positive</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">negative</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">positive</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">positive</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">negative</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">positive</span>
+<span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">negative</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">positive</span>
+<span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">negative</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">positive</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">nodes.csv</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">node_id</span><span class="p">,</span><span class="n">label</span>
+<span class="mi">0</span><span class="p">,</span><span class="n">positive</span>
+<span class="mi">1</span><span class="p">,</span><span class="n">negative</span>
+<span class="mi">2</span><span class="p">,</span><span class="n">positive</span>
+<span class="mi">3</span><span class="p">,</span><span class="n">negative</span>
+<span class="mi">4</span><span class="p">,</span><span class="n">positive</span>
+</pre></div>
+</div>
+<p>To parse the string type labels, one can define a <code class="docutils literal notranslate"><span class="pre">DataParser</span></code> class as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="k">class</span> <span class="nc">MyDataParser</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;Unnamed&#39;</span> <span class="ow">in</span> <span class="n">header</span><span class="p">:</span>  <span class="c1"># Handle Unnamed column</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unnamed column is found. Ignored...&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">header</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">header</span> <span class="o">==</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="s1">&#39;positive&#39;</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">dt</span><span class="p">])</span>
+            <span class="n">parsed</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="k">return</span> <span class="n">parsed</span>
+</pre></div>
+</div>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">CSVDataset</span></code> using the defined <code class="docutils literal notranslate"><span class="pre">DataParser</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">CSVDataset</span><span class="p">(</span><span class="s1">&#39;./customized_parser_dataset&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="n">ndata_parser</span><span class="o">=</span><span class="n">MyDataParser</span><span class="p">(),</span>
+<span class="gp">... </span>                              <span class="n">edata_parser</span><span class="o">=</span><span class="n">MyDataParser</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span>
+<span class="go">tensor([1, 0, 1, 0, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span>
+<span class="go">tensor([1, 0, 1, 1, 0, 1, 0, 1, 0, 1])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To specify different <code class="docutils literal notranslate"><span class="pre">DataParser</span></code>s for different node/edge types, pass a dictionary to
+<code class="docutils literal notranslate"><span class="pre">ndata_parser</span></code> and <code class="docutils literal notranslate"><span class="pre">edata_parser</span></code>, where the key is type name (a single string for
+node type; a string triplet for edge type) and the value is the <code class="docutils literal notranslate"><span class="pre">DataParser</span></code> to use.</p>
+</div>
+</section>
+<section id="full-yaml-specification">
+<h2>Full YAML Specification<a class="headerlink" href="#full-yaml-specification" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CSVDataset</span></code> allows more flexible control over the loading and parsing process. For example, one
+can change the ID column names via <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code>. The example below lists all the supported keys.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+<span class="nt">dataset_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">some_complex_data</span>
+<span class="nt">separator</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;,&#39;</span><span class="w">                   </span><span class="c1"># CSV separator symbol. Default: &#39;,&#39;</span>
+<span class="nt">edge_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges_0.csv</span>
+<span class="w">  </span><span class="nt">etype</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">user</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">follow</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">user</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">src_id_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">src_id</span><span class="w">           </span><span class="c1"># Column name for source node IDs. Default: src_id</span>
+<span class="w">  </span><span class="nt">dst_id_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dst_id</span><span class="w">           </span><span class="c1"># Column name for destination node IDs. Default: dst_id</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edges_1.csv</span>
+<span class="w">  </span><span class="nt">etype</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">user</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">like</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">item</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">src_id_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">src_id</span>
+<span class="w">  </span><span class="nt">dst_id_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dst_id</span>
+<span class="nt">node_data</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes_0.csv</span>
+<span class="w">  </span><span class="nt">ntype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user</span>
+<span class="w">  </span><span class="nt">node_id_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node_id</span><span class="w">         </span><span class="c1"># Column name for node IDs. Default: node_id</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodes_1.csv</span>
+<span class="w">  </span><span class="nt">ntype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">item</span>
+<span class="w">  </span><span class="nt">node_id_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node_id</span><span class="w">         </span><span class="c1"># Column name for node IDs. Default: node_id</span>
+<span class="nt">graph_data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">graphs.csv</span>
+<span class="w">  </span><span class="nt">graph_id_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">graph_id</span><span class="w">       </span><span class="c1"># Column name for graph IDs. Default: graph_id</span>
+</pre></div>
+</div>
+<section id="top-level">
+<h3>Top-level<a class="headerlink" href="#top-level" title="Link to this heading"></a></h3>
+<p>At the top level, only 6 keys are available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code>: Optional. String.
+It specifies which version of <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> is used. More feature may be added in the future.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataset_name</span></code>: Required. String.
+It specifies the dataset name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">separator</span></code>: Optional. String.
+It specifies how to parse data in CSV files. Default: <code class="docutils literal notranslate"><span class="pre">','</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edge_data</span></code>: Required. List of <code class="docutils literal notranslate"><span class="pre">EdgeData</span></code>.
+Meta data for parsing edge CSV files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">node_data</span></code>: Required. List of <code class="docutils literal notranslate"><span class="pre">NodeData</span></code>.
+Meta data for parsing node CSV files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graph_data</span></code>: Optional. <code class="docutils literal notranslate"><span class="pre">GraphData</span></code>.
+Meta data for parsing the graph CSV file.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="edgedata">
+<h3><code class="docutils literal notranslate"><span class="pre">EdgeData</span></code><a class="headerlink" href="#edgedata" title="Link to this heading"></a></h3>
+<p>There are 4 keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code>: Required. String.
+The CSV file to load data from.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">etype</span></code>: Optional. List of string.
+Edge type name in string triplet: [source node type, relation type, destination node type].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src_id_field</span></code>: Optional. String.
+Which column to read for source node IDs. Default: <code class="docutils literal notranslate"><span class="pre">src_id</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dst_id_field</span></code>: Optional. String.
+Which column to read for destination node IDs. Default: <code class="docutils literal notranslate"><span class="pre">dst_id</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="nodedata">
+<h3><code class="docutils literal notranslate"><span class="pre">NodeData</span></code><a class="headerlink" href="#nodedata" title="Link to this heading"></a></h3>
+<p>There are 3 keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code>: Required. String.
+The CSV file to load data from.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ntype</span></code>: Optional. String.
+Node type name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">node_id_field</span></code>: Optional. String.
+Which column to read for node IDs. Default: <code class="docutils literal notranslate"><span class="pre">node_id</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="graphdata">
+<h3><code class="docutils literal notranslate"><span class="pre">GraphData</span></code><a class="headerlink" href="#graphdata" title="Link to this heading"></a></h3>
+<p>There are 2 keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code>: Required. String.
+The CSV file to load data from.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graph_id_field</span></code>: Optional. String.
+Which column to read for graph IDs. Default: <code class="docutils literal notranslate"><span class="pre">graph_id</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="data-loadogb.html" class="btn btn-neutral float-left" title="4.5 Loading OGB datasets using ogb package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="training.html" class="btn btn-neutral float-right" title="Chapter 5: Training Graph Neural Networks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understand Graph Attention Network &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Batching many small graphs" href="../2_small_graph/index.html" />
+    <link rel="prev" title="Line Graph Neural Network" href="6_line_graph.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dist/index.html">Distributed training</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Paper Study with DGL</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Graph neural networks and its variants</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1_gcn.html">Graph Convolutional Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4_rgcn.html">Relational Graph Convolutional Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6_line_graph.html">Line Graph Neural Network</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Understand Graph Attention Network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../2_small_graph/index.html">Batching many small graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3_generative_model/index.html">Generative models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4_old_wines/index.html">Revisit classic models from a graph perspective</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Paper Study with DGL</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Graph neural networks and its variants</a></li>
+      <li class="breadcrumb-item active">Understand Graph Attention Network</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/tutorials/models/1_gnn/9_gat.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Understand-Graph-Attention-Network">
+<h1>Understand Graph Attention Network<a class="headerlink" href="#Understand-Graph-Attention-Network" title="Link to this heading"></a></h1>
+<p><strong>Authors:</strong> <a class="reference external" href="https://github.com/sufeidechabei/">Hao Zhang</a>, <a class="reference external" href="https://github.com/mufeili">Mufei Li</a>, <a class="reference external" href="https://jermainewang.github.io/">Minjie Wang</a> <a class="reference external" href="https://shanghai.nyu.edu/academics/faculty/directory/zheng-zhang">Zheng Zhang</a></p>
+<div class="alert alert-danger"><h4><p>Warning</p>
+</h4><p><p>The tutorial aims at gaining insights into the paper, with code as a mean of explanation. The implementation thus is NOT optimized for running efficiency. For recommended implementation, please refer to the <a class="reference external" href="https://github.com/dmlc/dgl/tree/master/examples">official examples</a>.</p>
+</p></div><p>In this tutorial, you learn about a graph attention network (GAT) and how it can be implemented in PyTorch. You can also learn to visualize and understand what the attention mechanism has learned.</p>
+<p>The research described in the paper <a class="reference external" href="https://arxiv.org/abs/1609.02907">Graph Convolutional Network (GCN)</a>, indicates that combining local graph structure and node-level features yields good performance on node classification tasks. However, the way GCN aggregates is structure-dependent, which can hurt its generalizability.</p>
+<p>One workaround is to simply average over all neighbor node features as described in the research paper <a class="reference external" href="https://www-cs-faculty.stanford.edu/people/jure/pubs/graphsage-nips17.pdf">GraphSAGE</a>. However, <a class="reference external" href="https://arxiv.org/abs/1710.10903">Graph Attention Network</a> proposes a different type of aggregation. GAT uses weighting neighbor features with feature dependent and structure-free normalization, in the style of attention.</p>
+<section id="Introducing-attention-to-GCN">
+<h2>Introducing attention to GCN<a class="headerlink" href="#Introducing-attention-to-GCN" title="Link to this heading"></a></h2>
+<p>The key difference between GAT and GCN is how the information from the one-hop neighborhood is aggregated.</p>
+<p>For GCN, a graph convolution operation produces the normalized sum of the node features of neighbors.</p>
+<p><span class="math">\begin{align}h_i^{(l+1)}=\sigma\left(\sum_{j\in \mathcal{N}(i)} {\frac{1}{c_{ij}} W^{(l)}h^{(l)}_j}\right)\end{align}</span></p>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{N}(i)\)</span> is the set of its one-hop neighbors (to include <span class="math notranslate nohighlight">\(v_i\)</span> in the set, simply add a self-loop to each node), <span class="math notranslate nohighlight">\(c_{ij}=\sqrt{|\mathcal{N}(i)|}\sqrt{|\mathcal{N}(j)|}\)</span> is a normalization constant based on graph structure, <span class="math notranslate nohighlight">\(\sigma\)</span> is an activation function (GCN uses ReLU), and <span class="math notranslate nohighlight">\(W^{(l)}\)</span> is a shared weight matrix for node-wise feature transformation. Another model proposed in
+<a class="reference external" href="https://www-cs-faculty.stanford.edu/people/jure/pubs/graphsage-nips17.pdf">GraphSAGE</a> employs the same update rule except that they set <span class="math notranslate nohighlight">\(c_{ij}=|\mathcal{N}(i)|\)</span>.</p>
+<p>GAT introduces the attention mechanism as a substitute for the statically normalized convolution operation. Below are the equations to compute the node embedding <span class="math notranslate nohighlight">\(h_i^{(l+1)}\)</span> of layer <span class="math notranslate nohighlight">\(l+1\)</span> from the embeddings of layer <span class="math notranslate nohighlight">\(l\)</span>.</p>
+<p><img alt="210f504b6d614eb7adfc9e49b5c0c1e0" class="no-scaled-link" src="https://data.dgl.ai/tutorial/gat/gat.png" style="width: 450px;" /></p>
+<dl class="simple">
+<dt>:nbsphinx-math:<a href="#id1"><span class="problematic" id="id2">`</span></a>begin{align}begin{align}</dt><dd><p>z_i^{(l)}&amp;=W^{(l)}h_i^{(l)},&amp;(1) \
+e_{ij}^{(l)}&amp;=text{LeakyReLU}(vec a^{(l)^T}(z_i^{(l)}||z_j^{(l)})),&amp;(2)\
+alpha_{ij}^{(l)}&amp;=frac{exp(e_{ij}^{(l)})}{sum_{kin mathcal{N}(i)}^{}exp(e_{ik}^{(l)})},&amp;(3)\
+h_i^{(l+1)}&amp;=sigmaleft(sum_{jin mathcal{N}(i)} {alpha^{(l)}_{ij} z^{(l)}_j }right),&amp;(4)
+end{align}`\end{align}</p>
+</dd>
+</dl>
+<p>Explanations:</p>
+<ul class="simple">
+<li><p>Equation (1) is a linear transformation of the lower layer embedding <span class="math notranslate nohighlight">\(h_i^{(l)}\)</span> and <span class="math notranslate nohighlight">\(W^{(l)}\)</span> is its learnable weight matrix.</p></li>
+<li><p>Equation (2) computes a pair-wise <em>un-normalized</em> attention score between two neighbors. Here, it first concatenates the <span class="math notranslate nohighlight">\(z\)</span> embeddings of the two nodes, where <span class="math notranslate nohighlight">\(||\)</span> denotes concatenation, then takes a dot product of it and a learnable weight vector <span class="math notranslate nohighlight">\(\vec a^{(l)}\)</span>, and applies a LeakyReLU in the end. This form of attention is usually called <em>additive attention</em>, contrast with the dot-product attention in the Transformer model.</p></li>
+<li><p>Equation (3) applies a softmax to normalize the attention scores on each node’s incoming edges.</p></li>
+<li><p>Equation (4) is similar to GCN. The embeddings from neighbors are aggregated together, scaled by the attention scores.</p></li>
+</ul>
+<p>There are other details from the paper, such as dropout and skip connections. For the purpose of simplicity, those details are left out of this tutorial. To see more details, download the <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/gat/gat.py">full example</a>. In its essence, GAT is just a different aggregation function with attention over features of neighbors, instead of a simple mean aggregation.</p>
+</section>
+<section id="GAT-in-DGL">
+<h2>GAT in DGL<a class="headerlink" href="#GAT-in-DGL" title="Link to this heading"></a></h2>
+<p>DGL provides an off-the-shelf implementation of the GAT layer under the <code class="docutils literal notranslate"><span class="pre">dgl.nn.&lt;backend&gt;</span></code> subpackage. Simply import the <code class="docutils literal notranslate"><span class="pre">GATConv</span></code> as the follows.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;DGLBACKEND&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+</pre></div>
+</div>
+</div>
+<p>Readers can skip the following step-by-step explanation of the implementation and jump to the <code class="docutils literal notranslate"><span class="pre">Put</span> <span class="pre">everything</span> <span class="pre">together</span></code>_ for training and visualization results.</p>
+<p>To begin, you can get an overall impression about how a <code class="docutils literal notranslate"><span class="pre">GATLayer</span></code> module is implemented in DGL. In this section, the four equations above are broken down one at a time.</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>This is showing how to implement a GAT from scratch. DGL provides a more efficient :class:<code class="docutils literal notranslate"><span class="pre">builtin</span> <span class="pre">GAT</span> <span class="pre">layer</span> <span class="pre">module</span> <span class="pre">&lt;dgl.nn.pytorch.conv.GATConv&gt;</span></code>.</p>
+</p></div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">dgl.nn.pytorch</span> <span class="kn">import</span> <span class="n">GATConv</span>
+
+
+<span class="k">class</span> <span class="nc">GATLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GATLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g</span>
+        <span class="c1"># equation (1)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># equation (2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn_fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">out_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reinitialize learnable parameters.&quot;&quot;&quot;</span>
+        <span class="n">gain</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">calculate_gain</span><span class="p">(</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="n">gain</span><span class="p">)</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attn_fc</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="n">gain</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">edge_attention</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
+        <span class="c1"># edge UDF for equation (2)</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">edges</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">],</span> <span class="n">edges</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_fc</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">leaky_relu</span><span class="p">(</span><span class="n">a</span><span class="p">)}</span>
+
+    <span class="k">def</span> <span class="nf">message_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
+        <span class="c1"># message UDF for equation (3) &amp; (4)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">],</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">]}</span>
+
+    <span class="k">def</span> <span class="nf">reduce_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="c1"># reduce UDF for equation (3) &amp; (4)</span>
+        <span class="c1"># equation (3)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># equation (4)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="n">h</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="c1"># equation (1)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="c1"># equation (2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">apply_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_attention</span><span class="p">)</span>
+        <span class="c1"># equation (3) &amp; (4)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_func</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Equation-(1)">
+<h3>Equation (1)<a class="headerlink" href="#Equation-(1)" title="Link to this heading"></a></h3>
+<p><span class="math">\begin{align}z_i^{(l)}=W^{(l)}h_i^{(l)},(1)\end{align}</span></p>
+<p>The first one shows linear transformation. It’s common and can be easily implemented in Pytorch using <code class="docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code>.</p>
+</section>
+<section id="Equation-(2)">
+<h3>Equation (2)<a class="headerlink" href="#Equation-(2)" title="Link to this heading"></a></h3>
+<p><span class="math">\begin{align}e_{ij}^{(l)}=\text{LeakyReLU}(\vec a^{(l)^T}(z_i^{(l)}|z_j^{(l)})),(2)\end{align}</span></p>
+<p>The un-normalized attention score <span class="math notranslate nohighlight">\(e_{ij}\)</span> is calculated using the embeddings of adjacent nodes <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>. This suggests that the attention scores can be viewed as edge data, which can be calculated by the <code class="docutils literal notranslate"><span class="pre">apply_edges</span></code> API. The argument to the <code class="docutils literal notranslate"><span class="pre">apply_edges</span></code> is an <strong>Edge UDF</strong>, which is defined as below:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">edge_attention</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
+    <span class="c1"># edge UDF for equation (2)</span>
+    <span class="n">z2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">edges</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">],</span> <span class="n">edges</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_fc</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">leaky_relu</span><span class="p">(</span><span class="n">a</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<p>Here, the dot product with the learnable weight vector <span class="math notranslate nohighlight">\(\vec{a^{(l)}}\)</span> is implemented again using PyTorch’s linear transformation <code class="docutils literal notranslate"><span class="pre">attn_fc</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">apply_edges</span></code> will <strong>batch</strong> all the edge data in one tensor, so the <code class="docutils literal notranslate"><span class="pre">cat</span></code>, <code class="docutils literal notranslate"><span class="pre">attn_fc</span></code> here are applied on all the edges in parallel.</p>
+</section>
+<section id="Equation-(3)-&amp;-(4)">
+<h3>Equation (3) &amp; (4)<a class="headerlink" href="#Equation-(3)-&-(4)" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>:nbsphinx-math:<a href="#id3"><span class="problematic" id="id4">`</span></a>begin{align}begin{align}</dt><dd><p>alpha_{ij}^{(l)}&amp;=frac{exp(e_{ij}^{(l)})}{sum_{kin mathcal{N}(i)}^{}exp(e_{ik}^{(l)})},&amp;(3)\
+h_i^{(l+1)}&amp;=sigmaleft(sum_{jin mathcal{N}(i)} {alpha^{(l)}_{ij} z^{(l)}_j }right),&amp;(4)
+end{align}`\end{align}</p>
+</dd>
+</dl>
+<p>Similar to GCN, <code class="docutils literal notranslate"><span class="pre">update_all</span></code> API is used to trigger message passing on all the nodes. The message function sends out two tensors: the transformed <code class="docutils literal notranslate"><span class="pre">z</span></code> embedding of the source node and the un-normalized attention score <code class="docutils literal notranslate"><span class="pre">e</span></code> on each edge. The reduce function then performs two tasks:</p>
+<ul class="simple">
+<li><p>Normalize the attention scores using softmax (equation (3)).</p></li>
+<li><p>Aggregate neighbor embeddings weighted by the attention scores (equation(4)).</p></li>
+</ul>
+<p>Both tasks first fetch data from the mailbox and then manipulate it on the second dimension (<code class="docutils literal notranslate"><span class="pre">dim=1</span></code>), on which the messages are batched.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">reduce_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+    <span class="c1"># reduce UDF for equation (3) &amp; (4)</span>
+    <span class="c1"># equation (3)</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># equation (4)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="n">h</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Multi-head-attention">
+<h3>Multi-head attention<a class="headerlink" href="#Multi-head-attention" title="Link to this heading"></a></h3>
+<p>Analogous to multiple channels in ConvNet, GAT introduces <strong>multi-head attention</strong> to enrich the model capacity and to stabilize the learning process. Each attention head has its own parameters and their outputs can be merged in two ways:</p>
+<p><span class="math">\begin{align}\text{concatenation}: h^{(l+1)}_{i} =||_{k=1}^{K}\sigma\left(\sum_{j\in \mathcal{N}(i)}\alpha_{ij}^{k}W^{k}h^{(l)}_{j}\right)\end{align}</span></p>
+<p>or</p>
+<p><span class="math">\begin{align}\text{average}: h_{i}^{(l+1)}=\sigma\left(\frac{1}{K}\sum_{k=1}^{K}\sum_{j\in\mathcal{N}(i)}\alpha_{ij}^{k}W^{k}h^{(l)}_{j}\right)\end{align}</span></p>
+<p>where <span class="math notranslate nohighlight">\(K\)</span> is the number of heads. You can use concatenation for intermediary layers and average for the final layer.</p>
+<p>Use the above defined single-head <code class="docutils literal notranslate"><span class="pre">GATLayer</span></code> as the building block for the <code class="docutils literal notranslate"><span class="pre">MultiHeadGATLayer</span></code> below:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MultiHeadGATLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">merge</span><span class="o">=</span><span class="s2">&quot;cat&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultiHeadGATLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heads</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_heads</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GATLayer</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merge</span> <span class="o">=</span> <span class="n">merge</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="n">head_outs</span> <span class="o">=</span> <span class="p">[</span><span class="n">attn_head</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">attn_head</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge</span> <span class="o">==</span> <span class="s2">&quot;cat&quot;</span><span class="p">:</span>
+            <span class="c1"># concat on the output feature dimension (dim=1)</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">head_outs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># merge using average</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">head_outs</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Put-everything-together">
+<h3>Put everything together<a class="headerlink" href="#Put-everything-together" title="Link to this heading"></a></h3>
+<p>Now, you can define a two-layer GAT model.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GAT</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GAT</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span> <span class="o">=</span> <span class="n">MultiHeadGATLayer</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">)</span>
+        <span class="c1"># Be aware that the input dimension is hidden_dim*num_heads since</span>
+        <span class="c1"># multiple head outputs are concatenated together. Also, only</span>
+        <span class="c1"># one attention head in the output layer.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span> <span class="o">=</span> <span class="n">MultiHeadGATLayer</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">hidden_dim</span> <span class="o">*</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">elu</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">h</span>
+
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+</pre></div>
+</div>
+</div>
+<p>We then load the Cora dataset using DGL’s built-in data module.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dgl</span> <span class="kn">import</span> <span class="n">DGLGraph</span>
+<span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">citation_graph</span> <span class="k">as</span> <span class="n">citegrh</span>
+
+
+<span class="k">def</span> <span class="nf">load_cora_data</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">citegrh</span><span class="o">.</span><span class="n">load_cora</span><span class="p">()</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">BoolTensor</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;train_mask&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;feat&quot;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">],</span> <span class="n">mask</span>
+</pre></div>
+</div>
+</div>
+<p>The training loop is exactly the same as in the GCN tutorial.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">g</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">load_cora_data</span><span class="p">()</span>
+
+<span class="c1"># create the model, 2 heads, each head has hidden size 8</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">GAT</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">in_dim</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">out_dim</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">num_heads</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># create optimizer</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+<span class="c1"># main loop</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dur</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+        <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+    <span class="n">logp</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">logp</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dur</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Epoch </span><span class="si">{:05d}</span><span class="s2"> | Loss </span><span class="si">{:.4f}</span><span class="s2"> | Time(s) </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dur</span></a><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  NumNodes: 2708
+  NumEdges: 10556
+  NumFeats: 1433
+  NumClasses: 7
+  NumTrainingSamples: 140
+  NumValidationSamples: 500
+  NumTestSamples: 1000
+Done loading data from cached files.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/conda/envs/cpu/lib/python3.10/site-packages/numpy/core/fromnumeric.py:3504: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/opt/conda/envs/cpu/lib/python3.10/site-packages/numpy/core/_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Epoch 00000 | Loss 1.9463 | Time(s) nan
+Epoch 00001 | Loss 1.9438 | Time(s) nan
+Epoch 00002 | Loss 1.9413 | Time(s) nan
+Epoch 00003 | Loss 1.9388 | Time(s) 0.1164
+Epoch 00004 | Loss 1.9363 | Time(s) 0.1102
+Epoch 00005 | Loss 1.9338 | Time(s) 0.1075
+Epoch 00006 | Loss 1.9313 | Time(s) 0.1061
+Epoch 00007 | Loss 1.9288 | Time(s) 0.1053
+Epoch 00008 | Loss 1.9263 | Time(s) 0.1048
+Epoch 00009 | Loss 1.9238 | Time(s) 0.1043
+Epoch 00010 | Loss 1.9213 | Time(s) 0.1042
+Epoch 00011 | Loss 1.9187 | Time(s) 0.1041
+Epoch 00012 | Loss 1.9162 | Time(s) 0.1039
+Epoch 00013 | Loss 1.9137 | Time(s) 0.1037
+Epoch 00014 | Loss 1.9111 | Time(s) 0.1035
+Epoch 00015 | Loss 1.9085 | Time(s) 0.1034
+Epoch 00016 | Loss 1.9060 | Time(s) 0.1033
+Epoch 00017 | Loss 1.9034 | Time(s) 0.1032
+Epoch 00018 | Loss 1.9008 | Time(s) 0.1031
+Epoch 00019 | Loss 1.8982 | Time(s) 0.1030
+Epoch 00020 | Loss 1.8956 | Time(s) 0.1029
+Epoch 00021 | Loss 1.8930 | Time(s) 0.1029
+Epoch 00022 | Loss 1.8904 | Time(s) 0.1028
+Epoch 00023 | Loss 1.8877 | Time(s) 0.1028
+Epoch 00024 | Loss 1.8851 | Time(s) 0.1030
+Epoch 00025 | Loss 1.8824 | Time(s) 0.1030
+Epoch 00026 | Loss 1.8797 | Time(s) 0.1030
+Epoch 00027 | Loss 1.8771 | Time(s) 0.1031
+Epoch 00028 | Loss 1.8744 | Time(s) 0.1036
+Epoch 00029 | Loss 1.8717 | Time(s) 0.1040
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Visualizing-and-understanding-attention-learned">
+<h2>Visualizing and understanding attention learned<a class="headerlink" href="#Visualizing-and-understanding-attention-learned" title="Link to this heading"></a></h2>
+<section id="Cora">
+<h3>Cora<a class="headerlink" href="#Cora" title="Link to this heading"></a></h3>
+<p>The following table summarizes the model performance on Cora that is reported in <a class="reference external" href="https://arxiv.org/pdf/1710.10903.pdf">the GAT paper</a> and obtained with DGL implementations.</p>
+<ul class="simple">
+<li><ul>
+<li><p>Model</p></li>
+<li><p>Accuracy</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>GCN (paper)</p></li>
+<li><p><span class="math notranslate nohighlight">\(81.4\pm 0.5%\)</span></p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>GCN (dgl)</p></li>
+<li><p><span class="math notranslate nohighlight">\(82.05\pm 0.33%\)</span></p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>GAT (paper)</p></li>
+<li><p><span class="math notranslate nohighlight">\(83.0\pm 0.7%\)</span></p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>GAT (dgl)</p></li>
+<li><p><span class="math notranslate nohighlight">\(83.69\pm 0.529%\)</span></p></li>
+</ul>
+</li>
+</ul>
+<p><em>What kind of attention distribution has our model learned?</em></p>
+<p>Because the attention weight <span class="math notranslate nohighlight">\(a_{ij}\)</span> is associated with edges, you can visualize it by coloring edges. Below you can pick a subgraph of Cora and plot the attention weights of the last <code class="docutils literal notranslate"><span class="pre">GATLayer</span></code>. The nodes are colored according to their labels, whereas the edges are colored according to the magnitude of the attention weights, which can be referred with the colorbar on the right.</p>
+<p><img alt="a92a17b5eff44be3a833e2c152ed561f" class="no-scaled-link" src="https://data.dgl.ai/tutorial/gat/cora-attention.png" style="width: 600px;" /></p>
+<p>You can see that the model seems to learn different attention weights. To understand the distribution more thoroughly, measure the <a class="reference external" href="https://en.wikipedia.org/wiki/Entropy_(information_theory)">entropy</a> of the attention distribution. For any node <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(\{\alpha_{ij}\}_{j\in\mathcal{N}(i)}\)</span> forms a discrete probability distribution over all its neighbors with the entropy given by</p>
+<p><span class="math">\begin{align}H({\alpha_{ij}}_{j\in\mathcal{N}(i)})=-\sum_{j\in\mathcal{N}(i)} \alpha_{ij}\log\alpha_{ij}\end{align}</span></p>
+<p>A low entropy means a high degree of concentration, and vice versa. An entropy of 0 means all attention is on one source node. The uniform distribution has the highest entropy of <span class="math notranslate nohighlight">\(\log(\mathcal{N}(i))\)</span>. Ideally, you want to see the model learns a distribution of lower entropy (i.e, one or two neighbors are much more important than the others).</p>
+<p>Note that since nodes can have different degrees, the maximum entropy will also be different. Therefore, you plot the aggregated histogram of entropy values of all nodes in the entire graph. Below are the attention histogram of learned by each attention head.</p>
+<p>|image2|</p>
+<p>As a reference, here is the histogram if all the nodes have uniform attention weight distribution.</p>
+<p><img alt="bf5b72797e1548e4adea9df7a63334d7" class="no-scaled-link" src="https://data.dgl.ai/tutorial/gat/cora-attention-uniform-hist.png" style="width: 250px;" /></p>
+<p>One can see that <strong>the attention values learned is quite similar to uniform distribution</strong> (i.e, all neighbors are equally important). This partially explains why the performance of GAT is close to that of GCN on Cora (according to <a class="reference external" href="https://arxiv.org/pdf/1710.10903.pdf">author’s reported result</a>, the accuracy difference averaged over 100 runs is less than 2 percent). Attention does not matter since it does not differentiate much.</p>
+<p><em>Does that mean the attention mechanism is not useful?</em> No! A different dataset exhibits an entirely different pattern, as you can see next.</p>
+</section>
+<section id="Protein-protein-interaction-(PPI)-networks">
+<h3>Protein-protein interaction (PPI) networks<a class="headerlink" href="#Protein-protein-interaction-(PPI)-networks" title="Link to this heading"></a></h3>
+<p>The PPI dataset used here consists of <span class="math notranslate nohighlight">\(24\)</span> graphs corresponding to different human tissues. Nodes can have up to <span class="math notranslate nohighlight">\(121\)</span> kinds of labels, so the label of node is represented as a binary tensor of size <span class="math notranslate nohighlight">\(121\)</span>. The task is to predict node label.</p>
+<p>Use <span class="math notranslate nohighlight">\(20\)</span> graphs for training, <span class="math notranslate nohighlight">\(2\)</span> for validation and <span class="math notranslate nohighlight">\(2\)</span> for test. The average number of nodes per graph is <span class="math notranslate nohighlight">\(2372\)</span>. Each node has <span class="math notranslate nohighlight">\(50\)</span> features that are composed of positional gene sets, motif gene sets, and immunological signatures. Critically, test graphs remain completely unobserved during training, a setting called “inductive learning”.</p>
+<p>Compare the performance of GAT and GCN for <span class="math notranslate nohighlight">\(10\)</span> random runs on this task and use hyperparameter search on the validation set to find the best model.</p>
+<ul class="simple">
+<li><ul>
+<li><p>Model</p></li>
+<li><p>F1 Score(micro)</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>GAT</p></li>
+<li><p><span class="math notranslate nohighlight">\(0.975 \pm 0.006\)</span></p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>GCN</p></li>
+<li><p><span class="math notranslate nohighlight">\(0.509 \pm 0.025\)</span></p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>Paper</p></li>
+<li><p><span class="math notranslate nohighlight">\(0.973 \pm 0.002\)</span></p></li>
+</ul>
+</li>
+</ul>
+<p>The table above is the result of this experiment, where you use micro <a class="reference external" href="https://en.wikipedia.org/wiki/F1_score">F1 score</a> to evaluate the model performance.</p>
+<div class="alert alert-info"><h4><p>Note</p>
+</h4><p><p>Below is the calculation process of F1 score:</p>
+<div class="math notranslate nohighlight">
+\[\]</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>precision=\frac{\sum_{t=1}^{n}TP_{t}}{\sum_{t=1}^{n}(TP_{t} +FP_{t})}
+
+recall=\frac{\sum_{t=1}^{n}TP_{t}}{\sum_{t=1}^{n}(TP_{t} +FN_{t})}
+
+F1_{micro}=2\frac{precision*recall}{precision+recall}
+</pre></div>
+</div>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(TP_{t}\)</span> represents for number of nodes that both have and are predicted to have label <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(FP_{t}\)</span> represents for number of nodes that do not have but are predicted to have label <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(FN_{t}\)</span> represents for number of output classes labeled as <span class="math notranslate nohighlight">\(t\)</span> but predicted as others.</p></li>
+<li><p><span class="math notranslate nohighlight">\(n\)</span> is the number of labels, i.e. <span class="math notranslate nohighlight">\(121\)</span> in our case.</p>
+</p></div></li>
+</ul>
+<p>During training, use <code class="docutils literal notranslate"><span class="pre">BCEWithLogitsLoss</span></code> as the loss function. The learning curves of GAT and GCN are presented below; what is evident is the dramatic performance adavantage of GAT over GCN.</p>
+<p><img alt="71dfd9c8dda24264bd0b3bddb5c22fc0" class="no-scaled-link" src="https://data.dgl.ai/tutorial/gat/ppi-curve.png" style="width: 300px;" /></p>
+<p>As before, you can have a statistical understanding of the attentions learned by showing the histogram plot for the node-wise attention entropy. Below are the attention histograms learned by different attention layers.</p>
+<p><em>Attention learned in layer 1:</em></p>
+<p>|image5|</p>
+<p><em>Attention learned in layer 2:</em></p>
+<p>|image6|</p>
+<p><em>Attention learned in final layer:</em></p>
+<p>|image7|</p>
+<p>Again, comparing with uniform distribution:</p>
+<p><img alt="724a221a172d4bb8936b08f7ce23ceaf" class="no-scaled-link" src="https://data.dgl.ai/tutorial/gat/ppi-uniform-hist.png" style="width: 250px;" /></p>
+<p>Clearly, <strong>GAT does learn sharp attention weights</strong>! There is a clear pattern over the layers as well: <strong>the attention gets sharper with a higher layer</strong>.</p>
+<p>Unlike the Cora dataset where GAT’s gain is minimal at best, for PPI there is a significant performance gap between GAT and other GNN variants compared in <a class="reference external" href="https://arxiv.org/pdf/1710.10903.pdf">the GAT paper</a> (at least 20 percent), and the attention distributions between the two clearly differ. While this deserves further research, one immediate conclusion is that GAT’s advantage lies perhaps more in its ability to handle a graph with more complex neighborhood structure.</p>
+</section>
+</section>
+<section id="What's-next?">
+<h2>What’s next?<a class="headerlink" href="#What's-next?" title="Link to this heading"></a></h2>
+<p>So far, you have seen how to use DGL to implement GAT. There are some missing details such as dropout, skip connections, and hyper-parameter tuning, which are practices that do not involve DGL-related concepts. For more information check out the full example.</p>
+<ul class="simple">
+<li><p>See the optimized <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/examples/pytorch/gat/gat.py">full example</a>.</p></li>
+<li><p>The next tutorial describes how to speedup GAT models by parallelizing multiple attention heads and SPMV optimization.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="6_line_graph.html" class="btn btn-neutral float-left" title="Line Graph Neural Network" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../2_small_graph/index.html" class="btn btn-neutral float-right" title="Batching many small graphs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

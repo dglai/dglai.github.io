@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generative Models of Graphs &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Revisit classic models from a graph perspective" href="../4_old_wines/index.html" />
+    <link rel="prev" title="Generative models" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dist/index.html">Distributed training</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Paper Study with DGL</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1_gnn/index.html">Graph neural networks and its variants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2_small_graph/index.html">Batching many small graphs</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Generative models</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Generative Models of Graphs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../4_old_wines/index.html">Revisit classic models from a graph perspective</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Paper Study with DGL</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Generative models</a></li>
+      <li class="breadcrumb-item active">Generative Models of Graphs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/tutorials/models/3_generative_model/5_dgmg.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Generative-Models-of-Graphs">
+<h1>Generative Models of Graphs<a class="headerlink" href="#Generative-Models-of-Graphs" title="Link to this heading"></a></h1>
+<p><strong>Author</strong>: <a class="reference external" href="https://github.com/mufeili">Mufei Li</a>, <a class="reference external" href="https://github.com/ylfdq1118">Lingfan Yu</a>, Zheng Zhang</p>
+<div class="alert alert-danger"><h4><p>Warning</p>
+</h4><p><p>The tutorial aims at gaining insights into the paper, with code as a mean of explanation. The implementation thus is NOT optimized for running efficiency. For recommended implementation, please refer to the <a class="reference external" href="https://github.com/dmlc/dgl/tree/master/examples">official examples</a>.</p>
+</p></div><p>In this tutorial, you learn how to train and generate one graph at a time. You also explore parallelism within the graph embedding operation, which is an essential building block. The tutorial ends with a simple optimization that delivers double the speed by batching across graphs.</p>
+<p>Earlier tutorials showed how embedding a graph or a node enables you to work on tasks such as <a class="reference external" href="http://docs.dgl.ai/tutorials/models/1_gcn.html#sphx-glr-tutorials-models-1-gcn-py">semi-supervised classification for nodes</a><em>or</em> <a class="reference external" href="http://docs.dgl.ai/tutorials/models/3_tree-lstm.html#sphx-glr-tutorials-models-3-tree-lstm-py">sentiment analysis</a>. Wouldn’t it be interesting to predict the future evolution of the graph and perform the analysis iteratively?</p>
+<p>To address the evolution of the graphs, you generate a variety of graph samples. In other words, you need <strong>generative models</strong> of graphs. In-addition to learning node and edge features, you would need to model the distribution of arbitrary graphs. While general generative models can model the density function explicitly and implicitly and generate samples at once or sequentially, you only focus on explicit generative models for sequential generation here. Typical applications include drug or
+materials discovery, chemical processes, or proteomics.</p>
+<section id="Introduction">
+<h2>Introduction<a class="headerlink" href="#Introduction" title="Link to this heading"></a></h2>
+<p>The primitive actions of mutating a graph in Deep Graph Library (DGL) are nothing more than <code class="docutils literal notranslate"><span class="pre">add_nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">add_edges</span></code>. That is, if you were to draw a circle of three nodes,</p>
+<figure class="align-default">
+<img alt="https://user-images.githubusercontent.com/19576924/48313438-78baf000-e5f7-11e8-931e-cd00ab34fa50.gif:alt:" src="https://user-images.githubusercontent.com/19576924/48313438-78baf000-e5f7-11e8-931e-cd00ab34fa50.gif:alt:" />
+</figure>
+<p>you can write the code as follows.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;DGLBACKEND&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+<span class="kn">import</span> <span class="nn">dgl</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">DGLGraph</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Add node 0</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Add node 1</span>
+
+<span class="c1"># Edges in DGLGraph are directed by default.</span>
+<span class="c1"># For undirected edges, add edges for both directions.</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># Add edges (1, 0), (0, 1)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Add node 2</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>  <span class="c1"># Add edges (2, 1), (1, 2)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>  <span class="c1"># Add edges (2, 0), (0, 2)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/ubuntu/dgl/python/dgl/heterograph.py:92: DGLWarning: Recommend creating graphs by `dgl.graph(data)` instead of `dgl.DGLGraph(data)`.
+  dgl_warning(
+</pre></div></div>
+</div>
+<p>Real-world graphs are much more complex. There are many families of graphs, with different sizes, topologies, node types, edge types, and the possibility of multigraphs. Besides, a same graph can be generated in many different orders. Regardless, the generative process entails a few steps.</p>
+<ul class="simple">
+<li><p>Encode a changing graph.</p></li>
+<li><p>Perform actions stochastically.</p></li>
+<li><p>If you are training, collect error signals and optimize the model parameters.</p></li>
+</ul>
+<p>When it comes to implementation, another important aspect is speed. How do you parallelize the computation, given that generating a graph is fundamentally a sequential process?</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>To be sure, this is not necessarily a hard constraint. Subgraphs can be built in parallel and then get assembled. But we will restrict ourselves to the sequential processes for this tutorial.</p>
+</p></div>
+</section>
+<section id="DGMG:-The-main-flow">
+<h2>DGMG: The main flow<a class="headerlink" href="#DGMG:-The-main-flow" title="Link to this heading"></a></h2>
+<p>For this tutorial, you use <a class="reference external" href="https://arxiv.org/abs/1803.03324">Deep Generative Models of Graphs</a>_ ) (DGMG) to implement a graph generative model using DGL. Its algorithmic framework is general but also challenging to parallelize.</p>
+<div class="admonition note">
+<div class="admonition-title fa fa-exclamation-circle"><h4></div><p>Note</p>
+</h4><p><p>While it’s possible for DGMG to handle complex graphs with typed nodes, typed edges, and multigraphs, here you use a simplified version of it for generating graph topologies.</p>
+</p></div>
+<p>DGMG generates a graph by following a state machine, which is basically a two-level loop. Generate one node at a time and connect it to a subset of the existing nodes, one at a time. This is similar to language modeling. The generative process is an iterative one that emits one word or character or sentence at a time, conditioned on the sequence generated so far.</p>
+<p>At each time step, you either: - Add a new node to the graph - Select two existing nodes and add an edge between them</p>
+<figure class="align-default">
+<img alt="https://user-images.githubusercontent.com/19576924/48605003-7f11e900-e9b6-11e8-8880-87362348e154.png:alt:" src="https://user-images.githubusercontent.com/19576924/48605003-7f11e900-e9b6-11e8-8880-87362348e154.png:alt:" />
+</figure>
+<p>The Python code will look as follows. In fact, this is <em>exactly</em> how inference with DGMG is implemented in DGL.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_node_and_update</span><span class="p">()</span>
+    <span class="k">while</span> <span class="p">(</span><span class="ow">not</span> <span class="n">stop</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">num_trials</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">to_add_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_or_not</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">to_add_edge</span> <span class="ow">and</span> <span class="p">(</span><span class="n">num_trials</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">choose_dest_and_update</span><span class="p">()</span>
+            <span class="n">num_trials</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">to_add_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_or_not</span><span class="p">()</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_node_and_update</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span>
+</pre></div>
+</div>
+</div>
+<p>Assume you have a pre-trained model for generating cycles of nodes 10-20. How does it generate a cycle on-the-fly during inference? Use the code below to create an animation with your own model.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>::
+</pre></div>
+</div>
+<blockquote>
+<div><p>import torch
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+import networkx as nx
+from copy import deepcopy</p>
+<dl>
+<dt>if __name__ == ‘__main__’:</dt><dd><p># pre-trained model saved with path ./model.pth
+model = torch.load(‘./model.pth’)
+model.eval()
+g = model()</p>
+<p>src_list = g.edges()[1]
+dest_list = g.edges()[0]</p>
+<p>evolution = []</p>
+<p>nx_g = nx.Graph()
+evolution.append(deepcopy(nx_g))</p>
+<dl>
+<dt>for i in range(0, len(src_list), 2):</dt><dd><p>src = src_list[i].item()
+dest = dest_list[i].item()
+if src not in nx_g.nodes():</p>
+<blockquote>
+<div><p>nx_g.add_node(src)
+evolution.append(deepcopy(nx_g))</p>
+</div></blockquote>
+<dl class="simple">
+<dt>if dest not in nx_g.nodes():</dt><dd><p>nx_g.add_node(dest)
+evolution.append(deepcopy(nx_g))</p>
+</dd>
+</dl>
+<p>nx_g.add_edges_from([(src, dest), (dest, src)])
+evolution.append(deepcopy(nx_g))</p>
+</dd>
+<dt>def animate(i):</dt><dd><p>ax.cla()
+g_t = evolution[i]
+nx.draw_circular(g_t, with_labels=True, ax=ax,</p>
+<blockquote>
+<div><p>node_color=[‘#FEBD69’] * g_t.num_nodes())</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>fig, ax = plt.subplots()
+ani = animation.FuncAnimation(fig, animate,</p>
+<blockquote>
+<div><p>frames=len(evolution),
+interval=600)</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+<figure class="align-default">
+<img alt="https://user-images.githubusercontent.com/19576924/48928548-2644d200-ef1b-11e8-8591-da93345382ad.gif:alt:" src="https://user-images.githubusercontent.com/19576924/48928548-2644d200-ef1b-11e8-8591-da93345382ad.gif:alt:" />
+</figure>
+</section>
+<section id="DGMG:-Optimization-objective">
+<h2>DGMG: Optimization objective<a class="headerlink" href="#DGMG:-Optimization-objective" title="Link to this heading"></a></h2>
+<p>Similar to language modeling, DGMG trains the model with <em>behavior cloning</em>, or <em>teacher forcing</em>. Assume for each graph there exists a sequence of <em>oracle actions</em> <span class="math notranslate nohighlight">\(a_{1},\cdots,a_{T}\)</span> that generates it. What the model does is to follow these actions, compute the joint probabilities of such action sequences, and maximize them.</p>
+<p>By chain rule, the probability of taking <span class="math notranslate nohighlight">\(a_{1},\cdots,a_{T}\)</span> is:</p>
+<p><span class="math">\begin{align}p(a_{1},\cdots, a_{T}) = p(a_{1})p(a_{2}|a_{1})\cdots p(a_{T}|a_{1},\cdots,a_{T-1}).\\\end{align}</span></p>
+<p>The optimization objective is then simply the typical MLE loss:</p>
+<p><span class="math">\begin{align}-\log p(a_{1},\cdots,a_{T})=-\sum_{t=1}^{T}\log p(a_{t}|a_{1},\cdots, a_{t-1}).\\\end{align}</span></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    - actions: list</span>
+<span class="sd">        - Contains a_1, ..., a_T described above</span>
+<span class="sd">    - self.prepare_for_train()</span>
+<span class="sd">        - Initializes self.action_step to be 0, which will get</span>
+<span class="sd">          incremented by 1 every time it is called.</span>
+<span class="sd">        - Initializes objects recording log p(a_t|a_1,...a_{t-1})</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    - self.get_log_prob(): log p(a_1, ..., a_T)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">prepare_for_train</span><span class="p">()</span>
+
+    <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_node_and_update</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">actions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">action_step</span><span class="p">])</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">stop</span><span class="p">:</span>
+        <span class="n">to_add_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_or_not</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">actions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">action_step</span><span class="p">])</span>
+        <span class="k">while</span> <span class="n">to_add_edge</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">choose_dest_and_update</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">actions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">action_step</span><span class="p">])</span>
+            <span class="n">to_add_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_or_not</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">actions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">action_step</span><span class="p">])</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_node_and_update</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">actions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">action_step</span><span class="p">])</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_log_prob</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>The key difference between <code class="docutils literal notranslate"><span class="pre">forward_train</span></code> and <code class="docutils literal notranslate"><span class="pre">forward_inference</span></code> is that the training process takes oracle actions as input and returns log probabilities for evaluating the loss.</p>
+</section>
+<section id="DGMG:-The-implementation">
+<h2>DGMG: The implementation<a class="headerlink" href="#DGMG:-The-implementation" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">DGMG</span></code> class `````````````````````````` Below you can find the skeleton code for the model. You gradually fill in the details for each function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+
+<span class="k">class</span> <span class="nc">DGMGSkeleton</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_max</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        v_max: int</span>
+<span class="sd">            Max number of nodes considered</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DGMGSkeleton</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Graph configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v_max</span> <span class="o">=</span> <span class="n">v_max</span>
+
+    <span class="k">def</span> <span class="nf">add_node_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decide if to add a new node.</span>
+<span class="sd">        If a new node should be added, update the graph.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">add_edge_or_not</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decide if a new edge should be added.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">choose_dest_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Choose destination and connect it to the latest node.</span>
+<span class="sd">        Add edges for both directions and update the graph.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">forward_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward at training time. It records the probability</span>
+<span class="sd">        of generating a ground truth graph following the actions.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">forward_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward at inference time.</span>
+<span class="sd">        It generates graphs on the fly.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># The graph you will work on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">DGLGraph</span><span class="p">()</span>
+
+        <span class="c1"># If there are some features for nodes and edges,</span>
+        <span class="c1"># zero tensors will be set for those of new nodes and edges.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">set_n_initializer</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">zero_initializer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">set_e_initializer</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">zero_initializer</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward_train</span><span class="p">(</span><span class="n">actions</span><span class="o">=</span><span class="n">actions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward_inference</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<section id="Encoding-a-dynamic-graph">
+<h3>Encoding a dynamic graph<a class="headerlink" href="#Encoding-a-dynamic-graph" title="Link to this heading"></a></h3>
+<p>All the actions generating a graph are sampled from probability distributions. In order to do that, you project the structured data, namely the graph, onto an Euclidean space. The challenge is that such process, called <em>embedding</em>, needs to be repeated as the graphs mutate.</p>
+<section id="Graph-embedding">
+<h4>Graph embedding<a class="headerlink" href="#Graph-embedding" title="Link to this heading"></a></h4>
+<p>Let <span class="math notranslate nohighlight">\(G=(V,E)\)</span> be an arbitrary graph. Each node <span class="math notranslate nohighlight">\(v\)</span> has an embedding vector <span class="math notranslate nohighlight">\(\textbf{h}_{v} \in \mathbb{R}^{n}\)</span>. Similarly, the graph has an embedding vector <span class="math notranslate nohighlight">\(\textbf{h}_{G} \in \mathbb{R}^{k}\)</span>. Typically, <span class="math notranslate nohighlight">\(k &gt; n\)</span> since a graph contains more information than an individual node.</p>
+<p>The graph embedding is a weighted sum of node embeddings under a linear transformation:</p>
+<p><span class="math">\begin{align}\textbf{h}_{G} =\sum_{v\in V}\text{Sigmoid}(g_m(\textbf{h}_{v}))f_{m}(\textbf{h}_{v}),\\\end{align}</span></p>
+<p>The first term, <span class="math notranslate nohighlight">\(\text{Sigmoid}(g_m(\textbf{h}_{v}))\)</span>, computes a gating function and can be thought of as how much the overall graph embedding attends on each node. The second term <span class="math notranslate nohighlight">\(f_{m}:\mathbb{R}^{n}\rightarrow\mathbb{R}^{k}\)</span> maps the node embeddings to the space of graph embeddings.</p>
+<p>Implement graph embedding as a <code class="docutils literal notranslate"><span class="pre">GraphEmbed</span></code> class.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+
+<span class="k">class</span> <span class="nc">GraphEmbed</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphEmbed</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Setting from the paper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_hidden_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">node_hidden_size</span>
+
+        <span class="c1"># Embed graphs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_gating</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">node_hidden_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_to_graph</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">node_hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_hidden_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_hidden_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Node features are stored as hv in ndata.</span>
+            <span class="n">hvs</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_gating</span><span class="p">(</span><span class="n">hvs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_to_graph</span><span class="p">(</span><span class="n">hvs</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Update-node-embeddings-via-graph-propagation">
+<h4>Update node embeddings via graph propagation<a class="headerlink" href="#Update-node-embeddings-via-graph-propagation" title="Link to this heading"></a></h4>
+<p>The mechanism of updating node embeddings in DGMG is similar to that for graph convolutional networks. For a node <span class="math notranslate nohighlight">\(v\)</span> in the graph, its neighbor <span class="math notranslate nohighlight">\(u\)</span> sends a message to it with</p>
+<p><span class="math">\begin{align}\textbf{m}_{u\rightarrow v}=\textbf{W}_{m}\text{concat}([\textbf{h}_{v}, \textbf{h}_{u}, \textbf{x}_{u, v}]) + \textbf{b}_{m},\\\end{align}</span></p>
+<p>where <span class="math notranslate nohighlight">\(\textbf{x}_{u,v}\)</span> is the embedding of the edge between <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span>.</p>
+<p>After receiving messages from all its neighbors, <span class="math notranslate nohighlight">\(v\)</span> summarizes them with a node activation vector</p>
+<p><span class="math">\begin{align}\textbf{a}_{v} = \sum_{u: (u, v)\in E}\textbf{m}_{u\rightarrow v}\\\end{align}</span></p>
+<p>and use this information to update its own feature:</p>
+<p><span class="math">\begin{align}\textbf{h}'_{v} = \textbf{GRU}(\textbf{h}_{v}, \textbf{a}_{v}).\\\end{align}</span></p>
+<p>Performing all the operations above once for all nodes synchronously is called one round of graph propagation. The more rounds of graph propagation you perform, the longer distance messages travel throughout the graph.</p>
+<p>With DGL, you implement graph propagation with <code class="docutils literal notranslate"><span class="pre">g.update_all</span></code>. The message notation here can be a bit confusing. Researchers can refer to <span class="math notranslate nohighlight">\(\textbf{m}_{u\rightarrow v}\)</span> as messages, however the message function below only passes <span class="math notranslate nohighlight">\(\text{concat}([\textbf{h}_{u}, \textbf{x}_{u, v}])\)</span>. The operation <span class="math notranslate nohighlight">\(\textbf{W}_{m}\text{concat}([\textbf{h}_{v}, \textbf{h}_{u}, \textbf{x}_{u, v}]) + \textbf{b}_{m}\)</span> is then performed across all edges at once for efficiency consideration.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a>
+
+
+<span class="k">class</span> <span class="nc">GraphProp</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_prop_rounds</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphProp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_prop_rounds</span> <span class="o">=</span> <span class="n">num_prop_rounds</span>
+
+        <span class="c1"># Setting from the paper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_activation_hidden_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">node_hidden_size</span>
+
+        <span class="n">message_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">node_update_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reduce_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_prop_rounds</span><span class="p">):</span>
+            <span class="c1"># input being [hv, hu, xuv]</span>
+            <span class="n">message_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+                    <span class="mi">2</span> <span class="o">*</span> <span class="n">node_hidden_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_activation_hidden_size</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">reduce_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dgmg_reduce</span><span class="p">,</span> <span class="nb">round</span><span class="o">=</span><span class="n">t</span><span class="p">))</span>
+            <span class="n">node_update_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">GRUCell</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_activation_hidden_size</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_funcs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">message_funcs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_update_funcs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">node_update_funcs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">dgmg_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For an edge u-&gt;v, return concat([h_u, x_uv])&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">edges</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">],</span> <span class="n">edges</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;he&quot;</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)}</span>
+
+    <span class="k">def</span> <span class="nf">dgmg_reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="nb">round</span><span class="p">):</span>
+        <span class="n">hv_old</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">mailbox</span><span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">]</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">hv_old</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">m</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="n">node_activation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_funcs</span><span class="p">[</span><span class="nb">round</span><span class="p">](</span><span class="n">message</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">node_activation</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_prop_rounds</span><span class="p">):</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span>
+                    <span class="n">message_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dgmg_msg</span><span class="p">,</span> <span class="n">reduce_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce_funcs</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_update_funcs</span><span class="p">[</span><span class="n">t</span><span class="p">](</span>
+                    <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Actions">
+<h3>Actions<a class="headerlink" href="#Actions" title="Link to this heading"></a></h3>
+<p>All actions are sampled from distributions parameterized using neural networks and here they are in turn.</p>
+<section id="Action-1:-Add-nodes">
+<h4>Action 1: Add nodes<a class="headerlink" href="#Action-1:-Add-nodes" title="Link to this heading"></a></h4>
+<p>Given the graph embedding vector <span class="math notranslate nohighlight">\(\textbf{h}_{G}\)</span>, evaluate</p>
+<p><span class="math">\begin{align}\text{Sigmoid}(\textbf{W}_{\text{add node}}\textbf{h}_{G}+b_{\text{add node}}),\\\end{align}</span></p>
+<p>which is then used to parametrize a Bernoulli distribution for deciding whether to add a new node.</p>
+<p>If a new node is to be added, initialize its feature with</p>
+<p><span class="math">\begin{align}\textbf{W}_{\text{init}}\text{concat}([\textbf{h}_{\text{init}} , \textbf{h}_{G}])+\textbf{b}_{\text{init}},\\\end{align}</span></p>
+<p>where <span class="math notranslate nohighlight">\(\textbf{h}_{\text{init}}\)</span> is a learnable embedding module for untyped nodes.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">torch.distributions</span> <span class="kn">import</span> <span class="n">Bernoulli</span>
+
+
+<span class="k">def</span> <span class="nf">bernoulli_action_log_prob</span><span class="p">(</span><span class="n">logit</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the log p of an action with respect to a Bernoulli</span>
+<span class="sd">    distribution. Use logit rather than prob for numerical stability.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">logsigmoid</span><span class="p">(</span><span class="o">-</span><span class="n">logit</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">logsigmoid</span><span class="p">(</span><span class="n">logit</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">AddNode</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph_embed_func</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddNode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_op</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;embed&quot;</span><span class="p">:</span> <span class="n">graph_embed_func</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">graph_embed_func</span><span class="o">.</span><span class="n">graph_hidden_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># If to add a node, initialize its hv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_type_embed</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_hv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">node_hidden_size</span> <span class="o">+</span> <span class="n">graph_embed_func</span><span class="o">.</span><span class="n">graph_hidden_size</span><span class="p">,</span>
+            <span class="n">node_hidden_size</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_node_activation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">node_hidden_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_node_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">graph_embed</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whenver a node is added, initialize its representation.&quot;&quot;&quot;</span>
+        <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+        <span class="n">hv_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_hv</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">node_type_embed</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="n">node_type</span><span class="p">])),</span>
+                    <span class="n">graph_embed</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">num_nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hv_init</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">num_nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_node_activation</span>
+
+    <span class="k">def</span> <span class="nf">prepare_training</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">graph_embed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_op</span><span class="p">[</span><span class="s2">&quot;embed&quot;</span><span class="p">](</span><span class="n">g</span><span class="p">)</span>
+
+        <span class="n">logit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">graph_embed</span><span class="p">)</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">logit</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">Bernoulli</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_node_repr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">graph_embed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">sample_log_prob</span> <span class="o">=</span> <span class="n">bernoulli_action_log_prob</span><span class="p">(</span><span class="n">logit</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_log_prob</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stop</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Action-2:-Add-edges">
+<h4>Action 2: Add edges<a class="headerlink" href="#Action-2:-Add-edges" title="Link to this heading"></a></h4>
+<p>Given the graph embedding vector <span class="math notranslate nohighlight">\(\textbf{h}_{G}\)</span> and the node embedding vector <span class="math notranslate nohighlight">\(\textbf{h}_{v}\)</span> for the latest node <span class="math notranslate nohighlight">\(v\)</span>, you evaluate</p>
+<p><span class="math">\begin{align}\text{Sigmoid}(\textbf{W}_{\text{add edge}}\text{concat}([\textbf{h}_{G}, \textbf{h}_{v}])+b_{\text{add edge}}),\\\end{align}</span></p>
+<p>which is then used to parametrize a Bernoulli distribution for deciding whether to add a new edge starting from <span class="math notranslate nohighlight">\(v\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AddEdge</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph_embed_func</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddEdge</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_op</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;embed&quot;</span><span class="p">:</span> <span class="n">graph_embed_func</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">graph_embed_func</span><span class="o">.</span><span class="n">graph_hidden_size</span> <span class="o">+</span> <span class="n">node_hidden_size</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">prepare_training</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">graph_embed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_op</span><span class="p">[</span><span class="s2">&quot;embed&quot;</span><span class="p">](</span><span class="n">g</span><span class="p">)</span>
+        <span class="n">src_embed</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span>
+
+        <span class="n">logit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">graph_embed</span><span class="p">,</span> <span class="n">src_embed</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">logit</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">sample_log_prob</span> <span class="o">=</span> <span class="n">bernoulli_action_log_prob</span><span class="p">(</span><span class="n">logit</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_log_prob</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">Bernoulli</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">to_add_edge</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">action</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_add_edge</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Action-3:-Choose-a-destination">
+<h4>Action 3: Choose a destination<a class="headerlink" href="#Action-3:-Choose-a-destination" title="Link to this heading"></a></h4>
+<p>When action 2 returns <code class="docutils literal notranslate"><span class="pre">True</span></code>, choose a destination for the latest node <span class="math notranslate nohighlight">\(v\)</span>.</p>
+<p>For each possible destination <span class="math notranslate nohighlight">\(u\in\{0, \cdots, v-1\}\)</span>, the probability of choosing it is given by</p>
+<p><span class="math">\begin{align}\frac{\text{exp}(\textbf{W}_{\text{dest}}\text{concat}([\textbf{h}_{u}, \textbf{h}_{v}])+\textbf{b}_{\text{dest}})}{\sum_{i=0}^{v-1}\text{exp}(\textbf{W}_{\text{dest}}\text{concat}([\textbf{h}_{i}, \textbf{h}_{v}])+\textbf{b}_{\text{dest}})}\\\end{align}</span></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch.distributions</span> <span class="kn">import</span> <span class="n">Categorical</span>
+
+
+<span class="k">class</span> <span class="nc">ChooseDestAndUpdate</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph_prop_func</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ChooseDestAndUpdate</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_op</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;prop&quot;</span><span class="p">:</span> <span class="n">graph_prop_func</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choose_dest</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">node_hidden_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_edge_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">src_list</span><span class="p">,</span> <span class="n">dest_list</span><span class="p">):</span>
+        <span class="c1"># For untyped edges, only add 1 to indicate its existence.</span>
+        <span class="c1"># For multiple edge types, use a one-hot representation</span>
+        <span class="c1"># or an embedding module.</span>
+        <span class="n">edge_repr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src_list</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">src_list</span><span class="p">,</span> <span class="n">dest_list</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;he&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_repr</span>
+
+    <span class="k">def</span> <span class="nf">prepare_training</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">possible_dests</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+
+        <span class="n">src_embed_expand</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">src</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">possible_dests_embed</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">possible_dests</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;hv&quot;</span><span class="p">]</span>
+
+        <span class="n">dests_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_dest</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">possible_dests_embed</span><span class="p">,</span> <span class="n">src_embed_expand</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dests_probs</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dests_scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">dest</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">dests_probs</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">has_edges_between</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+            <span class="c1"># For undirected graphs, add edges for both directions</span>
+            <span class="c1"># so that you can perform graph propagation.</span>
+            <span class="n">src_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">]</span>
+            <span class="n">dest_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">dest</span><span class="p">,</span> <span class="n">src</span><span class="p">]</span>
+
+            <span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">src_list</span><span class="p">,</span> <span class="n">dest_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_edge_repr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">src_list</span><span class="p">,</span> <span class="n">dest_list</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_op</span><span class="p">[</span><span class="s2">&quot;prop&quot;</span><span class="p">](</span><span class="n">g</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dests_probs</span><span class="o">.</span><span class="n">nelement</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">dests_scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">dest</span> <span class="p">:</span> <span class="n">dest</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Putting-it-together">
+<h3>Putting it together<a class="headerlink" href="#Putting-it-together" title="Link to this heading"></a></h3>
+<p>You are now ready to have a complete implementation of the model class.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DGMG</span><span class="p">(</span><span class="n">DGMGSkeleton</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_max</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">,</span> <span class="n">num_prop_rounds</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DGMG</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">v_max</span><span class="p">)</span>
+
+        <span class="c1"># Graph embedding module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_embed</span> <span class="o">=</span> <span class="n">GraphEmbed</span><span class="p">(</span><span class="n">node_hidden_size</span><span class="p">)</span>
+
+        <span class="c1"># Graph propagation module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_prop</span> <span class="o">=</span> <span class="n">GraphProp</span><span class="p">(</span><span class="n">num_prop_rounds</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">)</span>
+
+        <span class="c1"># Actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_node_agent</span> <span class="o">=</span> <span class="n">AddNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_embed</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_agent</span> <span class="o">=</span> <span class="n">AddEdge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_embed</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choose_dest_agent</span> <span class="o">=</span> <span class="n">ChooseDestAndUpdate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_prop</span><span class="p">,</span> <span class="n">node_hidden_size</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Forward functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forward_train</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">forward_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forward_inference</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">forward_inference</span><span class="p">,</span> <span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">action_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">old_step_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">old_step_count</span>
+
+    <span class="k">def</span> <span class="nf">prepare_for_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_node_agent</span><span class="o">.</span><span class="n">prepare_training</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_agent</span><span class="o">.</span><span class="n">prepare_training</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choose_dest_agent</span><span class="o">.</span><span class="n">prepare_training</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add_node_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decide if to add a new node.</span>
+<span class="sd">        If a new node should be added, update the graph.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_node_agent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_edge_or_not</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decide if a new edge should be added.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_agent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">choose_dest_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Choose destination and connect it to the latest node.</span>
+<span class="sd">        Add edges for both directions and update the graph.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">choose_dest_agent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">add_node_log_p</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_node_agent</span><span class="o">.</span><span class="n">log_prob</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">add_edge_log_p</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_edge_agent</span><span class="o">.</span><span class="n">log_prob</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">choose_dest_log_p</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">choose_dest_agent</span><span class="o">.</span><span class="n">log_prob</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">add_node_log_p</span> <span class="o">+</span> <span class="n">add_edge_log_p</span> <span class="o">+</span> <span class="n">choose_dest_log_p</span>
+</pre></div>
+</div>
+</div>
+<p>Below is an animation where a graph is generated on the fly after every 10 batches of training for the first 400 batches. You can see how the model improves over time and begins generating cycles.</p>
+<figure class="align-default">
+<img alt="https://user-images.githubusercontent.com/19576924/48929291-60fe3880-ef22-11e8-832a-fbe56656559a.gif:alt:" src="https://user-images.githubusercontent.com/19576924/48929291-60fe3880-ef22-11e8-832a-fbe56656559a.gif:alt:" />
+</figure>
+<p>For generative models, you can evaluate performance by checking the percentage of valid graphs among the graphs it generates on the fly.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.utils.model_zoo</span> <span class="k">as</span> <span class="nn">model_zoo</span>
+
+<span class="c1"># Download a pre-trained model state dict for generating cycles with 10-20 nodes.</span>
+<a href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict" class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">state_dict</span></a> <span class="o">=</span> <span class="n">model_zoo</span><span class="o">.</span><span class="n">load_url</span><span class="p">(</span>
+    <span class="s2">&quot;https://data.dgl.ai/model/dgmg_cycles-5a0c40be.pth&quot;</span>
+<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">DGMG</span><span class="p">(</span><span class="n">v_max</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">node_hidden_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_prop_rounds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><a href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict" class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">state_dict</span></a><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="c1"># Check if g is a cycle having 10-20 nodes.</span>
+    <span class="k">def</span> <span class="nf">_get_previous</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">,</span> <span class="n">v_max</span><span class="p">):</span>
+        <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_max</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_get_next</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">,</span> <span class="n">v_max</span><span class="p">):</span>
+        <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">==</span> <span class="n">v_max</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">_get_previous</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">_get_next</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_valid</span></a> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">model</span><span class="p">()</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_valid</span></a> <span class="o">+=</span> <span class="n">is_valid</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">model</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Among 100 graphs generated, </span><span class="si">{}% a</span><span class="s2">re valid.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_valid</span></a><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Among 100 graphs generated, 97% are valid.
+</pre></div></div>
+</div>
+<p>For the complete implementation, see the <a class="reference external" href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/dgmg">DGL DGMG example</a>_.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Generative models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../4_old_wines/index.html" class="btn btn-neutral float-right" title="Revisit classic models from a graph perspective" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

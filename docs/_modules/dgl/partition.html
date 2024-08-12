@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.partition &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.partition</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.partition</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module for graph partition utilities.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">F</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">._ffi.function</span> <span class="kn">import</span> <span class="n">_init_api</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">EID</span><span class="p">,</span> <span class="n">ETYPE</span><span class="p">,</span> <span class="n">NID</span><span class="p">,</span> <span class="n">NTYPE</span>
+<span class="kn">from</span> <span class="nn">.heterograph</span> <span class="kn">import</span> <span class="n">DGLGraph</span>
+<span class="kn">from</span> <span class="nn">.ndarray</span> <span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span> <span class="nn">.subgraph</span> <span class="kn">import</span> <span class="n">edge_subgraph</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;metis_partition&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;metis_partition_assignment&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;partition_graph_with_halo&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">reorder_nodes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">new_node_ids</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a new graph with new node IDs.</span>
+
+<span class="sd">    We assign each node in the input graph with a new node ID. This results in</span>
+<span class="sd">    a new graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The input graph</span>
+<span class="sd">    new_node_ids : a tensor</span>
+<span class="sd">        The new node IDs</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DGLGraph</span>
+<span class="sd">        The graph with new node IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">new_node_ids</span><span class="p">)</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+    <span class="p">),</span> <span class="s2">&quot;The number of new node ids must match #nodes in the graph.&quot;</span>
+    <span class="n">new_node_ids</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">new_node_ids</span><span class="p">)</span>
+    <span class="n">sorted_ids</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sort_1d</span><span class="p">(</span><span class="n">new_node_ids</span><span class="o">.</span><span class="n">tousertensor</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">sorted_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="ow">and</span> <span class="n">F</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">sorted_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="p">),</span> <span class="s2">&quot;The new node IDs are incorrect.&quot;</span>
+    <span class="n">new_gidx</span> <span class="o">=</span> <span class="n">_CAPI_DGLReorderGraph_Hetero</span><span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">new_node_ids</span><span class="o">.</span><span class="n">todgltensor</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">new_g</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">gidx</span><span class="o">=</span><span class="n">new_gidx</span><span class="p">,</span> <span class="n">ntypes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_N&quot;</span><span class="p">],</span> <span class="n">etypes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_E&quot;</span><span class="p">])</span>
+    <span class="n">new_g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+    <span class="k">return</span> <span class="n">new_g</span>
+
+
+<span class="k">def</span> <span class="nf">_get_halo_heterosubgraph_inner_node</span><span class="p">(</span><span class="n">halo_subg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_CAPI_GetHaloSubgraphInnerNodes_Hetero</span><span class="p">(</span><span class="n">halo_subg</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">reshuffle_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">node_part</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reshuffle node ids and edge IDs of a graph.</span>
+
+<span class="sd">    This function reshuffles nodes and edges in a graph so that all nodes/edges of the same type</span>
+<span class="sd">    have contiguous IDs. If a graph is partitioned and nodes are assigned to different partitions,</span>
+<span class="sd">    all nodes/edges in a partition should</span>
+<span class="sd">    get contiguous IDs; within a partition, all nodes/edges of the same type have contigous IDs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    node_part : Tensor</span>
+<span class="sd">        This is a vector whose length is the same as the number of nodes in the input graph.</span>
+<span class="sd">        Each element indicates the partition ID the corresponding node is assigned to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (DGLGraph, Tensor)</span>
+<span class="sd">        The graph whose nodes and edges are reshuffled.</span>
+<span class="sd">        The 1D tensor that indicates the partition IDs of the nodes in the reshuffled graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># In this case, we don&#39;t need to reshuffle node IDs and edge IDs.</span>
+    <span class="k">if</span> <span class="n">node_part</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">node_part</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">node_part</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">node_part</span><span class="p">)</span>
+        <span class="n">node_part</span> <span class="o">=</span> <span class="n">node_part</span><span class="o">.</span><span class="n">tousertensor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">NTYPE</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">:</span>
+        <span class="n">is_hetero</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NTYPE</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">is_hetero</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">is_hetero</span><span class="p">:</span>
+        <span class="n">num_node_types</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NTYPE</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">node_part</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sorted_part</span><span class="p">,</span> <span class="n">new2old_map</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sort_1d</span><span class="p">(</span>
+                <span class="n">node_part</span> <span class="o">*</span> <span class="n">num_node_types</span> <span class="o">+</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NTYPE</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sorted_part</span><span class="p">,</span> <span class="n">new2old_map</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sort_1d</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NTYPE</span><span class="p">])</span>
+        <span class="n">sorted_part</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">floor_div</span><span class="p">(</span><span class="n">sorted_part</span><span class="p">,</span> <span class="n">num_node_types</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">node_part</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sorted_part</span><span class="p">,</span> <span class="n">new2old_map</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sort_1d</span><span class="p">(</span><span class="n">node_part</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">]</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">EID</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="n">new_node_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">new_node_ids</span><span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">new2old_map</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+    <span class="c1"># If the input graph is homogneous, we only need to create an empty array, so that</span>
+    <span class="c1"># _CAPI_DGLReassignEdges_Hetero knows how to handle it.</span>
+    <span class="n">etype</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">ETYPE</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ETYPE</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">edata</span>
+        <span class="k">else</span> <span class="n">F</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">sorted_part</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+    <span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">reorder_nodes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">new_node_ids</span><span class="p">)</span>
+    <span class="n">node_part</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">sorted_part</span><span class="p">)</span>
+    <span class="c1"># We reassign edges in in-CSR. In this way, after partitioning, we can ensure</span>
+    <span class="c1"># that all edges in a partition are in the contiguous ID space.</span>
+    <span class="n">etype_idx</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">etype</span><span class="p">)</span>
+    <span class="n">orig_eids</span> <span class="o">=</span> <span class="n">_CAPI_DGLReassignEdges_Hetero</span><span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">etype_idx</span><span class="o">.</span><span class="n">todgltensor</span><span class="p">(),</span> <span class="n">node_part</span><span class="o">.</span><span class="n">todgltensor</span><span class="p">(),</span> <span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">orig_eids</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">orig_eids</span><span class="p">)</span>
+    <span class="n">orig_eids</span> <span class="o">=</span> <span class="n">orig_eids</span><span class="o">.</span><span class="n">tousertensor</span><span class="p">()</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_eids</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Reshuffle nodes and edges: </span><span class="si">{:.3f}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">node_part</span><span class="o">.</span><span class="n">tousertensor</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="partition_graph_with_halo">
+<a class="viewcode-back" href="../../generated/dgl.partition_graph_with_halo.html#dgl.partition_graph_with_halo">[docs]</a>
+<span class="k">def</span> <span class="nf">partition_graph_with_halo</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">node_part</span><span class="p">,</span> <span class="n">extra_cached_hops</span><span class="p">,</span> <span class="n">reshuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Partition a graph.</span>
+
+<span class="sd">    Based on the given node assignments for each partition, the function splits</span>
+<span class="sd">    the input graph into subgraphs. A subgraph may contain HALO nodes which does</span>
+<span class="sd">    not belong to the partition of a subgraph but are connected to the nodes</span>
+<span class="sd">    in the partition within a fixed number of hops.</span>
+
+<span class="sd">    If `reshuffle` is turned on, the function reshuffles node IDs and edge IDs</span>
+<span class="sd">    of the input graph before partitioning. After reshuffling, all nodes and edges</span>
+<span class="sd">    in a partition fall in a contiguous ID range in the input graph.</span>
+<span class="sd">    The partitioend subgraphs have node data &#39;orig_id&#39;, which stores the node IDs</span>
+<span class="sd">    in the original input graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ------------</span>
+<span class="sd">    g: DGLGraph</span>
+<span class="sd">        The graph to be partitioned</span>
+<span class="sd">    node_part: 1D tensor</span>
+<span class="sd">        Specify which partition a node is assigned to. The length of this tensor</span>
+<span class="sd">        needs to be the same as the number of nodes of the graph. Each element</span>
+<span class="sd">        indicates the partition ID of a node.</span>
+<span class="sd">    extra_cached_hops: int</span>
+<span class="sd">        The number of hops a HALO node can be accessed.</span>
+<span class="sd">    reshuffle : bool</span>
+<span class="sd">        Resuffle nodes so that nodes in the same partition are in the same ID range.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    a dict of DGLGraphs</span>
+<span class="sd">        The key is the partition ID and the value is the DGLGraph of the partition.</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        1D tensor that stores the mapping between the reshuffled node IDs and</span>
+<span class="sd">        the original node IDs if &#39;reshuffle=True&#39;. Otherwise, return None.</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        1D tensor that stores the mapping between the reshuffled edge IDs and</span>
+<span class="sd">        the original edge IDs if &#39;reshuffle=True&#39;. Otherwise, return None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_part</span><span class="p">)</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">reshuffle</span><span class="p">:</span>
+        <span class="n">g</span><span class="p">,</span> <span class="n">node_part</span> <span class="o">=</span> <span class="n">reshuffle_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">node_part</span><span class="p">)</span>
+        <span class="n">orig_nids</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span>
+        <span class="n">orig_eids</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span>
+
+    <span class="n">node_part</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">node_part</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">subgs</span> <span class="o">=</span> <span class="n">_CAPI_DGLPartitionWithHalo_Hetero</span><span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">node_part</span><span class="o">.</span><span class="n">todgltensor</span><span class="p">(),</span> <span class="n">extra_cached_hops</span>
+    <span class="p">)</span>
+    <span class="c1"># g is no longer needed. Free memory.</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Split the graph: </span><span class="si">{:.3f}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+    <span class="n">subg_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">node_part</span> <span class="o">=</span> <span class="n">node_part</span><span class="o">.</span><span class="n">tousertensor</span><span class="p">()</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># This function determines whether an edge belongs to a partition.</span>
+    <span class="c1"># An edge is assigned to a partition based on its destination node. If its destination node</span>
+    <span class="c1"># is assigned to a partition, we assign the edge to the partition as well.</span>
+    <span class="k">def</span> <span class="nf">get_inner_edge</span><span class="p">(</span><span class="n">subg</span><span class="p">,</span> <span class="n">inner_node</span><span class="p">):</span>
+        <span class="n">inner_edge</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">subg</span><span class="o">.</span><span class="n">num_edges</span><span class="p">(),),</span> <span class="n">F</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+        <span class="n">inner_nids</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nonzero_1d</span><span class="p">(</span><span class="n">inner_node</span><span class="p">)</span>
+        <span class="c1"># TODO(zhengda) we need to fix utils.toindex() to avoid the dtype cast below.</span>
+        <span class="n">inner_nids</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">inner_nids</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">inner_eids</span> <span class="o">=</span> <span class="n">subg</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">inner_nids</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s2">&quot;eid&quot;</span><span class="p">)</span>
+        <span class="n">inner_edge</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">scatter_row</span><span class="p">(</span>
+            <span class="n">inner_edge</span><span class="p">,</span>
+            <span class="n">inner_eids</span><span class="p">,</span>
+            <span class="n">F</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">inner_eids</span><span class="p">),),</span> <span class="n">F</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">inner_edge</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">()),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">inner_edge</span>
+
+    <span class="c1"># This creaets a subgraph from subgraphs returned from the CAPI above.</span>
+    <span class="k">def</span> <span class="nf">create_subgraph</span><span class="p">(</span><span class="n">subg</span><span class="p">,</span> <span class="n">induced_nodes</span><span class="p">,</span> <span class="n">induced_edges</span><span class="p">,</span> <span class="n">inner_node</span><span class="p">):</span>
+        <span class="n">subg1</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">gidx</span><span class="o">=</span><span class="n">subg</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">ntypes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_N&quot;</span><span class="p">],</span> <span class="n">etypes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_E&quot;</span><span class="p">])</span>
+        <span class="c1"># If IDs are shuffled, we should shuffled edges. This will help us collect edge data</span>
+        <span class="c1"># from the distributed graph after training.</span>
+        <span class="k">if</span> <span class="n">reshuffle</span><span class="p">:</span>
+            <span class="c1"># When we shuffle edges, we need to make sure that the inner edges are assigned with</span>
+            <span class="c1"># contiguous edge IDs and their ID range starts with 0. In other words, we want to</span>
+            <span class="c1"># place these edge IDs in the front of the edge list. To ensure that, we add the IDs</span>
+            <span class="c1"># of outer edges with a large value, so we will get the sorted list as we want.</span>
+            <span class="n">max_eid</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">induced_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">inner_edge</span> <span class="o">=</span> <span class="n">get_inner_edge</span><span class="p">(</span><span class="n">subg1</span><span class="p">,</span> <span class="n">inner_node</span><span class="p">)</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">induced_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="o">+</span> <span class="n">max_eid</span> <span class="o">*</span> <span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">inner_edge</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">int64</span>
+            <span class="p">)</span>
+
+            <span class="n">_</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">sort_1d</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+            <span class="n">subg1</span> <span class="o">=</span> <span class="n">edge_subgraph</span><span class="p">(</span><span class="n">subg1</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">subg1</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">]</span> <span class="o">=</span> <span class="n">induced_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">subg1</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">gather_row</span><span class="p">(</span><span class="n">induced_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subg1</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">]</span> <span class="o">=</span> <span class="n">induced_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">subg1</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">induced_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">subg1</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">subg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subgs</span><span class="p">):</span>
+        <span class="n">inner_node</span> <span class="o">=</span> <span class="n">_get_halo_heterosubgraph_inner_node</span><span class="p">(</span><span class="n">subg</span><span class="p">)</span>
+        <span class="n">inner_node</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dlpack</span><span class="p">(</span><span class="n">inner_node</span><span class="o">.</span><span class="n">to_dlpack</span><span class="p">())</span>
+        <span class="n">subg</span> <span class="o">=</span> <span class="n">create_subgraph</span><span class="p">(</span>
+            <span class="n">subg</span><span class="p">,</span> <span class="n">subg</span><span class="o">.</span><span class="n">induced_nodes</span><span class="p">,</span> <span class="n">subg</span><span class="o">.</span><span class="n">induced_edges</span><span class="p">,</span> <span class="n">inner_node</span>
+        <span class="p">)</span>
+        <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;inner_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_node</span>
+        <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;part_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">gather_row</span><span class="p">(</span><span class="n">node_part</span><span class="p">,</span> <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">reshuffle</span><span class="p">:</span>
+            <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">gather_row</span><span class="p">(</span><span class="n">orig_nids</span><span class="p">,</span> <span class="n">subg</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="n">NID</span><span class="p">])</span>
+            <span class="n">subg</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;orig_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">gather_row</span><span class="p">(</span><span class="n">orig_eids</span><span class="p">,</span> <span class="n">subg</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">EID</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">extra_cached_hops</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">inner_edge</span> <span class="o">=</span> <span class="n">get_inner_edge</span><span class="p">(</span><span class="n">subg</span><span class="p">,</span> <span class="n">inner_node</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inner_edge</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">subg</span><span class="o">.</span><span class="n">num_edges</span><span class="p">(),),</span> <span class="n">F</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+        <span class="n">subg</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="s2">&quot;inner_edge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_edge</span>
+        <span class="n">subg_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">subg</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Construct subgraphs: </span><span class="si">{:.3f}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">reshuffle</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">subg_dict</span><span class="p">,</span> <span class="n">orig_nids</span><span class="p">,</span> <span class="n">orig_eids</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">subg_dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">get_peak_mem</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the peak memory size.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        The peak memory size in GB.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/proc/self/status&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/proc/self/status&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;VmPeak&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">mem</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+    <span class="k">return</span> <span class="mf">0.0</span>
+
+
+<div class="viewcode-block" id="metis_partition_assignment">
+<a class="viewcode-back" href="../../generated/dgl.metis_partition_assignment.html#dgl.metis_partition_assignment">[docs]</a>
+<span class="k">def</span> <span class="nf">metis_partition_assignment</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">balance_ntypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">balance_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;k-way&quot;</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="s2">&quot;cut&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This assigns nodes to different partitions with Metis partitioning algorithm.</span>
+
+<span class="sd">    When performing Metis partitioning, we can put some constraint on the partitioning.</span>
+<span class="sd">    Current, it supports two constrants to balance the partitioning. By default, Metis</span>
+<span class="sd">    always tries to balance the number of nodes in each partition.</span>
+
+<span class="sd">    * `balance_ntypes` balances the number of nodes of different types in each partition.</span>
+<span class="sd">    * `balance_edges` balances the number of edges in each partition.</span>
+
+<span class="sd">    To balance the node types, a user needs to pass a vector of N elements to indicate</span>
+<span class="sd">    the type of each node. N is the number of nodes in the input graph.</span>
+
+<span class="sd">    After the partition assignment, we construct partitions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : DGLGraph</span>
+<span class="sd">        The graph to be partitioned</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The number of partitions.</span>
+<span class="sd">    balance_ntypes : tensor</span>
+<span class="sd">        Node type of each node</span>
+<span class="sd">    balance_edges : bool</span>
+<span class="sd">        Indicate whether to balance the edges.</span>
+<span class="sd">    mode : str, &quot;k-way&quot; or &quot;recursive&quot;</span>
+<span class="sd">        Whether use multilevel recursive bisection or multilevel k-way paritioning.</span>
+<span class="sd">    objtype : str, &quot;cut&quot; or &quot;vol&quot;</span>
+<span class="sd">        Set the objective as edge-cut minimization or communication volume minimization. This</span>
+<span class="sd">        argument is used by the Metis algorithm.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    a 1-D tensor</span>
+<span class="sd">        A vector with each element that indicates the partition ID of a vertex.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="s2">&quot;k-way&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recursive&quot;</span><span class="p">,</span>
+    <span class="p">),</span> <span class="s2">&quot;&#39;mode&#39; can only be &#39;k-way&#39; or &#39;recursive&#39;&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">idtype</span> <span class="o">==</span> <span class="n">F</span><span class="o">.</span><span class="n">int64</span>
+    <span class="p">),</span> <span class="s2">&quot;IdType of graph is required to be int64 for now.&quot;</span>
+    <span class="c1"># METIS works only on symmetric graphs.</span>
+    <span class="c1"># The METIS runs on the symmetric graph to generate the node assignment to partitions.</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">sym_gidx</span> <span class="o">=</span> <span class="n">_CAPI_DGLMakeSymmetric_Hetero</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">_graph</span><span class="p">)</span>
+    <span class="n">sym_g</span> <span class="o">=</span> <span class="n">DGLGraph</span><span class="p">(</span><span class="n">gidx</span><span class="o">=</span><span class="n">sym_gidx</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Convert a graph into a bidirected graph: </span><span class="si">{:.3f}</span><span class="s2"> seconds, peak memory: </span><span class="si">{:.3f}</span><span class="s2"> GB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">get_peak_mem</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">vwgt</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># To balance the node types in each partition, we can take advantage of the vertex weights</span>
+    <span class="c1"># in Metis. When vertex weights are provided, Metis will tries to generate partitions with</span>
+    <span class="c1"># balanced vertex weights. A vertex can be assigned with multiple weights. The vertex weights</span>
+    <span class="c1"># are stored in a vector of N * w elements, where N is the number of vertices and w</span>
+    <span class="c1"># is the number of weights per vertex. Metis tries to balance the first weight, and then</span>
+    <span class="c1"># the second weight, and so on.</span>
+    <span class="c1"># When balancing node types, we use the first weight to indicate the first node type.</span>
+    <span class="c1"># if a node belongs to the first node type, its weight is set to 1; otherwise, 0.</span>
+    <span class="c1"># Similary, we set the second weight for the second node type and so on. The number</span>
+    <span class="c1"># of weights is the same as the number of node types.</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">balance_ntypes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">balance_ntypes</span><span class="p">)</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
+        <span class="p">),</span> <span class="s2">&quot;The length of balance_ntypes should be equal to #nodes in the graph&quot;</span>
+        <span class="n">balance_ntypes</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">balance_ntypes</span><span class="p">)</span>
+        <span class="n">uniq_ntypes</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">balance_ntypes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">uniq_ntypes</span><span class="p">:</span>
+            <span class="n">vwgt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">balance_ntypes</span> <span class="o">==</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+
+    <span class="c1"># When balancing edges in partitions, we use in-degree as one of the weights.</span>
+    <span class="k">if</span> <span class="n">balance_edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">balance_ntypes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">vwgt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">(),</span> <span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">uniq_ntypes</span><span class="p">:</span>
+                <span class="n">nids</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">nonzero_1d</span><span class="p">(</span><span class="n">balance_ntypes</span> <span class="o">==</span> <span class="n">ntype</span><span class="p">))</span>
+                <span class="n">degs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),),</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+                <span class="n">degs</span><span class="p">[</span><span class="n">nids</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">in_degrees</span><span class="p">(</span><span class="n">nids</span><span class="p">))</span>
+                <span class="n">vwgt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_numpy</span><span class="p">(</span><span class="n">degs</span><span class="p">))</span>
+
+    <span class="c1"># The vertex weights have to be stored in a vector.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vwgt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vwgt</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">vwgt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">vwgt</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">vwgt</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">vwgt</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+        <span class="n">vwgt</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">vwgt</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vwgt</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="n">F</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+        <span class="n">vwgt</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_dgl_nd</span><span class="p">(</span><span class="n">vwgt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Construct multi-constraint weights: </span><span class="si">{:.3f}</span><span class="s2"> seconds, peak memory: </span><span class="si">{:.3f}</span><span class="s2"> GB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">get_peak_mem</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">node_part</span> <span class="o">=</span> <span class="n">_CAPI_DGLMetisPartition_Hetero</span><span class="p">(</span>
+        <span class="n">sym_g</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">vwgt</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="p">(</span><span class="n">objtype</span> <span class="o">==</span> <span class="s2">&quot;cut&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Metis partitioning: </span><span class="si">{:.3f}</span><span class="s2"> seconds, peak memory: </span><span class="si">{:.3f}</span><span class="s2"> GB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">get_peak_mem</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_part</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">node_part</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">toindex</span><span class="p">(</span><span class="n">node_part</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">node_part</span><span class="o">.</span><span class="n">tousertensor</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="metis_partition">
+<a class="viewcode-back" href="../../generated/dgl.metis_partition.html#dgl.metis_partition">[docs]</a>
+<span class="k">def</span> <span class="nf">metis_partition</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span>
+    <span class="n">k</span><span class="p">,</span>
+    <span class="n">extra_cached_hops</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">reshuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">balance_ntypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">balance_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;k-way&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is to partition a graph with Metis partitioning.</span>
+
+<span class="sd">    Metis assigns vertices to partitions. This API constructs subgraphs with the vertices assigned</span>
+<span class="sd">    to the partitions and their incoming edges. A subgraph may contain HALO nodes which does</span>
+<span class="sd">    not belong to the partition of a subgraph but are connected to the nodes</span>
+<span class="sd">    in the partition within a fixed number of hops.</span>
+
+<span class="sd">    When performing Metis partitioning, we can put some constraint on the partitioning.</span>
+<span class="sd">    Current, it supports two constrants to balance the partitioning. By default, Metis</span>
+<span class="sd">    always tries to balance the number of nodes in each partition.</span>
+
+<span class="sd">    * `balance_ntypes` balances the number of nodes of different types in each partition.</span>
+<span class="sd">    * `balance_edges` balances the number of edges in each partition.</span>
+
+<span class="sd">    To balance the node types, a user needs to pass a vector of N elements to indicate</span>
+<span class="sd">    the type of each node. N is the number of nodes in the input graph.</span>
+
+<span class="sd">    If `reshuffle` is turned on, the function reshuffles node IDs and edge IDs</span>
+<span class="sd">    of the input graph before partitioning. After reshuffling, all nodes and edges</span>
+<span class="sd">    in a partition fall in a contiguous ID range in the input graph.</span>
+<span class="sd">    The partitioend subgraphs have node data &#39;orig_id&#39;, which stores the node IDs</span>
+<span class="sd">    in the original input graph.</span>
+
+<span class="sd">    The partitioned subgraph is stored in DGLGraph. The DGLGraph has the `part_id`</span>
+<span class="sd">    node data that indicates the partition a node belongs to. The subgraphs do not contain</span>
+<span class="sd">    the node/edge data in the input graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ------------</span>
+<span class="sd">    g: DGLGraph</span>
+<span class="sd">        The graph to be partitioned</span>
+<span class="sd">    k: int</span>
+<span class="sd">        The number of partitions.</span>
+<span class="sd">    extra_cached_hops: int</span>
+<span class="sd">        The number of hops a HALO node can be accessed.</span>
+<span class="sd">    reshuffle : bool</span>
+<span class="sd">        Resuffle nodes so that nodes in the same partition are in the same ID range.</span>
+<span class="sd">    balance_ntypes : tensor</span>
+<span class="sd">        Node type of each node</span>
+<span class="sd">    balance_edges : bool</span>
+<span class="sd">        Indicate whether to balance the edges.</span>
+<span class="sd">    mode : str, &quot;k-way&quot; or &quot;recursive&quot;</span>
+<span class="sd">        Whether use multilevel recursive bisection or multilevel k-way paritioning.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    a dict of DGLGraphs</span>
+<span class="sd">        The key is the partition ID and the value is the DGLGraph of the partition.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="s2">&quot;k-way&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recursive&quot;</span><span class="p">,</span>
+    <span class="p">),</span> <span class="s2">&quot;&#39;mode&#39; can only be &#39;k-way&#39; or &#39;recursive&#39;&quot;</span>
+    <span class="n">node_part</span> <span class="o">=</span> <span class="n">metis_partition_assignment</span><span class="p">(</span>
+        <span class="n">g</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">balance_ntypes</span><span class="p">,</span> <span class="n">balance_edges</span><span class="p">,</span> <span class="n">mode</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">node_part</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Then we split the original graph into parts based on the METIS partitioning results.</span>
+    <span class="k">return</span> <span class="n">partition_graph_with_halo</span><span class="p">(</span>
+        <span class="n">g</span><span class="p">,</span> <span class="n">node_part</span><span class="p">,</span> <span class="n">extra_cached_hops</span><span class="p">,</span> <span class="n">reshuffle</span>
+    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">NDArrayPartition</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new partition of an NDArray. That is, an object which assigns</span>
+<span class="sd">    each row of an NDArray to a specific partition.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_size : int</span>
+<span class="sd">        The first dimension of the array being partitioned.</span>
+<span class="sd">    num_parts : int</span>
+<span class="sd">        The number of parts to divide the array into.</span>
+<span class="sd">    mode : String</span>
+<span class="sd">        The type of partition. Currently, the only valid values are</span>
+<span class="sd">        &#39;remainder&#39; and &#39;range&#39;.</span>
+<span class="sd">        &#39;remainder&#39; assigns rows based on remainder when dividing the row id by the</span>
+<span class="sd">        number of parts (e.g., i % num_parts).</span>
+<span class="sd">        &#39;range&#39; assigns rows based on which part of the range &#39;part_ranges&#39;</span>
+<span class="sd">        they fall into.</span>
+<span class="sd">    part_ranges : Tensor or dgl.NDArray, Optional</span>
+<span class="sd">        Should only be specified when the mode is &#39;range&#39;. Should be of the</span>
+<span class="sd">        length `num_parts + 1`, and be the exclusive prefix-sum of the number</span>
+<span class="sd">        of nodes in each partition. That is, for 3 partitions, we could have</span>
+<span class="sd">        the list [0, a, b, &#39;array_size&#39;], and all rows with index less</span>
+<span class="sd">        than &#39;a&#39; are assigned to partition 0, all rows with index greater than</span>
+<span class="sd">        or equal to &#39;a&#39; and less than &#39;b&#39; are in partition 1, and all rows</span>
+<span class="sd">        with index greater or equal to &#39;b&#39; are in partition 2. Should have</span>
+<span class="sd">        the same context as the partitioned NDArray (i.e., be on the same GPU).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    A partition of a homgeonous graph `g`, where the vertices are</span>
+<span class="sd">    striped across processes can be generated via:</span>
+
+<span class="sd">    &gt;&gt;&gt; from dgl.partition import NDArrayPartition</span>
+<span class="sd">    &gt;&gt;&gt; part = NDArrayPartition(g.num_nodes(), num_parts, mode=&#39;remainder&#39; )</span>
+
+<span class="sd">    A range based partition of a homogenous graph `g`&#39;s nodes, where</span>
+<span class="sd">    the nodes are stored in contiguous memory. This converts an existing</span>
+<span class="sd">    range based partitioning (e.g. from a</span>
+<span class="sd">    dgl.distributed.graph_partition_book.RangePartitionBook)</span>
+<span class="sd">    &#39;max_node_map&#39;, to an NDArrayPartition &#39;part&#39;.</span>
+
+<span class="sd">    &gt;&gt;&gt; part_range = [0]</span>
+<span class="sd">    &gt;&gt;&gt; for part in part_book.metadata():</span>
+<span class="sd">    &gt;&gt;&gt;     part_range.append(part_range[-1] + part[&#39;num_nodes&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; part = NDArrayPartition(g.num_nodes(), num_parts, mode=&#39;range&#39;,</span>
+<span class="sd">    ...                         part_ranges=part_range)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">array_size</span><span class="p">,</span> <span class="n">num_parts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;remainder&quot;</span><span class="p">,</span> <span class="n">part_ranges</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="n">num_parts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Invalid &quot;num_parts&quot;, must be &gt; 0.&#39;</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;remainder&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">part_ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+                <span class="s2">&quot;When using remainder-based &quot;</span>
+                <span class="s1">&#39;partitioning, &quot;part_ranges&quot; should not be specified.&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span> <span class="o">=</span> <span class="n">_CAPI_DGLNDArrayPartitionCreateRemainderBased</span><span class="p">(</span>
+                <span class="n">array_size</span><span class="p">,</span> <span class="n">num_parts</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;range&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">part_ranges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+                <span class="s2">&quot;When using range-based &quot;</span>
+                <span class="s1">&#39;partitioning, &quot;part_ranges&quot; must not be None.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">assert</span> <span class="n">part_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">part_ranges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">array_size</span><span class="p">,</span> <span class="p">(</span>
+                <span class="s2">&quot;part_ranges[0] must be 0, and part_ranges[-1] must be &quot;</span>
+                <span class="s1">&#39;&quot;array_size&quot;.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">part_ranges</span><span class="p">):</span>
+                <span class="n">part_ranges</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_to_dgl_ndarray</span><span class="p">(</span><span class="n">part_ranges</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part_ranges</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">),</span> <span class="p">(</span>
+                <span class="s1">&#39;&quot;part_ranges&quot; must &#39;</span> <span class="s2">&quot;be Tensor or dgl.NDArray.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span> <span class="o">=</span> <span class="n">_CAPI_DGLNDArrayPartitionCreateRangeBased</span><span class="p">(</span>
+                <span class="n">array_size</span><span class="p">,</span> <span class="n">num_parts</span><span class="p">,</span> <span class="n">part_ranges</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Unknown partition mode &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_array_size</span> <span class="o">=</span> <span class="n">array_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_parts</span> <span class="o">=</span> <span class="n">num_parts</span>
+
+    <span class="k">def</span> <span class="nf">num_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of partitions.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_parts</span>
+
+    <span class="k">def</span> <span class="nf">array_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the total size of the first dimension of the partitioned array.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_size</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the C-handle for this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span>
+
+    <span class="k">def</span> <span class="nf">get_local_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the set of global indices in this given partition.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_to_global</span><span class="p">(</span>
+            <span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_size</span><span class="p">(</span><span class="n">part</span><span class="p">),</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">),</span> <span class="n">part</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">local_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of rows/items assigned to the given part.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_CAPI_DGLNDArrayPartitionGetPartSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">map_to_local</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idxs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the set of global indices to local indices&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span>
+            <span class="n">_CAPI_DGLNDArrayPartitionMapToLocal</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_to_dgl_ndarray</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">map_to_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idxs</span><span class="p">,</span> <span class="n">part_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the set of local indices ot global indices&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span>
+            <span class="n">_CAPI_DGLNDArrayPartitionMapToGlobal</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_to_dgl_ndarray</span><span class="p">(</span><span class="n">idxs</span><span class="p">),</span> <span class="n">part_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate_permutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idxs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Produce a scheme that maps the given indices to separate partitions</span>
+<span class="sd">        and the counts of how many indices are in each partition.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        idxs: torch.Tensor.</span>
+<span class="sd">            A tensor with shape (`num_indices`,), representing global indices.</span>
+
+<span class="sd">        Return</span>
+<span class="sd">        ------</span>
+<span class="sd">        torch.Tensor.</span>
+<span class="sd">            A tensor with shape (`num_indices`,), representing the permutation</span>
+<span class="sd">            to re-order the indices by partition.</span>
+<span class="sd">        torch.Tensor.</span>
+<span class="sd">            A tensor with shape (`num_partition`,), representing the number of</span>
+<span class="sd">            indices per partition.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from dgl.partition import NDArrayPartition</span>
+<span class="sd">        &gt;&gt;&gt; part = NDArrayPartition(10, 2, mode=&quot;remainder&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; idx = torch.tensor([0, 2, 4, 5, 8, 8, 9], device=&quot;cuda:0&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; perm, splits_sum = part.generate_permutation(idx)</span>
+<span class="sd">        &gt;&gt;&gt; perm</span>
+<span class="sd">        tensor([0, 1, 2, 4, 5, 3, 6], device=&#39;cuda:0&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; splits_sum</span>
+<span class="sd">        tensor([5, 2], device=&#39;cuda:0&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">_CAPI_DGLNDArrayPartitionGeneratePermutation</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_to_dgl_ndarray</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span><span class="n">ret</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span> <span class="n">F</span><span class="o">.</span><span class="n">zerocopy_from_dgl_ndarray</span><span class="p">(</span>
+            <span class="n">ret</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="n">_init_api</span><span class="p">(</span><span class="s2">&quot;dgl.partition&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

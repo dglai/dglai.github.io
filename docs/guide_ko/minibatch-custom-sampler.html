@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.4 이웃 샘플러 커스터마이징하기 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기" href="minibatch-nn.html" />
+    <link rel="prev" title="6.3 이웃 샘플링을 사용한 링크 예측 GNN 모델 학습하기" href="minibatch-link.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="minibatch-node.html">6.1 이웃 샘플링을 사용한 노드 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-edge.html">6.2 이웃 샘플링을 사용한 에지 분류 GNN 모델 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-link.html">6.3 이웃 샘플링을 사용한 링크 예측 GNN 모델 학습하기</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6.4 이웃 샘플러 커스터마이징하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-nn.html">6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-inference.html">6.6 큰 그래프들에 대핸 정확한 오프라인 추론</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minibatch-gpu-sampling.html">6.7 이웃 샘플링에 GPU 사용하기</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">7장: 분산 학습</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+      <li class="breadcrumb-item active">6.4 이웃 샘플러 커스터마이징하기</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/minibatch-custom-sampler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-ko-minibatch-customizing-neighborhood-sampler">
+<span id="id1"></span><h1>6.4 이웃 샘플러 커스터마이징하기<a class="headerlink" href="#guide-ko-minibatch-customizing-neighborhood-sampler" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/minibatch-custom-sampler.html#guide-minibatch-customizing-neighborhood-sampler"><span class="std std-ref">(English Version)</span></a></p>
+<p>DGL이 여러 이웃 샘플링 방법들을 제공하지만, 샘플링 방법을 직접 만들어야할 경우도 있다. 이 절에서는 샘플링 방법을 직접 만드는 방법과 stochastic GNN 학습 프레임워크에서 사용하는 방법을 설명한다.</p>
+<p><a class="reference external" href="https://arxiv.org/pdf/1810.00826.pdf">그래프 뉴럴 네트워크가 얼마나 강력한가(How Powerful are Graph Neural Networks)</a> 에서 설명했듯이, 메시지 전달은 다음과 같이 정의된다.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+  \boldsymbol{a}_v^{(l)} = \rho^{(l)} \left(
+    \left\lbrace
+      \boldsymbol{h}_u^{(l-1)} : u \in \mathcal{N} \left( v \right)
+    \right\rbrace
+  \right)
+\\
+  \boldsymbol{h}_v^{(l)} = \phi^{(l)} \left(
+    \boldsymbol{h}_v^{(l-1)}, \boldsymbol{a}_v^{(l)}
+  \right)
+\end{gathered}\end{split}\]</div>
+<p>여기서, <span class="math notranslate nohighlight">\(\rho^{(l)}\)</span> 와 <span class="math notranslate nohighlight">\(\phi^{(l)}\)</span> 는 파라메터를 갖는 함수이고, <span class="math notranslate nohighlight">\(\mathcal{N}(v)`는 그래프 :math:\)</span>mathcal{G}` 에 속한 노드 <span class="math notranslate nohighlight">\(v\)</span> 의 선행 노드(predecessor)들 (또는 방향성 그래프의 경우 <em>이웃 노드들</em>)의 집합을 의미한다.</p>
+<p>아래 그래프의 빨간색 노드를 업데이트하는 메시지 전달을 수행하기 위해서는,</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_4_0.png" />
+</figure>
+<p>아래 그림의 녹색으로 표시된 이웃 노드들의 노드 피쳐들을 합쳐야한다(aggregate).</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_4_1.png" />
+</figure>
+<section id="id2">
+<h2>이웃 샘플링 직접 해보기<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>우선 위 그림의 그래프를 DGL 그래프로 정의한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">dgl</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span>
+     <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">])</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span>
+     <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>그리고 노드 한개에 대한 결과를 계산하기 위해서 멀티-레이어 메시지 전달을 어떻게 수행할지를 고려하자.</p>
+<section id="id3">
+<h3>메시지 전달 의존성 찾기<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>아래 그래프에서 2-레이어 GNN을 사용해서 시드 노드 8의 결과를 계산하는 것을 생각해보자.</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_4_2.png" />
+</figure>
+<p>공식은 다음과 같다.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+  \boldsymbol{a}_8^{(2)} = \rho^{(2)} \left(
+    \left\lbrace
+      \boldsymbol{h}_u^{(1)} : u \in \mathcal{N} \left( 8 \right)
+    \right\rbrace
+  \right) = \rho^{(2)} \left(
+    \left\lbrace
+      \boldsymbol{h}_4^{(1)}, \boldsymbol{h}_5^{(1)},
+      \boldsymbol{h}_7^{(1)}, \boldsymbol{h}_{11}^{(1)}
+    \right\rbrace
+  \right)
+\\
+  \boldsymbol{h}_8^{(2)} = \phi^{(2)} \left(
+    \boldsymbol{h}_8^{(1)}, \boldsymbol{a}_8^{(2)}
+  \right)
+\end{gathered}\end{split}\]</div>
+<p>이 공식에 따르면, <span class="math notranslate nohighlight">\(\boldsymbol{h}_8^{(2)}\)</span> 을 계산하기 위해서는 아래 그림에서와 같이 (녹색으로 표시된) 노드 4,5,7 그리고 11번에서 에지을 따라서 메시지를 수집하는 것이 필요하다.</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_4_3.png" />
+</figure>
+<p>이 그래프는 원본 그래프의 모든 노드들을 포함하고 있지만, 특정 출력 노드들에 메시지를 전달할 에지들만을 포함하고 있다. 이런 그래프를 빨간색 노드 8에 대한 두번째 GNN 레이어에 대한 <em>프론티어(frontier)</em> 라고 부른다.</p>
+<p>프론티어들을 생성하는데 여러 함수들이 사용된다. 예를 들어, <a class="reference internal" href="../generated/dgl.in_subgraph.html#dgl.in_subgraph" title="dgl.in_subgraph"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.in_subgraph()</span></code></a> 는 원본 그래프의 모든 노드를 포함하지만, 특정 노드의 진입 에지(incoming edge)들만 포함하는 서브 그래프를 유도하는 함수이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">in_subgraph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">[</span><span class="mi">8</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">frontier</span><span class="o">.</span><span class="n">all_edges</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>전체 구현은 <a class="reference internal" href="../api/python/dgl.html#api-subgraph-extraction"><span class="std std-ref">Subgraph Extraction Ops</span></a> 와 <a class="reference internal" href="../api/python/dgl.sampling.html#api-sampling"><span class="std std-ref">dgl.sampling</span></a> 를 참고하자.</p>
+<p>기술적으로는 원본 그래프와 같은 노들들 집합을 잡는 어떤 그래프도 프로티어가 될 수 있다. 이는 <a class="reference internal" href="#guide-ko-minibatch-customizing-neighborhood-sampler-impl"><span class="std std-ref">커스텀 이웃 샘플러 구현하기</span></a> 에 대한 기반이다.</p>
+</section>
+<section id="bipartite-structure">
+<h3>멀티-레이어 미니배치 메시지 전달을 위한 이분 구조(Bipartite Structure)<a class="headerlink" href="#bipartite-structure" title="Link to this heading"></a></h3>
+<p>하지만, <span class="math notranslate nohighlight">\(\boldsymbol{h}_\cdot^{(1)}\)</span> 로부터 단순히 <span class="math notranslate nohighlight">\(\boldsymbol{h}_8^{(2)}\)</span> 를 계산하는 것은 프론티어에서 메시지 전달을 계산하는 방식으로 할 수 없다. 그 이유는, 여전히 프론티어가 원본 그래프의 모든 노드를 포함하고 있기 때문이다. 이 그래프의 경우, (녹색과 빨간색 노드들) 4, 5, 7, 8, 11 노드들만이 입력으로 필요하고, 출력으로는 (빨간색 노드) 노드 8번이 필요하다. 입력과 출력의 노드 개수가 다르기 때문에, 작은 이분-구조(bipartite-structured) 그래프에서 메시지 전달을 수행할 필요가 있다.</p>
+<p>아래 그림은 노드 8에 대해서 2번째 GNN 레이어의 MFG를 보여준다.</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_4_4.png" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Message Flow Graph에 대한 개념은 <span class="xref std std-doc">Stochastic Training Tutorial</span> 참고하자.</p>
+</div>
+<p>목적지 노드들이 소스 노드에도 등장한다는 점을 유의하자. 그 이유는 메시지 전달(예를 들어, <span class="math notranslate nohighlight">\(\phi^{(2)}\)</span> )이 수행된 후에 이전 레이어의 목적지 노드들의 representation들이 피처를 합치는데 사용되기 때문이다.</p>
+<p>DGL은 임의의 프론티어를 MFG로 변환하는 <a class="reference internal" href="../generated/dgl.to_block.html#dgl.to_block" title="dgl.to_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgl.to_block()</span></code></a> 함수를 제공한다. 이 함수의 첫번째 인자는 프론티어이고, 두번째 인자는 목적지 노드들이다. 예를 들어, 위 프론티어는 목적지 노드 8에 대한 MFG로 전환하는 코드는 다음과 같다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dst_nodes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="mi">8</span><span class="p">])</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">dst_nodes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../generated/dgl.DGLGraph.number_of_src_nodes.html#dgl.DGLGraph.number_of_src_nodes" title="dgl.DGLGraph.number_of_src_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dgl.DGLGraph.number_of_src_nodes()</span></code></a> 와
+<a class="reference internal" href="../generated/dgl.DGLGraph.number_of_dst_nodes.html#dgl.DGLGraph.number_of_dst_nodes" title="dgl.DGLGraph.number_of_dst_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dgl.DGLGraph.number_of_dst_nodes()</span></code></a> 메소스들 사용해서 특정 노트 타입의 소스 노드 및 목적지 노드의 수를 알아낼 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_src_nodes</span><span class="p">,</span> <span class="n">num_dst_nodes</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">number_of_src_nodes</span><span class="p">(),</span> <span class="n">block</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">num_src_nodes</span><span class="p">,</span> <span class="n">num_dst_nodes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../generated/dgl.DGLGraph.srcdata.html#dgl.DGLGraph.srcdata" title="dgl.DGLGraph.srcdata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dgl.DGLGraph.srcdata</span></code></a> 와 <a class="reference internal" href="../generated/dgl.DGLGraph.srcnodes.html#dgl.DGLGraph.srcnodes" title="dgl.DGLGraph.srcnodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dgl.DGLGraph.srcnodes</span></code></a> 같은 멤머를 통해서 MFG의 소스 노드 피쳐들을 접근할 수 있고, <a class="reference internal" href="../generated/dgl.DGLGraph.dstdata.html#dgl.DGLGraph.dstdata" title="dgl.DGLGraph.dstdata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dgl.DGLGraph.dstdata</span></code></a> 와 <a class="reference internal" href="../generated/dgl.DGLGraph.dstnodes.html#dgl.DGLGraph.dstnodes" title="dgl.DGLGraph.dstnodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dgl.DGLGraph.dstnodes</span></code></a> 를 통해서는 목적지 노드의 피쳐들을 접근할 수 있다. <code class="docutils literal notranslate"><span class="pre">srcdata</span></code> / <code class="docutils literal notranslate"><span class="pre">dstdata</span></code> 와 <code class="docutils literal notranslate"><span class="pre">srcnodes</span></code> / <code class="docutils literal notranslate"><span class="pre">dstnodes</span></code> 의 사용법은 일반 그래프에 사용하는 <a class="reference internal" href="../generated/dgl.DGLGraph.ndata.html#dgl.DGLGraph.ndata" title="dgl.DGLGraph.ndata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dgl.DGLGraph.ndata</span></code></a> 와 <a class="reference internal" href="../generated/dgl.DGLGraph.nodes.html#dgl.DGLGraph.nodes" title="dgl.DGLGraph.nodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dgl.DGLGraph.nodes</span></code></a> 와 동일하다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">num_src_nodes</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">num_dst_nodes</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>만약 MFG가 프론티어에서 만들어졌다면, 즉 프래프에서 만들어졌다면, MFG의 소스 및 목적지 노드의 피쳐는 다음과 같이 직접 읽을 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MFG에서의 소스 노드와 목적지 노드의 원본의 노드 ID는 <code class="docutils literal notranslate"><span class="pre">dgl.NID</span></code> 피쳐에 저장되어 있고, MFG의 에지 ID들와 프론티어의 에지 ID 사이의 매핑은 <code class="docutils literal notranslate"><span class="pre">dgl.EID</span></code> 에 있다.</p>
+</div>
+<p>DGL에서는 MFG의 목적지 노드들이 항상 소스 노드에도 있도록 하고 있다. 다음 코드에서 알수 있듯이, 목적지 노드들은 소스 노드들에서 늘 먼저 위치한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">src_nodes</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+<span class="n">dst_nodes</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">src_nodes</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">dst_nodes</span><span class="p">)],</span> <span class="n">dst_nodes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>그 결과, 목적지 노드들은 프론티어의 에지들의 목적지인 모든 노들들을 포함해야 한다.</p>
+<p>예를 들어, 아래 프론티어를 생각해 보자.</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/asset/image/guide_6_4_5.png" />
+</figure>
+<p>여기서 빨간 노드와 녹색 노드들 (즉, 4, 5, 7, 8 그리고 11번 노드)는 에지의 목적지가 되는 노드들이다. 이 경우, 아래 코드는 에러를 발생시키는데, 이유는 목적지 노드 목록이 이들 노드를 모두 포함하지 않기 때문이다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier2</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]))</span>   <span class="c1"># ERROR</span>
+</pre></div>
+</div>
+<p>하지만, 목적지 노드들은 위 보다 더 많은 노드들을 포함할 수 있다. 이 예제의 경우, 어떤 에지도 연결되지 않은 고립된 노드들(isolated node)이 있고, 이 고립 노드들은 소스 노드와 목적지 노드 모두에 포함될 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Node 3 is an isolated node that do not have any edge pointing to it.</span>
+<span class="n">block3</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier2</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">block3</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">block3</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="heterogeneous">
+<h3>Heterogeneous 그래프들<a class="headerlink" href="#heterogeneous" title="Link to this heading"></a></h3>
+<p>MFG들은 heterogeneous 그래프에도 적용됩니다. 다음 프론티어를 예로 들어보자.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hetero_frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">heterograph</span><span class="p">({</span>
+    <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;follow&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">):</span> <span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">]),</span>
+    <span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;play&#39;</span><span class="p">,</span> <span class="s1">&#39;game&#39;</span><span class="p">):</span> <span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
+    <span class="p">(</span><span class="s1">&#39;game&#39;</span><span class="p">,</span> <span class="s1">&#39;played-by&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">):</span> <span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+<span class="p">},</span> <span class="n">num_nodes_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;game&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>목적지 노드들 User #3, #4, #8 그리고 Game #2, #6을 포함한 MFG를 생성한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hetero_block</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">hetero_frontier</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s1">&#39;game&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">]})</span>
+</pre></div>
+</div>
+<p>소스 노드들과 목적지 노드들의 타입별로 얻을 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># source users and games</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">hetero_block</span><span class="o">.</span><span class="n">srcnodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">],</span> <span class="n">hetero_block</span><span class="o">.</span><span class="n">srcnodes</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+<span class="c1"># destination users and games</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">hetero_block</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">],</span> <span class="n">hetero_block</span><span class="o">.</span><span class="n">dstnodes</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="guide-ko-minibatch-customizing-neighborhood-sampler-impl">
+<span id="id4"></span><h2>커스텀 이웃 샘플러 구현하기<a class="headerlink" href="#guide-ko-minibatch-customizing-neighborhood-sampler-impl" title="Link to this heading"></a></h2>
+<p>아래 코드는 노드 분류를 위한 이웃 샘플링을 수행한다는 것을 떠올려 보자.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">MultiLayerFullNeighborSampler</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>이웃 샘플링 전략을 직접 구현하기 위해서는 <code class="docutils literal notranslate"><span class="pre">sampler</span></code> 를 직접 구현한 내용으로 바꾸기만 하면 된다. 이를 살펴보기 위해서, 우선 <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerFullNeighborSampler</span></code> 를 상속한 클래스인 <code class="xref py py-class docutils literal notranslate"><span class="pre">BlockSampler</span></code> 를 살펴보자.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockSampler</span></code> 클래스는 <code class="xref py py-meth docutils literal notranslate"><span class="pre">sample_blocks()</span></code> 메소드를 통해서 마지막 레이어로부터 시작하는 MFG들의 리스트를 만들어내는 역할을 한다. <code class="docutils literal notranslate"><span class="pre">sample_blocks</span></code> 의 기본 구현은 프론티어들과 그것들을 MFG들로 변환하면서 backwards를 iterate한다.</p>
+<p>따라서, 이웃 샘플링을 하기 위해서 단지 <code class="xref py py-meth docutils literal notranslate"><span class="pre">sample_frontier()</span></code> <strong>메소드</strong> 를 <strong>구현하기만 하면된다</strong>. 어떤 레이어를 위한 프론티어를 생성할 것인지, 원본 그래프, representation들을 계산할 노드들이 주어지면, 이 메소드는 그것들을 위한 프론티어를 생성하는것을 담당한다.</p>
+<p>GNN 레이어 수를 상위 클래스에 전달해야 한다.</p>
+<p>예를 들어, <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerFullNeighborSampler</span></code> 구현은 다음과 같다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MultiLayerFullNeighborSampler</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">BlockSampler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_layers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sample_frontier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">):</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">in_subgraph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frontier</span>
+</pre></div>
+</div>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">dgl.dataloading.neighbor.MultiLayerNeighborSampler</span></code> 는 더 복잡한 이웃 샘플러로, 각 노들에 대해서 메시지를 수집할 적은 수의 이웃 노드들을 샘플하는 기능을 하는데, 구현은 다음과 같다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MultiLayerNeighborSampler</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">BlockSampler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fanouts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fanouts</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fanouts</span> <span class="o">=</span> <span class="n">fanouts</span>
+
+    <span class="k">def</span> <span class="nf">sample_frontier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">):</span>
+        <span class="n">fanout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fanouts</span><span class="p">[</span><span class="n">block_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fanout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">in_subgraph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">,</span> <span class="n">fanout</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frontier</span>
+</pre></div>
+</div>
+<p>위의 함수는 프론티어를 생성하지만, 원본 그래프와 같은 노들을 갖는 어떤 그래프도 프론티어로 사용될 수 있다.</p>
+<p>예를 들어, 주어진 확률에 따라서 시드 노드들에 연결되는 인바운드 에지를 임의로 삭제하기를 원한다면, 다음과 같이 샘플러를 정의할 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MultiLayerDropoutSampler</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">BlockSampler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">num_layers</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">sample_frontier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Get all inbound edges to `seed_nodes`</span>
+        <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">in_subgraph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">)</span><span class="o">.</span><span class="n">all_edges</span><span class="p">()</span>
+        <span class="c1"># Randomly select edges with a probability of p</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">src</span><span class="p">)</span><span class="o">.</span><span class="n">bernoulli_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">dst</span> <span class="o">=</span> <span class="n">dst</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="c1"># Return a new graph with the same nodes as the original graph as a</span>
+        <span class="c1"># frontier</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">graph</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">),</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">frontier</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span>
+</pre></div>
+</div>
+<p>샘플러를 직접 구현한 다음에는, 그 샘플러를 사용하는 데이터 로더를 생성하고, 예전과 같이 시드 노드들을 iterate하면서 MFG들의 리스트를 만들게 한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">MultiLayerDropoutSampler</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">NodeDataLoader</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">train_nids</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">StochasticTwoLayerRGCN</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">hidden_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">input_nodes</span><span class="p">,</span> <span class="n">blocks</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">]</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">srcdata</span>     <span class="c1"># returns a dict</span>
+    <span class="n">output_labels</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dstdata</span>     <span class="c1"># returns a dict</span>
+    <span class="n">output_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">output_labels</span><span class="p">,</span> <span class="n">output_predictions</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="id5">
+<h3>Heterogeneous 그래프들<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>Heterogeneous 그래프에 대한 프론티어를 생성하는 것은 homogeneous 그래프의 경우와 동일하다. 리턴된 그래프가 원본 그래프와 같은 노드들을 갖도록 하면, 나머지는 그대로 동작할 것이다. 예를 들어, 위 <code class="docutils literal notranslate"><span class="pre">MultiLayerDropoutSampler</span></code> 를 재작성해서 모든 에지 타입들을 iterate 해서, heterogeneous 그래프에도 작동하게 만들 수 있다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MultiLayerDropoutSampler</span><span class="p">(</span><span class="n">dgl</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">BlockSampler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">num_layers</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">sample_frontier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Get all inbound edges to `seed_nodes`</span>
+        <span class="n">sg</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">in_subgraph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seed_nodes</span><span class="p">)</span>
+
+        <span class="n">new_edges_masks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Iterate over all edge types</span>
+        <span class="k">for</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">sg</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+            <span class="n">edge_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">sg</span><span class="o">.</span><span class="n">num_edges</span><span class="p">(</span><span class="n">etype</span><span class="p">))</span>
+            <span class="n">edge_mask</span><span class="o">.</span><span class="n">bernoulli_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">new_edges_masks</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_mask</span><span class="o">.</span><span class="n">bool</span><span class="p">()</span>
+
+        <span class="c1"># Return a new graph with the same nodes as the original graph as a</span>
+        <span class="c1"># frontier</span>
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">new_edges_masks</span><span class="p">,</span> <span class="n">relabel_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frontier</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="minibatch-link.html" class="btn btn-neutral float-left" title="6.3 이웃 샘플링을 사용한 링크 예측 GNN 모델 학습하기" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="minibatch-nn.html" class="btn btn-neutral float-right" title="6.5 미니-배치 학습을 위한 커스텀 GNN 모듈 구현하기" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

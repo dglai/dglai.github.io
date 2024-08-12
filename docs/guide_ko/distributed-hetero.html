@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.3 분산 heterogeneous 그래프 학습하기 &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.4 분산 학습/추론을 런칭하기 위한 툴들" href="distributed-tools.html" />
+    <link rel="prev" title="7.2 분산 APIs" href="distributed-apis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">사용자 가이드[시대에 뒤쳐진]</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">1장: 그래프</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">2장: 메지시 전달(Message Passing)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn.html">3장: GNN 모듈 만들기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">4장: 그래프 데이터 파이프라인</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">5장: 그래프 뉴럴 네트워크 학습하기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">6장: 큰 그래프에 대한 stochastic 학습</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="distributed.html">7장: 분산 학습</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="distributed-preprocessing.html">7.1 분산 학습을 위한 전처리</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-apis.html">7.2 분산 APIs</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">7.3 분산 heterogeneous 그래프 학습하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed-tools.html">7.4 분산 학습/추론을 런칭하기 위한 툴들</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">8장: Mixed Precision 학습</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+          <li class="breadcrumb-item"><a href="distributed.html">7장: 분산 학습</a></li>
+      <li class="breadcrumb-item active">7.3 분산 heterogeneous 그래프 학습하기</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide_ko/distributed-hetero.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="heterogeneous">
+<span id="guide-ko-distributed-hetero"></span><h1>7.3 분산 heterogeneous 그래프 학습하기<a class="headerlink" href="#heterogeneous" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide/distributed-hetero.html#guide-distributed-hetero"><span class="std std-ref">(English Version)</span></a></p>
+<p>DGL v0.6.0은 heterogeneous 그래프들을 위한 분산 학습을 실험적으로 지원한다. DGL에서 heterogeneous 그래프의 노드와 에지는 그 노드 타입 및 에지 타입에서 고유한 ID를 갖는다. DGL은 노드/에지 타입과 타입별 ID의 tuple을 사용해서 노드 및 에지를 지정한다. 분산 학습에서는 노드/에지 타입과 타입별 ID의 tuple과 더불어서 노드 또는 에지는 homogeneous ID를 통해서 지정될 수 있다. Homogeneous ID는 노드 타입이나 에지 타입과 관련없이 고유하다. DGL은 같은 타입의 모든 노드들이 연속된 homogeneous ID값들을 갖도록 노드와 에지를 정렬한다.</p>
+<p>아래 그림은 homegeneous ID 할당을 보여주는 heterogeneous 그래프의 adjacency matrix이다. 여기서 그래프틑 두가지 노드 타입( <cite>T0</cite> 와 <cite>T1</cite> )을, 네가지 에지 타입(<cite>R0</cite> , <cite>R1</cite> , <cite>R2</cite> , <cite>R3</cite> )를 갖는다. 그래프는 총 400개의 노드를 갖고, 각 타입은 200개 노드를 갖는다. <cite>T0</cite> 의 노드들은 [0,200)의 ID를 갖고, <cite>T1</cite> 의 노드들은 [200, 400)의 ID 값을 갖는다. 여기서 만약 tuple을 사용해서 노드를 구분한다면, <cite>T0</cite> 의 노드들은 (T0, type-wise ID)로 지정될 수 있다. 여기서 type-wise ID는 [0,200)에 속한다; <cite>T1</cite> 의 노드들은 (T1, type-wise ID)으로 지정되고, type-wise ID는 [0, 200)에 속한다.</p>
+<figure class="align-default">
+<img alt="Imgur" src="https://data.dgl.ai/tutorial/hetero/heterograph_ids.png" />
+</figure>
+<section id="id1">
+<h2>7.3.1 분산 그래프 데이터 접근하기<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>분산 학습을 위해 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.DistGraph" title="dgl.distributed.DistGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistGraph</span></code></a> 은 <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a> 에서 heterogeneous 그래프 API를 지원한다. 아래 코드는 <cite>T0</cite> 의 노드 데이터를 type-wise 노드 ID를 사용해서 얻는 것을 보여준다. <a class="reference internal" href="../api/python/dgl.DGLGraph.html#dgl.DGLGraph" title="dgl.DGLGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DGLGraph</span></code></a> 의 데이터를 접근할 때, 사용자는 type-wise ID와 연관된 노드 타입 또는 에지 타입을 사용해야 한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dgl</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistGraph</span><span class="p">(</span><span class="s1">&#39;graph_name&#39;</span><span class="p">,</span> <span class="n">part_config</span><span class="o">=</span><span class="s1">&#39;data/graph_name.json&#39;</span><span class="p">)</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;T0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">][</span><span class="n">type_wise_ids</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>사용자는 특정 노드 타입 또는 에지 타입에 대한 분산 텐서 및 분산 임베딩을 생성할 수 있다. 분산 텐서들과 분산 임베딩들은 여러 머신에 나눠져서 저장된다. 만들 때는 <a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.PartitionPolicy" title="dgl.distributed.PartitionPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartitionPolicy</span></code></a> 로 파티션을 어떻게 할지를 명시해야 한다. 기본 설정으로 DGL은 첫 차원 값의 크기를 기반으로 적절한 파티션 정책을 선택한다. 하지만, 다중 노드 타입 또는 에지 타입이 같은 수의 노드 또는 에지를 갖는 다면, DGL은 파티션 정책을 자동으로 결정할 수 없고, 사용자는 직접 파티션 정책을 지정해야 한다. 아래 코드는 노드 타입 <cite>T0</cite> 의 분산 텐서를 <cite>T0</cite> 를 위한 파티션 정책을 사용해서 생성하고, 이를 <cite>T0</cite> 의 노드 데이터로 저장한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s1">&#39;T0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">DistTensor</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(</span><span class="s1">&#39;T0&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">th</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="s1">&#39;feat1&#39;</span><span class="p">,</span>
+                                                         <span class="n">part_policy</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">get_node_partition_policy</span><span class="p">(</span><span class="s1">&#39;T0&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>분산 텐서 및 분산 임베딩을 만들기 위한 파티션 정책은 heterogeneous 그래프가 그래프 서버에 로드될 때 초기화된다. 사용자는 새로운 파티션 정책을 실행 중에 생성할 수 없다. 따라서, 사용자는 노드 타입 이나 에지 타입에 대한 분산 텐서 또는 분산 임베딩 만을 만들 수 있다.</p>
+</section>
+<section id="id2">
+<h2>7.3.2 분산 샘플링<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>DGL v0.6은 분산 샘플링에서 homogeneous ID를 사용한다. <strong>Note</strong>: 이는 앞으로 릴리즈에서 바뀔 수도 있다. DGL은 homogeneous ID와 type-wise ID 간에 노드 ID와 에지 ID를 변환하는 네 개의 API를 제공한다.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_per_ntype" title="dgl.distributed.GraphPartitionBook.map_to_per_ntype"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_per_ntype()</span></code></a> : homogeneous 노드 ID를 type-wise ID와 노드 타입 ID로 변환한다.</p></li>
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_per_etype" title="dgl.distributed.GraphPartitionBook.map_to_per_etype"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_per_etype()</span></code></a> : homogeneous 에지 ID를 type-wise ID와 에지 타입 ID로 변환한다.</p></li>
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_homo_nid" title="dgl.distributed.GraphPartitionBook.map_to_homo_nid"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_homo_nid()</span></code></a> : type-wise ID와 노드 타입을 homogeneous 노드 ID로 변환한다.</p></li>
+<li><p><a class="reference internal" href="../api/python/dgl.distributed.html#dgl.distributed.GraphPartitionBook.map_to_homo_eid" title="dgl.distributed.GraphPartitionBook.map_to_homo_eid"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_to_homo_eid()</span></code></a> : type-wise ID와 에지 타입을 homogeneous 에지 ID로 변환한다.</p></li>
+</ul>
+<p>다음 예제는 <cite>paper</cite> 라는 노드 타입을 갖는 heterogeneous 그래프로부터 <a class="reference internal" href="../generated/dgl.distributed.sample_neighbors.html#dgl.distributed.sample_neighbors" title="dgl.distributed.sample_neighbors"><code class="xref py py-func docutils literal notranslate"><span class="pre">sample_neighbors()</span></code></a> 를 사용해서 서브 그래프를 샘플링한다. 이는 우선 type-wise 노드 ID들을 homogeneous 노드 ID들로 변환한다. 시드 노드들로 서브 그래프를 샘플링 한 다음, homogeneous 노드 ID들과 에지 ID들을 type-wise ID들로 바꾸고, 타입 ID를 노드 데이터와 에지 데이터에 저장한다.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gpb</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_partition_book</span><span class="p">()</span>
+<span class="c1"># We need to map the type-wise node IDs to homogeneous IDs.</span>
+<span class="n">cur</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_homo_nid</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">)</span>
+<span class="c1"># For a heterogeneous input graph, the returned frontier is stored in</span>
+<span class="c1"># the homogeneous graph format.</span>
+<span class="n">frontier</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sample_neighbors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">cur</span><span class="p">,</span> <span class="n">fanout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_block</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="n">cur</span><span class="p">)</span>
+<span class="n">cur</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span>
+
+<span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">frontier</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">]</span>
+<span class="c1"># Map the homogeneous edge Ids to their edge type.</span>
+<span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">ETYPE</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_per_etype</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">edata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">EID</span><span class="p">])</span>
+<span class="c1"># Map the homogeneous node Ids to their node types and per-type Ids.</span>
+<span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NTYPE</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_per_ntype</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">srcdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+<span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NTYPE</span><span class="p">],</span> <span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpb</span><span class="o">.</span><span class="n">map_to_per_ntype</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">dstdata</span><span class="p">[</span><span class="n">dgl</span><span class="o">.</span><span class="n">NID</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>노드/에지 타입 ID를 위해서, 사용자는 노드/에지 타입을 검색할 수 있다. 예를 들어, <cite>g.ntypes[node_type_id]</cite> . 노드/에지 타입들과 type-wise ID들을 사용해서, 사용자는 미니배치 계산을 위해서 <cite>DistGraph</cite> 로부터 노드/에지 데이터를 검색할 수 있다.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="distributed-apis.html" class="btn btn-neutral float-left" title="7.2 분산 APIs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed-tools.html" class="btn btn-neutral float-right" title="7.4 분산 학습/추론을 런칭하기 위한 툴들" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

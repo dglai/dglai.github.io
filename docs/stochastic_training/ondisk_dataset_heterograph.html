@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OnDiskDataset for Heterogeneous Graph &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="YAML specification" href="ondisk-dataset-specification.html" />
+    <link rel="prev" title="OnDiskDataset for Homogeneous Graph" href="ondisk_dataset_homograph.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">🆕 Stochastic Training of GNNs with GraphBolt</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="neighbor_sampling_overview.html">Neighbor Sampling Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="node_classification.html">Node Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="link_prediction.html">Link Prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multigpu_node_classification.html">Multi-GPU Node Classification</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="ondisk-dataset.html">Composing OnDiskDataset from raw data</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ondisk_dataset_homograph.html">OnDiskDataset for Homogeneous Graph</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">OnDiskDataset for Heterogeneous Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ondisk-dataset-specification.html">YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+          <li class="breadcrumb-item"><a href="ondisk-dataset.html">Composing OnDiskDataset from raw data</a></li>
+      <li class="breadcrumb-item active">OnDiskDataset for Heterogeneous Graph</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/stochastic_training/ondisk_dataset_heterograph.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="OnDiskDataset-for-Heterogeneous-Graph">
+<h1>OnDiskDataset for Heterogeneous Graph<a class="headerlink" href="#OnDiskDataset-for-Heterogeneous-Graph" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/dmlc/dgl/blob/master/notebooks/stochastic_training/ondisk_dataset_heterograph.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/notebooks/stochastic_training/ondisk_dataset_heterograph.ipynb"><img alt="GitHub" src="https://img.shields.io/badge/-View%20on%20GitHub-181717?logo=github&amp;logoColor=ffffff" /></a></p>
+<p>This tutorial shows how to create <code class="docutils literal notranslate"><span class="pre">OnDiskDataset</span></code> for heterogeneous graph that could be used in <strong>GraphBolt</strong> framework. The major difference from creating dataset for homogeneous graph is that we need to specify node/edge types for edges, feature data, training/validation/test sets.</p>
+<p>By the end of this tutorial, you will be able to</p>
+<ul class="simple">
+<li><p>organize graph structure data.</p></li>
+<li><p>organize feature data.</p></li>
+<li><p>organize training/validation/test set for specific tasks.</p></li>
+</ul>
+<p>To create an <code class="docutils literal notranslate"><span class="pre">OnDiskDataset</span></code> object, you need to organize all the data including graph structure, feature data and tasks into a directory. The directory should contain a <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code> file that describes the metadata of the dataset.</p>
+<p>Now let’s generate various data step by step and organize them together to instantiate <code class="docutils literal notranslate"><span class="pre">OnDiskDataset</span></code> finally.</p>
+<section id="Install-DGL-package">
+<h2>Install DGL package<a class="headerlink" href="#Install-DGL-package" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install required packages.</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TORCH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DGLBACKEND&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+
+<span class="c1"># Install the CPU version.</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--pre<span class="w"> </span>dgl<span class="w"> </span>-f<span class="w"> </span>https://data.dgl.ai/wheels-test/repo.html
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dgl</span>
+    <span class="kn">import</span> <span class="nn">dgl.graphbolt</span> <span class="k">as</span> <span class="nn">gb</span>
+    <span class="n">installed</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="n">installed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DGL installed!&quot;</span> <span class="k">if</span> <span class="n">installed</span> <span class="k">else</span> <span class="s2">&quot;DGL not found!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Looking in links: https://data.dgl.ai/wheels-test/repo.html
+Requirement already satisfied: dgl in /opt/conda/envs/cpu/lib/python3.10/site-packages (2.2a240410)
+Requirement already satisfied: numpy&gt;=1.14.0 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (1.26.4)
+Requirement already satisfied: scipy&gt;=1.1.0 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (1.14.0)
+Requirement already satisfied: networkx&gt;=2.1 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (3.3)
+Requirement already satisfied: requests&gt;=2.19.0 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (2.32.3)
+Requirement already satisfied: tqdm in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (4.66.4)
+Requirement already satisfied: psutil&gt;=5.8.0 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (6.0.0)
+Requirement already satisfied: torchdata&gt;=0.5.0 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (0.7.1)
+Requirement already satisfied: pandas in /opt/conda/envs/cpu/lib/python3.10/site-packages (from dgl) (2.2.2)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from requests&gt;=2.19.0-&gt;dgl) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from requests&gt;=2.19.0-&gt;dgl) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from requests&gt;=2.19.0-&gt;dgl) (2.2.2)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from requests&gt;=2.19.0-&gt;dgl) (2024.6.2)
+Requirement already satisfied: torch&gt;=2 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from torchdata&gt;=0.5.0-&gt;dgl) (2.1.0+cpu)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from pandas-&gt;dgl) (2.9.0.post0)
+Requirement already satisfied: pytz&gt;=2020.1 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from pandas-&gt;dgl) (2024.1)
+Requirement already satisfied: tzdata&gt;=2022.7 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from pandas-&gt;dgl) (2024.1)
+Requirement already satisfied: six&gt;=1.5 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas-&gt;dgl) (1.16.0)
+Requirement already satisfied: filelock in /opt/conda/envs/cpu/lib/python3.10/site-packages (from torch&gt;=2-&gt;torchdata&gt;=0.5.0-&gt;dgl) (3.15.4)
+Requirement already satisfied: typing-extensions in /opt/conda/envs/cpu/lib/python3.10/site-packages (from torch&gt;=2-&gt;torchdata&gt;=0.5.0-&gt;dgl) (4.12.2)
+Requirement already satisfied: sympy in /opt/conda/envs/cpu/lib/python3.10/site-packages (from torch&gt;=2-&gt;torchdata&gt;=0.5.0-&gt;dgl) (1.12.1)
+Requirement already satisfied: jinja2 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from torch&gt;=2-&gt;torchdata&gt;=0.5.0-&gt;dgl) (3.1.4)
+Requirement already satisfied: fsspec in /opt/conda/envs/cpu/lib/python3.10/site-packages (from torch&gt;=2-&gt;torchdata&gt;=0.5.0-&gt;dgl) (2024.6.0)
+Requirement already satisfied: MarkupSafe&gt;=2.0 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from jinja2-&gt;torch&gt;=2-&gt;torchdata&gt;=0.5.0-&gt;dgl) (2.1.5)
+Requirement already satisfied: mpmath&lt;1.4.0,&gt;=1.1.0 in /opt/conda/envs/cpu/lib/python3.10/site-packages (from sympy-&gt;torch&gt;=2-&gt;torchdata&gt;=0.5.0-&gt;dgl) (1.3.0)
+DGL installed!
+</pre></div></div>
+</div>
+</section>
+<section id="Data-preparation">
+<h2>Data preparation<a class="headerlink" href="#Data-preparation" title="Link to this heading"></a></h2>
+<p>In order to demonstrate how to organize various data, let’s create a base directory first.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">base_dir</span> <span class="o">=</span> <span class="s1">&#39;./ondisk_dataset_heterograph&#39;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created base directory: </span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Created base directory: ./ondisk_dataset_heterograph
+</pre></div></div>
+</div>
+<section id="Generate-graph-structure-data">
+<h3>Generate graph structure data<a class="headerlink" href="#Generate-graph-structure-data" title="Link to this heading"></a></h3>
+<p>For heterogeneous graph, we need to save different edge edges(namely seeds) into separate <strong>Numpy</strong> or <strong>CSV</strong> files.</p>
+<p>Note: - when saving to <strong>Numpy</strong>, the array requires to be in shape of <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">N)</span></code>. This format is recommended as constructing graph from it is much faster than <strong>CSV</strong> file. - when saving to <strong>CSV</strong> file, do not save index and header.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># For simplicity, we create a heterogeneous graph with</span>
+<span class="c1"># 2 node types: `user`, `item`</span>
+<span class="c1"># 2 edge types: `user:like:item`, `user:follow:user`</span>
+<span class="c1"># And each node/edge type has the same number of nodes/edges.</span>
+<span class="n">num_nodes</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">num_edges</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">num_nodes</span>
+
+<span class="c1"># Edge type: &quot;user:like:item&quot;</span>
+<span class="n">like_edges_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;like-edges.csv&quot;</span><span class="p">)</span>
+<span class="n">like_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of [user:like:item] edges: </span><span class="si">{</span><span class="n">like_edges</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">like_edges</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">like_edges_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[user:like:item] edges are saved into </span><span class="si">{</span><span class="n">like_edges_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Edge type: &quot;user:follow:user&quot;</span>
+<span class="n">follow_edges_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;follow-edges.csv&quot;</span><span class="p">)</span>
+<span class="n">follow_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of [user:follow:user] edges: </span><span class="si">{</span><span class="n">follow_edges</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">follow_edges</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">follow_edges_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[user:follow:user] edges are saved into </span><span class="si">{</span><span class="n">follow_edges_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Part of [user:like:item] edges: [[182 744]
+ [210 533]
+ [279 371]
+ [296 101]
+ [783 226]]
+
+[user:like:item] edges are saved into ./ondisk_dataset_heterograph/like-edges.csv
+
+Part of [user:follow:user] edges: [[ 30 197]
+ [522 545]
+ [636 594]
+ [219 149]
+ [555 876]]
+
+[user:follow:user] edges are saved into ./ondisk_dataset_heterograph/follow-edges.csv
+
+</pre></div></div>
+</div>
+</section>
+<section id="Generate-feature-data-for-graph">
+<h3>Generate feature data for graph<a class="headerlink" href="#Generate-feature-data-for-graph" title="Link to this heading"></a></h3>
+<p>For feature data, numpy arrays and torch tensors are supported for now. Let’s generate feature data for each node/edge type.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate node[user] feature in numpy array.</span>
+<span class="n">node_user_feat_0_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;node-user-feat-0.npy&quot;</span><span class="p">)</span>
+<span class="n">node_user_feat_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of node[user] feature [feat_0]: </span><span class="si">{</span><span class="n">node_user_feat_0</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">node_user_feat_0_path</span><span class="p">,</span> <span class="n">node_user_feat_0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node[user] feature [feat_0] is saved to </span><span class="si">{</span><span class="n">node_user_feat_0_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generate another node[user] feature in torch tensor</span>
+<span class="n">node_user_feat_1_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;node-user-feat-1.pt&quot;</span><span class="p">)</span>
+<span class="n">node_user_feat_1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of node[user] feature [feat_1]: </span><span class="si">{</span><span class="n">node_user_feat_1</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">node_user_feat_1</span><span class="p">,</span> <span class="n">node_user_feat_1_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node[user] feature [feat_1] is saved to </span><span class="si">{</span><span class="n">node_user_feat_1_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generate node[item] feature in numpy array.</span>
+<span class="n">node_item_feat_0_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;node-item-feat-0.npy&quot;</span><span class="p">)</span>
+<span class="n">node_item_feat_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of node[item] feature [feat_0]: </span><span class="si">{</span><span class="n">node_item_feat_0</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">node_item_feat_0_path</span><span class="p">,</span> <span class="n">node_item_feat_0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node[item] feature [feat_0] is saved to </span><span class="si">{</span><span class="n">node_item_feat_0_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generate another node[item] feature in torch tensor</span>
+<span class="n">node_item_feat_1_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;node-item-feat-1.pt&quot;</span><span class="p">)</span>
+<span class="n">node_item_feat_1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of node[item] feature [feat_1]: </span><span class="si">{</span><span class="n">node_item_feat_1</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">node_item_feat_1</span><span class="p">,</span> <span class="n">node_item_feat_1_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node[item] feature [feat_1] is saved to </span><span class="si">{</span><span class="n">node_item_feat_1_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generate edge[user:like:item] feature in numpy array.</span>
+<span class="n">edge_like_feat_0_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;edge-like-feat-0.npy&quot;</span><span class="p">)</span>
+<span class="n">edge_like_feat_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of edge[user:like:item] feature [feat_0]: </span><span class="si">{</span><span class="n">edge_like_feat_0</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">edge_like_feat_0_path</span><span class="p">,</span> <span class="n">edge_like_feat_0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge[user:like:item] feature [feat_0] is saved to </span><span class="si">{</span><span class="n">edge_like_feat_0_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generate another edge[user:like:item] feature in torch tensor</span>
+<span class="n">edge_like_feat_1_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;edge-like-feat-1.pt&quot;</span><span class="p">)</span>
+<span class="n">edge_like_feat_1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of edge[user:like:item] feature [feat_1]: </span><span class="si">{</span><span class="n">edge_like_feat_1</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">edge_like_feat_1</span><span class="p">,</span> <span class="n">edge_like_feat_1_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge[user:like:item] feature [feat_1] is saved to </span><span class="si">{</span><span class="n">edge_like_feat_1_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generate edge[user:follow:user] feature in numpy array.</span>
+<span class="n">edge_follow_feat_0_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;edge-follow-feat-0.npy&quot;</span><span class="p">)</span>
+<span class="n">edge_follow_feat_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of edge[user:follow:user] feature [feat_0]: </span><span class="si">{</span><span class="n">edge_follow_feat_0</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">edge_follow_feat_0_path</span><span class="p">,</span> <span class="n">edge_follow_feat_0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge[user:follow:user] feature [feat_0] is saved to </span><span class="si">{</span><span class="n">edge_follow_feat_0_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generate another edge[user:follow:user] feature in torch tensor</span>
+<span class="n">edge_follow_feat_1_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;edge-follow-feat-1.pt&quot;</span><span class="p">)</span>
+<span class="n">edge_follow_feat_1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of edge[user:follow:user] feature [feat_1]: </span><span class="si">{</span><span class="n">edge_follow_feat_1</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">edge_follow_feat_1</span><span class="p">,</span> <span class="n">edge_follow_feat_1_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge[user:follow:user] feature [feat_1] is saved to </span><span class="si">{</span><span class="n">edge_follow_feat_1_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Part of node[user] feature [feat_0]: [[0.54641945 0.2443805  0.64150579 0.05496823 0.31051594]
+ [0.9977861  0.47676184 0.01937671 0.16863336 0.64819194]
+ [0.095835   0.75682661 0.96191266 0.81833543 0.76758842]]
+Node[user] feature [feat_0] is saved to ./ondisk_dataset_heterograph/node-user-feat-0.npy
+
+Part of node[user] feature [feat_1]: tensor([[0.9449, 0.3036, 0.2365, 0.5371, 0.6609],
+        [0.1845, 0.9214, 0.4634, 0.8937, 0.5301],
+        [0.6035, 0.5004, 0.0988, 0.4482, 0.4567]])
+Node[user] feature [feat_1] is saved to ./ondisk_dataset_heterograph/node-user-feat-1.pt
+
+Part of node[item] feature [feat_0]: [[0.30050454 0.32268312 0.07164375 0.64772459 0.12463691]
+ [0.80224344 0.16900733 0.39609141 0.44587415 0.37199251]
+ [0.38036276 0.44012174 0.21606284 0.90590371 0.16228766]]
+Node[item] feature [feat_0] is saved to ./ondisk_dataset_heterograph/node-item-feat-0.npy
+
+Part of node[item] feature [feat_1]: tensor([[0.7401, 0.1222, 0.9717, 0.7092, 0.6812],
+        [0.7676, 0.2153, 0.8554, 0.8088, 0.8858],
+        [0.2685, 0.3661, 0.1360, 0.2404, 0.2548]])
+Node[item] feature [feat_1] is saved to ./ondisk_dataset_heterograph/node-item-feat-1.pt
+
+Part of edge[user:like:item] feature [feat_0]: [[0.01600913 0.15979991 0.74513696 0.25446424 0.54218241]
+ [0.78959052 0.45927537 0.64707546 0.73990423 0.84059178]
+ [0.50636623 0.78693675 0.42412315 0.9552039  0.93127584]]
+Edge[user:like:item] feature [feat_0] is saved to ./ondisk_dataset_heterograph/edge-like-feat-0.npy
+
+Part of edge[user:like:item] feature [feat_1]: tensor([[0.3549, 0.3510, 0.7121, 0.0219, 0.2684],
+        [0.4072, 0.3614, 0.7186, 0.8714, 0.1348],
+        [0.7780, 0.7619, 0.5650, 0.9851, 0.3525]])
+Edge[user:like:item] feature [feat_1] is saved to ./ondisk_dataset_heterograph/edge-like-feat-1.pt
+
+Part of edge[user:follow:user] feature [feat_0]: [[0.13066706 0.44352349 0.81742498 0.59742215 0.94926414]
+ [0.98039916 0.07692542 0.59949626 0.49381445 0.08568116]
+ [0.86406537 0.59082296 0.41738253 0.17488987 0.02716009]]
+Edge[user:follow:user] feature [feat_0] is saved to ./ondisk_dataset_heterograph/edge-follow-feat-0.npy
+
+Part of edge[user:follow:user] feature [feat_1]: tensor([[0.1526, 0.6109, 0.5623, 0.1507, 0.4967],
+        [0.7713, 0.7886, 0.7638, 0.6953, 0.2030],
+        [0.0151, 0.8409, 0.2196, 0.1628, 0.5089]])
+Edge[user:follow:user] feature [feat_1] is saved to ./ondisk_dataset_heterograph/edge-follow-feat-1.pt
+
+</pre></div></div>
+</div>
+</section>
+<section id="Generate-tasks">
+<h3>Generate tasks<a class="headerlink" href="#Generate-tasks" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">OnDiskDataset</span></code> supports multiple tasks. For each task, we need to prepare training/validation/test sets respectively. Such sets usually vary among different tasks. In this tutorial, let’s create a <strong>Node Classification</strong> task and <strong>Link Prediction</strong> task.</p>
+<section id="Node-Classification-Task">
+<h4>Node Classification Task<a class="headerlink" href="#Node-Classification-Task" title="Link to this heading"></a></h4>
+<p>For node classification task, we need <strong>node IDs</strong> and corresponding <strong>labels</strong> for each training/validation/test set. Like feature data, numpy arrays and torch tensors are supported for these sets.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For illustration, let&#39;s generate item sets for each node type.</span>
+<span class="n">num_trains</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_nodes</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">)</span>
+<span class="n">num_vals</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_nodes</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span>
+<span class="n">num_tests</span> <span class="o">=</span> <span class="n">num_nodes</span> <span class="o">-</span> <span class="n">num_trains</span> <span class="o">-</span> <span class="n">num_vals</span>
+
+<span class="n">user_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">user_ids</span><span class="p">)</span>
+
+<span class="n">item_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">item_ids</span><span class="p">)</span>
+
+<span class="c1"># Train IDs for user.</span>
+<span class="n">nc_train_user_ids_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-train-user-ids.npy&quot;</span><span class="p">)</span>
+<span class="n">nc_train_user_ids</span> <span class="o">=</span> <span class="n">user_ids</span><span class="p">[:</span><span class="n">num_trains</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of train ids[user] for node classification: </span><span class="si">{</span><span class="n">nc_train_user_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_train_user_ids_path</span><span class="p">,</span> <span class="n">nc_train_user_ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC train ids[user] are saved to </span><span class="si">{</span><span class="n">nc_train_user_ids_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Train labels for user.</span>
+<span class="n">nc_train_user_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-train-user-labels.pt&quot;</span><span class="p">)</span>
+<span class="n">nc_train_user_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">num_trains</span><span class="p">,))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of train labels[user] for node classification: </span><span class="si">{</span><span class="n">nc_train_user_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_train_user_labels</span><span class="p">,</span> <span class="n">nc_train_user_labels_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC train labels[user] are saved to </span><span class="si">{</span><span class="n">nc_train_user_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Train IDs for item.</span>
+<span class="n">nc_train_item_ids_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-train-item-ids.npy&quot;</span><span class="p">)</span>
+<span class="n">nc_train_item_ids</span> <span class="o">=</span> <span class="n">item_ids</span><span class="p">[:</span><span class="n">num_trains</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of train ids[item] for node classification: </span><span class="si">{</span><span class="n">nc_train_item_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_train_item_ids_path</span><span class="p">,</span> <span class="n">nc_train_item_ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC train ids[item] are saved to </span><span class="si">{</span><span class="n">nc_train_item_ids_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Train labels for item.</span>
+<span class="n">nc_train_item_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-train-item-labels.pt&quot;</span><span class="p">)</span>
+<span class="n">nc_train_item_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">num_trains</span><span class="p">,))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of train labels[item] for node classification: </span><span class="si">{</span><span class="n">nc_train_item_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_train_item_labels</span><span class="p">,</span> <span class="n">nc_train_item_labels_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC train labels[item] are saved to </span><span class="si">{</span><span class="n">nc_train_item_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val IDs for user.</span>
+<span class="n">nc_val_user_ids_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-val-user-ids.npy&quot;</span><span class="p">)</span>
+<span class="n">nc_val_user_ids</span> <span class="o">=</span> <span class="n">user_ids</span><span class="p">[</span><span class="n">num_trains</span><span class="p">:</span><span class="n">num_trains</span><span class="o">+</span><span class="n">num_vals</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val ids[user] for node classification: </span><span class="si">{</span><span class="n">nc_val_user_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_val_user_ids_path</span><span class="p">,</span> <span class="n">nc_val_user_ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC val ids[user] are saved to </span><span class="si">{</span><span class="n">nc_val_user_ids_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val labels for user.</span>
+<span class="n">nc_val_user_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-val-user-labels.pt&quot;</span><span class="p">)</span>
+<span class="n">nc_val_user_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">num_vals</span><span class="p">,))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val labels[user] for node classification: </span><span class="si">{</span><span class="n">nc_val_user_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_val_user_labels</span><span class="p">,</span> <span class="n">nc_val_user_labels_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC val labels[user] are saved to </span><span class="si">{</span><span class="n">nc_val_user_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val IDs for item.</span>
+<span class="n">nc_val_item_ids_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-val-item-ids.npy&quot;</span><span class="p">)</span>
+<span class="n">nc_val_item_ids</span> <span class="o">=</span> <span class="n">item_ids</span><span class="p">[</span><span class="n">num_trains</span><span class="p">:</span><span class="n">num_trains</span><span class="o">+</span><span class="n">num_vals</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val ids[item] for node classification: </span><span class="si">{</span><span class="n">nc_val_item_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_val_item_ids_path</span><span class="p">,</span> <span class="n">nc_val_item_ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC val ids[item] are saved to </span><span class="si">{</span><span class="n">nc_val_item_ids_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val labels for item.</span>
+<span class="n">nc_val_item_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-val-item-labels.pt&quot;</span><span class="p">)</span>
+<span class="n">nc_val_item_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">num_vals</span><span class="p">,))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val labels[item] for node classification: </span><span class="si">{</span><span class="n">nc_val_item_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_val_item_labels</span><span class="p">,</span> <span class="n">nc_val_item_labels_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC val labels[item] are saved to </span><span class="si">{</span><span class="n">nc_val_item_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test IDs for user.</span>
+<span class="n">nc_test_user_ids_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-test-user-ids.npy&quot;</span><span class="p">)</span>
+<span class="n">nc_test_user_ids</span> <span class="o">=</span> <span class="n">user_ids</span><span class="p">[</span><span class="o">-</span><span class="n">num_tests</span><span class="p">:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test ids[user] for node classification: </span><span class="si">{</span><span class="n">nc_test_user_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_test_user_ids_path</span><span class="p">,</span> <span class="n">nc_test_user_ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC test ids[user] are saved to </span><span class="si">{</span><span class="n">nc_test_user_ids_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test labels for user.</span>
+<span class="n">nc_test_user_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-test-user-labels.pt&quot;</span><span class="p">)</span>
+<span class="n">nc_test_user_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">num_tests</span><span class="p">,))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test labels[user] for node classification: </span><span class="si">{</span><span class="n">nc_test_user_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_test_user_labels</span><span class="p">,</span> <span class="n">nc_test_user_labels_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC test labels[user] are saved to </span><span class="si">{</span><span class="n">nc_test_user_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test IDs for item.</span>
+<span class="n">nc_test_item_ids_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-test-item-ids.npy&quot;</span><span class="p">)</span>
+<span class="n">nc_test_item_ids</span> <span class="o">=</span> <span class="n">item_ids</span><span class="p">[</span><span class="o">-</span><span class="n">num_tests</span><span class="p">:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test ids[item] for node classification: </span><span class="si">{</span><span class="n">nc_test_item_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_test_item_ids_path</span><span class="p">,</span> <span class="n">nc_test_item_ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC test ids[item] are saved to </span><span class="si">{</span><span class="n">nc_test_item_ids_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test labels for item.</span>
+<span class="n">nc_test_item_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;nc-test-item-labels.pt&quot;</span><span class="p">)</span>
+<span class="n">nc_test_item_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">num_tests</span><span class="p">,))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test labels[item] for node classification: </span><span class="si">{</span><span class="n">nc_test_item_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nc_test_item_labels</span><span class="p">,</span> <span class="n">nc_test_item_labels_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NC test labels[item] are saved to </span><span class="si">{</span><span class="n">nc_test_item_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Part of train ids[user] for node classification: [697 856 465]
+NC train ids[user] are saved to ./ondisk_dataset_heterograph/nc-train-user-ids.npy
+
+Part of train labels[user] for node classification: tensor([5, 9, 1])
+NC train labels[user] are saved to ./ondisk_dataset_heterograph/nc-train-user-labels.pt
+
+Part of train ids[item] for node classification: [981 263 637]
+NC train ids[item] are saved to ./ondisk_dataset_heterograph/nc-train-item-ids.npy
+
+Part of train labels[item] for node classification: tensor([6, 6, 7])
+NC train labels[item] are saved to ./ondisk_dataset_heterograph/nc-train-item-labels.pt
+
+Part of val ids[user] for node classification: [406 757 990]
+NC val ids[user] are saved to ./ondisk_dataset_heterograph/nc-val-user-ids.npy
+
+Part of val labels[user] for node classification: tensor([1, 7, 2])
+NC val labels[user] are saved to ./ondisk_dataset_heterograph/nc-val-user-labels.pt
+
+Part of val ids[item] for node classification: [356 195 656]
+NC val ids[item] are saved to ./ondisk_dataset_heterograph/nc-val-item-ids.npy
+
+Part of val labels[item] for node classification: tensor([4, 9, 5])
+NC val labels[item] are saved to ./ondisk_dataset_heterograph/nc-val-item-labels.pt
+
+Part of test ids[user] for node classification: [153 178 980]
+NC test ids[user] are saved to ./ondisk_dataset_heterograph/nc-test-user-ids.npy
+
+Part of test labels[user] for node classification: tensor([5, 5, 7])
+NC test labels[user] are saved to ./ondisk_dataset_heterograph/nc-test-user-labels.pt
+
+Part of test ids[item] for node classification: [983 377  80]
+NC test ids[item] are saved to ./ondisk_dataset_heterograph/nc-test-item-ids.npy
+
+Part of test labels[item] for node classification: tensor([6, 5, 3])
+NC test labels[item] are saved to ./ondisk_dataset_heterograph/nc-test-item-labels.pt
+
+</pre></div></div>
+</div>
+</section>
+<section id="Link-Prediction-Task">
+<h4>Link Prediction Task<a class="headerlink" href="#Link-Prediction-Task" title="Link to this heading"></a></h4>
+<p>For link prediction task, we need <strong>seeds</strong> or <strong>corresponding labels and indexes</strong> which representing the pos/neg property and group of the seeds for each training/validation/test set. Like feature data, numpy arrays and torch tensors are supported for these sets.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For illustration, let&#39;s generate item sets for each edge type.</span>
+<span class="n">num_trains</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_edges</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">)</span>
+<span class="n">num_vals</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_edges</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span>
+<span class="n">num_tests</span> <span class="o">=</span> <span class="n">num_edges</span> <span class="o">-</span> <span class="n">num_trains</span> <span class="o">-</span> <span class="n">num_vals</span>
+
+<span class="c1"># Train seeds for user:like:item.</span>
+<span class="n">lp_train_like_seeds_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-train-like-seeds.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_train_like_seeds</span> <span class="o">=</span> <span class="n">like_edges</span><span class="p">[:</span><span class="n">num_trains</span><span class="p">,</span> <span class="p">:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of train seeds[user:like:item] for link prediction: </span><span class="si">{</span><span class="n">lp_train_like_seeds</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_train_like_seeds_path</span><span class="p">,</span> <span class="n">lp_train_like_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP train seeds[user:like:item] are saved to </span><span class="si">{</span><span class="n">lp_train_like_seeds_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Train seeds for user:follow:user.</span>
+<span class="n">lp_train_follow_seeds_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-train-follow-seeds.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_train_follow_seeds</span> <span class="o">=</span> <span class="n">follow_edges</span><span class="p">[:</span><span class="n">num_trains</span><span class="p">,</span> <span class="p">:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of train seeds[user:follow:user] for link prediction: </span><span class="si">{</span><span class="n">lp_train_follow_seeds</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_train_follow_seeds_path</span><span class="p">,</span> <span class="n">lp_train_follow_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP train seeds[user:follow:user] are saved to </span><span class="si">{</span><span class="n">lp_train_follow_seeds_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val seeds for user:like:item.</span>
+<span class="n">lp_val_like_seeds_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-val-like-seeds.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_val_like_seeds</span> <span class="o">=</span> <span class="n">like_edges</span><span class="p">[</span><span class="n">num_trains</span><span class="p">:</span><span class="n">num_trains</span><span class="o">+</span><span class="n">num_vals</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">lp_val_like_neg_dsts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="p">(</span><span class="n">num_vals</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">lp_val_like_neg_srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_val_like_seeds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_val_like_neg_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_val_like_neg_srcs</span><span class="p">,</span> <span class="n">lp_val_like_neg_dsts</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">lp_val_like_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_val_like_seeds</span><span class="p">,</span> <span class="n">lp_val_like_neg_seeds</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val seeds[user:like:item] for link prediction: </span><span class="si">{</span><span class="n">lp_val_like_seeds</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_val_like_seeds_path</span><span class="p">,</span> <span class="n">lp_val_like_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP val seeds[user:like:item] are saved to </span><span class="si">{</span><span class="n">lp_val_like_seeds_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val labels for user:like:item.</span>
+<span class="n">lp_val_like_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-val-like-labels.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_val_like_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">num_vals</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">lp_val_like_labels</span><span class="p">[:</span><span class="n">num_vals</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lp_val_like_labels</span><span class="p">[</span><span class="n">num_vals</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val labels[user:like:item] for link prediction: </span><span class="si">{</span><span class="n">lp_val_like_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_val_like_labels_path</span><span class="p">,</span> <span class="n">lp_val_like_labels</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP val labels[user:like:item] are saved to </span><span class="si">{</span><span class="n">lp_val_like_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val indexes for user:like:item.</span>
+<span class="n">lp_val_like_indexes_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-val-like-indexes.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_val_like_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_vals</span><span class="p">)</span>
+<span class="n">lp_val_like_neg_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_val_like_indexes</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_val_like_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lp_val_like_indexes</span><span class="p">,</span> <span class="n">lp_val_like_neg_indexes</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val indexes[user:like:item] for link prediction: </span><span class="si">{</span><span class="n">lp_val_like_indexes</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_val_like_indexes_path</span><span class="p">,</span> <span class="n">lp_val_like_indexes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP val indexes[user:like:item] are saved to </span><span class="si">{</span><span class="n">lp_val_like_indexes_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val seeds for user:follow:item.</span>
+<span class="n">lp_val_follow_seeds_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-val-follow-seeds.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_val_follow_seeds</span> <span class="o">=</span> <span class="n">follow_edges</span><span class="p">[</span><span class="n">num_trains</span><span class="p">:</span><span class="n">num_trains</span><span class="o">+</span><span class="n">num_vals</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">lp_val_follow_neg_dsts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="p">(</span><span class="n">num_vals</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">lp_val_follow_neg_srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_val_follow_seeds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_val_follow_neg_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_val_follow_neg_srcs</span><span class="p">,</span> <span class="n">lp_val_follow_neg_dsts</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">lp_val_follow_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_val_follow_seeds</span><span class="p">,</span> <span class="n">lp_val_follow_neg_seeds</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val seeds[user:follow:item] for link prediction: </span><span class="si">{</span><span class="n">lp_val_follow_seeds</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_val_follow_seeds_path</span><span class="p">,</span> <span class="n">lp_val_follow_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP val seeds[user:follow:item] are saved to </span><span class="si">{</span><span class="n">lp_val_follow_seeds_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val labels for user:follow:item.</span>
+<span class="n">lp_val_follow_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-val-follow-labels.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_val_follow_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">num_vals</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">lp_val_follow_labels</span><span class="p">[:</span><span class="n">num_vals</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lp_val_follow_labels</span><span class="p">[</span><span class="n">num_vals</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val labels[user:follow:item] for link prediction: </span><span class="si">{</span><span class="n">lp_val_follow_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_val_follow_labels_path</span><span class="p">,</span> <span class="n">lp_val_follow_labels</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP val labels[user:follow:item] are saved to </span><span class="si">{</span><span class="n">lp_val_follow_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Val indexes for user:follow:item.</span>
+<span class="n">lp_val_follow_indexes_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-val-follow-indexes.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_val_follow_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_vals</span><span class="p">)</span>
+<span class="n">lp_val_follow_neg_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_val_follow_indexes</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_val_follow_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lp_val_follow_indexes</span><span class="p">,</span> <span class="n">lp_val_follow_neg_indexes</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of val indexes[user:follow:item] for link prediction: </span><span class="si">{</span><span class="n">lp_val_follow_indexes</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_val_follow_indexes_path</span><span class="p">,</span> <span class="n">lp_val_follow_indexes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP val indexes[user:follow:item] are saved to </span><span class="si">{</span><span class="n">lp_val_follow_indexes_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test seeds for user:like:item.</span>
+<span class="n">lp_test_like_seeds_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-test-like-seeds.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_test_like_seeds</span> <span class="o">=</span> <span class="n">like_edges</span><span class="p">[</span><span class="o">-</span><span class="n">num_tests</span><span class="p">:,</span> <span class="p">:]</span>
+<span class="n">lp_test_like_neg_dsts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="p">(</span><span class="n">num_tests</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">lp_test_like_neg_srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_test_like_seeds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_test_like_neg_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_test_like_neg_srcs</span><span class="p">,</span> <span class="n">lp_test_like_neg_dsts</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">lp_test_like_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_test_like_seeds</span><span class="p">,</span> <span class="n">lp_test_like_neg_seeds</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test seeds[user:like:item] for link prediction: </span><span class="si">{</span><span class="n">lp_test_like_seeds</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_test_like_seeds_path</span><span class="p">,</span> <span class="n">lp_test_like_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP test seeds[user:like:item] are saved to </span><span class="si">{</span><span class="n">lp_test_like_seeds_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test labels for user:like:item.</span>
+<span class="n">lp_test_like_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-test-like-labels.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_test_like_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">num_tests</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">lp_test_like_labels</span><span class="p">[:</span><span class="n">num_tests</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lp_test_like_labels</span><span class="p">[</span><span class="n">num_tests</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test labels[user:like:item] for link prediction: </span><span class="si">{</span><span class="n">lp_test_like_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_test_like_labels_path</span><span class="p">,</span> <span class="n">lp_test_like_labels</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP test labels[user:like:item] are saved to </span><span class="si">{</span><span class="n">lp_test_like_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test indexes for user:like:item.</span>
+<span class="n">lp_test_like_indexes_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-test-like-indexes.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_test_like_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_tests</span><span class="p">)</span>
+<span class="n">lp_test_like_neg_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_test_like_indexes</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_test_like_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lp_test_like_indexes</span><span class="p">,</span> <span class="n">lp_test_like_neg_indexes</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test indexes[user:like:item] for link prediction: </span><span class="si">{</span><span class="n">lp_test_like_indexes</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_test_like_indexes_path</span><span class="p">,</span> <span class="n">lp_test_like_indexes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP test indexes[user:like:item] are saved to </span><span class="si">{</span><span class="n">lp_test_like_indexes_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test seeds for user:follow:item.</span>
+<span class="n">lp_test_follow_seeds_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-test-follow-seeds.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_test_follow_seeds</span> <span class="o">=</span> <span class="n">follow_edges</span><span class="p">[</span><span class="o">-</span><span class="n">num_tests</span><span class="p">:,</span> <span class="p">:]</span>
+<span class="n">lp_test_follow_neg_dsts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="p">(</span><span class="n">num_tests</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">lp_test_follow_neg_srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_test_follow_seeds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_test_follow_neg_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_test_follow_neg_srcs</span><span class="p">,</span> <span class="n">lp_test_follow_neg_dsts</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">lp_test_follow_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lp_test_follow_seeds</span><span class="p">,</span> <span class="n">lp_test_follow_neg_seeds</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test seeds[user:follow:item] for link prediction: </span><span class="si">{</span><span class="n">lp_test_follow_seeds</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_test_follow_seeds_path</span><span class="p">,</span> <span class="n">lp_test_follow_seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP test seeds[user:follow:item] are saved to </span><span class="si">{</span><span class="n">lp_test_follow_seeds_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test labels for user:follow:item.</span>
+<span class="n">lp_test_follow_labels_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-test-follow-labels.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_test_follow_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">num_tests</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">lp_test_follow_labels</span><span class="p">[:</span><span class="n">num_tests</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lp_test_follow_labels</span><span class="p">[</span><span class="n">num_tests</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test labels[user:follow:item] for link prediction: </span><span class="si">{</span><span class="n">lp_test_follow_labels</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_test_follow_labels_path</span><span class="p">,</span> <span class="n">lp_test_follow_labels</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP test labels[user:follow:item] are saved to </span><span class="si">{</span><span class="n">lp_test_follow_labels_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test indexes for user:follow:item.</span>
+<span class="n">lp_test_follow_indexes_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;lp-test-follow-indexes.npy&quot;</span><span class="p">)</span>
+<span class="n">lp_test_follow_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_tests</span><span class="p">)</span>
+<span class="n">lp_test_follow_neg_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">lp_test_follow_indexes</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">lp_test_follow_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lp_test_follow_indexes</span><span class="p">,</span> <span class="n">lp_test_follow_neg_indexes</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part of test indexes[user:follow:item] for link prediction: </span><span class="si">{</span><span class="n">lp_test_follow_indexes</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">lp_test_follow_indexes_path</span><span class="p">,</span> <span class="n">lp_test_follow_indexes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LP test indexes[user:follow:item] are saved to </span><span class="si">{</span><span class="n">lp_test_follow_indexes_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Part of train seeds[user:like:item] for link prediction: [[182 744]
+ [210 533]
+ [279 371]]
+LP train seeds[user:like:item] are saved to ./ondisk_dataset_heterograph/lp-train-like-seeds.npy
+
+Part of train seeds[user:follow:user] for link prediction: [[ 30 197]
+ [522 545]
+ [636 594]]
+LP train seeds[user:follow:user] are saved to ./ondisk_dataset_heterograph/lp-train-follow-seeds.npy
+
+Part of val seeds[user:like:item] for link prediction: [[544 128]
+ [906 618]
+ [302 381]]
+LP val seeds[user:like:item] are saved to ./ondisk_dataset_heterograph/lp-val-like-seeds.npy
+
+Part of val labels[user:like:item] for link prediction: [1. 1. 1.]
+LP val labels[user:like:item] are saved to ./ondisk_dataset_heterograph/lp-val-like-labels.npy
+
+Part of val indexes[user:like:item] for link prediction: [0 1 2]
+LP val indexes[user:like:item] are saved to ./ondisk_dataset_heterograph/lp-val-like-indexes.npy
+
+Part of val seeds[user:follow:item] for link prediction: [[173 931]
+ [378 742]
+ [860 618]]
+LP val seeds[user:follow:item] are saved to ./ondisk_dataset_heterograph/lp-val-follow-seeds.npy
+
+Part of val labels[user:follow:item] for link prediction: [1. 1. 1.]
+LP val labels[user:follow:item] are saved to ./ondisk_dataset_heterograph/lp-val-follow-labels.npy
+
+Part of val indexes[user:follow:item] for link prediction: [0 1 2]
+LP val indexes[user:follow:item] are saved to ./ondisk_dataset_heterograph/lp-val-follow-indexes.npy
+
+Part of test seeds[user:like:item] for link prediction: [[292  47]
+ [139 313]
+ [402 381]]
+LP test seeds[user:like:item] are saved to ./ondisk_dataset_heterograph/lp-test-like-seeds.npy
+
+Part of test labels[user:like:item] for link prediction: [1. 1. 1.]
+LP test labels[user:like:item] are saved to ./ondisk_dataset_heterograph/lp-test-like-labels.npy
+
+Part of test indexes[user:like:item] for link prediction: [0 1 2]
+LP test indexes[user:like:item] are saved to ./ondisk_dataset_heterograph/lp-test-like-indexes.npy
+
+Part of test seeds[user:follow:item] for link prediction: [[179 903]
+ [269 642]
+ [137 617]]
+LP test seeds[user:follow:item] are saved to ./ondisk_dataset_heterograph/lp-test-follow-seeds.npy
+
+Part of test labels[user:follow:item] for link prediction: [1. 1. 1.]
+LP test labels[user:follow:item] are saved to ./ondisk_dataset_heterograph/lp-test-follow-labels.npy
+
+Part of test indexes[user:follow:item] for link prediction: [0 1 2]
+LP test indexes[user:follow:item] are saved to ./ondisk_dataset_heterograph/lp-test-follow-indexes.npy
+
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+<section id="Organize-Data-into-YAML-File">
+<h2>Organize Data into YAML File<a class="headerlink" href="#Organize-Data-into-YAML-File" title="Link to this heading"></a></h2>
+<p>Now we need to create a <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code> file which contains the paths, dadta types of graph structure, feature data, training/validation/test sets. Please note that all path should be relative to <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code>.</p>
+<p>For heterogeneous graph, we need to specify the node/edge type in <strong>type</strong> fields. For edge type, canonical etype is required which is a string that’s concatenated by source node type, etype, and destination node type together with <code class="docutils literal notranslate"><span class="pre">:</span></code>.</p>
+<p>Notes: - all path should be relative to <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code>. - Below fields are optional and not specified in below example. - <code class="docutils literal notranslate"><span class="pre">in_memory</span></code>: indicates whether to load dada into memory or <code class="docutils literal notranslate"><span class="pre">mmap</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>Please refer to <a class="reference external" href="https://github.com/dmlc/dgl/blob/master/docs/source/stochastic_training/ondisk-dataset-specification.rst">YAML specification</a> for more details.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">yaml_content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    dataset_name: heterogeneous_graph_nc_lp</span>
+<span class="s2">    graph:</span>
+<span class="s2">      nodes:</span>
+<span class="s2">        - type: user</span>
+<span class="s2">          num: </span><span class="si">{</span><span class="n">num_nodes</span><span class="si">}</span>
+<span class="s2">        - type: item</span>
+<span class="s2">          num: </span><span class="si">{</span><span class="n">num_nodes</span><span class="si">}</span>
+<span class="s2">      edges:</span>
+<span class="s2">        - type: &quot;user:like:item&quot;</span>
+<span class="s2">          format: csv</span>
+<span class="s2">          path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">like_edges_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">        - type: &quot;user:follow:user&quot;</span>
+<span class="s2">          format: csv</span>
+<span class="s2">          path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">follow_edges_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">    feature_data:</span>
+<span class="s2">      - domain: node</span>
+<span class="s2">        type: user</span>
+<span class="s2">        name: feat_0</span>
+<span class="s2">        format: numpy</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">node_user_feat_0_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - domain: node</span>
+<span class="s2">        type: user</span>
+<span class="s2">        name: feat_1</span>
+<span class="s2">        format: torch</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">node_user_feat_1_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - domain: node</span>
+<span class="s2">        type: item</span>
+<span class="s2">        name: feat_0</span>
+<span class="s2">        format: numpy</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">node_item_feat_0_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - domain: node</span>
+<span class="s2">        type: item</span>
+<span class="s2">        name: feat_1</span>
+<span class="s2">        format: torch</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">node_item_feat_1_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - domain: edge</span>
+<span class="s2">        type: &quot;user:like:item&quot;</span>
+<span class="s2">        name: feat_0</span>
+<span class="s2">        format: numpy</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">edge_like_feat_0_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - domain: edge</span>
+<span class="s2">        type: &quot;user:like:item&quot;</span>
+<span class="s2">        name: feat_1</span>
+<span class="s2">        format: torch</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">edge_like_feat_1_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - domain: edge</span>
+<span class="s2">        type: &quot;user:follow:user&quot;</span>
+<span class="s2">        name: feat_0</span>
+<span class="s2">        format: numpy</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">edge_follow_feat_0_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - domain: edge</span>
+<span class="s2">        type: &quot;user:follow:user&quot;</span>
+<span class="s2">        name: feat_1</span>
+<span class="s2">        format: torch</span>
+<span class="s2">        path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">edge_follow_feat_1_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">    tasks:</span>
+<span class="s2">      - name: node_classification</span>
+<span class="s2">        num_classes: 10</span>
+<span class="s2">        train_set:</span>
+<span class="s2">          - type: user</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_train_user_ids_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: torch</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_train_user_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">          - type: item</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_train_item_ids_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: torch</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_train_item_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">        validation_set:</span>
+<span class="s2">          - type: user</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_val_user_ids_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: torch</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_val_user_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">          - type: item</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_val_item_ids_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: torch</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_val_item_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">        test_set:</span>
+<span class="s2">          - type: user</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_test_user_ids_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: torch</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_test_user_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">          - type: item</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_test_item_ids_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: torch</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">nc_test_item_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">      - name: link_prediction</span>
+<span class="s2">        num_classes: 10</span>
+<span class="s2">        train_set:</span>
+<span class="s2">          - type: &quot;user:like:item&quot;</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_train_like_seeds_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">          - type: &quot;user:follow:user&quot;</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_train_follow_seeds_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">        validation_set:</span>
+<span class="s2">          - type: &quot;user:like:item&quot;</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_val_like_seeds_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_val_like_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: indexes</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_val_like_indexes_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">          - type: &quot;user:follow:user&quot;</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_val_follow_seeds_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_val_follow_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: indexes</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_val_follow_indexes_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">        test_set:</span>
+<span class="s2">          - type: &quot;user:like:item&quot;</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_test_like_seeds_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_test_like_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: indexes</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_test_like_indexes_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">          - type: &quot;user:follow:user&quot;</span>
+<span class="s2">            data:</span>
+<span class="s2">              - name: seeds</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_test_follow_seeds_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: labels</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_test_follow_labels_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">              - name: indexes</span>
+<span class="s2">                format: numpy</span>
+<span class="s2">                path: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lp_test_follow_indexes_path</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;metadata.yaml&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_content</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Instantiate-OnDiskDataset">
+<h2>Instantiate <code class="docutils literal notranslate"><span class="pre">OnDiskDataset</span></code><a class="headerlink" href="#Instantiate-OnDiskDataset" title="Link to this heading"></a></h2>
+<p>Now we’re ready to load dataset via <code class="docutils literal notranslate"><span class="pre">dgl.graphbolt.OnDiskDataset</span></code>. When instantiating, we just pass in the base directory where <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code> file lies.</p>
+<p>During first instantiation, GraphBolt preprocesses the raw data such as constructing <code class="docutils literal notranslate"><span class="pre">FusedCSCSamplingGraph</span></code> from edges. All data including graph, feature data, training/validation/test sets are put into <code class="docutils literal notranslate"><span class="pre">preprocessed</span></code> directory after preprocessing. Any following dataset loading will skip the preprocess stage.</p>
+<p>After preprocessing, <code class="docutils literal notranslate"><span class="pre">load()</span></code> is required to be called explicitly in order to load graph, feature data and tasks.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">OnDiskDataset</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">graph</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded graph: </span><span class="si">{</span><span class="n">graph</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">feature</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded feature store: </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">tasks</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">tasks</span>
+<span class="n">nc_task</span> <span class="o">=</span> <span class="n">tasks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded node classification task: </span><span class="si">{</span><span class="n">nc_task</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">lp_task</span> <span class="o">=</span> <span class="n">tasks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded link prediction task: </span><span class="si">{</span><span class="n">lp_task</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Start to preprocess the on-disk dataset.
+Finish preprocessing the on-disk dataset.
+Loaded graph: FusedCSCSamplingGraph(csc_indptr=tensor([    0,    12,    19,  ..., 19989, 19996, 20000], dtype=torch.int32),
+                      indices=tensor([1790, 1290, 1929,  ..., 1152, 1408, 1461], dtype=torch.int32),
+                      total_num_nodes=2000, num_edges={&#39;user:follow:user&#39;: 10000, &#39;user:like:item&#39;: 10000},
+                      node_type_offset=tensor([   0, 1000, 2000], dtype=torch.int32),
+                      type_per_edge=tensor([1, 1, 1,  ..., 0, 0, 0], dtype=torch.uint8),
+                      node_type_to_id={&#39;item&#39;: 0, &#39;user&#39;: 1},
+                      edge_type_to_id={&#39;user:follow:user&#39;: 0, &#39;user:like:item&#39;: 1},)
+
+Loaded feature store: TorchBasedFeatureStore(
+    {(&lt;OnDiskFeatureDataDomain.NODE: &#39;node&#39;&gt;, &#39;user&#39;, &#39;feat_0&#39;): TorchBasedFeature(
+        feature=tensor([[0.5464, 0.2444, 0.6415, 0.0550, 0.3105],
+                        [0.9978, 0.4768, 0.0194, 0.1686, 0.6482],
+                        [0.0958, 0.7568, 0.9619, 0.8183, 0.7676],
+                        ...,
+                        [0.8291, 0.0591, 0.1033, 0.5721, 0.4065],
+                        [0.9518, 0.6003, 0.9171, 0.2680, 0.4421],
+                        [0.2790, 0.1307, 0.7656, 0.1357, 0.5311]], dtype=torch.float64),
+        metadata={},
+    ), (&lt;OnDiskFeatureDataDomain.NODE: &#39;node&#39;&gt;, &#39;user&#39;, &#39;feat_1&#39;): TorchBasedFeature(
+        feature=tensor([[0.9449, 0.3036, 0.2365, 0.5371, 0.6609],
+                        [0.1845, 0.9214, 0.4634, 0.8937, 0.5301],
+                        [0.6035, 0.5004, 0.0988, 0.4482, 0.4567],
+                        ...,
+                        [0.5357, 0.9703, 0.0705, 0.4339, 0.3075],
+                        [0.7345, 0.4323, 0.6018, 0.5746, 0.3670],
+                        [0.7435, 0.4452, 0.3010, 0.4257, 0.3078]]),
+        metadata={},
+    ), (&lt;OnDiskFeatureDataDomain.NODE: &#39;node&#39;&gt;, &#39;item&#39;, &#39;feat_0&#39;): TorchBasedFeature(
+        feature=tensor([[0.3005, 0.3227, 0.0716, 0.6477, 0.1246],
+                        [0.8022, 0.1690, 0.3961, 0.4459, 0.3720],
+                        [0.3804, 0.4401, 0.2161, 0.9059, 0.1623],
+                        ...,
+                        [0.1584, 0.9949, 0.7526, 0.7434, 0.2593],
+                        [0.0622, 0.1983, 0.6002, 0.5845, 0.6883],
+                        [0.3997, 0.9721, 0.0111, 0.6118, 0.4948]], dtype=torch.float64),
+        metadata={},
+    ), (&lt;OnDiskFeatureDataDomain.NODE: &#39;node&#39;&gt;, &#39;item&#39;, &#39;feat_1&#39;): TorchBasedFeature(
+        feature=tensor([[0.7401, 0.1222, 0.9717, 0.7092, 0.6812],
+                        [0.7676, 0.2153, 0.8554, 0.8088, 0.8858],
+                        [0.2685, 0.3661, 0.1360, 0.2404, 0.2548],
+                        ...,
+                        [0.9415, 0.3291, 0.0160, 0.6753, 0.1986],
+                        [0.0852, 0.1764, 0.1652, 0.8100, 0.6012],
+                        [0.4083, 0.2637, 0.8766, 0.1651, 0.1232]]),
+        metadata={},
+    ), (&lt;OnDiskFeatureDataDomain.EDGE: &#39;edge&#39;&gt;, &#39;user:like:item&#39;, &#39;feat_0&#39;): TorchBasedFeature(
+        feature=tensor([[0.0160, 0.1598, 0.7451, 0.2545, 0.5422],
+                        [0.7896, 0.4593, 0.6471, 0.7399, 0.8406],
+                        [0.5064, 0.7869, 0.4241, 0.9552, 0.9313],
+                        ...,
+                        [0.0095, 0.5579, 0.0601, 0.2635, 0.3613],
+                        [0.3611, 0.9942, 0.2789, 0.5265, 0.4187],
+                        [0.7454, 0.2532, 0.5369, 0.8574, 0.2186]], dtype=torch.float64),
+        metadata={},
+    ), (&lt;OnDiskFeatureDataDomain.EDGE: &#39;edge&#39;&gt;, &#39;user:like:item&#39;, &#39;feat_1&#39;): TorchBasedFeature(
+        feature=tensor([[0.3549, 0.3510, 0.7121, 0.0219, 0.2684],
+                        [0.4072, 0.3614, 0.7186, 0.8714, 0.1348],
+                        [0.7780, 0.7619, 0.5650, 0.9851, 0.3525],
+                        ...,
+                        [0.3463, 0.5765, 0.8666, 0.4026, 0.0303],
+                        [0.0846, 0.5044, 0.6062, 0.0862, 0.9135],
+                        [0.3456, 0.5452, 0.9335, 0.7186, 0.0507]]),
+        metadata={},
+    ), (&lt;OnDiskFeatureDataDomain.EDGE: &#39;edge&#39;&gt;, &#39;user:follow:user&#39;, &#39;feat_0&#39;): TorchBasedFeature(
+        feature=tensor([[0.1307, 0.4435, 0.8174, 0.5974, 0.9493],
+                        [0.9804, 0.0769, 0.5995, 0.4938, 0.0857],
+                        [0.8641, 0.5908, 0.4174, 0.1749, 0.0272],
+                        ...,
+                        [0.8827, 0.2472, 0.5230, 0.5552, 0.4426],
+                        [0.1919, 0.7759, 0.4080, 0.8412, 0.8489],
+                        [0.6154, 0.8325, 0.6936, 0.3409, 0.6755]], dtype=torch.float64),
+        metadata={},
+    ), (&lt;OnDiskFeatureDataDomain.EDGE: &#39;edge&#39;&gt;, &#39;user:follow:user&#39;, &#39;feat_1&#39;): TorchBasedFeature(
+        feature=tensor([[0.1526, 0.6109, 0.5623, 0.1507, 0.4967],
+                        [0.7713, 0.7886, 0.7638, 0.6953, 0.2030],
+                        [0.0151, 0.8409, 0.2196, 0.1628, 0.5089],
+                        ...,
+                        [0.3403, 0.8174, 0.2359, 0.3680, 0.6829],
+                        [0.7812, 0.5585, 0.0577, 0.0342, 0.8723],
+                        [0.1598, 0.1853, 0.3574, 0.6905, 0.5667]]),
+        metadata={},
+    )}
+)
+
+Loaded node classification task: OnDiskTask(validation_set=HeteroItemSet(
+               itemsets={&#39;user&#39;: ItemSet(
+                            items=(tensor([406, 757, 990, 266, 202, 263, 618, 663, 958, 570, 421, 320, 703, 951,
+                                500, 524, 231, 366, 953, 280, 262, 199, 797, 181, 282, 412, 706, 972,
+                                 54, 484, 166, 659, 609, 700, 865, 777,  90, 875, 809, 858, 466, 208,
+                                514, 682, 853, 138, 592, 838, 284, 900,  57,  34, 175, 246, 714, 801,
+                                372, 248, 675, 456, 507, 954, 546, 341, 685, 589, 186, 520, 732, 126,
+                                307, 141, 754, 873, 572, 315,   1, 598,  14, 468, 536, 920, 361, 211,
+                                538, 976, 964, 358, 999, 184, 268, 471, 488, 279, 796, 624,  42, 142,
+                                768, 238, 338, 943, 802, 753, 710, 569, 817, 686, 129, 759, 748, 480,
+                                  6, 215, 296, 152, 635, 913, 413, 449, 786, 870, 906, 690, 305, 382,
+                                309, 910, 409, 811, 928, 922, 110, 411, 794, 715, 568, 483, 908, 460,
+                                707, 511, 600, 866, 336, 260, 245, 904, 364, 633, 584, 581, 750, 160,
+                                122, 819, 820, 390, 100, 696,  36, 371, 407, 868, 780, 519, 242, 862,
+                                810,  95, 540, 846, 550, 695, 933, 725, 339, 487, 531, 664, 463, 147,
+                                932, 766, 225, 982,  40, 945, 340,  55, 473, 656, 992, 712, 350, 997,
+                                435, 432, 351,   5], dtype=torch.int32), tensor([1, 7, 2, 7, 9, 2, 1, 0, 2, 0, 4, 9, 9, 4, 6, 9, 1, 4, 9, 3, 7, 3, 1, 6,
+                                1, 5, 8, 0, 7, 4, 5, 9, 9, 2, 4, 3, 2, 6, 9, 7, 1, 0, 5, 4, 8, 2, 9, 5,
+                                6, 3, 5, 0, 8, 4, 3, 6, 4, 7, 6, 3, 3, 7, 5, 1, 1, 8, 6, 3, 1, 5, 4, 2,
+                                4, 2, 5, 2, 5, 0, 7, 9, 2, 7, 2, 5, 4, 2, 1, 7, 4, 8, 1, 4, 5, 1, 0, 6,
+                                4, 2, 6, 2, 4, 2, 7, 4, 2, 9, 7, 0, 5, 2, 5, 4, 8, 0, 9, 9, 1, 2, 4, 4,
+                                8, 8, 8, 0, 1, 4, 1, 8, 2, 5, 3, 9, 7, 1, 7, 1, 8, 5, 6, 0, 6, 0, 4, 1,
+                                4, 4, 1, 3, 0, 0, 5, 3, 3, 1, 7, 1, 4, 0, 2, 8, 3, 0, 4, 7, 9, 5, 1, 0,
+                                6, 9, 5, 7, 2, 6, 7, 5, 1, 1, 5, 4, 6, 0, 7, 5, 0, 9, 7, 7, 4, 7, 6, 3,
+                                7, 9, 6, 4, 0, 0, 2, 2])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;),
+                        ), &#39;item&#39;: ItemSet(
+                            items=(tensor([356, 195, 656, 327, 639,  54, 836, 764, 927, 275,  23, 964, 526, 470,
+                                284, 421, 547, 897, 216, 372, 736, 467, 487, 481, 411, 500,  92, 568,
+                                203, 767, 605, 153, 855, 716, 601, 187, 345,  64,  73, 888, 661, 191,
+                                975, 829,  37, 249, 564, 669, 308,  50, 910, 904,  32, 185, 148,   6,
+                                390, 277, 205, 785, 721, 850, 993, 242, 373, 514, 525, 980, 262, 402,
+                                770, 649, 667, 150, 889, 843, 955, 214, 969, 536, 196, 740, 545, 595,
+                                749, 446, 480,  88, 817, 483, 801, 518, 658, 674, 748, 109, 860, 293,
+                                123,  19, 305, 313, 183,  99, 630, 316, 900, 139, 907, 570, 666, 849,
+                                270, 911, 406, 604, 104, 880, 311, 501, 814, 340, 928, 960, 471, 128,
+                                 67, 660,  41, 807, 496, 121,   4, 199, 971, 515,  97, 371, 602, 701,
+                                404, 787, 439, 569, 363,  94, 659, 771, 387, 873, 397, 497, 393, 645,
+                                472, 744, 758, 994, 757, 566, 159,  34, 122, 978, 539, 575, 125, 217,
+                                528, 126, 590, 549, 459, 510,  40, 746, 686, 890, 324, 512, 154, 706,
+                                209, 946, 871, 874, 306, 922, 332, 729, 984, 970, 163, 779, 486,  66,
+                                177, 792, 365,   5], dtype=torch.int32), tensor([4, 9, 5, 9, 1, 0, 2, 1, 3, 7, 9, 2, 9, 3, 4, 1, 1, 0, 4, 5, 7, 4, 5, 6,
+                                0, 7, 3, 2, 0, 0, 7, 5, 6, 3, 8, 1, 3, 6, 7, 0, 6, 0, 7, 4, 2, 9, 6, 0,
+                                5, 1, 7, 4, 5, 0, 6, 8, 0, 5, 9, 5, 2, 7, 5, 7, 1, 1, 0, 0, 6, 6, 0, 3,
+                                4, 4, 6, 2, 6, 9, 2, 0, 8, 6, 1, 6, 8, 8, 8, 3, 8, 4, 9, 0, 6, 7, 8, 1,
+                                6, 3, 1, 6, 8, 3, 1, 1, 8, 5, 3, 7, 2, 6, 5, 3, 1, 9, 9, 4, 8, 0, 6, 4,
+                                5, 8, 3, 8, 7, 6, 5, 7, 1, 6, 1, 9, 8, 0, 5, 0, 3, 1, 9, 8, 9, 6, 5, 2,
+                                4, 3, 6, 9, 7, 2, 0, 3, 0, 3, 2, 1, 1, 2, 8, 8, 8, 2, 7, 0, 4, 4, 4, 1,
+                                0, 9, 4, 1, 4, 6, 6, 1, 9, 4, 5, 5, 7, 4, 2, 7, 2, 2, 1, 5, 3, 9, 4, 2,
+                                2, 4, 8, 2, 3, 0, 0, 7])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;),
+                        )},
+               names=(&#39;seeds&#39;, &#39;labels&#39;),
+           ),
+           train_set=HeteroItemSet(
+               itemsets={&#39;user&#39;: ItemSet(
+                            items=(tensor([697, 856, 465, 436, 894, 582, 452, 505, 425,  70, 393, 839, 360, 171,
+                                356, 229, 521, 562, 936, 567, 602, 281,  91, 532, 234, 930, 267,  45,
+                                424, 711, 303, 117, 683, 149,  63, 929, 698, 447, 669, 751, 841, 823,
+                                343, 310, 950, 693, 746, 182, 496, 140,  10, 942, 984, 154, 416, 640,
+                                494, 576, 454, 547, 776, 408, 462, 311, 752, 666, 855, 453, 509, 367,
+                                835, 442, 525, 319,  96, 586, 244, 665, 767, 402, 692, 947, 386, 135,
+                                251, 137, 497, 434, 359, 653, 621, 676, 926, 631, 204, 606, 119, 493,
+                                168, 253, 499, 583, 220, 892, 197, 607, 278, 969, 761, 741, 294, 323,
+                                 31, 205, 795,  83, 515, 903,  16, 455, 807, 104, 187, 909, 960, 643,
+                                486, 573, 691,  15, 144, 423, 886, 620, 528, 849,  88, 156, 740, 114,
+                                639,  28, 475, 627, 578, 446, 907, 956, 818, 831, 177, 368, 188, 952,
+                                399, 902, 921,  94, 654, 448,  59, 349, 489, 332, 658, 445, 345, 792,
+                                611, 459,  80, 784, 474, 344, 261, 667, 501, 169, 973, 239, 440, 646,
+                                769, 994, 139, 758, 630, 381, 329, 883, 482, 975,  49, 594, 502, 561,
+                                131, 479, 935, 265, 878, 313, 403, 506, 718, 427,  98, 510, 905, 219,
+                                616,  82, 236, 145, 274, 477, 232, 661,  23,  81, 743, 771, 765, 163,
+                                485, 437, 890, 681, 735, 491, 441, 213, 867, 362, 848, 563,  65, 395,
+                                876, 580,  13, 289, 148, 247,   0, 429, 837, 161,   2, 300, 136, 619,
+                                444,  74, 755, 200, 385, 457, 603, 716, 334, 747, 608, 764, 388, 826,
+                                256, 651,  53, 737, 209, 165, 588, 512, 542, 189,  77, 717, 227, 212,
+                                185, 331, 613, 230, 164, 704, 428,  68, 173, 353, 874, 915, 648,  61,
+                                962, 813, 237, 167, 965, 919, 162,  89, 472, 106,   7, 989, 688, 745,
+                                176, 763, 414, 985, 645, 882, 899, 534, 553, 297, 328, 552, 948, 957,
+                                749, 443, 439, 859,  71, 275, 146, 374, 133, 288, 585, 250,  41, 593,
+                                869,  25, 821, 968, 857,  47, 596,  64, 252,   4, 269, 888, 722, 357,
+                                518, 481, 556, 101, 788, 458, 719, 931, 721, 113,  86,  51, 555, 652,
+                                877, 720, 396, 636,  21, 314, 557, 476, 912, 678, 365, 325, 983, 730,
+                                394,  76, 901, 842, 217, 318, 322, 770, 391, 523, 272, 847, 702,  43,
+                                642, 638, 918, 673, 560, 233, 978,  18, 604, 812, 844, 772, 206, 287,
+                                977, 376, 799, 389, 674, 677, 679, 370, 891, 378, 739, 548, 270, 158,
+                                324, 241, 599, 286, 773, 944,  17, 783, 893, 404, 632, 590, 392, 203,
+                                254,  48,   8, 861, 623, 326,  69, 724, 417, 243, 790, 803, 889,  12,
+                                864, 713, 680, 478,  72, 966, 798,  30, 190, 845, 647, 533, 426, 934,
+                                174,  33,  29,  35, 492, 834, 986, 789, 949, 827, 420, 335, 380,  20,
+                                539,  92, 504, 298, 726, 132, 157,  24, 897, 938, 159, 348, 201, 575,
+                                387, 333, 723, 172, 566, 708, 369, 625, 375, 155, 522, 400, 554, 574,
+                                283, 180, 290, 438, 670, 916, 628,  44,  56, 170, 629, 924,  50, 469,
+                                221, 626, 292, 762, 923,  78,  19, 959, 734, 979, 709, 634, 742, 183,
+                                 37, 738, 526, 587, 240, 814, 884, 222,  26, 258,  60, 529,  38, 701,
+                                461, 791, 729, 116, 271, 112, 970, 637, 535, 880, 277, 346, 295, 498,
+                                895, 850,   9, 879, 993, 806, 124, 699, 744, 961,  11, 415, 782, 527,
+                                308,  73, 143, 995, 760, 991, 433, 223, 467, 940, 644, 115, 804, 564,
+                                672, 778, 694, 207, 216, 273, 657, 419, 987, 107,  75, 615],
+                               dtype=torch.int32), tensor([5, 9, 1, 3, 2, 7, 5, 8, 6, 5, 5, 3, 5, 8, 3, 4, 0, 9, 1, 8, 0, 8, 5, 6,
+                                9, 5, 2, 9, 0, 8, 6, 9, 5, 4, 8, 6, 0, 0, 9, 5, 5, 9, 3, 7, 5, 9, 9, 5,
+                                1, 7, 0, 4, 5, 7, 3, 5, 2, 4, 3, 0, 0, 2, 2, 8, 5, 7, 8, 8, 5, 3, 7, 7,
+                                7, 7, 7, 4, 8, 7, 9, 0, 7, 7, 8, 8, 3, 7, 2, 0, 2, 6, 0, 5, 8, 3, 1, 0,
+                                4, 7, 5, 2, 9, 4, 6, 0, 2, 5, 3, 1, 5, 4, 5, 4, 7, 6, 1, 9, 2, 0, 5, 3,
+                                1, 1, 1, 6, 9, 4, 1, 6, 3, 3, 7, 9, 9, 9, 9, 0, 6, 9, 4, 6, 5, 5, 8, 4,
+                                7, 4, 7, 5, 9, 8, 1, 0, 3, 6, 9, 5, 5, 9, 4, 3, 3, 5, 9, 8, 7, 2, 7, 0,
+                                2, 7, 7, 2, 2, 4, 9, 7, 8, 0, 9, 3, 2, 6, 3, 2, 1, 8, 1, 0, 6, 8, 6, 3,
+                                5, 1, 6, 0, 4, 5, 1, 0, 7, 9, 9, 9, 8, 5, 5, 5, 4, 6, 2, 3, 6, 0, 5, 1,
+                                2, 1, 2, 0, 3, 2, 0, 4, 3, 1, 8, 6, 9, 1, 4, 4, 3, 4, 2, 1, 0, 8, 7, 1,
+                                2, 3, 3, 3, 4, 2, 5, 8, 3, 4, 2, 5, 3, 3, 1, 7, 3, 5, 2, 1, 6, 0, 3, 1,
+                                6, 5, 1, 8, 6, 2, 6, 7, 0, 6, 9, 7, 8, 5, 1, 7, 6, 3, 7, 8, 9, 4, 5, 1,
+                                0, 4, 6, 3, 9, 0, 5, 1, 3, 1, 7, 3, 4, 4, 6, 8, 4, 2, 4, 2, 3, 5, 2, 6,
+                                5, 4, 8, 1, 7, 2, 4, 5, 7, 3, 4, 2, 4, 0, 5, 5, 0, 1, 5, 5, 8, 2, 9, 3,
+                                6, 6, 6, 0, 0, 9, 3, 7, 3, 3, 0, 1, 2, 5, 0, 9, 1, 9, 7, 9, 6, 5, 0, 3,
+                                9, 3, 4, 8, 7, 6, 1, 4, 7, 5, 7, 0, 8, 1, 3, 5, 1, 6, 5, 5, 5, 2, 5, 9,
+                                1, 6, 6, 0, 3, 4, 5, 0, 4, 6, 3, 9, 5, 6, 2, 7, 7, 6, 9, 8, 5, 0, 6, 5,
+                                4, 1, 2, 1, 7, 8, 8, 8, 2, 0, 9, 6, 9, 0, 7, 1, 4, 2, 0, 2, 5, 5, 7, 0,
+                                0, 0, 1, 0, 2, 0, 5, 7, 1, 9, 0, 3, 1, 9, 0, 9, 3, 9, 1, 8, 2, 1, 5, 1,
+                                4, 0, 6, 4, 5, 5, 3, 6, 3, 3, 8, 6, 5, 2, 6, 0, 2, 4, 3, 1, 8, 0, 0, 5,
+                                8, 5, 8, 8, 7, 1, 8, 2, 1, 7, 3, 7, 5, 9, 0, 9, 1, 6, 1, 2, 6, 5, 9, 8,
+                                4, 1, 1, 7, 1, 7, 6, 6, 8, 1, 1, 0, 8, 4, 9, 2, 8, 6, 1, 3, 0, 2, 7, 6,
+                                6, 0, 4, 0, 7, 4, 6, 7, 0, 8, 5, 0, 1, 7, 3, 3, 7, 1, 0, 7, 8, 7, 8, 1,
+                                0, 5, 8, 4, 8, 9, 1, 8, 4, 8, 2, 9, 3, 5, 3, 2, 5, 1, 8, 8, 9, 1, 0, 8,
+                                8, 8, 5, 9, 5, 9, 0, 9, 1, 4, 7, 2, 4, 3, 8, 1, 3, 5, 3, 1, 1, 3, 6, 4])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;),
+                        ), &#39;item&#39;: ItemSet(
+                            items=(tensor([981, 263, 637, 259, 825, 224, 241, 300, 264, 682, 816, 668, 918,   3,
+                                391, 127, 914, 522, 485, 174, 913, 638, 631,  42, 108, 112, 317, 976,
+                                  0, 343, 155, 901, 611, 774, 357, 119, 845, 844, 493, 702, 806, 953,
+                                204,  87, 392, 956, 782, 513, 543, 598,  89, 268, 531, 106, 542, 895,
+                                331, 151, 444, 441, 672, 170, 482, 977, 220, 796, 712, 447, 853, 448,
+                                629, 227, 231, 172, 415, 320, 233, 430, 173, 556, 281, 697, 541, 333,
+                                 39, 999, 189,  93,  22, 453, 654, 532, 995, 478,  15, 877, 385, 294,
+                                576, 596, 761, 527, 144,  79, 295, 100, 985, 768, 794, 747, 732,  18,
+                                622,  33, 432, 705, 973, 962, 408, 824,  85,  56, 473, 808, 246, 831,
+                                616, 492,  14, 475, 302, 468, 232, 738, 607, 312, 863, 925, 254, 644,
+                                113,  95, 587, 811, 775, 612, 805, 958, 798,  44, 266, 579, 694, 256,
+                                818, 433, 685, 937, 362, 986, 643, 868, 692,  26,  86, 335,  48, 491,
+                                882, 464, 663, 225, 646, 676, 847, 437, 776, 673,  25, 662, 519, 412,
+                                201, 269, 208, 700, 610, 789,  38, 809,   8, 742, 802, 318, 455, 184,
+                                899, 465, 851, 935, 253, 210, 997, 286, 966, 533, 852, 553,  35, 939,
+                                323, 416, 561, 347, 219, 652, 117,  62,  43,  90, 537, 414, 427, 932,
+                                804,  16, 797, 141, 511, 557, 445, 143, 708, 247, 998, 585, 720, 120,
+                                684, 733, 147,  78, 680, 267, 728, 862, 750, 594, 821, 370, 839, 298,
+                                274, 718, 429, 346, 161, 677, 169,  82, 338, 857, 800, 463, 636, 301,
+                                822, 419, 450, 476, 912, 435, 456, 717, 477, 200, 348, 961, 538, 842,
+                                101,  58, 321, 240, 996, 310, 691,  72, 230, 507, 349, 517, 479, 641,
+                                919, 856, 830, 516, 474, 812, 974, 452, 282, 175, 212, 158, 418, 236,
+                                389, 665, 737, 449, 735, 272, 535, 374, 781, 867, 166, 258, 440,  83,
+                                226, 289, 883, 237, 498, 103, 651, 457, 322, 653, 979, 869, 529, 815,
+                                828, 763, 936, 394,  70, 687, 462, 572, 791, 425, 554, 640, 965, 490,
+                                896, 355, 635, 234,   1, 190, 647, 458, 730, 754, 407, 135, 304, 329,
+                                405, 424, 273, 906,  20, 909, 876, 799, 727,  51, 581, 760, 864, 563,
+                                905,  98, 950, 297, 489,  45, 592, 330, 400, 215, 933, 591, 583, 271,
+                                903, 952, 469,   7, 552, 132, 548, 908, 731, 609, 931, 941, 892, 110,
+                                 59, 145, 409, 884, 124,  53,   2, 105, 626, 902, 840, 115, 551, 624,
+                                619, 689, 328, 597, 118, 334, 600, 307, 559, 788, 823, 361, 278, 442,
+                                133, 571, 382, 222, 193, 578, 546, 386, 745, 589, 261, 130, 186, 879,
+                                696, 944, 502, 207, 580, 244, 690, 206, 257, 350, 870, 181,  63, 296,
+                                228, 314, 460, 769, 383, 504, 292, 466, 613, 565,  46, 617, 834, 826,
+                                741, 509, 488, 948, 620, 709, 793, 573, 451, 146, 670, 399, 934,  47,
+                                865, 315, 461,  24, 963, 968, 194, 364,  28, 920, 376, 875, 725, 819,
+                                 75, 621, 223,  10, 198, 790, 395, 162, 558, 142, 202, 368, 291,  30,
+                                255, 192, 752, 681, 618, 751, 134, 443, 872, 803, 923, 188, 820, 675,
+                                339, 810, 503, 606, 949, 783, 168, 243, 713,  74, 550, 303, 375, 403,
+                                650, 778, 917, 967, 838, 149, 854, 671, 434, 523, 846, 422, 726, 655,
+                                588, 218, 930, 693, 239, 285, 280, 250,  68, 734,  21, 972, 756, 140,
+                                560, 182, 648, 586, 287, 555, 988,  57, 171, 861, 739, 337, 138, 366,
+                                544, 410, 102, 288, 943, 367, 695, 894, 524, 413, 352, 762],
+                               dtype=torch.int32), tensor([6, 6, 7, 2, 7, 1, 7, 8, 9, 0, 6, 6, 4, 8, 2, 4, 9, 1, 3, 3, 6, 9, 6, 5,
+                                5, 8, 9, 3, 0, 1, 8, 0, 7, 7, 3, 5, 4, 1, 5, 9, 9, 9, 7, 7, 6, 2, 0, 8,
+                                6, 0, 4, 3, 8, 7, 9, 2, 3, 4, 5, 6, 0, 7, 6, 6, 3, 5, 0, 9, 2, 1, 5, 8,
+                                0, 1, 3, 7, 5, 8, 3, 7, 0, 1, 4, 3, 5, 2, 0, 1, 8, 2, 0, 7, 7, 6, 3, 0,
+                                9, 0, 0, 7, 3, 5, 2, 3, 4, 9, 9, 4, 8, 6, 9, 3, 1, 0, 3, 8, 6, 5, 7, 0,
+                                8, 8, 8, 5, 5, 6, 7, 2, 4, 1, 4, 0, 4, 9, 0, 8, 7, 4, 4, 3, 2, 7, 0, 9,
+                                4, 6, 2, 3, 1, 6, 8, 8, 7, 1, 2, 1, 3, 0, 6, 6, 6, 3, 0, 2, 3, 5, 3, 5,
+                                2, 8, 8, 8, 8, 7, 3, 0, 3, 1, 3, 9, 4, 4, 8, 1, 1, 7, 9, 4, 3, 2, 0, 8,
+                                7, 2, 3, 3, 1, 5, 5, 4, 4, 3, 5, 5, 2, 9, 3, 1, 8, 0, 1, 5, 2, 2, 1, 8,
+                                2, 7, 2, 4, 0, 0, 4, 7, 6, 7, 1, 1, 5, 1, 9, 3, 0, 8, 7, 8, 3, 6, 0, 7,
+                                9, 2, 8, 0, 6, 8, 4, 9, 3, 3, 7, 2, 3, 7, 0, 0, 6, 5, 9, 3, 4, 4, 4, 0,
+                                1, 8, 4, 1, 8, 5, 1, 2, 7, 3, 8, 3, 5, 9, 5, 7, 3, 5, 5, 1, 7, 3, 4, 3,
+                                2, 1, 2, 8, 1, 5, 3, 0, 8, 1, 8, 9, 5, 4, 5, 6, 5, 8, 1, 2, 8, 0, 8, 3,
+                                8, 1, 3, 4, 9, 3, 2, 8, 5, 4, 6, 0, 9, 5, 2, 9, 1, 4, 0, 6, 9, 7, 6, 1,
+                                0, 3, 2, 1, 5, 4, 8, 7, 2, 9, 2, 9, 2, 2, 3, 8, 8, 3, 0, 7, 9, 6, 8, 6,
+                                6, 3, 3, 7, 4, 0, 7, 4, 8, 6, 5, 8, 1, 8, 4, 2, 3, 3, 3, 6, 5, 8, 3, 0,
+                                4, 0, 9, 5, 9, 6, 7, 5, 3, 0, 6, 4, 1, 6, 4, 3, 7, 1, 2, 9, 6, 5, 0, 1,
+                                4, 0, 0, 3, 7, 9, 9, 5, 1, 9, 9, 4, 8, 8, 7, 8, 7, 8, 9, 6, 5, 6, 6, 1,
+                                7, 1, 6, 2, 9, 0, 3, 9, 2, 2, 6, 9, 9, 2, 6, 6, 2, 3, 1, 6, 0, 0, 1, 0,
+                                8, 8, 2, 7, 2, 3, 8, 5, 3, 6, 8, 1, 5, 8, 2, 0, 9, 6, 0, 8, 5, 0, 4, 9,
+                                4, 5, 5, 3, 6, 5, 8, 0, 9, 4, 0, 2, 0, 2, 3, 3, 5, 6, 2, 9, 1, 7, 8, 4,
+                                4, 3, 7, 7, 8, 7, 4, 6, 8, 8, 5, 9, 0, 2, 5, 2, 6, 0, 5, 7, 5, 2, 9, 4,
+                                5, 2, 2, 6, 2, 7, 4, 5, 4, 4, 9, 1, 8, 5, 5, 8, 3, 5, 6, 1, 8, 3, 5, 3,
+                                7, 7, 0, 5, 0, 5, 2, 1, 1, 2, 0, 9, 7, 7, 5, 2, 3, 5, 3, 1, 4, 8, 0, 4,
+                                0, 1, 4, 8, 1, 7, 0, 4, 2, 1, 8, 6, 5, 6, 7, 1, 1, 7, 7, 4, 5, 7, 5, 7])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;),
+                        )},
+               names=(&#39;seeds&#39;, &#39;labels&#39;),
+           ),
+           test_set=HeteroItemSet(
+               itemsets={&#39;user&#39;: ItemSet(
+                            items=(tensor([153, 178, 980, 330, 851,  46, 235, 941,  52, 347, 342, 981, 352, 383,
+                                 79, 946, 312, 490, 650, 852, 687, 927, 537, 887, 196, 816, 971, 937,
+                                825, 917, 218, 118, 988, 660, 728, 579, 885, 558, 551, 595, 733, 544,
+                                276, 108, 150, 914, 808, 192, 781, 815, 863, 828, 317, 779, 127,  22,
+                                 67, 198, 591, 179, 398, 898,  85, 102, 191, 405, 955,  58, 617, 833,
+                                195, 401, 321, 793, 756, 840,   3, 214, 671, 516, 255, 612, 384, 787,
+                                377, 285, 193, 105, 151, 974, 854,  97, 451, 301, 963, 464, 422, 610,
+                                123, 508, 736, 302, 470, 800,  87, 824, 299, 684, 836, 541, 379, 306,
+                                881, 103, 668, 832, 304, 689, 998,  66, 662, 727, 194, 293,  99, 571,
+                                249, 549, 410, 996,  84, 397, 705, 109, 830, 259, 967, 517, 111, 872,
+                                 93, 939, 649, 641, 911, 363, 264, 125, 577, 601, 327, 495, 530, 513,
+                                134,  32, 896, 373, 785,  62, 257, 559,  39, 871, 925, 431, 355, 337,
+                                354, 316, 450,  27, 565, 843, 731, 503, 860, 121, 822, 430, 543, 418,
+                                829, 545, 614, 622, 597, 228, 774, 210, 226, 120, 655, 224, 291, 130,
+                                775, 605, 128, 805], dtype=torch.int32), tensor([5, 5, 7, 9, 3, 8, 6, 5, 6, 0, 7, 0, 4, 9, 3, 8, 0, 1, 6, 5, 1, 6, 9, 5,
+                                2, 6, 4, 4, 6, 0, 7, 6, 6, 3, 2, 6, 3, 2, 6, 4, 0, 6, 6, 3, 8, 5, 0, 3,
+                                4, 1, 1, 4, 9, 9, 2, 2, 9, 7, 7, 8, 8, 4, 9, 0, 4, 7, 4, 6, 6, 7, 3, 5,
+                                7, 3, 3, 9, 7, 3, 9, 9, 6, 5, 4, 0, 7, 2, 0, 4, 2, 1, 5, 3, 5, 7, 5, 5,
+                                2, 8, 5, 0, 5, 1, 6, 3, 8, 0, 4, 4, 5, 2, 6, 7, 4, 5, 6, 3, 2, 8, 4, 0,
+                                4, 7, 6, 3, 8, 5, 5, 6, 2, 5, 5, 7, 3, 8, 2, 5, 2, 7, 7, 8, 1, 2, 6, 1,
+                                0, 5, 0, 4, 5, 0, 8, 3, 5, 4, 6, 0, 0, 5, 8, 1, 4, 6, 8, 8, 9, 4, 3, 6,
+                                8, 3, 3, 8, 2, 1, 9, 8, 1, 8, 5, 1, 1, 6, 6, 4, 8, 7, 5, 3, 0, 3, 1, 3,
+                                8, 1, 4, 6, 1, 8, 5, 8])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;),
+                        ), &#39;item&#39;: ItemSet(
+                            items=(tensor([983, 377,  80, 715, 698, 707, 886, 116,  84, 584, 426, 938, 353, 859,
+                                766, 137, 773, 388, 945, 499, 179, 530, 521, 136, 378, 885, 152, 428,
+                                765,  13, 423, 755, 245, 562,   9, 723, 574, 957, 342,  69, 165, 178,
+                                786, 251,  52, 326,  55, 699,  77, 197, 360, 627, 309, 921, 358, 229,
+                                848, 495, 628,  91, 344, 915, 603, 784, 704, 577, 341, 354, 916, 683,
+                                 17, 379, 417, 633, 608, 924, 248, 679, 772, 657, 114, 319,  81, 714,
+                                753,  12, 634, 211, 703, 221, 990, 283, 438, 777, 111,  76, 954, 252,
+                                176, 381, 454, 710, 107, 582, 929, 129, 359, 795, 722, 987, 837, 881,
+                                833, 265, 279,  49, 160, 780, 520,  36, 567, 431, 299,  27, 436, 841,
+                                131, 508, 951,  29, 351, 832, 384, 711, 959,  60, 401, 642, 369, 290,
+                                420, 534, 235,  11, 926, 380, 484, 989, 540, 156, 942, 678, 506, 599,
+                                396, 164, 858, 167, 759, 813, 878, 494, 238, 688, 982, 743, 947, 991,
+                                260, 724,  96,  31, 614, 593, 276,  65, 898, 992, 180, 336, 891,  61,
+                                664, 827, 887, 866, 505, 623,  71, 157, 940, 213, 835, 325, 632, 625,
+                                893, 615, 719, 398], dtype=torch.int32), tensor([6, 5, 3, 6, 0, 1, 2, 5, 3, 8, 8, 9, 6, 6, 5, 2, 4, 1, 2, 0, 1, 7, 2, 1,
+                                7, 7, 8, 9, 9, 6, 0, 4, 9, 4, 4, 5, 5, 5, 9, 1, 4, 6, 9, 3, 2, 1, 2, 7,
+                                5, 2, 9, 9, 9, 2, 0, 3, 7, 0, 7, 5, 2, 7, 9, 2, 0, 7, 7, 7, 4, 9, 5, 3,
+                                8, 2, 0, 3, 6, 3, 7, 7, 0, 4, 4, 7, 0, 6, 9, 5, 8, 0, 9, 8, 7, 4, 4, 8,
+                                0, 7, 6, 4, 8, 2, 3, 3, 2, 2, 1, 0, 8, 9, 2, 4, 1, 2, 6, 5, 0, 3, 4, 9,
+                                9, 6, 7, 0, 4, 9, 9, 8, 3, 3, 3, 1, 4, 5, 6, 4, 0, 3, 7, 2, 5, 0, 7, 1,
+                                7, 3, 7, 9, 7, 3, 2, 1, 0, 8, 9, 9, 9, 5, 7, 4, 4, 5, 1, 7, 4, 2, 1, 7,
+                                6, 2, 5, 9, 4, 4, 1, 3, 1, 6, 5, 1, 3, 1, 6, 8, 1, 7, 7, 9, 7, 9, 6, 9,
+                                1, 7, 6, 9, 3, 1, 2, 1])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;),
+                        )},
+               names=(&#39;seeds&#39;, &#39;labels&#39;),
+           ),
+           metadata={&#39;name&#39;: &#39;node_classification&#39;, &#39;num_classes&#39;: 10},)
+
+Loaded link prediction task: OnDiskTask(validation_set=HeteroItemSet(
+               itemsets={&#39;user:like:item&#39;: ItemSet(
+                            items=(tensor([[544, 128],
+                                [906, 618],
+                                [302, 381],
+                                ...,
+                                [225, 817],
+                                [225, 876],
+                                [225, 843]], dtype=torch.int32), tensor([1., 1., 1.,  ..., 0., 0., 0.], dtype=torch.float64), tensor([   0,    1,    2,  ..., 1999, 1999, 1999])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;, &#39;indexes&#39;),
+                        ), &#39;user:follow:user&#39;: ItemSet(
+                            items=(tensor([[173, 931],
+                                [378, 742],
+                                [860, 618],
+                                ...,
+                                [294, 977],
+                                [294, 661],
+                                [294, 897]], dtype=torch.int32), tensor([1., 1., 1.,  ..., 0., 0., 0.], dtype=torch.float64), tensor([   0,    1,    2,  ..., 1999, 1999, 1999])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;, &#39;indexes&#39;),
+                        )},
+               names=(&#39;seeds&#39;, &#39;labels&#39;, &#39;indexes&#39;),
+           ),
+           train_set=HeteroItemSet(
+               itemsets={&#39;user:like:item&#39;: ItemSet(
+                            items=(tensor([[182, 744],
+                                [210, 533],
+                                [279, 371],
+                                ...,
+                                [558, 366],
+                                [946, 756],
+                                [930,   0]], dtype=torch.int32),),
+                            names=(&#39;seeds&#39;,),
+                        ), &#39;user:follow:user&#39;: ItemSet(
+                            items=(tensor([[ 30, 197],
+                                [522, 545],
+                                [636, 594],
+                                ...,
+                                [430, 941],
+                                [498, 403],
+                                [132, 291]], dtype=torch.int32),),
+                            names=(&#39;seeds&#39;,),
+                        )},
+               names=(&#39;seeds&#39;,),
+           ),
+           test_set=HeteroItemSet(
+               itemsets={&#39;user:like:item&#39;: ItemSet(
+                            items=(tensor([[292,  47],
+                                [139, 313],
+                                [402, 381],
+                                ...,
+                                [816, 724],
+                                [816, 716],
+                                [816, 491]], dtype=torch.int32), tensor([1., 1., 1.,  ..., 0., 0., 0.], dtype=torch.float64), tensor([   0,    1,    2,  ..., 1999, 1999, 1999])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;, &#39;indexes&#39;),
+                        ), &#39;user:follow:user&#39;: ItemSet(
+                            items=(tensor([[179, 903],
+                                [269, 642],
+                                [137, 617],
+                                ...,
+                                [804, 395],
+                                [804, 117],
+                                [804, 528]], dtype=torch.int32), tensor([1., 1., 1.,  ..., 0., 0., 0.], dtype=torch.float64), tensor([   0,    1,    2,  ..., 1999, 1999, 1999])),
+                            names=(&#39;seeds&#39;, &#39;labels&#39;, &#39;indexes&#39;),
+                        )},
+               names=(&#39;seeds&#39;, &#39;labels&#39;, &#39;indexes&#39;),
+           ),
+           metadata={&#39;name&#39;: &#39;link_prediction&#39;, &#39;num_classes&#39;: 10},)
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/ubuntu/dgl/python/dgl/graphbolt/impl/ondisk_dataset.py:460: DGLWarning: Edge feature is stored, but edge IDs are not saved.
+  dgl_warning(&#34;Edge feature is stored, but edge IDs are not saved.&#34;)
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ondisk_dataset_homograph.html" class="btn btn-neutral float-left" title="OnDiskDataset for Homogeneous Graph" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ondisk-dataset-specification.html" class="btn btn-neutral float-right" title="YAML specification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

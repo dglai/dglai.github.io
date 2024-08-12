@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.3 Heterogeneous GraphConv Module &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 4: Graph Data Pipeline" href="data.html" />
+    <link rel="prev" title="3.2 DGL NN Module Forward Function" href="nn-forward.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Chapter 1: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Chapter 2: Message Passing</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nn.html">Chapter 3: Building GNN Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nn-construction.html">3.1 DGL NN Module Construction Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nn-forward.html">3.2 DGL NN Module Forward Function</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.3 Heterogeneous GraphConv Module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Chapter 4: Graph Data Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Chapter 5: Training Graph Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch.html">Chapter 6: Stochastic Training on Large Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed.html">Chapter 7: Distributed Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mixed_precision.html">Chapter 8: Mixed Precision Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User Guide</a></li>
+          <li class="breadcrumb-item"><a href="nn.html">Chapter 3: Building GNN Modules</a></li>
+      <li class="breadcrumb-item active">3.3 Heterogeneous GraphConv Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guide/nn-heterograph.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="heterogeneous-graphconv-module">
+<span id="guide-nn-heterograph"></span><h1>3.3 Heterogeneous GraphConv Module<a class="headerlink" href="#heterogeneous-graphconv-module" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../guide_cn/nn-heterograph.html#guide-cn-nn-heterograph"><span class="std std-ref">(中文版)</span></a></p>
+<p><a class="reference internal" href="../generated/dgl.nn.pytorch.HeteroGraphConv.html#dgl.nn.pytorch.HeteroGraphConv" title="dgl.nn.pytorch.HeteroGraphConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeteroGraphConv</span></code></a>
+is a module-level encapsulation to run DGL NN module on heterogeneous
+graphs. The implementation logic is the same as message passing level API
+<a class="reference internal" href="../generated/dgl.DGLGraph.multi_update_all.html#dgl.DGLGraph.multi_update_all" title="dgl.DGLGraph.multi_update_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multi_update_all()</span></code></a>, including:</p>
+<ul class="simple">
+<li><p>DGL NN module within each relation <span class="math notranslate nohighlight">\(r\)</span>.</p></li>
+<li><p>Reduction that merges the results on the same node type from multiple
+relations.</p></li>
+</ul>
+<p>This can be formulated as:</p>
+<div class="math notranslate nohighlight">
+\[h_{dst}^{(l+1)} = \underset{r\in\mathcal{R}, r_{dst}=dst}{AGG} (f_r(g_r, h_{r_{src}}^l, h_{r_{dst}}^l))\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_r\)</span> is the NN module for each relation <span class="math notranslate nohighlight">\(r\)</span>,
+<span class="math notranslate nohighlight">\(AGG\)</span> is the aggregation function.</p>
+<section id="heterographconv-implementation-logic">
+<h2>HeteroGraphConv implementation logic:<a class="headerlink" href="#heterographconv-implementation-logic" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="k">class</span> <span class="nc">HeteroGraphConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mods</span><span class="p">,</span> <span class="n">aggregate</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HeteroGraphConv</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mods</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span><span class="n">mods</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aggregate</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># An internal function to get common aggregation functions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agg_fn</span> <span class="o">=</span> <span class="n">get_aggregate_fn</span><span class="p">(</span><span class="n">aggregate</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agg_fn</span> <span class="o">=</span> <span class="n">aggregate</span>
+</pre></div>
+</div>
+<p>The heterograph convolution takes a dictionary <code class="docutils literal notranslate"><span class="pre">mods</span></code> that maps each
+relation to an nn module and sets the function that aggregates results on
+the same node type from multiple relations.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">mod_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mod_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">mod_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mod_args</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">mod_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mod_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">nty</span> <span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">nty</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">dsttypes</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Besides input graph and input tensors, the <code class="docutils literal notranslate"><span class="pre">forward()</span></code> function takes
+two additional dictionary parameters <code class="docutils literal notranslate"><span class="pre">mod_args</span></code> and <code class="docutils literal notranslate"><span class="pre">mod_kwargs</span></code>.
+These two dictionaries have the same keys as <code class="docutils literal notranslate"><span class="pre">self.mods</span></code>. They are
+used as customized parameters when calling their corresponding NN
+modules in <code class="docutils literal notranslate"><span class="pre">self.mods</span></code> for different types of relations.</p>
+<p>An output dictionary is created to hold output tensor for each
+destination type <code class="docutils literal notranslate"><span class="pre">nty</span></code> . Note that the value for each <code class="docutils literal notranslate"><span class="pre">nty</span></code> is a
+list, indicating a single node type may get multiple outputs if more
+than one relations have <code class="docutils literal notranslate"><span class="pre">nty</span></code> as the destination type. <code class="docutils literal notranslate"><span class="pre">HeteroGraphConv</span></code>
+will perform a further aggregation on the lists.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">is_block</span><span class="p">:</span>
+    <span class="n">src_inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+    <span class="n">dst_inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[:</span><span class="n">g</span><span class="o">.</span><span class="n">number_of_dst_nodes</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">src_inputs</span> <span class="o">=</span> <span class="n">dst_inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+
+<span class="k">for</span> <span class="n">stype</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">canonical_etypes</span><span class="p">:</span>
+    <span class="n">rel_graph</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="n">stype</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">rel_graph</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="k">if</span> <span class="n">stype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src_inputs</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dst_inputs</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">dstdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mods</span><span class="p">[</span><span class="n">etype</span><span class="p">](</span>
+        <span class="n">rel_graph</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">src_inputs</span><span class="p">[</span><span class="n">stype</span><span class="p">],</span> <span class="n">dst_inputs</span><span class="p">[</span><span class="n">dtype</span><span class="p">]),</span>
+        <span class="o">*</span><span class="n">mod_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="p">()),</span>
+        <span class="o">**</span><span class="n">mod_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="p">{}))</span>
+    <span class="n">outputs</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dstdata</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The input <code class="docutils literal notranslate"><span class="pre">g</span></code> can be a heterogeneous graph or a subgraph block from a
+heterogeneous graph. As in ordinary NN module, the <code class="docutils literal notranslate"><span class="pre">forward()</span></code>
+function need to handle different input graph types separately.</p>
+<p>Each relation is represented as a <code class="docutils literal notranslate"><span class="pre">canonical_etype</span></code>, which is
+<code class="docutils literal notranslate"><span class="pre">(stype,</span> <span class="pre">etype,</span> <span class="pre">dtype)</span></code>. Using <code class="docutils literal notranslate"><span class="pre">canonical_etype</span></code> as the key, one can
+extract out a bipartite graph <code class="docutils literal notranslate"><span class="pre">rel_graph</span></code>. For bipartite graph, the
+input feature will be organized as a tuple
+<code class="docutils literal notranslate"><span class="pre">(src_inputs[stype],</span> <span class="pre">dst_inputs[dtype])</span></code>. The NN module for each
+relation is called and the output is saved. To avoid unnecessary call,
+relations with no edges or no nodes with the src type will be skipped.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rsts</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">nty</span><span class="p">,</span> <span class="n">alist</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alist</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">rsts</span><span class="p">[</span><span class="n">nty</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agg_fn</span><span class="p">(</span><span class="n">alist</span><span class="p">,</span> <span class="n">nty</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, the results on the same destination node type from multiple
+relations are aggregated using <code class="docutils literal notranslate"><span class="pre">self.agg_fn</span></code> function. Examples can
+be found in the API Doc for <a class="reference internal" href="../generated/dgl.nn.pytorch.HeteroGraphConv.html#dgl.nn.pytorch.HeteroGraphConv" title="dgl.nn.pytorch.HeteroGraphConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeteroGraphConv</span></code></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="nn-forward.html" class="btn btn-neutral float-left" title="3.2 DGL NN Module Forward Function" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data.html" class="btn btn-neutral float-right" title="Chapter 4: Graph Data Pipeline" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

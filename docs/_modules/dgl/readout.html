@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dgl.readout &mdash; DGL 2.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0bf289b5" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9caaf7ed"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DGL
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/blitz/index.html">A Blitz Introduction to DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced Materials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../stochastic_training/index.html">🆕 Stochastic Training of GNNs with GraphBolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_cn/index.html">用户指南【包含过时信息】</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide_ko/index.html">사용자 가이드[시대에 뒤쳐진]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphtransformer/index.html">🆕 Tutorial: Graph Transformer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/sparse/index.html">Tutorials: dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cpu/index.html">Training on CPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/multi/index.html">Training on Multiple GPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/dist/index.html">Distributed training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/models/index.html">Paper Study with DGL</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.html">dgl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.data.html">dgl.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.dataloading.html">dgl.dataloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.DGLGraph.html">dgl.DGLGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.distributed.html">dgl.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.function.html">dgl.function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.geometry.html">dgl.geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.graphbolt.html">🆕 dgl.graphbolt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn-pytorch.html">dgl.nn (PyTorch)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/nn.functional.html">dgl.nn.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.ops.html">dgl.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.optim.html">dgl.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sampling.html">dgl.sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.sparse_v0.html">dgl.sparse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/dgl.multiprocessing.html">dgl.multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/transforms.html">dgl.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/python/udf.html">User-defined Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to DGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/ffi.html">DGL Foreign Function Interface (FFI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../performance.html">Performance Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Misc</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../env_var.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DGL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dgl.readout</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dgl.readout</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Classes and functions for batching multiple graphs together.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">dgl_warning</span><span class="p">,</span> <span class="n">DGLError</span>
+<span class="kn">from</span> <span class="nn">.ops</span> <span class="kn">import</span> <span class="n">segment</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;readout_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;readout_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sum_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sum_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;softmax_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;softmax_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;broadcast_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;broadcast_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;topk_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;topk_edges&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="readout_nodes">
+<a class="viewcode-back" href="../../generated/dgl.readout_nodes.html#dgl.readout_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">readout_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a graph-level representation by aggregating node features</span>
+<span class="sd">    :attr:`feat`.</span>
+
+<span class="sd">    The function is commonly used as a *readout* function on a batch of graphs</span>
+<span class="sd">    to generate graph-level representation. Thus, the result tensor shape</span>
+<span class="sd">    depends on the batch size of the input graph. Given a graph of batch size</span>
+<span class="sd">    :math:`B`, and a feature size of :math:`D`, the result shape will be</span>
+<span class="sd">    :math:`(B, D)`, with each row being the aggregated node features of each</span>
+<span class="sd">    graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph.</span>
+<span class="sd">        Input graph.</span>
+<span class="sd">    feat : str</span>
+<span class="sd">        Node feature name.</span>
+<span class="sd">    weight : str, optional</span>
+<span class="sd">        Node weight name. None means aggregating without weights.</span>
+<span class="sd">        Otherwise, multiply each node feature by node feature :attr:`weight`</span>
+<span class="sd">        before aggregation. The weight feature shape must be compatible with</span>
+<span class="sd">        an element-wise multiplication with the feature tensor.</span>
+<span class="sd">    op : str, optional</span>
+<span class="sd">        Readout operator. Can be &#39;sum&#39;, &#39;max&#39;, &#39;min&#39;, &#39;mean&#39;.</span>
+<span class="sd">    ntype : str, optional</span>
+<span class="sd">        Node type. Can be omitted if there is only one node type in the graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        Result tensor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    node features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1], [1, 0]))              # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g1.ndata[&#39;h&#39;] = th.tensor([1., 2.])</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1], [1, 2]))              # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; g2.ndata[&#39;h&#39;] = th.tensor([1., 2., 3.])</span>
+
+<span class="sd">    Sum over one graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.readout_nodes(g1, &#39;h&#39;)</span>
+<span class="sd">    tensor([3.])  # 1 + 2</span>
+
+<span class="sd">    Sum over a batched graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.readout_nodes(bg, &#39;h&#39;)</span>
+<span class="sd">    tensor([3., 6.])  # [1 + 2, 1 + 2 + 3]</span>
+
+<span class="sd">    Weighted sum:</span>
+
+<span class="sd">    &gt;&gt;&gt; bg.ndata[&#39;w&#39;] = th.tensor([.1, .2, .1, .5, .2])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.readout_nodes(bg, &#39;h&#39;, &#39;w&#39;)</span>
+<span class="sd">    tensor([.5, 1.7])</span>
+
+<span class="sd">    Readout by max:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.readout_nodes(bg, &#39;h&#39;, op=&#39;max&#39;)</span>
+<span class="sd">    tensor([2., 3.])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">segment</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">batch_num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">),</span> <span class="n">x</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">op</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="readout_edges">
+<a class="viewcode-back" href="../../generated/dgl.readout_edges.html#dgl.readout_edges">[docs]</a>
+<span class="k">def</span> <span class="nf">readout_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sum the edge feature :attr:`feat` in :attr:`graph`, optionally</span>
+<span class="sd">    multiplies it by a edge :attr:`weight`.</span>
+
+<span class="sd">    The function is commonly used as a *readout* function on a batch of graphs</span>
+<span class="sd">    to generate graph-level representation. Thus, the result tensor shape</span>
+<span class="sd">    depends on the batch size of the input graph. Given a graph of batch size</span>
+<span class="sd">    :math:`B`, and a feature size of :math:`D`, the result shape will be</span>
+<span class="sd">    :math:`(B, D)`, with each row being the aggregated edge features of each</span>
+<span class="sd">    graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph.</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    feat : str</span>
+<span class="sd">        The edge feature name.</span>
+<span class="sd">    weight : str, optional</span>
+<span class="sd">        The edge weight feature name. If None, no weighting will be performed,</span>
+<span class="sd">        otherwise, weight each edge feature with field :attr:`feat`.</span>
+<span class="sd">        for summation. The weight feature shape must be compatible with</span>
+<span class="sd">        an element-wise multiplication with the feature tensor.</span>
+<span class="sd">    op : str, optional</span>
+<span class="sd">        Readout operator. Can be &#39;sum&#39;, &#39;max&#39;, &#39;min&#39;, &#39;mean&#39;.</span>
+<span class="sd">    etype : str or (str, str, str), optional</span>
+<span class="sd">        The type names of the edges. The allowed type name formats are:</span>
+
+<span class="sd">        * ``(str, str, str)`` for source node type, edge type and destination node type.</span>
+<span class="sd">        * or one ``str`` edge type name if the name can uniquely identify a</span>
+<span class="sd">          triplet format in the graph.</span>
+
+<span class="sd">        Can be omitted if the graph has only one type of edges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        Result tensor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    edge features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1], [1, 0]))              # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g1.edata[&#39;h&#39;] = th.tensor([1., 2.])</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1], [1, 2]))              # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; g2.edata[&#39;h&#39;] = th.tensor([2., 3.])</span>
+
+<span class="sd">    Sum over one graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.readout_edges(g1, &#39;h&#39;)</span>
+<span class="sd">    tensor([3.])  # 1 + 2</span>
+
+<span class="sd">    Sum over a batched graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.readout_edges(bg, &#39;h&#39;)</span>
+<span class="sd">    tensor([3., 5.])  # [1 + 2, 2 + 3]</span>
+
+<span class="sd">    Weighted sum:</span>
+
+<span class="sd">    &gt;&gt;&gt; bg.edata[&#39;w&#39;] = th.tensor([.1, .2, .1, .5])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.readout_edges(bg, &#39;h&#39;, &#39;w&#39;)</span>
+<span class="sd">    tensor([.5, 1.7])</span>
+
+<span class="sd">    Readout by max:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.readout_edges(bg, &#39;w&#39;, op=&#39;max&#39;)</span>
+<span class="sd">    tensor([2., 3.])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">segment</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">batch_num_edges</span><span class="p">(</span><span class="n">etype</span><span class="p">),</span> <span class="n">x</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">op</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sum_nodes">
+<a class="viewcode-back" href="../../generated/dgl.sum_nodes.html#dgl.sum_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">sum_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Syntax sugar for ``dgl.readout_nodes(graph, feat, weight, ntype=ntype, op=&#39;sum&#39;)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">readout_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sum_edges">
+<a class="viewcode-back" href="../../generated/dgl.sum_edges.html#dgl.sum_edges">[docs]</a>
+<span class="k">def</span> <span class="nf">sum_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Syntax sugar for ``dgl.readout_edges(graph, feat, weight, etype=etype, op=&#39;sum&#39;)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">readout_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="mean_nodes">
+<a class="viewcode-back" href="../../generated/dgl.mean_nodes.html#dgl.mean_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">mean_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Syntax sugar for ``dgl.readout_nodes(graph, feat, weight, ntype=ntype, op=&#39;mean&#39;)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">readout_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="mean_edges">
+<a class="viewcode-back" href="../../generated/dgl.mean_edges.html#dgl.mean_edges">[docs]</a>
+<span class="k">def</span> <span class="nf">mean_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Syntax sugar for ``dgl.readout_edges(graph, feat, weight, etype=etype, op=&#39;mean&#39;)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">readout_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="max_nodes">
+<a class="viewcode-back" href="../../generated/dgl.max_nodes.html#dgl.max_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">max_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Syntax sugar for ``dgl.readout_nodes(graph, feat, weight, ntype=ntype, op=&#39;max&#39;)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">readout_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="max_edges">
+<a class="viewcode-back" href="../../generated/dgl.max_edges.html#dgl.max_edges">[docs]</a>
+<span class="k">def</span> <span class="nf">max_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Syntax sugar for ``dgl.readout_edges(graph, feat, weight, etype=etype, op=&#39;max&#39;)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    readout_edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">readout_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="n">etype</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="softmax_nodes">
+<a class="viewcode-back" href="../../generated/dgl.softmax_nodes.html#dgl.softmax_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">softmax_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform graph-wise softmax on the node features.</span>
+
+<span class="sd">    For each node :math:`v\in\mathcal{V}` and its feature :math:`x_v`,</span>
+<span class="sd">    calculate its normalized feature as follows:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        z_v = \frac{\exp(x_v)}{\sum_{u\in\mathcal{V}}\exp(x_u)}</span>
+
+<span class="sd">    If the graph is a batch of multiple graphs, each graph computes softmax</span>
+<span class="sd">    independently. The result tensor has the same shape as the original node</span>
+<span class="sd">    feature.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph.</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    feat : str</span>
+<span class="sd">        The node feature name.</span>
+<span class="sd">    ntype : str, optional</span>
+<span class="sd">        The node type name. Can be omitted if there is only one node type in the graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        Result tensor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    node features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1], [1, 0]))              # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g1.ndata[&#39;h&#39;] = th.tensor([1., 1.])</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1], [1, 2]))              # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; g2.ndata[&#39;h&#39;] = th.tensor([1., 1., 1.])</span>
+
+<span class="sd">    Softmax over one graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.softmax_nodes(g1, &#39;h&#39;)</span>
+<span class="sd">    tensor([.5000, .5000])</span>
+
+<span class="sd">    Softmax over a batched graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.softmax_nodes(bg, &#39;h&#39;)</span>
+<span class="sd">    tensor([.5000, .5000, .3333, .3333, .3333])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    softmax_edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">segment</span><span class="o">.</span><span class="n">segment_softmax</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">batch_num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="softmax_edges">
+<a class="viewcode-back" href="../../generated/dgl.softmax_edges.html#dgl.softmax_edges">[docs]</a>
+<span class="k">def</span> <span class="nf">softmax_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform graph-wise softmax on the edge features.</span>
+
+<span class="sd">    For each edge :math:`e\in\mathcal{E}` and its feature :math:`x_e`,</span>
+<span class="sd">    calculate its normalized feature as follows:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        z_e = \frac{\exp(x_e)}{\sum_{e&#39;\in\mathcal{E}}\exp(x_{e&#39;})}</span>
+
+<span class="sd">    If the graph is a batch of multiple graphs, each graph computes softmax</span>
+<span class="sd">    independently. The result tensor has the same shape as the original edge</span>
+<span class="sd">    feature.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph.</span>
+<span class="sd">        The input graph.</span>
+<span class="sd">    feat : str</span>
+<span class="sd">        The edge feature name.</span>
+<span class="sd">    etype : str or (str, str, str), optional</span>
+<span class="sd">        The type names of the edges. The allowed type name formats are:</span>
+
+<span class="sd">        * ``(str, str, str)`` for source node type, edge type and destination node type.</span>
+<span class="sd">        * or one ``str`` edge type name if the name can uniquely identify a</span>
+<span class="sd">          triplet format in the graph.</span>
+
+<span class="sd">        Can be omitted if the graph has only one type of edges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        Result tensor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    edge features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1], [1, 0]))              # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g1.edata[&#39;h&#39;] = th.tensor([1., 1.])</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1, 0], [1, 2, 2]))        # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; g2.edata[&#39;h&#39;] = th.tensor([1., 1., 1.])</span>
+
+<span class="sd">    Softmax over one graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.softmax_edges(g1, &#39;h&#39;)</span>
+<span class="sd">    tensor([.5000, .5000])</span>
+
+<span class="sd">    Softmax over a batched graph:</span>
+
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.softmax_edges(bg, &#39;h&#39;)</span>
+<span class="sd">    tensor([.5000, .5000, .3333, .3333, .3333])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    softmax_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">segment</span><span class="o">.</span><span class="n">segment_softmax</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">batch_num_edges</span><span class="p">(</span><span class="n">etype</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="broadcast_nodes">
+<a class="viewcode-back" href="../../generated/dgl.broadcast_nodes.html#dgl.broadcast_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">broadcast_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">graph_feat</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a node feature equal to the graph-level feature :attr:`graph_feat`.</span>
+
+<span class="sd">    The operation is similar to ``numpy.repeat`` (or ``torch.repeat_interleave``).</span>
+<span class="sd">    It is commonly used to normalize node features by a global vector. For example,</span>
+<span class="sd">    to normalize node features across graph to range :math:`[0~1)`:</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.batch([...])  # batch multiple graphs</span>
+<span class="sd">    &gt;&gt;&gt; g.ndata[&#39;h&#39;] = ...  # some node features</span>
+<span class="sd">    &gt;&gt;&gt; h_sum = dgl.broadcast_nodes(g, dgl.sum_nodes(g, &#39;h&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; g.ndata[&#39;h&#39;] /= h_sum  # normalize by summation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph.</span>
+<span class="sd">    graph_feat : tensor</span>
+<span class="sd">        The feature to broadcast. Tensor shape is :math:`(B, *)` for batched graph,</span>
+<span class="sd">        where :math:`B` is the batch size.</span>
+
+<span class="sd">    ntype : str, optional</span>
+<span class="sd">        Node type. Can be omitted if there is only one node type.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        The node features tensor with shape :math:`(N, *)`, where :math:`N` is the</span>
+<span class="sd">        number of nodes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    node features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0], [1]))                    # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1], [1, 2]))              # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2])</span>
+<span class="sd">    &gt;&gt;&gt; feat = th.rand(2, 5)</span>
+<span class="sd">    &gt;&gt;&gt; feat</span>
+<span class="sd">    tensor([[0.4325, 0.7710, 0.5541, 0.0544, 0.9368],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014]])</span>
+
+<span class="sd">    Broadcast feature to all nodes in the batched graph, feat[i] is broadcast to nodes</span>
+<span class="sd">    in the i-th example in the batch.</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.broadcast_nodes(bg, feat)</span>
+<span class="sd">    tensor([[0.4325, 0.7710, 0.5541, 0.0544, 0.9368],</span>
+<span class="sd">            [0.4325, 0.7710, 0.5541, 0.0544, 0.9368],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014]])</span>
+
+<span class="sd">    Broadcast feature to all nodes in the single graph (the feature tensor shape</span>
+<span class="sd">    to broadcast should be :math:`(1, *)`).</span>
+
+<span class="sd">    &gt;&gt;&gt; feat0 = th.unsqueeze(feat[0], 0)</span>
+<span class="sd">    &gt;&gt;&gt; dgl.broadcast_nodes(g1, feat0)</span>
+<span class="sd">    tensor([[0.4325, 0.7710, 0.5541, 0.0544, 0.9368],</span>
+<span class="sd">            [0.4325, 0.7710, 0.5541, 0.0544, 0.9368]])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    broadcast_edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">graph_feat</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">graph</span><span class="o">.</span><span class="n">batch_size</span> <span class="ow">and</span> <span class="n">graph</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">dgl_warning</span><span class="p">(</span>
+            <span class="s2">&quot;For a single graph, use a tensor of shape (1, *) for graph_feat.&quot;</span>
+            <span class="s2">&quot; The support of shape (*) will be deprecated.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">graph_feat</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">graph_feat</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">graph_feat</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">batch_num_nodes</span><span class="p">(</span><span class="n">ntype</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="broadcast_edges">
+<a class="viewcode-back" href="../../generated/dgl.broadcast_edges.html#dgl.broadcast_edges">[docs]</a>
+<span class="k">def</span> <span class="nf">broadcast_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">graph_feat</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an edge feature equal to the graph-level feature :attr:`graph_feat`.</span>
+
+<span class="sd">    The operation is similar to ``numpy.repeat`` (or ``torch.repeat_interleave``).</span>
+<span class="sd">    It is commonly used to normalize edge features by a global vector. For example,</span>
+<span class="sd">    to normalize edge features across graph to range :math:`[0~1)`:</span>
+
+<span class="sd">    &gt;&gt;&gt; g = dgl.batch([...])  # batch multiple graphs</span>
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;h&#39;] = ...  # some node features</span>
+<span class="sd">    &gt;&gt;&gt; h_sum = dgl.broadcast_edges(g, dgl.sum_edges(g, &#39;h&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; g.edata[&#39;h&#39;] /= h_sum  # normalize by summation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph.</span>
+<span class="sd">    graph_feat : tensor</span>
+<span class="sd">        The feature to broadcast. Tensor shape is :math:`(B, *)` for batched graph,</span>
+<span class="sd">        where :math:`B` is the batch size.</span>
+<span class="sd">    etype : str, typle of str, optional</span>
+<span class="sd">        Edge type. Can be omitted if there is only one edge type in the graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        The edge features tensor with shape :math:`(M, *)`, where :math:`M` is the</span>
+<span class="sd">        number of edges.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    edge features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0], [1]))                    # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1], [1, 2]))              # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2])</span>
+<span class="sd">    &gt;&gt;&gt; feat = th.rand(2, 5)</span>
+<span class="sd">    &gt;&gt;&gt; feat</span>
+<span class="sd">    tensor([[0.4325, 0.7710, 0.5541, 0.0544, 0.9368],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014]])</span>
+
+<span class="sd">    Broadcast feature to all edges in the batched graph, feat[i] is broadcast to edges</span>
+<span class="sd">    in the i-th example in the batch.</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.broadcast_edges(bg, feat)</span>
+<span class="sd">    tensor([[0.4325, 0.7710, 0.5541, 0.0544, 0.9368],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014]])</span>
+
+<span class="sd">    Broadcast feature to all edges in the single graph (the feature tensor shape</span>
+<span class="sd">    to broadcast should be :math:`(1, *)`).</span>
+
+<span class="sd">    &gt;&gt;&gt; feat1 = th.unsqueeze(feat[1], 0)</span>
+<span class="sd">    &gt;&gt;&gt; dgl.broadcast_edges(g2, feat1)</span>
+<span class="sd">    tensor([[0.2721, 0.4629, 0.7269, 0.0724, 0.1014],</span>
+<span class="sd">            [0.2721, 0.4629, 0.7269, 0.0724, 0.1014]])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    broadcast_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">graph_feat</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">graph</span><span class="o">.</span><span class="n">batch_size</span> <span class="ow">and</span> <span class="n">graph</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">dgl_warning</span><span class="p">(</span>
+            <span class="s2">&quot;For a single graph, use a tensor of shape (1, *) for graph_feat.&quot;</span>
+            <span class="s2">&quot; The support of shape (*) will be deprecated.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">graph_feat</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">graph_feat</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">graph_feat</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">batch_num_edges</span><span class="p">(</span><span class="n">etype</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<span class="n">READOUT_ON_ATTRS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;ndata&quot;</span><span class="p">,</span> <span class="s2">&quot;batch_num_nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;number_of_nodes&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;edata&quot;</span><span class="p">,</span> <span class="s2">&quot;batch_num_edges&quot;</span><span class="p">,</span> <span class="s2">&quot;number_of_edges&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_topk_torch</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">descending</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal function to take graph-wise top-k node/edge features according to</span>
+<span class="sd">    the rank given by keys, this function is PyTorch only.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    keys : Tensor</span>
+<span class="sd">        The key for ranking.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The :math:`k` in &quot;top-:math:`k`&quot;.</span>
+<span class="sd">    descending : bool</span>
+<span class="sd">        Indicates whether to return the feature corresponding to largest or</span>
+<span class="sd">        smallest elements.</span>
+<span class="sd">    x : Tensor</span>
+<span class="sd">        The padded feature with shape (batch, max_len, *)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sorted_feat : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(batch, k, *)`.</span>
+<span class="sd">    sorted_idx : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(batch, k)`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+
+    <span class="n">batch_size</span><span class="p">,</span> <span class="n">max_len</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">topk_indices</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">largest</span><span class="o">=</span><span class="n">descending</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># (batch_size, k)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">((</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">max_len</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">shift</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">th</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">max_len</span>
+    <span class="p">)</span>
+    <span class="n">topk_indices_</span> <span class="o">=</span> <span class="n">topk_indices</span> <span class="o">+</span> <span class="n">shift</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">topk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">th</span><span class="o">.</span><span class="n">masked_fill</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="n">topk_indices</span>
+
+
+<span class="k">def</span> <span class="nf">_topk_on</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">typestr</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">descending</span><span class="p">,</span> <span class="n">sortby</span><span class="p">,</span> <span class="n">ntype_or_etype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal function to take graph-wise top-k node/edge features of</span>
+<span class="sd">    field :attr:`feat` in :attr:`graph` ranked by keys at given</span>
+<span class="sd">    index :attr:`sortby`. If :attr:`descending` is set to False, return the</span>
+<span class="sd">    k smallest elements instead.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph</span>
+<span class="sd">    typestr : str</span>
+<span class="sd">        &#39;nodes&#39; or &#39;edges&#39;</span>
+<span class="sd">    feat : str</span>
+<span class="sd">        The feature field name.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The :math:`k` in &quot;top-:math`k`&quot;.</span>
+<span class="sd">    descending : bool</span>
+<span class="sd">        Controls whether to return the largest or smallest elements,</span>
+<span class="sd">         defaults to True.</span>
+<span class="sd">    sortby : int</span>
+<span class="sd">        The key index we sort :attr:`feat` on, if set to None, we sort</span>
+<span class="sd">        the whole :attr:`feat`.</span>
+<span class="sd">    ntype_or_etype : str, tuple of str</span>
+<span class="sd">        Node/edge type.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sorted_feat : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(B, K, D)`, where</span>
+<span class="sd">        :math:`B` is the batch size of the input graph.</span>
+<span class="sd">    sorted_idx : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(B, K)`(:math:`(B, K, D)` if sortby</span>
+<span class="sd">        is set to None), where</span>
+<span class="sd">        :math:`B` is the batch size of the input graph, :math:`D`</span>
+<span class="sd">        is the feature size.</span>
+
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If an example has :math:`n` nodes/edges and :math:`n&lt;k`, in the first</span>
+<span class="sd">    returned tensor the :math:`n+1` to :math:`k`th rows would be padded</span>
+<span class="sd">    with all zero; in the second returned tensor, the behavior of :math:`n+1`</span>
+<span class="sd">    to :math:`k`th elements is not defined.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">batch_num_objs_attr</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">READOUT_ON_ATTRS</span><span class="p">[</span><span class="n">typestr</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">typestr</span><span class="p">)[</span><span class="n">ntype_or_etype</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">feat</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DGLError</span><span class="p">(</span>
+            <span class="s2">&quot;Only support </span><span class="si">{}</span><span class="s2"> feature `</span><span class="si">{}</span><span class="s2">` with dimension less than or&quot;</span>
+            <span class="s2">&quot; equal to 2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typestr</span><span class="p">,</span> <span class="n">feat</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">feat</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">feat</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">batch_num_objs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">batch_num_objs_attr</span><span class="p">)(</span><span class="n">ntype_or_etype</span><span class="p">)</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_num_objs</span><span class="p">)</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">batch_num_objs</span><span class="p">)),</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">fill_val</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+    <span class="n">feat_</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">pad_packed_tensor</span><span class="p">(</span>
+        <span class="n">feat</span><span class="p">,</span> <span class="n">batch_num_objs</span><span class="p">,</span> <span class="n">fill_val</span><span class="p">,</span> <span class="n">l_min</span><span class="o">=</span><span class="n">k</span>
+    <span class="p">)</span>  <span class="c1"># (batch_size, l, d)</span>
+
+    <span class="k">if</span> <span class="n">F</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">==</span> <span class="s2">&quot;pytorch&quot;</span> <span class="ow">and</span> <span class="n">sortby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># PyTorch&#39;s implementation of top-K</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">feat_</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">sortby</span><span class="p">]</span>  <span class="c1"># (batch_size, l)</span>
+        <span class="k">return</span> <span class="n">_topk_torch</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">descending</span><span class="p">,</span> <span class="n">feat_</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Fallback to framework-agnostic implementation of top-K</span>
+        <span class="k">if</span> <span class="n">sortby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">slice_axis</span><span class="p">(</span><span class="n">feat_</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">sortby</span><span class="p">,</span> <span class="n">sortby</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">feat_</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">)</span>
+        <span class="n">topk_indices</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">slice_axis</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sortby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feat_</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">feat_</span><span class="p">,</span> <span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">length</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">length</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">feat</span><span class="p">))</span>
+            <span class="n">topk_indices_</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">topk_indices</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span> <span class="o">+</span> <span class="n">shift</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">feat_</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">feat_</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">),</span> <span class="n">k</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">)</span> <span class="o">*</span> <span class="n">length</span> <span class="o">*</span> <span class="n">hidden_size</span> <span class="o">+</span> <span class="n">F</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)]</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="o">*</span> <span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">)</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">copy_to</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">feat</span><span class="p">))</span>
+            <span class="n">topk_indices_</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">topk_indices</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span> <span class="o">*</span> <span class="n">hidden_size</span> <span class="o">+</span> <span class="n">shift</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">gather_row</span><span class="p">(</span><span class="n">feat_</span><span class="p">,</span> <span class="n">topk_indices_</span><span class="p">),</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">replace_inf_with_zero</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">topk_indices</span>
+
+
+<div class="viewcode-block" id="topk_nodes">
+<a class="viewcode-back" href="../../generated/dgl.topk_nodes.html#dgl.topk_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">topk_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sortby</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a graph-level representation by a graph-wise top-k on</span>
+<span class="sd">    node features :attr:`feat` in :attr:`graph` by feature at index :attr:`sortby`.</span>
+
+<span class="sd">    If :attr:`descending` is set to False, return the k smallest elements instead.</span>
+
+<span class="sd">    If :attr:`sortby` is set to None, the function would perform top-k on</span>
+<span class="sd">    all dimensions independently, equivalent to calling</span>
+<span class="sd">    :code:`torch.topk(graph.ndata[feat], dim=0)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph.</span>
+<span class="sd">    feat : str</span>
+<span class="sd">        The feature field.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The k in &quot;top-k&quot;</span>
+<span class="sd">    descending : bool</span>
+<span class="sd">        Controls whether to return the largest or smallest elements.</span>
+<span class="sd">    sortby : int, optional</span>
+<span class="sd">        Sort according to which feature. If is None, all features are sorted independently.</span>
+<span class="sd">    ntype : str, optional</span>
+<span class="sd">        Node type. Can be omitted if there is only one node type in the graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sorted_feat : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(B, K, D)`, where</span>
+<span class="sd">        :math:`B` is the batch size of the input graph.</span>
+<span class="sd">    sorted_idx : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(B, K)`(:math:`(B, K, D)` if sortby</span>
+<span class="sd">        is set to None), where</span>
+<span class="sd">        :math:`B` is the batch size of the input graph, :math:`D`</span>
+<span class="sd">        is the feature size.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If an example has :math:`n` nodes and :math:`n&lt;k`, the ``sorted_feat``</span>
+<span class="sd">    tensor will pad the :math:`n+1` to :math:`k` th rows with zero;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    node features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1], [2, 3]))              # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g1.ndata[&#39;h&#39;] = th.rand(4, 5)</span>
+<span class="sd">    &gt;&gt;&gt; g1.ndata[&#39;h&#39;]</span>
+<span class="sd">    tensor([[0.0297, 0.8307, 0.9140, 0.6702, 0.3346],</span>
+<span class="sd">            [0.5901, 0.3030, 0.9280, 0.6893, 0.7997],</span>
+<span class="sd">            [0.0880, 0.6515, 0.4451, 0.7507, 0.5297],</span>
+<span class="sd">            [0.5171, 0.6379, 0.2695, 0.8954, 0.5197]])</span>
+
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1, 2], [2, 3, 4]))       # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; g2.ndata[&#39;h&#39;] = th.rand(5, 5)</span>
+<span class="sd">    &gt;&gt;&gt; g2.ndata[&#39;h&#39;]</span>
+<span class="sd">    tensor([[0.3168, 0.3174, 0.5303, 0.0804, 0.3808],</span>
+<span class="sd">            [0.1323, 0.2766, 0.4318, 0.6114, 0.1458],</span>
+<span class="sd">            [0.1752, 0.9105, 0.5692, 0.8489, 0.0539],</span>
+<span class="sd">            [0.1931, 0.4954, 0.3455, 0.3934, 0.0857],</span>
+<span class="sd">            [0.5065, 0.5182, 0.5418, 0.1520, 0.3872]])</span>
+
+<span class="sd">    Top-k over node attribute :attr:`h` in a batched graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2], ndata=[&#39;h&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.topk_nodes(bg, &#39;h&#39;, 3)</span>
+<span class="sd">    (tensor([[[0.5901, 0.8307, 0.9280, 0.8954, 0.7997],</span>
+<span class="sd">              [0.5171, 0.6515, 0.9140, 0.7507, 0.5297],</span>
+<span class="sd">              [0.0880, 0.6379, 0.4451, 0.6893, 0.5197]],</span>
+<span class="sd">             [[0.5065, 0.9105, 0.5692, 0.8489, 0.3872],</span>
+<span class="sd">              [0.3168, 0.5182, 0.5418, 0.6114, 0.3808],</span>
+<span class="sd">              [0.1931, 0.4954, 0.5303, 0.3934, 0.1458]]]), tensor([[[1, 0, 1, 3, 1],</span>
+<span class="sd">              [3, 2, 0, 2, 2],</span>
+<span class="sd">              [2, 3, 2, 1, 3]],</span>
+<span class="sd">             [[4, 2, 2, 2, 4],</span>
+<span class="sd">              [0, 4, 4, 1, 0],</span>
+<span class="sd">              [3, 3, 0, 3, 1]]]))</span>
+
+<span class="sd">    Top-k over node attribute :attr:`h` along the last dimension in a batched graph.</span>
+<span class="sd">    (used in SortPooling)</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.topk_nodes(bg, &#39;h&#39;, 3, sortby=-1)</span>
+<span class="sd">    (tensor([[[0.5901, 0.3030, 0.9280, 0.6893, 0.7997],</span>
+<span class="sd">              [0.0880, 0.6515, 0.4451, 0.7507, 0.5297],</span>
+<span class="sd">              [0.5171, 0.6379, 0.2695, 0.8954, 0.5197]],</span>
+<span class="sd">             [[0.5065, 0.5182, 0.5418, 0.1520, 0.3872],</span>
+<span class="sd">              [0.3168, 0.3174, 0.5303, 0.0804, 0.3808],</span>
+<span class="sd">              [0.1323, 0.2766, 0.4318, 0.6114, 0.1458]]]), tensor([[1, 2, 3],</span>
+<span class="sd">             [4, 0, 1]]))</span>
+
+<span class="sd">    Top-k over node attribute :attr:`h` in a single graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.topk_nodes(g1, &#39;h&#39;, 3)</span>
+<span class="sd">    (tensor([[[0.5901, 0.8307, 0.9280, 0.8954, 0.7997],</span>
+<span class="sd">              [0.5171, 0.6515, 0.9140, 0.7507, 0.5297],</span>
+<span class="sd">              [0.0880, 0.6379, 0.4451, 0.6893, 0.5197]]]), tensor([[[1, 0, 1, 3, 1],</span>
+<span class="sd">              [3, 2, 0, 2, 2],</span>
+<span class="sd">              [2, 3, 2, 1, 3]]]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_topk_on</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="s2">&quot;nodes&quot;</span><span class="p">,</span>
+        <span class="n">feat</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">,</span>
+        <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">,</span>
+        <span class="n">sortby</span><span class="o">=</span><span class="n">sortby</span><span class="p">,</span>
+        <span class="n">ntype_or_etype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="topk_edges">
+<a class="viewcode-back" href="../../generated/dgl.topk_edges.html#dgl.topk_edges">[docs]</a>
+<span class="k">def</span> <span class="nf">topk_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sortby</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">etype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a graph-level representation by a graph-wise top-k</span>
+<span class="sd">    on edge features :attr:`feat` in :attr:`graph` by feature at index :attr:`sortby`.</span>
+
+<span class="sd">    If :attr:`descending` is set to False, return the k smallest elements instead.</span>
+
+<span class="sd">    If :attr:`sortby` is set to None, the function would perform top-k on</span>
+<span class="sd">    all dimensions independently, equivalent to calling</span>
+<span class="sd">    :code:`torch.topk(graph.edata[feat], dim=0)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : DGLGraph</span>
+<span class="sd">        The graph.</span>
+<span class="sd">    feat : str</span>
+<span class="sd">        The feature field.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The k in &quot;top-k&quot;</span>
+<span class="sd">    descending : bool</span>
+<span class="sd">        Controls whether to return the largest or smallest elements.</span>
+<span class="sd">    sortby : int, optional</span>
+<span class="sd">        Sort according to which feature. If is None, all features are sorted independently.</span>
+<span class="sd">    etype : str, typle of str, optional</span>
+<span class="sd">        Edge type. Can be omitted if there is only one edge type in the graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sorted_feat : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(B, K, D)`, where</span>
+<span class="sd">        :math:`B` is the batch size of the input graph.</span>
+<span class="sd">    sorted_idx : Tensor</span>
+<span class="sd">        A tensor with shape :math:`(B, K)`(:math:`(B, K, D)` if sortby</span>
+<span class="sd">        is set to None), where</span>
+<span class="sd">        :math:`B` is the batch size of the input graph, :math:`D`</span>
+<span class="sd">        is the feature size.</span>
+
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If an example has :math:`n` nodes and :math:`n&lt;k`, the ``sorted_feat``</span>
+<span class="sd">    tensor will pad the :math:`n+1` to :math:`k` th rows with zero;</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import dgl</span>
+<span class="sd">    &gt;&gt;&gt; import torch as th</span>
+
+<span class="sd">    Create two :class:`~dgl.DGLGraph` objects and initialize their</span>
+<span class="sd">    edge features.</span>
+
+<span class="sd">    &gt;&gt;&gt; g1 = dgl.graph(([0, 1, 2, 3], [1, 2, 3, 0]))         # Graph 1</span>
+<span class="sd">    &gt;&gt;&gt; g1.edata[&#39;h&#39;] = th.rand(4, 5)</span>
+<span class="sd">    &gt;&gt;&gt; g1.edata[&#39;h&#39;]</span>
+<span class="sd">    tensor([[0.0297, 0.8307, 0.9140, 0.6702, 0.3346],</span>
+<span class="sd">            [0.5901, 0.3030, 0.9280, 0.6893, 0.7997],</span>
+<span class="sd">            [0.0880, 0.6515, 0.4451, 0.7507, 0.5297],</span>
+<span class="sd">            [0.5171, 0.6379, 0.2695, 0.8954, 0.5197]])</span>
+
+<span class="sd">    &gt;&gt;&gt; g2 = dgl.graph(([0, 1, 2, 3, 4], [1, 2, 3, 4, 0]))   # Graph 2</span>
+<span class="sd">    &gt;&gt;&gt; g2.edata[&#39;h&#39;] = th.rand(5, 5)</span>
+<span class="sd">    &gt;&gt;&gt; g2.edata[&#39;h&#39;]</span>
+<span class="sd">    tensor([[0.3168, 0.3174, 0.5303, 0.0804, 0.3808],</span>
+<span class="sd">            [0.1323, 0.2766, 0.4318, 0.6114, 0.1458],</span>
+<span class="sd">            [0.1752, 0.9105, 0.5692, 0.8489, 0.0539],</span>
+<span class="sd">            [0.1931, 0.4954, 0.3455, 0.3934, 0.0857],</span>
+<span class="sd">            [0.5065, 0.5182, 0.5418, 0.1520, 0.3872]])</span>
+
+<span class="sd">    Top-k over edge attribute :attr:`h` in a batched graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; bg = dgl.batch([g1, g2], edata=[&#39;h&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; dgl.topk_edges(bg, &#39;h&#39;, 3)</span>
+<span class="sd">    (tensor([[[0.5901, 0.8307, 0.9280, 0.8954, 0.7997],</span>
+<span class="sd">              [0.5171, 0.6515, 0.9140, 0.7507, 0.5297],</span>
+<span class="sd">              [0.0880, 0.6379, 0.4451, 0.6893, 0.5197]],</span>
+<span class="sd">             [[0.5065, 0.9105, 0.5692, 0.8489, 0.3872],</span>
+<span class="sd">              [0.3168, 0.5182, 0.5418, 0.6114, 0.3808],</span>
+<span class="sd">              [0.1931, 0.4954, 0.5303, 0.3934, 0.1458]]]), tensor([[[1, 0, 1, 3, 1],</span>
+<span class="sd">              [3, 2, 0, 2, 2],</span>
+<span class="sd">              [2, 3, 2, 1, 3]],</span>
+<span class="sd">             [[4, 2, 2, 2, 4],</span>
+<span class="sd">              [0, 4, 4, 1, 0],</span>
+<span class="sd">              [3, 3, 0, 3, 1]]]))</span>
+
+<span class="sd">    Top-k over edge attribute :attr:`h` along index -1 in a batched graph.</span>
+<span class="sd">    (used in SortPooling)</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.topk_edges(bg, &#39;h&#39;, 3, sortby=-1)</span>
+<span class="sd">    (tensor([[[0.5901, 0.3030, 0.9280, 0.6893, 0.7997],</span>
+<span class="sd">              [0.0880, 0.6515, 0.4451, 0.7507, 0.5297],</span>
+<span class="sd">              [0.5171, 0.6379, 0.2695, 0.8954, 0.5197]],</span>
+<span class="sd">             [[0.5065, 0.5182, 0.5418, 0.1520, 0.3872],</span>
+<span class="sd">              [0.3168, 0.3174, 0.5303, 0.0804, 0.3808],</span>
+<span class="sd">              [0.1323, 0.2766, 0.4318, 0.6114, 0.1458]]]), tensor([[1, 2, 3],</span>
+<span class="sd">             [4, 0, 1]]))</span>
+
+<span class="sd">    Top-k over edge attribute :attr:`h` in a single graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; dgl.topk_edges(g1, &#39;h&#39;, 3)</span>
+<span class="sd">    (tensor([[[0.5901, 0.8307, 0.9280, 0.8954, 0.7997],</span>
+<span class="sd">              [0.5171, 0.6515, 0.9140, 0.7507, 0.5297],</span>
+<span class="sd">              [0.0880, 0.6379, 0.4451, 0.6893, 0.5197]]]), tensor([[[1, 0, 1, 3, 1],</span>
+<span class="sd">              [3, 2, 0, 2, 2],</span>
+<span class="sd">              [2, 3, 2, 1, 3]]]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_topk_on</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="s2">&quot;edges&quot;</span><span class="p">,</span>
+        <span class="n">feat</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">,</span>
+        <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">,</span>
+        <span class="n">sortby</span><span class="o">=</span><span class="n">sortby</span><span class="p">,</span>
+        <span class="n">ntype_or_etype</span><span class="o">=</span><span class="n">etype</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, DGL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
