@@ -383,235 +383,268 @@
 
           <div class="single-blog-details">
             <div class="blog-img">
-              <img src="/assets/images/release-blog-image.jpg" alt="blog">
+              <img src="/assets/images/posts/2024-08-10-bfloat16/title.png" alt="blog">
             </div>
             <div class="blog-content-desc">
-              <h4 class="themeix-blog-h">DGL v0.4 Release (heterogeneous graph update)</h4>
-              <p><p>We are thrilled to announce the 0.4 release!  This includes:</p>
+              <h4 class="themeix-blog-h">GNN training acceleration with BFloat16 data type on CPU</h4>
+              <p><p>Graph neural networks (GNN) have achieved state-of-the-art performance on
+various industrial tasks. However, most GNN operations are memory-bound and
+require a significant amount of RAM. To tackle this problem well known
+technique to reduce tensor size by using small data type is proposed for
+memory efficiency optimization of GNN training on Intel® Xeon® Scalable
+processors with Bfloat16. The proposed approach could achieve outstanding
+optimization on various GNN models, covering a wide range of datasets, which
+speeds up the training by up to 5×.</p>
 
-<h1 id="heterogeneous-graph-support">Heterogeneous Graph Support</h1>
+<h2 id="bfloat16-data-type">Bfloat16 data type</h2>
 
-<h2 id="what-is-a-heterogeneous-graph">What is a heterogeneous graph?</h2>
+<p>Bfloat16 is a half-precision data type. It differs from the default float data
+type only in mantissa length, which is 7 bits long compared to 23 bits.</p>
 
-<p>A heterogeneous graph is a graph whose nodes and edges are typed:</p>
+<p><img src="/assets/images/posts/2024-08-10-bfloat16/bfloat16.png" alt="bfloat16" /></p>
 
-<p><img src="https://user-images.githubusercontent.com/2978100/66382127-3196d400-e9ed-11e9-94f8-ee89ba530a13.png" alt="" width="350x" class="aligncenter" /></p>
+<p>Bfloat16 was developed by the Google Brain team and is currently used widely in
+DNN and other AI applications. A lot of devices natively support bfloat16
+starting from GPUs and AI accelerators and ending with CPUs. Even compilers such
+as GCC, and LLVM are enabling this data type in the latest <a href="https://en.cppreference.com/w/cpp/types/floating-point">C/C++ standards</a>.
+According to the Google Brain team exponent is more valuable for training and ML
+operations, so such reduction of mantissa bits will preserve the accuracy of the
+model and at the same time provide the same performance as other half-precision
+data types. Another advantage of using bfloat16 data type is the simplicity of
+conversion between bfloat16 and float.</p>
 
-<h2 id="models-that-work-on-heterogeneous-graphs">Models that work on heterogeneous graphs?</h2>
+<h2 id="bfloat16-cpu-acceleration">Bfloat16 CPU acceleration</h2>
 
-<p>Models using Heterogeneous Graph API:</p>
-<ul>
-  <li>
-    <p><a href="https://arxiv.org/abs/1706.02263">GCMC</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/mxnet/gcmc">Code in MXNet</a>]</p>
+<p>Starting from the 3rd Gen Intel® Xeon® Scalable processor (codenamed Cooper Lake)
+x86 CPU natively supports bfloat16. It was enabled via the Intel® Advanced Vector
+Extensions-512 (Intel® AVX-512): AVX512_BF16 vector instruction set, which like
+other AVX512 instructions provides basic operations: dot product and conversion
+functions.
+In the latest 4th Gen Intel® Xeon® Scalable processors (codename Sapphire Rapids),
+the Intel® <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html">AMX</a>
+instruction set was introduced to further improve 16-bit and 8-bit matrix
+performance. In this instruction set “tile” instructions were added, which operate
+on special “tile” 2D registers. Currently, this instruction set has only tile
+matrix multiply unit (TMUL) support, that can perform matrix multiplication for
+bfloat16 and int8 data types.
+In the next Intel Xeon generations, starting from Granite Rapids, in addition to
+bfloat16, fp16 will be supported.</p>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Dataset</th>
-          <th>RMSE (DGL)</th>
-          <th>RMSE (Official)</th>
-          <th>Speed (DGL)</th>
-          <th>Speed (Official)</th>
-          <th>Speed Comparison</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>MovieLens-100K</td>
-          <td><strong>0.9077</strong></td>
-          <td>0.910</td>
-          <td><strong>0.0246s/epoch</strong></td>
-          <td>0.1008s/epoch</td>
-          <td>5x</td>
-        </tr>
-        <tr>
-          <td>MovieLens-1M</td>
-          <td>0.8377</td>
-          <td><strong>0.832</strong></td>
-          <td>0.0695s/epoch</td>
-          <td>1.538s/epoch</td>
-          <td>22x</td>
-        </tr>
-        <tr>
-          <td>MovieLens-10M (full-graph training)</td>
-          <td>0.7875</td>
-          <td><strong>0.777</strong></td>
-          <td>0.6480s/epoch</td>
-          <td>OOM</td>
-          <td>-</td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-  <li><a href="https://arxiv.org/abs/1703.06103">R-GCN</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn-hetero">Code in PyTorch</a>]
-    <ul>
-      <li>We provide an R-GCN model for heterograph input. The new code can train the model for the AM dataset (&gt;5M edges) using one GPU, while the original implementation can only run on CPU and consume 32GB memory.</li>
-      <li>The original implementation takes 51.88s to train one epoch on CPU. The new R-GCN based on heterograph takes only 0.1781s for one epoch on V100 GPU (<strong>291x faster !!</strong>).</li>
-    </ul>
-  </li>
-  <li><a href="https://arxiv.org/abs/1903.07293">Heterogeneous Attention Networks</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/han">Code in PyTorch</a>]</li>
-  <li><a href="https://dl.acm.org/citation.cfm?id=3098036">Metapath2vec</a> [<a href="https://github.com/dmlc/dgl/tree/master/examples/pytorch/metapath2vec">Code in PyTorch</a>]
-    <ul>
-      <li>The metapath sampler is twice as fast as the original implementation.</li>
-    </ul>
-  </li>
-</ul>
+<h2 id="bfloat16-in-dgl">Bfloat16 in DGL</h2>
 
-<h2 id="how-could-i-play-with-a-heterogeneous-graph">How could I play with a heterogeneous graph?</h2>
+<p>Recently bfloat16 support was added to DGL library (starting from <a href="https://github.com/dmlc/dgl/releases/tag/1.0.0">DGL version 1.0.0</a>
+for Nvidia GPU and <a href="https://github.com/dmlc/dgl/releases/tag/1.1.0">DGL version 1.1.0</a>
+for CPU), so it is possible to use it in model training and inference for both
+CPU and GPU devices.
+Examples of DGL API, which will help to convert the graph and the model to
+bfloat16 data type:</p>
 
-<p>Here is an example for creating and manipulating a heterogeneous graph:</p>
-
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">dgl</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">dgl.function</span> <span class="kn">as</span> <span class="nn">fn</span>
-
-<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">heterograph</span><span class="p">({</span>
-    <span class="p">(</span><span class="s">'user'</span><span class="p">,</span> <span class="s">'follows'</span><span class="p">,</span> <span class="s">'user'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
-    <span class="p">(</span><span class="s">'user'</span><span class="p">,</span> <span class="s">'plays'</span><span class="p">,</span> <span class="s">'game'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
-    <span class="p">(</span><span class="s">'game'</span><span class="p">,</span> <span class="s">'attracts'</span><span class="p">,</span> <span class="s">'user'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
-    <span class="p">(</span><span class="s">'developer'</span><span class="p">,</span> <span class="s">'develops'</span><span class="p">,</span> <span class="s">'game'</span><span class="p">):</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
-    <span class="p">})</span>
-
-<span class="c"># Here the user nodes have a single feature named x, and game nodes have a single feature named y</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s">'user'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'x'</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
-<span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s">'game'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'y'</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
-
-<span class="c"># Edge features are similar</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
-<span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s">'follows'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'a'</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
-<span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s">'plays'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'b'</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
-
-<span class="c"># One can also perform message passing.</span>
-<span class="c"># The following code performs a full message passing on the "plays" edges.</span>
-<span class="n">g</span><span class="p">[</span><span class="s">'follows'</span><span class="p">]</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s">'x'</span><span class="p">,</span> <span class="s">'m'</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="s">'m'</span><span class="p">,</span> <span class="s">'z'</span><span class="p">))</span>
-<span class="n">z</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s">'game'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">'z'</span><span class="p">]</span>
-<span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-<span class="c"># Moreover, one can also perform message passing on multiple types at the same time, aggregating the results</span>
-<span class="n">g</span><span class="o">.</span><span class="n">multi_update_all</span><span class="p">({</span>
-    <span class="s">'follows'</span><span class="p">:</span> <span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s">'x'</span><span class="p">,</span> <span class="s">'m'</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="s">'m'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)),</span>
-    <span class="s">'attracts'</span><span class="p">:</span> <span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">copy_u</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span> <span class="s">'m'</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="s">'m'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)),</span>
-    <span class="p">},</span> <span class="s">'sum'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># Convert graph, model, and graph features to bfloat16</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_bfloat16</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">)</span>
 </code></pre>
 </div>
 
-<p>Checkout our heterograph tutorial: <a href="https://docs.dgl.ai/tutorials/hetero/1_basics.html">Working with Heterogeneous Graphs in DGL</a></p>
+<p>The following example trains <a href="https://snap.stanford.edu/graphsage/">GraphSAGE</a>
+with bfloat16 using the provided API:</p>
 
-<p>Checkout the full <a href="https://docs.dgl.ai/api/python/heterograph.html">API reference</a>.</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="kn">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="kn">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">dgl</span>
+<span class="kn">from</span> <span class="nn">dgl.data</span> <span class="kn">import</span> <span class="n">CiteseerGraphDataset</span>
+<span class="kn">from</span> <span class="nn">dgl.nn</span> <span class="kn">import</span> <span class="n">SAGEConv</span>
+<span class="kn">from</span> <span class="nn">dgl.transforms</span> <span class="kn">import</span> <span class="n">AddSelfLoop</span>
 
-<h1 id="knowledge-graph-models">Knowledge Graph Models</h1>
 
-<p>We also released DGL-KE, a subpackage of DGL that trains embeddings on knowledge graphs. This package is adapted from the <a href="https://github.com/DeepGraphLearning/KnowledgeGraphEmbedding">KnowledgeGraphEmbedding</a> package. We made it fast and scalable while still maintaining the flexibility of the original package. Using a single NVIDIA V100 GPU, DGL-KE can train TransE on FB15k in <strong>6.85 mins</strong>, substantially outperforming existing tools such as GraphVite.  For graphs with hundreds of millions of edges (such as the full Freebase graph), it takes a couple of hours on <strong>one</strong> EC2 x1.32xlarge machine.</p>
+<span class="k">class</span> <span class="nc">SAGE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_size</span><span class="p">,</span> <span class="n">hid_size</span><span class="p">,</span> <span class="n">out_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="c"># two-layer SAGE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">in_size</span><span class="p">,</span> <span class="n">hid_size</span><span class="p">,</span> <span class="s">"gcn"</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SAGEConv</span><span class="p">(</span><span class="n">hid_size</span><span class="p">,</span> <span class="n">out_size</span><span class="p">,</span> <span class="s">"gcn"</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
-<p>Currently, the following models are supported:</p>
 
-<ul>
-  <li>TransE</li>
-  <li>DistMult</li>
-  <li>ComplEx</li>
-</ul>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">l</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">h</span>
 
-<p>And the following training schemas are supported:</p>
 
-<ul>
-  <li>CPU training</li>
-  <li>GPU training</li>
-  <li>Joint CPU &amp; GPU training</li>
-  <li>Multiprocessing training on CPUs</li>
-</ul>
+<span class="c"># Data loading</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">AddSelfLoop</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">CiteseerGraphDataset</span><span class="p">(</span><span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
 
-<p><strong>Training results on FB15k using one NVIDIA V100 GPU</strong></p>
 
-<p>Training Speed:</p>
+<span class="n">g</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="nb">int</span><span class="p">()</span>
+<span class="n">train_mask</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s">'train_mask'</span><span class="p">]</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s">'feat'</span><span class="p">]</span>
+<span class="n">label</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ndata</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span>
 
-<table>
-  <thead>
-    <tr>
-      <th>Models</th>
-      <th>TransE</th>
-      <th>DistMult</th>
-      <th>ComplEx</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MAX_STEPS</td>
-      <td>20000</td>
-      <td>100000</td>
-      <td>100000</td>
-    </tr>
-    <tr>
-      <td>TIME</td>
-      <td>411s</td>
-      <td>690s</td>
-      <td>806s</td>
-    </tr>
-  </tbody>
+
+<span class="n">in_size</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">hid_size</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">out_size</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">num_classes</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SAGE</span><span class="p">(</span><span class="n">in_size</span><span class="p">,</span> <span class="n">hid_size</span><span class="p">,</span> <span class="n">out_size</span><span class="p">)</span>
+
+
+<span class="c"># Convert model and graph to bfloat16</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dgl</span><span class="o">.</span><span class="n">to_bfloat16</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">)</span>
+
+
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+
+<span class="c"># Create optimizer</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>
+<span class="n">loss_fcn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">feat</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fcn</span><span class="p">(</span><span class="n">logits</span><span class="p">[</span><span class="n">train_mask</span><span class="p">],</span> <span class="n">label</span><span class="p">[</span><span class="n">train_mask</span><span class="p">])</span>
+
+
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+
+    <span class="k">print</span><span class="p">(</span><span class="s">'Epoch {} | Loss {}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+</code></pre>
+</div>
+
+<h2 id="experimental-results">Experimental results</h2>
+
+<p>The most popular examples have been tested – <a href="https://arxiv.org/abs/1312.6203">GCN</a>,
+<a href="https://arxiv.org/abs/1706.02216">GraphSAGE</a>. For full graph training, basic
+datasets were chosen, while for the mini-batch approach datasets from <a href="https://ogb.stanford.edu/docs/nodeprop/">OGB</a>
+were used, the sizes of which significantly exceed the sizes of the basic ones.
+For instance, ogbn-products has around 2.5 million nodes and 61 million edges,
+whereas ogbn-papers100M has 111 million nodes and 1.6 million edges. Table 1.
+demonstrates accuracy which is similar for float and bfloat16 or has not been
+changed significantly.</p>
+
+<table style="text-align: center;">
+   <tr>
+      <th>Model</th>
+      <th>Dataset</th>
+      <th>Test accuracy(float)</th>
+      <th>Test accuracy(bfloat16)</th>
+   </tr>
+   <tr>
+      <td>gcn</td>
+      <td>citeseer</td>
+      <td>71%</td>
+      <td>71%</td>
+   </tr>
+   <tr>
+      <td>gcn</td>
+      <td>cora</td>
+      <td>81%</td>
+      <td>81%</td>
+   </tr>
+   <tr>
+      <td>gcn</td>
+      <td>pubmed</td>
+      <td>79%</td>
+      <td>79%</td>
+   </tr>
+   <tr>
+      <td>graphsage</td>
+      <td>citeseer</td>
+      <td>71%</td>
+      <td>71%</td>
+   </tr>
+   <tr>
+      <td>graphsage</td>
+      <td>cora</td>
+      <td>81%</td>
+      <td>81%</td>
+   </tr>
+   <tr>
+      <td>graphsage</td>
+      <td>pubmed</td>
+      <td>78%</td>
+      <td>78%</td>
+   </tr>
+   <tr>
+      <td>gcn minibatch</td>
+      <td>ogbn-paper100M</td>
+      <td>57%</td>
+      <td>57%</td>
+   </tr>
+   <tr>
+      <td>gcn minibatch</td>
+      <td>ogbn-products</td>
+      <td>78%</td>
+      <td>78%</td>
+   </tr>
+   <tr>
+      <td>graphsage minibatch</td>
+      <td>ogbn-paper100M</td>
+      <td>62%</td>
+      <td>61%</td>
+   </tr>
+   <tr>
+      <td>graphsage minibatch</td>
+      <td>ogbn-products</td>
+      <td>76%</td>
+      <td>74%</td>
+   </tr>
 </table>
 
-<p>Training accuracy:</p>
+<p>The plots below show results on <a href="https://aws.amazon.com/ec2/instance-types/r6i/">AWS r6i</a>
+powered by 3rd Generation Intel Xeon Scalable processors (codename Ice Lake),
+which does not have native bfloat16 instruction, and results on <a href="https://aws.amazon.com/ec2/instance-types/r7iz/">AWS r7iz</a>
+4th Generation Intel Xeon Scalable-based (Sapphire Rapids) instances, which has
+native support for both AVX512_BF16 and AMX. In both experiments, the number of
+threads is limited to 16, which is the best-known number of threads for a single
+run on Intel® Xeon®.</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>Models</th>
-      <th>MR</th>
-      <th>MRR</th>
-      <th>HITS@1</th>
-      <th>HITS@3</th>
-      <th>HITS@10</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>TransE</td>
-      <td>69.12</td>
-      <td>0.656</td>
-      <td>0.567</td>
-      <td>0.718</td>
-      <td>0.802</td>
-    </tr>
-    <tr>
-      <td>DistMult</td>
-      <td>43.35</td>
-      <td>0.783</td>
-      <td>0.713</td>
-      <td>0.837</td>
-      <td>0.897</td>
-    </tr>
-    <tr>
-      <td>ComplEx</td>
-      <td>51.99</td>
-      <td>0.785</td>
-      <td>0.720</td>
-      <td>0.832</td>
-      <td>0.889</td>
-    </tr>
-  </tbody>
-</table>
+<p><img src="/assets/images/posts/2024-08-10-bfloat16/plot_1.png" alt="plot_1" width="800x" class="aligncenter" />
+<img src="/assets/images/posts/2024-08-10-bfloat16/plot_2.png" alt="plot_2" width="800x" class="aligncenter" /></p>
 
-<p>In comparison, GraphVite uses 4 GPUs and takes 14 minutes. Thus, DGL-KE trains TransE on FB15k 2x times faster than GraphVite while using much fewer resources.</p>
+<p>The efficiency of GNN training has been enhanced on both types of Intel® Xeon®
+instances with bfloat16. Notably, for basic datasets on the AWS r6i, there was
+an improvement in performance of up to 32%. Similarly, for basic datasets on the
+r7iz accelerated by Intel® AMX machine, the use of bfloat16 led to an improvement
+in training performance of up to 92%.
+When discussing the results of <a href="https://ogb.stanford.edu/docs/nodeprop/">OGB</a>
+datasets, which are notably larger in size, performance improved by up to 2.89
+times on the r6i and up to 5.04 times on the r7iz. On the provided plots it was
+demonstrated that all training steps experienced improvements in performance.
+The most significant impact was observed in the forward pass, which was up to
+12.7 times faster when utilizing bfloat16.</p>
 
-<p>For more information, please refer to <a href="https://github.com/dmlc/dgl/tree/master/apps/kg">this directory</a></p>
+<p><img src="/assets/images/posts/2024-08-10-bfloat16/plot_3.png" alt="plot_3" width="800x" class="aligncenter" />
+<img src="/assets/images/posts/2024-08-10-bfloat16/plot_4.png" alt="plot_4" width="800x" class="aligncenter" />
+<img src="/assets/images/posts/2024-08-10-bfloat16/plot_5.png" alt="plot_5" width="800x" class="aligncenter" />
+<img src="/assets/images/posts/2024-08-10-bfloat16/plot_6.png" alt="plot_6" width="800x" class="aligncenter" /></p>
 
-<h1 id="miscellaneous">Miscellaneous</h1>
+<h2 id="conclusion">Conclusion</h2>
+<p>Using the bfloat16 data type is strongly recommended for GNN training on Sapphire
+Rapids and earlier generations of Intel Xeon Scalable processors to enhance
+performance. Even on Ice Lake, bfloat16 enhances the efficiency of memory-bound
+operations and reduces training costs.</p>
 
-<ul>
-  <li>New builtin message function: dot product (<code class="highlighter-rouge">u_dot_v</code> etc. #831 @classicsong )</li>
-  <li>More efficient data format and serialization (#728 @VoVAllen )</li>
-  <li>ClusterGCN (#877 , @Zardinality )</li>
-  <li>CoraFull, Amazon, KarateClub, Coauthor datasets (#855 @VoVAllen )</li>
-  <li>More performance improvements</li>
-  <li>More bugfixes</li>
-</ul>
+<p>Nevertheless, certain methods within DL frameworks may not fully support or
+optimally use CPU bfloat16 instructions. In such situations, we advise evaluating
+both float and bfloat16 performance over a small number of epochs to determine
+the optimal choice.</p>
+
 </p>
               <div class="blog-post-date">
-                <p>08 <span>October</span> </p>
+                <p>10 <span>August</span> </p>
               </div>
               <div class="tag-links mt-30">
                 <div class="widget">
@@ -622,8 +655,8 @@
                 <div class="blog-data">
                   <p>By 
                   
-                  <a href="https://github.com/dmlc/dgl/">DGLTeam</a>,
-                   in <a href="#">release</a> </p>
+                  <a href="https://github.com/itaraban">Ilia Taraban</a>,
+                   in <a href="#">blog</a> </p>
                 </div>
               </div>
               <!-- Leave a Comment -->
@@ -632,7 +665,7 @@
                   <div id='discourse-comments'></div>
                   <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://discuss.dgl.ai/',
-                     discourseEmbedUrl: 'https://www.dgl.ai/release/2019/10/08/release.html' };
+                     discourseEmbedUrl: 'https://www.dgl.ai/blog/2024/08/10/bfloat16.html' };
 
   (function() {
     var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;

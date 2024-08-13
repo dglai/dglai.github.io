@@ -1,4 +1,257 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2024-06-27T05:21:30+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">DGL 2.1: GPU Acceleration for Your GNN Data Pipeline</title><link href="https://www.dgl.ai/release/2024/03/06/release.html" rel="alternate" type="text/html" title="DGL 2.1: GPU Acceleration for Your GNN Data Pipeline" /><published>2024-03-06T00:00:00+00:00</published><updated>2024-03-06T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2024/03/06/release</id><content type="html" xml:base="https://www.dgl.ai/release/2024/03/06/release.html">&lt;p&gt;We are happy to announce the release of DGL 2.1. In this release, we are making
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.2">Jekyll</generator><link href="https://www.dgl.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.dgl.ai/" rel="alternate" type="text/html" /><updated>2024-08-13T10:11:06+00:00</updated><id>https://www.dgl.ai/feed.xml</id><title type="html">Deep Graph Library</title><subtitle>Easy Deep Learning on Graphs</subtitle><entry><title type="html">GNN training acceleration with BFloat16 data type on CPU</title><link href="https://www.dgl.ai/blog/2024/08/10/bfloat16.html" rel="alternate" type="text/html" title="GNN training acceleration with BFloat16 data type on CPU" /><published>2024-08-10T00:00:00+00:00</published><updated>2024-08-10T00:00:00+00:00</updated><id>https://www.dgl.ai/blog/2024/08/10/bfloat16</id><content type="html" xml:base="https://www.dgl.ai/blog/2024/08/10/bfloat16.html">&lt;p&gt;Graph neural networks (GNN) have achieved state-of-the-art performance on
+various industrial tasks. However, most GNN operations are memory-bound and
+require a significant amount of RAM. To tackle this problem well known
+technique to reduce tensor size by using small data type is proposed for
+memory efficiency optimization of GNN training on Intel® Xeon® Scalable
+processors with Bfloat16. The proposed approach could achieve outstanding
+optimization on various GNN models, covering a wide range of datasets, which
+speeds up the training by up to 5×.&lt;/p&gt;
+
+&lt;h2 id=&quot;bfloat16-data-type&quot;&gt;Bfloat16 data type&lt;/h2&gt;
+
+&lt;p&gt;Bfloat16 is a half-precision data type. It differs from the default float data
+type only in mantissa length, which is 7 bits long compared to 23 bits.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-08-10-bfloat16/bfloat16.png&quot; alt=&quot;bfloat16&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Bfloat16 was developed by the Google Brain team and is currently used widely in
+DNN and other AI applications. A lot of devices natively support bfloat16
+starting from GPUs and AI accelerators and ending with CPUs. Even compilers such
+as GCC, and LLVM are enabling this data type in the latest &lt;a href=&quot;https://en.cppreference.com/w/cpp/types/floating-point&quot;&gt;C/C++ standards&lt;/a&gt;.
+According to the Google Brain team exponent is more valuable for training and ML
+operations, so such reduction of mantissa bits will preserve the accuracy of the
+model and at the same time provide the same performance as other half-precision
+data types. Another advantage of using bfloat16 data type is the simplicity of
+conversion between bfloat16 and float.&lt;/p&gt;
+
+&lt;h2 id=&quot;bfloat16-cpu-acceleration&quot;&gt;Bfloat16 CPU acceleration&lt;/h2&gt;
+
+&lt;p&gt;Starting from the 3rd Gen Intel® Xeon® Scalable processor (codenamed Cooper Lake)
+x86 CPU natively supports bfloat16. It was enabled via the Intel® Advanced Vector
+Extensions-512 (Intel® AVX-512): AVX512_BF16 vector instruction set, which like
+other AVX512 instructions provides basic operations: dot product and conversion
+functions.
+In the latest 4th Gen Intel® Xeon® Scalable processors (codename Sapphire Rapids),
+the Intel® &lt;a href=&quot;https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html&quot;&gt;AMX&lt;/a&gt;
+instruction set was introduced to further improve 16-bit and 8-bit matrix
+performance. In this instruction set “tile” instructions were added, which operate
+on special “tile” 2D registers. Currently, this instruction set has only tile
+matrix multiply unit (TMUL) support, that can perform matrix multiplication for
+bfloat16 and int8 data types.
+In the next Intel Xeon generations, starting from Granite Rapids, in addition to
+bfloat16, fp16 will be supported.&lt;/p&gt;
+
+&lt;h2 id=&quot;bfloat16-in-dgl&quot;&gt;Bfloat16 in DGL&lt;/h2&gt;
+
+&lt;p&gt;Recently bfloat16 support was added to DGL library (starting from &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/1.0.0&quot;&gt;DGL version 1.0.0&lt;/a&gt;
+for Nvidia GPU and &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/1.1.0&quot;&gt;DGL version 1.1.0&lt;/a&gt;
+for CPU), so it is possible to use it in model training and inference for both
+CPU and GPU devices.
+Examples of DGL API, which will help to convert the graph and the model to
+bfloat16 data type:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Convert graph, model, and graph features to bfloat16&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_bfloat16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;feat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dtype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bfloat16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dtype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bfloat16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The following example trains &lt;a href=&quot;https://snap.stanford.edu/graphsage/&quot;&gt;GraphSAGE&lt;/a&gt;
+with bfloat16 using the provided API:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;torch&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;torch.nn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;nn&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;torch.nn.functional&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;F&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.data&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CiteseerGraphDataset&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.nn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SAGEConv&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dgl.transforms&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AddSelfLoop&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SAGE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hid_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ModuleList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# two-layer SAGE&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SAGEConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hid_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;gcn&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SAGEConv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hid_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;gcn&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dropout&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;layer&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;enumerate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;layer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;relu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;
+
+
+&lt;span class=&quot;c&quot;&gt;# Data loading&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AddSelfLoop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CiteseerGraphDataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;train_mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'train_mask'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;feat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'feat'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;label&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndata&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'label'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+
+&lt;span class=&quot;n&quot;&gt;in_size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;hid_size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;out_size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_classes&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SAGE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hid_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&quot;c&quot;&gt;# Convert model and graph to bfloat16&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_bfloat16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;feat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dtype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bfloat16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dtype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bfloat16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+
+&lt;span class=&quot;c&quot;&gt;# Create optimizer&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;optimizer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;optim&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Adam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1e-2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weight_decay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;5e-4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;loss_fcn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CrossEntropyLoss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;epoch&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logits&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss_fcn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+
+    &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;backward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;optimizer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;step&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Epoch {} | Loss {}'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;epoch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;experimental-results&quot;&gt;Experimental results&lt;/h2&gt;
+
+&lt;p&gt;The most popular examples have been tested – &lt;a href=&quot;https://arxiv.org/abs/1312.6203&quot;&gt;GCN&lt;/a&gt;,
+&lt;a href=&quot;https://arxiv.org/abs/1706.02216&quot;&gt;GraphSAGE&lt;/a&gt;. For full graph training, basic
+datasets were chosen, while for the mini-batch approach datasets from &lt;a href=&quot;https://ogb.stanford.edu/docs/nodeprop/&quot;&gt;OGB&lt;/a&gt;
+were used, the sizes of which significantly exceed the sizes of the basic ones.
+For instance, ogbn-products has around 2.5 million nodes and 61 million edges,
+whereas ogbn-papers100M has 111 million nodes and 1.6 million edges. Table 1.
+demonstrates accuracy which is similar for float and bfloat16 or has not been
+changed significantly.&lt;/p&gt;
+
+&lt;table style=&quot;text-align: center;&quot;&gt;
+   &lt;tr&gt;
+      &lt;th&gt;Model&lt;/th&gt;
+      &lt;th&gt;Dataset&lt;/th&gt;
+      &lt;th&gt;Test accuracy(float)&lt;/th&gt;
+      &lt;th&gt;Test accuracy(bfloat16)&lt;/th&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;gcn&lt;/td&gt;
+      &lt;td&gt;citeseer&lt;/td&gt;
+      &lt;td&gt;71%&lt;/td&gt;
+      &lt;td&gt;71%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;gcn&lt;/td&gt;
+      &lt;td&gt;cora&lt;/td&gt;
+      &lt;td&gt;81%&lt;/td&gt;
+      &lt;td&gt;81%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;gcn&lt;/td&gt;
+      &lt;td&gt;pubmed&lt;/td&gt;
+      &lt;td&gt;79%&lt;/td&gt;
+      &lt;td&gt;79%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;graphsage&lt;/td&gt;
+      &lt;td&gt;citeseer&lt;/td&gt;
+      &lt;td&gt;71%&lt;/td&gt;
+      &lt;td&gt;71%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;graphsage&lt;/td&gt;
+      &lt;td&gt;cora&lt;/td&gt;
+      &lt;td&gt;81%&lt;/td&gt;
+      &lt;td&gt;81%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;graphsage&lt;/td&gt;
+      &lt;td&gt;pubmed&lt;/td&gt;
+      &lt;td&gt;78%&lt;/td&gt;
+      &lt;td&gt;78%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;gcn minibatch&lt;/td&gt;
+      &lt;td&gt;ogbn-paper100M&lt;/td&gt;
+      &lt;td&gt;57%&lt;/td&gt;
+      &lt;td&gt;57%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;gcn minibatch&lt;/td&gt;
+      &lt;td&gt;ogbn-products&lt;/td&gt;
+      &lt;td&gt;78%&lt;/td&gt;
+      &lt;td&gt;78%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;graphsage minibatch&lt;/td&gt;
+      &lt;td&gt;ogbn-paper100M&lt;/td&gt;
+      &lt;td&gt;62%&lt;/td&gt;
+      &lt;td&gt;61%&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr&gt;
+      &lt;td&gt;graphsage minibatch&lt;/td&gt;
+      &lt;td&gt;ogbn-products&lt;/td&gt;
+      &lt;td&gt;76%&lt;/td&gt;
+      &lt;td&gt;74%&lt;/td&gt;
+   &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The plots below show results on &lt;a href=&quot;https://aws.amazon.com/ec2/instance-types/r6i/&quot;&gt;AWS r6i&lt;/a&gt;
+powered by 3rd Generation Intel Xeon Scalable processors (codename Ice Lake),
+which does not have native bfloat16 instruction, and results on &lt;a href=&quot;https://aws.amazon.com/ec2/instance-types/r7iz/&quot;&gt;AWS r7iz&lt;/a&gt;
+4th Generation Intel Xeon Scalable-based (Sapphire Rapids) instances, which has
+native support for both AVX512_BF16 and AMX. In both experiments, the number of
+threads is limited to 16, which is the best-known number of threads for a single
+run on Intel® Xeon®.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-08-10-bfloat16/plot_1.png&quot; alt=&quot;plot_1&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;
+&lt;img src=&quot;/assets/images/posts/2024-08-10-bfloat16/plot_2.png&quot; alt=&quot;plot_2&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The efficiency of GNN training has been enhanced on both types of Intel® Xeon®
+instances with bfloat16. Notably, for basic datasets on the AWS r6i, there was
+an improvement in performance of up to 32%. Similarly, for basic datasets on the
+r7iz accelerated by Intel® AMX machine, the use of bfloat16 led to an improvement
+in training performance of up to 92%.
+When discussing the results of &lt;a href=&quot;https://ogb.stanford.edu/docs/nodeprop/&quot;&gt;OGB&lt;/a&gt;
+datasets, which are notably larger in size, performance improved by up to 2.89
+times on the r6i and up to 5.04 times on the r7iz. On the provided plots it was
+demonstrated that all training steps experienced improvements in performance.
+The most significant impact was observed in the forward pass, which was up to
+12.7 times faster when utilizing bfloat16.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2024-08-10-bfloat16/plot_3.png&quot; alt=&quot;plot_3&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;
+&lt;img src=&quot;/assets/images/posts/2024-08-10-bfloat16/plot_4.png&quot; alt=&quot;plot_4&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;
+&lt;img src=&quot;/assets/images/posts/2024-08-10-bfloat16/plot_5.png&quot; alt=&quot;plot_5&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;
+&lt;img src=&quot;/assets/images/posts/2024-08-10-bfloat16/plot_6.png&quot; alt=&quot;plot_6&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Using the bfloat16 data type is strongly recommended for GNN training on Sapphire
+Rapids and earlier generations of Intel Xeon Scalable processors to enhance
+performance. Even on Ice Lake, bfloat16 enhances the efficiency of memory-bound
+operations and reduces training costs.&lt;/p&gt;
+
+&lt;p&gt;Nevertheless, certain methods within DL frameworks may not fully support or
+optimally use CPU bfloat16 instructions. In such situations, we advise evaluating
+both float and bfloat16 performance over a small number of epochs to determine
+the optimal choice.&lt;/p&gt;</content><author><name>Ilia Taraban</name></author><category term="blog" /><category term="blog" /><summary type="html">Graph neural networks (GNN) have achieved state-of-the-art performance on various industrial tasks. However, most GNN operations are memory-bound and require a significant amount of RAM. To tackle this problem well known technique to reduce tensor size by using small data type is proposed for memory efficiency optimization of GNN training on Intel® Xeon® Scalable processors with Bfloat16. The proposed approach could achieve outstanding optimization on various GNN models, covering a wide range of datasets, which speeds up the training by up to 5×.</summary></entry><entry><title type="html">DGL 2.1: GPU Acceleration for Your GNN Data Pipeline</title><link href="https://www.dgl.ai/release/2024/03/06/release.html" rel="alternate" type="text/html" title="DGL 2.1: GPU Acceleration for Your GNN Data Pipeline" /><published>2024-03-06T00:00:00+00:00</published><updated>2024-03-06T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2024/03/06/release</id><content type="html" xml:base="https://www.dgl.ai/release/2024/03/06/release.html">&lt;p&gt;We are happy to announce the release of DGL 2.1. In this release, we are making
 GNN data loading lightning fast. We introduce GPU acceleration for the whole GNN
 data loading pipeline in GraphBolt, including the graph sampling and feature
 fetching stages.&lt;/p&gt;
@@ -1952,136 +2205,4 @@ CSV format.&lt;/li&gt;
 
 &lt;p&gt;[2] TorchQuiver: &lt;a href=&quot;https://github.com/quiver-team/torch-quiver&quot;&gt;https://github.com/quiver-team/torch-quiver&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[3] We compared our new &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; module with multiple existing baselines from DGL and PyG. For DGL v0.7, Baseline#1 uses the old &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; module with &lt;code class=&quot;highlighter-rouge&quot;&gt;low_mem=False&lt;/code&gt;; Baseline#2 uses the old &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;low_mem=True&lt;/code&gt;; Baseline#3 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.HeteroGarphConv&lt;/code&gt;. For PyG, Baseline#1 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RGCNConv&lt;/code&gt; while Baseline#2 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.FastRGCNConv&lt;/code&gt;. All the benchmarks are tested on one NVIDIA T4 GPU card.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are excited to announce the release of DGL v0.8, which brings many new features as well as improvement on system performance. The highlights are:</summary></entry><entry><title type="html">v0.7 Release Highlights</title><link href="https://www.dgl.ai/release/2021/07/26/release.html" rel="alternate" type="text/html" title="v0.7 Release Highlights" /><published>2021-07-26T00:00:00+00:00</published><updated>2021-07-26T00:00:00+00:00</updated><id>https://www.dgl.ai/release/2021/07/26/release</id><content type="html" xml:base="https://www.dgl.ai/release/2021/07/26/release.html">&lt;p&gt;v0.7 brings improvements on the low-level system infrastructure as well as on
-the high-level user-facing utilities. Many of
-them involve contributions from the user community. We are grateful to see such
-a growing trend and welcome more in the future. Here are the notable
-updates.&lt;/p&gt;
-
-&lt;h2 id=&quot;gpu-based-neighbor-sampling&quot;&gt;GPU-based Neighbor Sampling&lt;/h2&gt;
-
-&lt;p&gt;We worked with NVIDIA to make DGL support uniform neighbor sampling and MFG
-conversion on GPU. This removes the need to move samples from CPU to GPU in
-each iteration and at the same time accelerate the sampling step using GPU
-acceleration. As a result, experiment for GraphSAGE on the ogbn-product graph
-gets a &lt;strong&gt;&amp;gt;10x speedup&lt;/strong&gt; (reduced from 113s to 11s per epoch) on a g3.16x
-instance. To enable the feature, create a NodeDataLoader with a GPU graph and
-specify the sampling device to be on GPU:&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;             &lt;span class=&quot;c&quot;&gt;# create a graph&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'cuda:0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# move the graph to GPU&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# create a data loader&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;dataloader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dgl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataloading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NodeDataLoader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;                                &lt;span class=&quot;c&quot;&gt;# now accepts graph on GPU&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;train_nid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;sampler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'cuda:0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;# specify the sampling device&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;num_workers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;                    &lt;span class=&quot;c&quot;&gt;# num_workers must be 0&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;batch_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;drop_last&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;shuffle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# training loop&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sample_graphs&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataloader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;# the produced sample_graphs are already on GPU&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;train_on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_nodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sample_graphs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;The following docs have been updated accordingly:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;A new user guide chapter &lt;a href=&quot;https://docs.dgl.ai/guide/minibatch-gpu-sampling.html&quot;&gt;Using GPU for Neighborhood
-Sampling&lt;/a&gt; about when
-and how to use this new feature.&lt;/li&gt;
-  &lt;li&gt;The API doc of &lt;a href=&quot;https://docs.dgl.ai/api/python/dgl.dataloading.html#dgl.dataloading.pytorch.NodeDataLoader&quot;&gt;NodeDataLoader&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;em&gt;We thank @nv-dlasalle from NVIDIA for contributing the CUDA kernels for
-performing neighbor sampling as well as MFG conversion.&lt;/em&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;improved-cpu-message-passing-kernel&quot;&gt;Improved CPU Message Passing Kernel&lt;/h2&gt;
-
-&lt;p&gt;The core SpMM kernel for GNN message passing on CPU has been re-implemented.
-The new kernel performs tiling on CSR matrix and leverages Intel’s LibXSMM for
-kernel generation.  Please read the paper
-&lt;a href=&quot;https://arxiv.org/abs/2104.06700&quot;&gt;https://arxiv.org/abs/2104.06700&lt;/a&gt; for more
-details. The feature is turned on automatically for Xeon CPUs which shows significant
-speed boost. &lt;em&gt;We thank @sanchit-misra and Intel for contributing the new CPU kernel.&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2021-07-26-release/cpu_kernel.png&quot; alt=&quot;cpu_kernel&quot; width=&quot;600x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;better-nodeembedding-for-multi-gpu-training-and-distributed-training&quot;&gt;Better NodeEmbedding for multi-GPU training and distributed training&lt;/h2&gt;
-
-&lt;p&gt;DGL now utilizes &lt;a href=&quot;https://developer.nvidia.com/nccl&quot;&gt;NCCL&lt;/a&gt; to synchronize the
-gradients of sparse node embeddings (&lt;code class=&quot;highlighter-rouge&quot;&gt;dgl.nn.NodeEmbedding&lt;/code&gt;) during training. It
-is enabled automatically when users specify nccl as the backend for
-&lt;code class=&quot;highlighter-rouge&quot;&gt;torch.distributed.init_process_group&lt;/code&gt;. Our experiment shows a &lt;strong&gt;20% speedup&lt;/strong&gt;
-(reduced from 47.2s to 39.5s per epoch) on a g4dn.12xlarge (4 T4 GPU) instance
-for training RGCN on ogbn-mag graph. &lt;em&gt;We thank the effort from @nv-dlasalle and
-NVIDIA.&lt;/em&gt; Distributed node embedding now uses synchronized gradient update,
-making the training more stable.&lt;/p&gt;
-
-&lt;h2 id=&quot;dgl-kubernetes-operator&quot;&gt;DGL Kubernetes Operator&lt;/h2&gt;
-
-&lt;p&gt;Qihoo360 built a DGL Operator that makes running graph neural network
-distributed or non-distributed training on Kubernetes. Please check out their
-repository for usage: &lt;a href=&quot;https://github.com/Qihoo360/dgl-operator&quot;&gt;https://github.com/Qihoo360/dgl-operator&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;other-performance-gains&quot;&gt;Other Performance Gains&lt;/h2&gt;
-
-&lt;p&gt;Apart from the major feature improvement, we have also received helps from
-community contributors for fixing performance issues. Notably, DGL’s CPU random
-walk sampling is improved by 24x on medium to large size graphs; the memory
-consumption of distributed training set splitting drops by ~7x on graphs of
-billion scale.&lt;/p&gt;
-
-&lt;h2 id=&quot;more-than-more-models&quot;&gt;More than More Models&lt;/h2&gt;
-
-&lt;p&gt;As usual, the release brings a batch of &lt;strong&gt;19 new model examples&lt;/strong&gt; to the
-repository bringing the total number to be &lt;strong&gt;over 90&lt;/strong&gt;. To help users find examples
-that fit their needs (e.g. certain topic, datasets), we present a new search
-tool on &lt;a href=&quot;https://www.dgl.ai/&quot;&gt;dgl.ai&lt;/a&gt; which supports finding examples by
-keywords.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2021-07-26-release/0.7-high.gif&quot; alt=&quot;search&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Below are the new models added in v0.7.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Interaction Networks for Learning about Objects, Relations, and Physics&lt;/li&gt;
-  &lt;li&gt;Multi-GPU RGAT for OGB-LSC Node Classification&lt;/li&gt;
-  &lt;li&gt;Network Embedding with Completely-imbalanced Labels&lt;/li&gt;
-  &lt;li&gt;Temporal Graph Networks improved&lt;/li&gt;
-  &lt;li&gt;Diffusion Convolutional Recurrent Neural Network&lt;/li&gt;
-  &lt;li&gt;Gated Attention Networks for Learning on Large and Spatiotemporal Graphs&lt;/li&gt;
-  &lt;li&gt;DeeperGCN&lt;/li&gt;
-  &lt;li&gt;Deep Graph Contrastive Representation Learning&lt;/li&gt;
-  &lt;li&gt;Graph Neural Networks Inspired by Classical Iterative Algorithms&lt;/li&gt;
-  &lt;li&gt;GraphSAINT&lt;/li&gt;
-  &lt;li&gt;Label Propagation&lt;/li&gt;
-  &lt;li&gt;Combining Label Propagation and Simple Models Out-performs Graph Neural Networks&lt;/li&gt;
-  &lt;li&gt;GCNII&lt;/li&gt;
-  &lt;li&gt;Latent Dirichlet Allocation on GPU&lt;/li&gt;
-  &lt;li&gt;A Heterogeneous Information Network based Cross Domain Insurance Recommendation System for Cold Start Users&lt;/li&gt;
-  &lt;li&gt;Five heterogeneous graph models: HetGNN/GTN/HAN/NSHE/MAGNN.  Sparse matrix
-multiplication and addition with autograd are also added as a result.&lt;/li&gt;
-  &lt;li&gt;Heterogeneous Graph Attention Networks with minibatch sampling&lt;/li&gt;
-  &lt;li&gt;Learning Hierarchical Graph Neural Networks for Image Clustering&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;tutorials-for-multi-gpu-and-distributed-training&quot;&gt;Tutorials for Multi-GPU and Distributed Training&lt;/h2&gt;
-
-&lt;p&gt;With a growing interest in applying GNNs on large-scale graphs, we see many
-questions from our users about how to utilize multi-GPU or multi-machine for
-acceleration. In this release, we published two new tutorials about multi-GPU
-training for node classification and graph classification, respectively. There
-is also a new tutorial about distributed training across multiple machines. All
-of them are available at &lt;a href=&quot;https://docs.dgl.ai/&quot;&gt;docs.dgl.ai&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2021-07-26-release/multi-gpu-tut.png&quot; alt=&quot;tutorial&quot; width=&quot;800x&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;further-readings&quot;&gt;Further Readings&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Full release note: &lt;a href=&quot;https://github.com/dmlc/dgl/releases/tag/v0.7.0&quot;&gt;https://github.com/dmlc/dgl/releases/tag/v0.7.0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">v0.7 brings improvements on the low-level system infrastructure as well as on the high-level user-facing utilities. Many of them involve contributions from the user community. We are grateful to see such a growing trend and welcome more in the future. Here are the notable updates.</summary></entry></feed>
+&lt;p&gt;[3] We compared our new &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; module with multiple existing baselines from DGL and PyG. For DGL v0.7, Baseline#1 uses the old &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; module with &lt;code class=&quot;highlighter-rouge&quot;&gt;low_mem=False&lt;/code&gt;; Baseline#2 uses the old &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RelGraphConv&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;low_mem=True&lt;/code&gt;; Baseline#3 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.HeteroGarphConv&lt;/code&gt;. For PyG, Baseline#1 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.RGCNConv&lt;/code&gt; while Baseline#2 uses &lt;code class=&quot;highlighter-rouge&quot;&gt;nn.FastRGCNConv&lt;/code&gt;. All the benchmarks are tested on one NVIDIA T4 GPU card.&lt;/p&gt;</content><author><name>DGLTeam</name></author><category term="release" /><category term="release" /><summary type="html">We are excited to announce the release of DGL v0.8, which brings many new features as well as improvement on system performance. The highlights are:</summary></entry></feed>
