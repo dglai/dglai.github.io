@@ -26,11 +26,12 @@ Additional supported CUDA version when using PyTorch:
 
 Linux: CentOS 8+ / Ubuntu 20.04+
 
-PyTorch ver. \ CUDA ver. | 11.8 | 12.1
---   | -- | --
-2.1  | ✅ | ✅
-2.2  | ✅ | ✅
-2.3  | ✅ | ✅
+PyTorch ver. \ CUDA ver. | 11.8 | 12.1 | 12.4
+--   | -- | -- | --
+2.1  | ✅ | ✅  |
+2.2  | ✅ | ✅  |
+2.3  | ✅ | ✅  |
+2.4  | ✅ | ✅  | ✅
 
 Windows: Windows 10+/Windows server 2016+
 
