@@ -220,7 +220,7 @@ The folder contains example implementations of selected research papers related 
     - Example code: [MXNet](../examples/mxnet/scenegraph)
     - Tags: scene graph extraction
 - <a name="settrans"></a> Lee et al. Set Transformer: A Framework for Attention-based Permutation-Invariant Neural Networks. [Paper link](https://arxiv.org/abs/1810.00825).
-    - Pooling module: [PyTorch encoder](https://docs.dgl.ai/api/python/nn.pytorch.html#settransformerencoder), [PyTorch decoder](https://docs.dgl.ai/api/python/nn.pytorch.html#settransformerdecoder)
+    - Pooling module: [PyTorch encoder](https://www.dgl.ai/dgl_docs/api/python/nn.pytorch.html#settransformerencoder), [PyTorch decoder](https://www.dgl.ai/dgl_docs/api/python/nn.pytorch.html#settransformerdecoder)
     - Tags: graph classification
 - <a name="wln"></a> Coley et al. A graph-convolutional neural network model for the prediction of chemical reactivity. [Paper link](https://pubs.rsc.org/en/content/articlelanding/2019/sc/c8sc04228d#!divAbstract).
     - Example code: [PyTorch](https://github.com/awslabs/dgl-lifesci/tree/master/examples/reaction_prediction/rexgen_direct)
@@ -290,7 +290,7 @@ The folder contains example implementations of selected research papers related 
     - Tags: spatio-temporal, traffic forecasting
 
 - <a name="dgcnn"></a> Zhang et al. An End-to-End Deep Learning Architecture for Graph Classification. [Paper link](https://www.cse.wustl.edu/~ychen/public/DGCNN.pdf).
-    - Pooling module: [PyTorch](https://docs.dgl.ai/api/python/nn.pytorch.html#sortpooling), [TensorFlow](https://docs.dgl.ai/api/python/nn.tensorflow.html#sortpooling), [MXNet](https://docs.dgl.ai/api/python/nn.mxnet.html#sortpooling)
+    - Pooling module: [PyTorch](https://www.dgl.ai/dgl_docs/api/python/nn.pytorch.html#sortpooling), [TensorFlow](https://www.dgl.ai/dgl_docs/api/python/nn.tensorflow.html#sortpooling), [MXNet](https://www.dgl.ai/dgl_docs/api/python/nn.mxnet.html#sortpooling)
     - Tags: graph classification
 
 - <a name="seal"></a>  Zhang et al. Link Prediction Based on Graph Neural Networks. [Paper link](https://papers.nips.cc/paper/2018/file/53f0d7c537d99b3824f0f99d62ea2428-Paper.pdf).
@@ -395,7 +395,7 @@ The folder contains example implementations of selected research papers related 
     - Tags: sentiment classification
     
 - <a name="seq2seq"></a> Vinyals et al. Order Matters: Sequence to sequence for sets. [Paper link](https://arxiv.org/abs/1511.06391).
-    - Pooling module: [PyTorch](https://docs.dgl.ai/api/python/nn.pytorch.html#set2set), [MXNet](https://docs.dgl.ai/api/python/nn.mxnet.html#set2set)
+    - Pooling module: [PyTorch](https://www.dgl.ai/dgl_docs/api/python/nn.pytorch.html#set2set), [MXNet](https://www.dgl.ai/dgl_docs/api/python/nn.mxnet.html#set2set)
     - Tags: graph classification
     
 - <a name="transr"></a> Lin et al. Learning Entity and Relation Embeddings for Knowledge Graph Completion. [Paper link](https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/viewPaper/9571).
