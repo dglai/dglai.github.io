@@ -49,11 +49,11 @@ You can download GPU enabled DGL [docker containers](https://catalog.ngc.nvidia.
 Install from source
 ---
 
-Check out the instructions to [build from source](https://docs.dgl.ai/install/index.html#install-from-source).
+Check out the instructions to [build from source](https://www.dgl.ai/dgl_docs/install/index.html#install-from-source).
 
 Learning DGL
 ---
-Check out our [tutorials and documentations](https://docs.dgl.ai/index.html#getting-started).
+Check out our [tutorials and documentations](https://www.dgl.ai/dgl_docs/index.html#getting-started).
 
 Using DGL with SageMaker
 ---
